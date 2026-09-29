@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jax Coach</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23261c4a'/><path d='M12 27V10a4.5 4.5 0 0 1 9 0v2' fill='none' stroke='%23bea8ff' stroke-width='3' stroke-linecap='round'/><path d='M9 27h6' stroke='%23bea8ff' stroke-width='3' stroke-linecap='round'/><rect x='17.5' y='12.5' width='7' height='6.5' rx='2' fill='%23f5ce6e'/></svg>">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="top">
+  <div class="brand">
+    <svg viewBox="0 0 32 32" width="26" height="26" aria-hidden="true"><rect width="32" height="32" rx="7" fill="var(--brand-bg)"/><path d="M12 27V10a4.5 4.5 0 0 1 9 0v2M9 27h6" fill="none" stroke="var(--accent)" stroke-width="3" stroke-linecap="round"/><rect x="17.5" y="12.5" width="7" height="6.5" rx="2" fill="var(--gold)"/></svg>
+    <span>Jax Coach</span>
+    <span class="chip" id="patchChip">…</span>
+  </div>
+  <nav id="tabs" role="tablist">
+    <button data-view="live" class="on">Live</button>
+    <button data-view="report">Game report</button>
+    <button data-view="matchups">Matchups</button>
+    <button data-view="build">Build &amp; Runes</button>
+    <button data-view="plan">Game Plan</button>
+    <button data-view="review">Review</button>
+    <button data-view="sources">Sources</button>
+  </nav>
+  <div class="top-right">
+    <div class="statusbar" id="status" aria-live="polite"><span class="pill off"><i></i>Starting…</span></div>
+    <button class="icon-btn" id="settingsBtn" title="Settings (Riot API key, region)" aria-label="Settings">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3h0a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8v0a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+    </button>
+  </div>
+</header>
+
+<main>
+  <section id="view-live" class="view on"></section>
+  <section id="view-report" class="view"></section>
+  <section id="view-matchups" class="view"></section>
+  <section id="view-build" class="view"></section>
+  <section id="view-plan" class="view"></section>
+  <section id="view-review" class="view"></section>
+  <section id="view-sources" class="view"></section>
+</main>
+
+<div class="demo-bar" id="demoBar" hidden>
+  <b>Demo game</b>
+  <button id="demoPlay" class="btn small">Play</button>
+  <input type="range" id="demoSlider" min="0" max="2400" step="5" value="330" aria-label="Demo game time">
+  <span id="demoClock">5:30</span>
+  <button id="demoExit" class="btn small ghost">Exit demo</button>
+</div>
+
+<dialog id="settings">
+  <form method="dialog" id="settingsForm">
+    <h2>Settings</h2>
+    <p class="muted">Player scouting (rank, mastery, recent games) needs a Riot API key. Get a free development key at
+      <a href="https://developer.riotgames.com" target="_blank" rel="noopener">developer.riotgames.com</a> (log in, copy the key on the dashboard).
+      Development keys expire every 24 hours; a Personal API key doesn't.</p>
+    <label>Riot API key
+      <input type="password" id="apiKey" placeholder="RGAPI-…" autocomplete="off" spellcheck="false">
+    </label>
+    <small class="muted" id="keyHint"></small>
+    <label>Your server
+      <select id="platform">
+        <option value="euw1">EUW</option><option value="eun1">EUNE</option><option value="tr1">TR</option><option value="ru">RU</option><option value="me1">ME</option>
+        <option value="na1">NA</option><option value="br1">BR</option><option value="la1">LAN</option><option value="la2">LAS</option>
+        <option value="kr">KR</option><option value="jp1">JP</option><option value="oc1">OCE</option><option value="sg2">SG</option><option value="tw2">TW</option><option value="vn2">VN</option>
+      </select>
+    </label>
+    <h2 style="margin-top:6px">Voice</h2>
+    <div class="small muted" id="voiceInfo"></div>
+    <label>Voice <select id="vVoice"></select></label>
+    <div id="vMixWrap" class="row" style="gap:10px;align-items:flex-end">
+      <label style="flex:1">Mix with <select id="vMix"></select></label>
+      <label style="flex:1">Mix amount <span class="small muted" id="vMixAmtTxt"></span><input type="range" id="vMixAmt" min="10" max="90" step="5"></label>
+    </div>
+    <label id="vStyleWrap">Tone <select id="vStyle"></select></label>
+    <label id="vSpeedWrap">Speed <select id="vSpeed"><option value="0.95">Relaxed</option><option value="1.05">Normal</option><option value="1.15">Brisk</option><option value="1.25">Fast</option></select></label>
+    <label>Volume <input type="range" id="vVolume" min="0.2" max="1" step="0.05"></label>
+    <label class="check"><input type="checkbox" id="vChime"> Soft chime before each callout</label>
+    <div class="row"><button type="button" class="btn ghost small" id="vTest">Test voice</button><span class="small muted" id="vTestNote"></span></div>
+    <div class="row end">
+      <button value="cancel" class="btn ghost">Cancel</button>
+      <button id="saveSettings" value="save" class="btn">Save</button>
+    </div>
+  </form>
+</dialog>
+
+<div class="tip" id="tip" hidden></div>
+<footer class="legal">Jax Coach isn't endorsed by Riot Games and doesn't reflect the views or opinions of Riot Games or anyone officially involved in producing or managing Riot Games properties. Riot Games and all associated properties are trademarks or registered trademarks of Riot Games, Inc.</footer>
+
+<script src="engine.js"></script>
+<script src="scout.js"></script>
+<script src="demo.js"></script>
+<script src="voice.js"></script>
+<script src="review.js"></script>
+<script src="focus.js"></script>
+<script src="report.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

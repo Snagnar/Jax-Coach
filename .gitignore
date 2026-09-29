@@ -1,0 +1,24 @@
+# your settings (may hold your Riot API key) and keys
+config.json
+.env
+.env.*
+*.env.txt
+
+# made while running
+cache/
+history/
+logs/
+
+# local voice: downloaded by voice/setup-voice.ps1 (the model alone is 310 MB)
+voice/.venv/
+voice/python/
+voice/bin/
+voice/models/
+voice/samples/
+voice/.uv-cache/
+__pycache__/
+*.wav
+
+# installer build output (attach the exe to a GitHub release instead)
+dist/
+installer/obj/

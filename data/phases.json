@@ -1,0 +1,442 @@
+{
+  "lastUpdated": "2026-09-28",
+  "patch": "26.19",
+  "sources": [
+    {"name": "Riot - Patch 26.1 Notes (2026 season start: role quests, objectives, turrets)", "url": "https://www.leagueoflegends.com/en-us/news/game-updates/patch-26-1-notes/"},
+    {"name": "Riot - /dev: 2026 Season One Gameplay Preview", "url": "https://www.leagueoflegends.com/en-us/news/dev/dev-2026-season-one-gameplay-preview/"},
+    {"name": "LoL Wiki - V26.09 (Season 2: role quest tuning, Doran's Bow/Helm)", "url": "https://wiki.leagueoflegends.com/en-us/V26.09"},
+    {"name": "Riot - Patch 26.19 Notes (top quest Teleport cooldowns)", "url": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-19-notes/"},
+    {"name": "LoL Wiki - Jax (abilities, V26.12 changes)", "url": "https://wiki.leagueoflegends.com/en-us/Jax"},
+    {"name": "LoL Wiki - Jax/Strategy", "url": "https://wiki.leagueoflegends.com/en-us/Jax/Strategy"},
+    {"name": "LoL Wiki - Voidgrub", "url": "https://wiki.leagueoflegends.com/en-us/Voidgrub"},
+    {"name": "LoL Wiki - Rift Herald", "url": "https://wiki.leagueoflegends.com/en-us/Rift_Herald"},
+    {"name": "LoL Wiki - Baron Nashor", "url": "https://wiki.leagueoflegends.com/en-us/Baron_Nashor"},
+    {"name": "LoL Wiki - Elemental drake", "url": "https://wiki.leagueoflegends.com/en-us/Elemental_drake"},
+    {"name": "LoL Wiki - Teleport", "url": "https://wiki.leagueoflegends.com/en-us/Teleport"},
+    {"name": "LoL Wiki - Trinity Force", "url": "https://wiki.leagueoflegends.com/en-us/Trinity_Force"},
+    {"name": "LoL Wiki - Sundered Sky", "url": "https://wiki.leagueoflegends.com/en-us/Sundered_Sky"},
+    {"name": "Mobalytics - Jax Top Build (26.19)", "url": "https://mobalytics.gg/lol/champions/jax/build"},
+    {"name": "Mobalytics - Jax Guide (S26)", "url": "https://mobalytics.gg/lol/champions/jax/guide"},
+    {"name": "Mobalytics - Jax Combos", "url": "https://mobalytics.gg/lol/champions/jax/combos"},
+    {"name": "U.GG - Jax Top Build (26.19, role quest ETA)", "url": "https://u.gg/lol/champions/jax/build"},
+    {"name": "OP.GG - Jax Top Build", "url": "https://www.op.gg/lol/champions/jax/build/top"},
+    {"name": "LoLalytics - Jax Top", "url": "https://lolalytics.com/lol/jax/build/"},
+    {"name": "Skill Capped - Jax Top Guide (26.19)", "url": "https://www.skill-capped.com/lol/guides/builds/jax/top"},
+    {"name": "lolmatchups.gg - Jax Guide", "url": "https://lolmatchups.gg/champion-guides/Jax"},
+    {"name": "MOBAFire - ThisIsPatrik's In-depth Jax Guide (26.19)", "url": "https://www.mobafire.com/league-of-legends/build/26-19-thisispatriks-in-depth-jax-guide-503356"},
+    {"name": "MOBAFire - Best Jax World Challenger Guide by RAIDER", "url": "https://www.mobafire.com/league-of-legends/build/best-jax-world-challenger-guide-by-raider-matchups-588428"},
+    {"name": "MOBAFire - Stefanko's Challenger In Depth Jax Guide (26.08)", "url": "https://www.mobafire.com/league-of-legends/build/26-08-stefankos-challenger-in-depth-jax-guide-621520"}
+  ],
+  "seasonFacts": [
+    "Atakhan was removed in 26.1; Baron spawns at 20:00 again (6:00 respawn).",
+    "Voidgrubs: one camp of 3 at 8:00, despawns 14:45. Rift Herald: once at 15:00, despawns 19:45. Dragon: 5:00, respawns 5:00 after kill; Elder 6:00 after the 4th drake.",
+    "Minions spawn at 0:30 (was 1:05). Feats of Strength removed: First Blood +100g, first turret +300g.",
+    "Turret plates are permanent (no 14:00 fall-off) and exist on inner and inhibitor turrets too. Melee champions deal 20% more damage to turrets.",
+    "Crystalline Overgrowth builds on a turret not hit for ~90s; the next champion attack consumes it for bonus true damage to the turret.",
+    "Top role quest (1200 pts): +2/minion and +40/plate in top lane, +50 turret, +15 takedown, +30 epic monster, plus passive gain; recalling pauses passive gain 12s; progress outside your lane is penalized early. Jax average completion ~12:30. Rewards: bonus XP, +11% XP gain, +80 XP per takedown, level cap 20, and a free Teleport (390s cd as of 26.19) or, if you took Teleport, an upgraded TP with a max-HP shield.",
+    "Jax gets +1.5% attack speed per passive stack at level 19 (26.1). Leap Strike costs 50 mana; Counter Strike deals 4-8% target max HP (26.12)."
+  ],
+  "phases": [
+    {
+      "id": "lvl1_3",
+      "label": "Levels 1-3",
+      "timeHint": "0:00-~4:00",
+      "goals": [
+        "Get through levels 1-3 without losing HP or CS; Jax is weaker early than most top laners.",
+        "Win the level 2 race or punish the enemy if they fall behind in levels.",
+        "Farm toward 900 gold for Sheen."
+      ],
+      "do": [
+        "Take E level 1, Q at 2, W at 3 (the most common and highest win-rate path).",
+        "Stack your passive on minions (3-4 stacks) before you start a trade.",
+        "Use E only after the enemy commits to autos or melee range, then recast into the stun.",
+        "Level 2: E first, then Q onto them so you land inside the stun radius; auto, then walk out.",
+        "Level 3: auto, W to reset, Q away or E-stun, then disengage before their cooldowns are back."
+      ],
+      "dont": [
+        "Don't open with Q against champions with disengage or strong counter-trades (e.g. Riven, Gragas).",
+        "Don't waste E on poke or minion damage; without it you lose most early trades.",
+        "Don't hard-push in a losing matchup; you get ganked and have no escape but Q."
+      ],
+      "ifAhead": [
+        "Take short E trades whenever their cooldowns are down and zone them off CS.",
+        "Crash waves into their tower to hit plates; they no longer fall off, so there is no rush."
+      ],
+      "ifEven": [
+        "Farm, trade only when E is up, and track the enemy jungler before you walk up.",
+        "Keep the wave near the middle or your side so you're never overextended."
+      ],
+      "ifBehind": [
+        "Let the wave push to you and farm under your tower with W resets; don't contest CS.",
+        "Skip trades with E on cooldown and play for Sheen and level 6."
+      ]
+    },
+    {
+      "id": "lvl4_5",
+      "label": "Levels 4-5",
+      "timeHint": "~4:00-~7:00",
+      "goals": [
+        "Recall for Sheen at 900+ gold, ideally after crashing the wave into their tower.",
+        "Keep up in CS and XP so your role quest and level 6 come on time.",
+        "Be ready for the 5:00 dragon: push first if your jungler is going."
+      ],
+      "do": [
+        "Crash the wave before recalling (E recast hits the whole wave) so you lose no minions.",
+        "Trade with Sheen: auto, W reset (Sheen proc), Q if needed, E when they fight back.",
+        "Put W into Q (press W before Q) for burst on the gap-close.",
+        "Ward the river or tri-brush before pushing past the middle of the lane."
+      ],
+      "dont": [
+        "Don't take extended fights you can't finish before level 6 if the enemy has better early all-in.",
+        "Don't walk up on the enemy while E is on cooldown."
+      ],
+      "ifAhead": [
+        "Freeze or slow push to deny CS, or crash and take plates (+40 quest points each in top).",
+        "Ping your jungler for dragon or a dive if the enemy top is low."
+      ],
+      "ifEven": [
+        "Slow push and fight on the bigger wave; recall when it crashes.",
+        "Farm safely; Jax outscales most top laners, so don't force it."
+      ],
+      "ifBehind": [
+        "Hold the wave near your tower and only last-hit.",
+        "Buy Sheen and wait for 6; avoid 50/50 fights."
+      ]
+    },
+    {
+      "id": "lvl6_first_item",
+      "label": "Level 6 to first item",
+      "timeHint": "~6:00-~13:00",
+      "goals": [
+        "Use your level 6 all-in window; R active adds a lot of armor and MR.",
+        "Finish Trinity Force (Sheen + Phage + Hearthbound Axe).",
+        "Contest the 8:00 Voidgrubs with your jungler and finish the top role quest (~12:30)."
+      ],
+      "do": [
+        "Start all-ins with R active only when it will hit the enemy; the resists only come from champion hits.",
+        "Look for all-ins when E and Q are up and you have passive stacks from the wave.",
+        "Push the wave first, then join grubs at 8:00; Jax takes objectives quickly with W resets.",
+        "Farm top to finish the quest; out-of-lane points count much less early."
+      ],
+      "dont": [
+        "Don't roam before the wave is crashed; it slows your quest and loses plates.",
+        "Don't use R active if the swing won't hit an enemy champion.",
+        "Don't fight around grubs if their jungler and top arrive before yours."
+      ],
+      "ifAhead": [
+        "Dive or zone the enemy with your jungler; take plates and turret.",
+        "Stay top and keep pushing; don't give free farm back."
+      ],
+      "ifEven": [
+        "Push for priority, help at grubs, and farm to Trinity Force.",
+        "Fight them on your terms: with R and E up, when their key skill is on cooldown."
+      ],
+      "ifBehind": [
+        "Farm safely toward Trinity Force; your spike is later.",
+        "Keep vision on your side of the lane and don't contest grubs without priority."
+      ]
+    },
+    {
+      "id": "first_item_to_14",
+      "label": "First item to ~14 minutes",
+      "timeHint": "~12:00-~15:00",
+      "goals": [
+        "Use your Trinity Force spike to win lane or take the turret.",
+        "Set up the 15:00 Rift Herald and use your quest Teleport to swing plays.",
+        "Buy boots next (Plated Steelcaps or Mercury's Treads), then start Sundered Sky."
+      ],
+      "do": [
+        "Use W resets and Trinity Force procs on the turret to pressure it; melee champions deal 20% more to turrets.",
+        "Hit turrets while Crystalline Overgrowth is up for extra true damage.",
+        "Hold Teleport for dragon fights or to rejoin lane after a recall.",
+        "Push top before herald so you arrive first."
+      ],
+      "dont": [
+        "Don't TP into a fight that will be over before you land.",
+        "Don't leave the wave pushing into you before an objective; you lose CS and turret HP."
+      ],
+      "ifAhead": [
+        "Take the tower (first turret is worth +300g) and start rotating to open the map.",
+        "Invade or hold vision around top-side jungle with your jungler."
+      ],
+      "ifEven": [
+        "Push top, then help at herald or dragon.",
+        "Duel when your spells are up; many top laners can't beat Trinity Force Jax."
+      ],
+      "ifBehind": [
+        "Farm and wait for Sundered Sky; don't fight the enemy top alone yet.",
+        "Use Teleport to help your team win bot-side fights instead."
+      ]
+    },
+    {
+      "id": "midgame",
+      "label": "Midgame",
+      "timeHint": "~15:00-~25:00",
+      "goals": [
+        "Split push the side lane opposite the next objective, forcing them to answer.",
+        "Build Sundered Sky, then a defensive item (Sterak's Gage, Death's Dance or Zhonya's Hourglass).",
+        "Plan around Baron at 20:00 and dragons."
+      ],
+      "do": [
+        "Push the lane across the map from Baron or dragon, and be ready to TP or walk back.",
+        "Take plates on inner and inhibitor turrets; they stay up permanently.",
+        "If one enemy comes to stop you, duel them; if two or more come, back off and ping your team to take something.",
+        "Keep a ward in the jungle near your lane so you can ward-hop out with Q."
+      ],
+      "dont": [
+        "Don't split push without vision when three or more enemies are missing.",
+        "Don't stay split while your team fights 4v5 at Baron or Soul with no TP."
+      ],
+      "ifAhead": [
+        "Draw two or more enemies to you, or take turrets for free.",
+        "Group with your team for Baron at 20:00 and look to flank."
+      ],
+      "ifEven": [
+        "Side lane with TP up and join fights at objectives.",
+        "Rotate early to the side of the map with the next objective."
+      ],
+      "ifBehind": [
+        "Farm safe side waves, catch up in items, and avoid being caught.",
+        "Group before objectives and play as a flanker, not the frontline."
+      ]
+    },
+    {
+      "id": "lategame",
+      "label": "Lategame",
+      "timeHint": "25:00+",
+      "goals": [
+        "Use your late game power (level 19-20 from the quest, full build) to split push or carry fights.",
+        "Force the enemy to send several players to you while your team takes Baron, Elder or turrets.",
+        "Don't get caught; death timers are long now."
+      ],
+      "do": [
+        "Keep side waves pushed while Baron or Elder is up so your team has minion pressure.",
+        "Flank in teamfights and wait for the enemy to use CC before you Q in.",
+        "Finish with Guardian Angel or another defensive item if you keep getting focused.",
+        "Play near the side of the map with the next objective so you can get there in time."
+      ],
+      "dont": [
+        "Don't face-check jungle brush alone.",
+        "Don't Q in first into full CC; you die before doing damage."
+      ],
+      "ifAhead": [
+        "1v1 anyone; take inhibitors with your team and end with Baron.",
+        "Split while your team holds mid; answer only for objectives."
+      ],
+      "ifEven": [
+        "Group for Elder or Baron and flank the fight.",
+        "Split only when your TP is up or your team can safely wait."
+      ],
+      "ifBehind": [
+        "Group with your team and peel or flank; your full-build damage still comes online late.",
+        "Look for picks on lone side laners from jungle brush instead of fighting 5v5 head-on."
+      ]
+    }
+  ],
+  "trading": [
+    "Stack passive on minions before trading; you want several stacks before you commit.",
+    "Standard short trade: auto, W (auto reset + Sheen proc), then walk out or Q away before they respond.",
+    "Vs ranged: auto a minion, Q to the enemy, then auto and W right away when you land.",
+    "E is reactive: start it when the enemy commits autos or melee, not as poke. It dodges non-turret basic attacks and cuts AoE damage 25%.",
+    "E can be recast after 1s; recast early when the enemy is about to leave the 375 radius, otherwise let it charge (up to +100% damage from dodged autos) and stun.",
+    "Gap-close stun: E, then Q, recast E in the air so the stun lands as you arrive.",
+    "Press W before Q to add W damage to the leap.",
+    "All in when E and Q are up and the enemy's key skill (dash, stun, shield) is on cooldown, and at level 6 with R ready.",
+    "When E is on cooldown against an auto-attacker, back off and give up CS until it's back."
+  ],
+  "waveManagement": [
+    "In hard matchups, keep the wave on your side near your tower; Jax can't survive being pushed up with no escape but Q.",
+    "Slow push and fight when the bigger wave meets you; your minions help you win the trade.",
+    "Crash the wave before recalling (E recast hits the wave) so you lose no CS.",
+    "Crash before every objective (5:00 dragon, 8:00 grubs, 15:00 herald, 20:00 Baron) so you arrive first and lose no minions.",
+    "When ahead, freeze near your tower to deny CS, or crash for plates; plates no longer fall at 14:00.",
+    "Farm in top lane to finish the role quest faster: 2 points per minion and 40 per plate in top vs less elsewhere."
+  ],
+  "splitPush": {
+    "when": [
+      "After Trinity Force, and especially from Sundered Sky onward, when you win a 1v1 against whoever usually answers.",
+      "When your team can safely play 4v4 or hold mid without you.",
+      "When the next objective is on the other side of the map and your TP is up."
+    ],
+    "rules": [
+      "Push the lane opposite the next objective: if Baron is up and TP is ready, split bot; if TP is down, split top.",
+      "Look at the map: if 3 or more enemies are missing, back off to a safe spot.",
+      "If one enemy comes, duel them. If two come, retreat and ping your team to take an objective.",
+      "Keep a ward near your lane so you can Q out over walls.",
+      "Use W, R passive and Trinity Force on turrets, and hit them when Crystalline Overgrowth is up for extra true damage."
+    ],
+    "tpUsage": [
+      "Save TP for dragon, herald or Baron fights instead of walking back to lane.",
+      "TP to a ward or minion on a flank, not straight in front of the enemy team.",
+      "After the quest, you get a free Teleport (390s cd) or a TP shield if you took Teleport; plan splits around its cooldown.",
+      "Don't TP into a fight that will be over before you land, and make sure you'll actually reach the enemy."
+    ]
+  },
+  "teamfight": {
+    "role": "Flanking diver and cleanup: come in from the side after the front line engages and dive the carries, using E to cancel their autos.",
+    "rules": [
+      "Don't go first into full CC; wait for key stuns to be used, then Q in.",
+      "Flank against ranged comps and wait for a target to get out of position.",
+      "Against assassins, stay close to your carries and stun them when they jump in.",
+      "Let your tanks or engage go first; Jax cleans up.",
+      "Use E before you land so you stun several enemies; E also takes 25% less AoE damage.",
+      "Cast R active once you are in and can hit an enemy champion for the resists."
+    ],
+    "targetPriority": [
+      "Carries you can reach: the ADC or mid laner in range of Q and E.",
+      "Whoever is out of position or low on HP.",
+      "Otherwise the closest threat to your carries (divers or assassins)."
+    ]
+  },
+  "objectives": [
+    "Dragon spawns at 5:00 (5:00 respawn); Soul needs 4 drakes, and Elder comes 6:00 later. Push top first so you can TP bot.",
+    "Voidgrubs: one camp of 3 at 8:00, despawns 14:45. Crash the wave and help take them; each grub adds bonus turret damage.",
+    "Rift Herald: once at 15:00, despawns 19:45. Ride its Eye into top turrets; the charge does 3000 true damage to a turret.",
+    "Baron: 20:00, then 6:00 after each kill. Split on the opposite side or group with TP up; don't be dead or far away at 20:00.",
+    "Atakhan was removed in 2026; plan around Baron at 20:00 instead.",
+    "Plates are permanent and on inner and inhibitor turrets too. Every turret hit matters for Jax (melee bonus + W/R/Sheen procs).",
+    "Epic monster kills give 30 quest points; turrets and plates give far more in top, so push top between objectives."
+  ],
+  "mechanics": [
+    "Ward hop: Q can target allied minions, champions and wards (yours or enemies'), so you can jump walls to escape or dodge skillshots.",
+    "W resets your auto; the empowered auto has +50 range and can't be cancelled. Use it right after an auto lands.",
+    "Press W before Q to add W damage to the leap.",
+    "You can cast E and W during Q; E, then Q, then recast E mid-air.",
+    "E then Flash: start E, then Flash in after 1s and recast for a stun they can't dodge.",
+    "Only a manual E recast procs Sheen/Trinity Force; the auto recast doesn't. Recast yourself for two procs.",
+    "E dodges minion autos too, but not turret shots.",
+    "R passive: every third auto does bonus magic damage; during R active it procs every second auto. R active gives armor/MR only if it hits a champion.",
+    "W and R passive do 50% damage to turrets, but W still resets the auto and procs Sheen on turrets.",
+    "Stack your passive on minions or wards before fights; attack speed per stack grows with level and gets a boost at level 19."
+  ],
+  "recallTimings": [
+    {"gold": 900, "buy": "Sheen", "note": "Your biggest early spike. Crash the wave first."},
+    {"gold": 1100, "buy": "Phage (if you have Sheen) or Sheen + Health Potion/Control Ward", "note": "Phage adds HP and ms for Trinity Force."},
+    {"gold": 1200, "buy": "Hearthbound Axe (if you have Sheen and Phage)", "note": "Last Trinity Force part; 133g combine."},
+    {"gold": 2000, "buy": "Sheen + Phage", "note": "Good after a kill or a long lane stay."},
+    {"gold": 1200, "buy": "Plated Steelcaps (vs AD/autos) or Mercury's Treads (vs AP/CC)", "note": "Usually right after Trinity Force."},
+    {"gold": 1150, "buy": "Tunneler or Caulfield's Warhammer toward Sundered Sky", "note": "Second item after boots."},
+    {"gold": 400, "buy": "Long Sword or Boots + Control Ward", "note": "Only if you have to recall early."}
+  ],
+  "commonMistakes": [
+    "Using E on poke or minion damage instead of saving it for committed trades.",
+    "Always opening with Q; keep it to follow up or escape.",
+    "Fighting before 6 or before Sheen against strong early laners.",
+    "Using R active without hitting a champion, so you get no resists.",
+    "Recalling without crashing the wave.",
+    "Split pushing without vision or TP while the enemy starts Baron or Soul.",
+    "Q-ing into full CC in teamfights instead of waiting for it to be used.",
+    "Roaming or fighting in the river too early, so your role quest is late."
+  ],
+  "triggers": {
+    "enemy_laner_dead": [
+      "Push the wave into their turret and take plates or Overgrowth damage.",
+      "Recall after crashing if you need items, or help your jungler at the next objective."
+    ],
+    "you_died_to_gank": [
+      "Ward the river or tri-brush and keep the wave closer to your tower.",
+      "Track the enemy jungler; save Q for a ward or minion to escape."
+    ],
+    "you_died_solo": [
+      "Check their cooldowns and your E before fighting; don't trade into their power spike.",
+      "Farm safely under tower and play for Sheen/Trinity Force and level 6."
+    ],
+    "opp_level_lead": [
+      "They're a level up; don't fight until you catch up.",
+      "Farm safely with W resets."
+    ],
+    "you_level_lead": [
+      "You're a level up; take an E trade or all-in before they catch up.",
+      "Watch for their jungler first."
+    ],
+    "you_hit_level_2_first": [
+      "Level 2 first: E then Q onto them, stun as you land, auto and walk out."
+    ],
+    "you_hit_6": [
+      "R ready: all-in when E and Q are up; open with R active only if it hits them.",
+      "Watch for the enemy jungler before you commit."
+    ],
+    "first_item_done": [
+      "Trinity Force done: your strongest dueling window starts now, so push and duel.",
+      "Buy boots next, then start Sundered Sky."
+    ],
+    "second_item_done": [
+      "Two items: split push opposite the next objective and duel whoever answers."
+    ],
+    "three_items_done": [
+      "Three items: you can 1v1 most champions. Force two to answer you, or join fights with TP."
+    ],
+    "you_are_fed": [
+      "Stay top and keep your lead: crash waves, take turrets, and force them to send two.",
+      "Don't overextend without vision; your bounty is high."
+    ],
+    "you_are_behind": [
+      "Farm safely and don't fight; Jax scales well into the late game.",
+      "Group before objectives and flank instead of splitting alone."
+    ],
+    "enemy_laner_fed": [
+      "Don't 1v1 them; freeze near your tower and ask your jungler for help.",
+      "Build defense early (Plated Steelcaps/Mercury's Treads) and farm to your late game."
+    ],
+    "enemy_team_numbers_down": [
+      "You have more players; push a turret or take the next objective now.",
+      "Crash your wave on the way."
+    ],
+    "your_team_numbers_down": [
+      "Your team is down players; don't fight. Clear waves under your turret and wait."
+    ],
+    "baron_up_soon": [
+      "Baron soon: push your side lane now so you can join or split opposite with TP up.",
+      "If your TP is down, split top so you can walk to Baron."
+    ],
+    "dragon_up_soon": [
+      "Dragon soon: crash top and keep TP ready to join bot.",
+      "If you can't make it, push top to pull an enemy away."
+    ],
+    "atakhan_soon": [
+      "Atakhan was removed in 2026; plan around dragon and Baron (20:00) instead."
+    ],
+    "grubs_soon": [
+      "Grubs at 8:00: crash your wave and help your jungler take them.",
+      "Don't go if the enemy top and jungler get there first."
+    ],
+    "herald_soon": [
+      "Herald at 15:00: push top first, then help take it and use the Eye on a top turret."
+    ],
+    "enemy_jungler_ganked_top_repeatedly": [
+      "Keep the wave near your tower and ward the river and tri-brush.",
+      "Save Q for a ward or minion to escape; don't use E until the jungler shows up."
+    ],
+    "long_death_timers": [
+      "Death timers are long: don't split without vision; one death can lose Baron or the game.",
+      "Group near the objective or split with TP up."
+    ],
+    "enemy_has_heavy_healing": [
+      "Heavy healing: buy Chempunk Chainsword for Grievous Wounds.",
+      "Burst them with W and your E stun so they can't heal back up."
+    ],
+    "enemy_heavy_ap": [
+      "Heavy AP: buy Mercury's Treads and consider Wit's End or Zhonya's Hourglass.",
+      "E reduces AoE ability damage by 25%; use it in fights."
+    ],
+    "enemy_heavy_ad": [
+      "Heavy AD: Plated Steelcaps and Death's Dance; E cancels their autos.",
+      "Use E when their ADC or auto-attackers engage you."
+    ],
+    "enemy_many_tanks": [
+      "Many tanks: Blade of the Ruined King and E's max-HP damage are good against them.",
+      "Split push so they have to send a tank to you, and take turrets."
+    ],
+    "enemy_heavy_cc": [
+      "Heavy CC: Mercury's Treads and Sterak's Gage; don't Q in until the key CC is used."
+    ],
+    "turret_lost": [
+      "Your turret is down: don't push without vision; play side lanes near your next turret.",
+      "Move to a safer lane or group with your team."
+    ],
+    "enemy_turret_taken": [
+      "Turret taken: the map is open, so move to the next side lane or objective.",
+      "Keep hitting their inner turrets; plates stay up and pay out."
+    ]
+  }
+}
