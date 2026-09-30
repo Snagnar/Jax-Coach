@@ -5,8 +5,10 @@ from their seat, with this lineup. Today is {{DATE}}.
 ## Your folder
 - `input.json`: `when` is "champ select" (you get `lineup`: your champion, allies and enemies with roles) or
   "in game" (you get `game`: a live snapshot with levels, items, scores, objectives and recent events).
-  `player` (may be null) summarises the player's recent games on this champion: use it (e.g. many early deaths to
-  ganks means a safer lane plan).
+  `player` (may be null) summarises the player's own games from their match archive: recent form on this champion,
+  `championRecord` (all their games on it) and `vsThisOpponent` (their record in this exact matchup: games, wins,
+  gold difference at 15, deaths before 14:00). Use it: many early deaths to ganks means a safer lane plan; a matchup
+  they keep losing early deserves a more defensive start than the general advice.
 - `reference/current/`: the playbook the app uses for this champion (build, matchups, rules). Your plan is an
   overlay on top of it: only say what is different for this game.
 - `reference/playbook-format.md`: read the "Game plan" section and the rules section before writing rules.

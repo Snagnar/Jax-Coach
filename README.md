@@ -10,8 +10,10 @@ browser (a second monitor works best):
 - **Champ select prep**: the matchup, build and runes against the enemy laner, and the enemy players' rank and mastery.
 - **Game report** after each game: a rating for all ten players, how much of the win/loss was yours, the gold story of
   the game, the three things to fix next time, and "Watch" buttons that jump the League replay to each of your deaths.
-- **Review**: patterns over your recent games on a champion (CS at 10, gold at 15, how and where you die) and one focus
-  per game.
+- **Review**: patterns over your games on a champion (CS at 10, gold at 15, how and where you die), your record per
+  matchup, streaks and sessions, and one focus per game.
+- **Match archive**: every game Riot still has for you (about two years) is imported once in the background and kept
+  on your PC for good, so the stats use hundreds of games instead of the last few.
 - **Research agents** (through [Claude Code](https://claude.com/claude-code)):
   - **A playbook for any champion.** Lock in a champion without one and a quick run delivers build and runes within
     about a minute. A full research run (Opus, with Sonnet sub-agents) then writes the whole playbook: matchups,
@@ -118,10 +120,22 @@ Opens by itself a few minutes after each game, as soon as Riot publishes the mat
 - **Improve next game**: the three biggest leaks with what to do instead. One click makes one of them your next focus.
 - **Replay**: download or open the replay, and jump to 15 seconds before each of your deaths.
 
+### Match archive
+The first time Review opens (or 30 minutes after the app starts, while idle), Jax Coach lists every Solo/Duo, Flex,
+Draft and Quickplay game Riot still has for you and downloads each one, newest first. Games on your playbook
+champions or in top lane also get their minute-by-minute timeline. It's paced at about 40 Riot calls a minute (a
+development key allows 50), pauses while you're queued, in champ select or in a game, and continues where it stopped
+if you close the app. After that it only fetches new games. Everything lands in `history/matches` (gzipped, about
+20-25 MB per 1,000 games) plus one summary row per game in `history/games`. Riot deletes games after about two years;
+your archive keeps them. Settings → Storage never clears it.
+
 ### Review
-Imports your recent games on the champion you have selected (Solo/Duo, Flex, Draft, Quickplay) with their timelines: CS at 10, gold diff at 15, item
-timings, and every death classified as gank, solo or fight, with where on the map it happened. "What to work on" ranks
-the patterns behind the most deaths.
+Your games on the champion you have selected, from the archive: CS at 10, gold diff at 15, item timings, and every
+death classified as gank, solo or fight, with where on the map it happened. Look at your last 30, last 100 or all
+games. "What to work on" ranks the patterns behind the most deaths; "By opponent" shows your win rate, gold at 15 and
+early deaths per matchup. **All your games** covers every champion: win rate over time, CS at 10 over time, win rate
+after a win / a loss / two losses and by game number in a session, win rate per patch, and a champion table. The
+research agents get the same numbers (your record in this matchup, your recent form) for game plans and reviews.
 
 ### Playbook tab
 - **Champions**: every champion with a playbook (built-in, researched on this PC, or a draft still being researched).
@@ -166,7 +180,8 @@ flowchart LR
   - proxies Riot's **Live Client Data API** (`127.0.0.1:2999`), which every League game runs locally;
   - reads the **League client** (LCU) for champ select and replays. It finds the client's port and token from its
     process, allows only a short list of read-only endpoints, plus the two replay download/watch calls;
-  - proxies the **Riot Web API** (rank, mastery, match history) with your key, caching answers on disk in `cache/`;
+  - proxies the **Riot Web API** (rank, mastery, match history) with your key; finished matches and timelines go to
+    the match archive in `history/matches`;
   - gets item and champion data from **Data Dragon**, so names, icons and costs follow the current patch.
 - **The page** (`public/`) does all the thinking in the browser, about once a second:
   - `engine.js`: game analysis (phase, ahead/behind, play mode, don't-fight guard, jungler tracking, objective timers,
@@ -174,6 +189,7 @@ flowchart LR
   - `app.js`: the dashboard, champ select, settings and callouts.
   - `voice.js`: speech. It tries the local Kokoro voice first, then Groq, then Windows voices.
   - `report.js`: Game report ratings and the replay jumps.
+  - `archive.js`: imports your match history into the archive and computes stats across all your games.
   - `review.js` and `focus.js`: match-history patterns and the focus of the game.
   - `scout.js`: enemy rank and mastery.
   - `demo.js`: a demo game for trying the dashboard without playing.
@@ -211,10 +227,10 @@ flowchart LR
 ### Files that stay on your PC
 These are git-ignored and never in the installer:
 - `config.json`: your settings, including a Riot key if you pasted one in Settings.
-- `history/`: your own games.
+- `history/`: your match archive (`matches/`, `games/`) and what the dashboard said in games you played with it open.
 - `playbooks/`: playbook versions made on your PC.
 - `jobs/`: research agent runs (prompt, input, what the agent did, its output).
-- `cache/`: Riot answers, game data and voice lines. Settings → Storage shows the size of each part and can clear the
+- `cache/`: game data and voice lines. Settings → Storage shows the size of each part and can clear the
   caches (playbooks and game records are never cleared there).
 - `logs/`
 - the downloaded voice in `voice/`.

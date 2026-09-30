@@ -5,7 +5,9 @@ and propose improvements to the champion's playbook. Today is {{DATE}}.
 ## Your folder
 - `input.json`: `game` (result, length, opponent, deaths with what the dashboard said at the time, how long each
   dashboard mode was shown, the focus of the game, the plans the in-game agents made, and the post-game report
-  with ratings, story and improvement points if Riot published it) and `player` (their recent trends).
+  with ratings, story and improvement points if Riot published it) and `player` (their recent trends from the match
+  archive, their whole record on this champion and, in `vsThisOpponent`, their record in this matchup over every
+  archived game). Prefer patterns that show up across many games over what happened in this one.
 - `reference/current/`: the playbook that was used (meta, phases, matchups, rules).
 - `reference/playbook-format.md`: read the rules section and the "Post-game proposal" section.
 You can only read and write inside this folder. You may search and read the web (a few lookups) to check a claim,

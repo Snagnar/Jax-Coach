@@ -11,14 +11,16 @@ $Public   = Join-Path $Root 'public'
 $DataDir  = Join-Path $Root 'data'
 $CacheDir = Join-Path $Root 'cache'
 $ConfigPath = Join-Path $Root 'config.json'
-$RiotDiskCache = Join-Path $CacheDir 'matches'
+$RiotDiskCache = Join-Path $CacheDir 'matches'        # before 1.1: finished matches were cached here (moved to the archive)
 $HistoryDir = Join-Path $Root 'history'
+$ArchiveDir = Join-Path $HistoryDir 'matches'         # your match archive: every game Riot still had, gzipped, kept for good
+$GamesDir   = Join-Path $HistoryDir 'games'           # one summary row per archived game (written by the page)
 $TtsCache = Join-Path $CacheDir 'tts'
 $ShippedPb = Join-Path $DataDir 'champions'          # playbooks that ship with the app (in git)
 $LocalPb   = Join-Path $Root 'playbooks'             # playbooks made or changed on this PC (research agents, your approvals)
 $JobsDir   = Join-Path $Root 'jobs'                  # research agent runs
 $AgentsDir = Join-Path $Root 'agents'                # agent prompts and the playbook format
-New-Item -ItemType Directory -Force $CacheDir, $RiotDiskCache, $HistoryDir, $TtsCache, $LocalPb, $JobsDir | Out-Null
+New-Item -ItemType Directory -Force $CacheDir, $HistoryDir, $ArchiveDir, $GamesDir, $TtsCache, $LocalPb, $JobsDir | Out-Null
 
 Add-Type -TypeDefinition @"
 using System;
@@ -87,6 +89,24 @@ public static class JcHttp {
         res.RetryAfter = resp.Headers["Retry-After"];
         using (StreamReader sr = new StreamReader(resp.GetResponseStream(), Encoding.UTF8)) res.Body = sr.ReadToEnd();
         return res;
+    }
+}
+
+// the match archive stores Riot's JSON gzipped (about a tenth of the size)
+public static class JcGz {
+    public static void Write(string path, string text) {
+        string tmp = path + ".tmp";
+        using (FileStream fs = File.Create(tmp))
+        using (System.IO.Compression.GZipStream gz = new System.IO.Compression.GZipStream(fs, System.IO.Compression.CompressionLevel.Optimal)) {
+            byte[] b = new UTF8Encoding(false).GetBytes(text); gz.Write(b, 0, b.Length);
+        }
+        if (File.Exists(path)) File.Delete(path);
+        File.Move(tmp, path);
+    }
+    public static string Read(string path) {
+        using (FileStream fs = File.OpenRead(path))
+        using (System.IO.Compression.GZipStream gz = new System.IO.Compression.GZipStream(fs, System.IO.Compression.CompressionMode.Decompress))
+        using (StreamReader sr = new StreamReader(gz, Encoding.UTF8)) return sr.ReadToEnd();
     }
 }
 "@
@@ -195,6 +215,52 @@ function Get-DDFile([string]$kind) {
   return [IO.File]::ReadAllText($file, [Text.Encoding]::UTF8)
 }
 
+# ---------------- match archive ----------------
+# Finished matches and timelines never change: every one the app downloads is kept (gzipped) in history\matches,
+# so your history outlives Riot's (about two years) and clearing the caches never loses it.
+function Get-ArchivePath([string]$id, [bool]$timeline) { Join-Path $ArchiveDir ($id + $(if ($timeline) { '_timeline' } else { '' }) + '.json.gz') }
+function Read-Archived([string]$path) {
+  if (Test-Path $path) { try { return [JcGz]::Read($path) } catch { Remove-Item $path -Force -ErrorAction SilentlyContinue } }
+  return $null
+}
+# one-time move of the old match cache (cache\matches\*.json) into the archive
+function Move-OldMatchCache {
+  if (-not (Test-Path $RiotDiskCache)) { return }
+  foreach ($f in (Get-ChildItem $RiotDiskCache -Filter '*.json' -File -ErrorAction SilentlyContinue)) {
+    $dest = Join-Path $ArchiveDir ($f.BaseName + '.json.gz')
+    try { if (-not (Test-Path $dest)) { [JcGz]::Write($dest, [IO.File]::ReadAllText($f.FullName, [Text.Encoding]::UTF8)) }; Remove-Item $f.FullName -Force } catch {}
+  }
+  if (-not (Get-ChildItem $RiotDiskCache -Force -ErrorAction SilentlyContinue)) { Remove-Item $RiotDiskCache -Force -ErrorAction SilentlyContinue }
+}
+Move-OldMatchCache
+
+# /api/archive          GET: what's archived { meta, matches: [ids], timelines: [ids] }
+# /api/archive/rows     GET: every summary row (one JSON file per game)
+# /api/archive/rows/ID  POST: save one row (the page builds them from the match data)
+# /api/archive/meta     POST: the importer's progress (which queues are fully imported, for whom)
+function Handle-Archive($ctx, [string]$sub) {
+  $req = $ctx.Request
+  $metaFile = Join-Path $HistoryDir 'archive.json'
+  if ($req.HttpMethod -eq 'POST') {
+    $body = (New-Object IO.StreamReader($req.InputStream, [Text.Encoding]::UTF8)).ReadToEnd()
+    try { $null = $body | ConvertFrom-Json } catch { Send $ctx 400 '{"error":"bad_json"}'; return }
+    if ($sub -match '^/rows/([A-Z0-9]+_\d+)$') { [IO.File]::WriteAllText((Join-Path $GamesDir ($Matches[1] + '.json')), $body, (New-Object Text.UTF8Encoding($false))); Send $ctx 200 '{"ok":true}'; return }
+    if ($sub -eq '/meta') { [IO.File]::WriteAllText($metaFile, $body, (New-Object Text.UTF8Encoding($false))); Send $ctx 200 '{"ok":true}'; return }
+    Send $ctx 404 '{"error":"not_found"}'; return
+  }
+  if ($sub -eq '/rows') {
+    $rows = foreach ($f in (Get-ChildItem $GamesDir -Filter '*.json' -File -ErrorAction SilentlyContinue)) { [IO.File]::ReadAllText($f.FullName, [Text.Encoding]::UTF8) }
+    Send $ctx 200 ('[' + (@($rows) -join ',') + ']'); return
+  }
+  $m = New-Object Collections.Generic.List[string]; $t = New-Object Collections.Generic.List[string]
+  foreach ($f in (Get-ChildItem $ArchiveDir -Filter '*.json.gz' -File -ErrorAction SilentlyContinue)) {
+    $n = $f.Name.Substring(0, $f.Name.Length - 8)
+    if ($n.EndsWith('_timeline')) { $t.Add($n.Substring(0, $n.Length - 9)) } else { $m.Add($n) }
+  }
+  $meta = if (Test-Path $metaFile) { [IO.File]::ReadAllText($metaFile, [Text.Encoding]::UTF8) } else { '{}' }
+  Send $ctx 200 ('{"meta":' + $meta + ',"matches":' + (ConvertTo-Json @($m) -Compress) + ',"timelines":' + (ConvertTo-Json @($t) -Compress) + '}')
+}
+
 # ---------------- Riot API proxy ----------------
 $RiotCache = @{}
 $script:LastRiotCall = [DateTime]::MinValue
@@ -214,8 +280,9 @@ function Handle-Riot($ctx, [string]$route, [string]$pathAndQuery) {
   # finished matches and their timelines never change: keep them on disk
   $diskFile = $null
   if ($pathAndQuery -match '^/lol/match/v5/matches/([A-Z0-9]+_\d+)(/timeline)?$') {
-    $diskFile = Join-Path $RiotDiskCache ($Matches[1] + $(if ($Matches[2]) { '_timeline' } else { '' }) + '.json')
-    if (Test-Path $diskFile) { Send $ctx 200 ([IO.File]::ReadAllText($diskFile, [Text.Encoding]::UTF8)); return }
+    $diskFile = Get-ArchivePath $Matches[1] ([bool]$Matches[2])
+    $text = Read-Archived $diskFile
+    if ($null -ne $text) { $ctx.Response.Headers['X-JC-Archive'] = '1'; Send $ctx 200 $text; return }
   }
   $isMatchDetail = [bool]$diskFile
   $hit = $RiotCache[$url]
@@ -228,7 +295,7 @@ function Handle-Riot($ctx, [string]$route, [string]$pathAndQuery) {
   $r = [JcHttp]::Get($url, $Config.riotApiKey, 8000)
   $script:LastRiotCall = Get-Date
   if ($r.Status -eq 200 -or $r.Status -eq 404) { $RiotCache[$url] = @{ t = Get-Date; status = $r.Status; body = $r.Body } }
-  if ($r.Status -eq 200 -and $diskFile) { [IO.File]::WriteAllText($diskFile, $r.Body, (New-Object Text.UTF8Encoding($false))) }
+  if ($r.Status -eq 200 -and $diskFile) { try { [JcGz]::Write($diskFile, $r.Body) } catch {} }
   if ($r.Status -eq 429 -and $r.RetryAfter) { $ctx.Response.Headers['Retry-After'] = $r.RetryAfter }
   $status = if ($r.Status -eq 0) { 502 } else { $r.Status }
   $body = if ($r.Body) { $r.Body } else { '{}' }
@@ -379,11 +446,11 @@ function Get-StorageAreas {
   if ($null -eq $script:VoiceEngineSize) { $script:VoiceEngineSize = Get-FilesSize (Get-TreeFiles (Join-Path $Root 'voice')) }
   $areas = @(
     [ordered]@{ id = 'tts'; label = 'Spoken lines'; clear = $true; note = 'Voice lines made so far. They are made again when needed (a second or two each).'; size = (Get-FilesSize (Get-TreeFiles (Join-Path $CacheDir 'tts'))) }
-    [ordered]@{ id = 'matches'; label = 'Downloaded matches'; clear = $true; note = 'Your past games and timelines from Riot. Reports and Review download them again (a minute or two, needs the API key).'; size = (Get-FilesSize (Get-TreeFiles (Join-Path $CacheDir 'matches'))) }
     [ordered]@{ id = 'gamedata'; label = 'Game data'; clear = $true; note = 'Champion and item data per patch (Data Dragon). Downloaded again on the next start.'; size = (Get-FilesSize (Get-ChildItem $CacheDir -File -ErrorAction SilentlyContinue)) }
     [ordered]@{ id = 'jobs'; label = 'Research run logs'; clear = $true; note = 'Logs of finished agent runs. Their results are already in your playbooks. Running jobs are kept.'; size = (Get-FilesSize $jobFiles) }
     [ordered]@{ id = 'playbooks'; label = 'Your playbooks'; clear = $false; note = 'Researched and updated champion playbooks with all versions. Manage them in the Playbook tab.'; size = (Get-FilesSize (Get-TreeFiles $LocalPb)) }
-    [ordered]@{ id = 'history'; label = 'Game records'; clear = $false; note = 'What the dashboard said in your games (Review, reports). Not a cache.'; size = (Get-FilesSize (Get-TreeFiles $HistoryDir)) }
+    [ordered]@{ id = 'archive'; label = 'Your match archive'; clear = $false; note = 'Every game of yours Riot still had, kept for good (Riot deletes games after about two years). Review, reports and stats read it.'; size = (Get-FilesSize @(@(Get-TreeFiles $ArchiveDir) + @(Get-TreeFiles $GamesDir))) }
+    [ordered]@{ id = 'history'; label = 'Live game records'; clear = $false; note = 'What the dashboard said in games you played with Jax Coach open.'; size = (Get-FilesSize (Get-ChildItem $HistoryDir -File -ErrorAction SilentlyContinue)) }
     [ordered]@{ id = 'voice'; label = 'Local voice engine'; clear = $false; note = 'The installed Kokoro voice. Uninstalling Jax Coach removes it.'; size = $script:VoiceEngineSize }
   )
   return $areas
@@ -391,7 +458,6 @@ function Get-StorageAreas {
 function Clear-StorageArea([string]$id) {
   switch ($id) {
     'tts' { Get-TreeFiles (Join-Path $CacheDir 'tts') | Remove-Item -Force -ErrorAction SilentlyContinue }
-    'matches' { Get-TreeFiles (Join-Path $CacheDir 'matches') | Remove-Item -Force -ErrorAction SilentlyContinue; $RiotCache.Clear() }
     'gamedata' { Get-ChildItem $CacheDir -File -ErrorAction SilentlyContinue | Remove-Item -Force -ErrorAction SilentlyContinue }
     'jobs' { Get-FinishedJobDirs | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue }
     default { return $false }
@@ -454,6 +520,7 @@ function Handle-Request($ctx) {
     return
   }
   if ($path -eq '/api/history') { Handle-History $ctx; return }
+  if ($path -match '^/api/archive(/.*)?$') { Handle-Archive $ctx "$($Matches[1])"; return }
   if ($path -match '^/api/storage(/.*)?$') { Handle-Storage $ctx "$($Matches[1])"; return }
   if ($path -match '^/api/playbooks?(/.*)?$') { Handle-Playbook $ctx "$($Matches[1])"; return }
   if ($path -match '^/api/agent(/.*)$') { Handle-Agent $ctx $Matches[1]; return }

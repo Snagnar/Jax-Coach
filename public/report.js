@@ -4,7 +4,7 @@
 // won or lost, what to fix next game, and jumps the League replay to each of your deaths.
 
 const Report = (() => {
-  const S = { status: 'idle', list: [], sel: null, R: null, error: null, waiting: null, replay: null, replayMsg: '' };
+  const S = { listLimit: 20, status: 'idle', list: [], sel: null, R: null, error: null, waiting: null, replay: null, replayMsg: '' };
   let onChange = () => {};
   const changed = () => onChange();
 
@@ -247,21 +247,17 @@ const Report = (() => {
   }
 
   // ---------- loading ----------
+  // your games from the match archive; the newest few are checked with Riot first so a game that just ended shows up
   async function loadList(D, { fresh = false } = {}) {
     const puuid = await Review.ensurePuuid(D);
-    const ids = (await Scout.api('match', `/lol/match/v5/matches/by-puuid/${puuid}/ids?count=12${fresh ? '&jcfresh=1' : ''}`)) || [];
-    const out = [];
-    for (const id of ids) {
-      const m = await Scout.api('match', `/lol/match/v5/matches/${id}`);
-      if (!m || !m.info || m.info.mapId !== 11) continue;
-      const p = m.info.participants.find((x) => x.puuid === puuid);
-      if (!p || p.gameEndedInEarlySurrender) continue;
-      const o = m.info.participants.find((x) => x.teamId !== p.teamId && x.teamPosition && x.teamPosition === p.teamPosition);
-      out.push({ id, win: p.win, champ: p.championName, opp: o ? o.championName : null, end: m.info.gameEndTimestamp, dur: m.info.gameDuration, queue: m.info.queueId, kda: `${p.kills}/${p.deaths}/${p.assists}` });
-      if (out.length >= 10) break;
-    }
-    S.list = out;
-    return out;
+    await Archive.load();
+    const ids = (await Scout.api('match', `/lol/match/v5/matches/by-puuid/${puuid}/ids?count=10${fresh ? '&jcfresh=1' : ''}`)) || [];
+    for (const id of ids) if (!Archive.row(id)) { try { await Archive.addGame(D, id, puuid); } catch {} }
+    return refreshList();
+  }
+  function refreshList() {
+    S.list = Archive.rows().filter((r) => !r.remake).map((r) => ({ id: r.id, win: r.win, champ: r.champ, opp: r.opp, end: r.end, dur: r.dur, queue: r.queue, kda: `${r.k}/${r.d}/${r.a}` }));
+    return S.list;
   }
 
   async function open(D, id) {
@@ -271,10 +267,11 @@ const Report = (() => {
       const [m, tl] = [await Scout.api('match', `/lol/match/v5/matches/${id}`), await Scout.api('match', `/lol/match/v5/matches/${id}/timeline`)];
       if (!m || !tl) throw new Error('Riot has not published this game yet. Try again in a minute.');
       let hist = []; try { hist = await (await fetch('/api/history')).json(); } catch {}
-      const me = m.info.participants.find((p) => p.puuid === puuid);
+      const me = Archive.findMe(m, puuid);
+      if (!me) throw new Error('You are not in this game (a different Riot ID?)');
       const live = (hist || []).filter((h) => h.champ === me.championName && Math.abs((h.endedAt || 0) - m.info.gameEndTimestamp) < 15 * 60000).pop() || null;
       const T = Review.state.games.length >= 3 ? Review.trends(Review.state.games) : null;
-      S.R = build(D, m, tl, puuid, live, T);
+      S.R = build(D, m, tl, me.puuid, live, T);
       S.status = 'done';
       replayStatus();
     } catch (e) { S.status = 'error'; S.error = e.message; }
@@ -327,5 +324,5 @@ const Report = (() => {
     changed();
   }
 
-  return { state: S, build, loadList, open, waitForNew, replayStatus, replayAction, jump, REPLAY_STATE, ROLE_NAME, QUEUES, onChange: (fn) => { onChange = fn; }, gk };
+  return { state: S, build, loadList, refreshList, open, waitForNew, replayStatus, replayAction, jump, REPLAY_STATE, ROLE_NAME, QUEUES, onChange: (fn) => { onChange = fn; }, gk };
 })();

@@ -119,11 +119,18 @@ const Agent = (() => {
       enemies: (cs.theirTeam || []).map((p) => ({ champ: nm(idOf(p.championId)), role: POS[String(p.assignedPosition || '').toLowerCase()] || '' })).filter((p) => p.champ),
     };
   }
-  function playerProfile() {
+  // the player's own numbers from the match archive: recent form on this champion, the whole record, and this matchup
+  function playerProfile(champ, opp) {
     try {
+      const out = {};
       const T = Review.state.games.length >= 3 ? Review.trends(Review.state.games) : null;
-      if (!T) return null;
-      return { games: T.n, winRate: T.wr, cs10: T.cs10 != null ? Math.round(T.cs10) : null, goldDiff15: T.gd15 != null ? Math.round(T.gd15) : null, deathsBefore14PerGame: T.earlyDeathsPerGame, earlyDeathsThatWereGanks: `${T.earlyGanks.length}/${T.early.length}`, focus: Focus.current ? Focus.current.title : null };
+      if (T) Object.assign(out, { recentGames: T.n, winRate: T.wr, cs10: T.cs10 != null ? Math.round(T.cs10) : null, goldDiff15: T.gd15 != null ? Math.round(T.gd15) : null, deathsBefore14PerGame: T.earlyDeathsPerGame != null ? Math.round(T.earlyDeathsPerGame * 10) / 10 : null, earlyDeathsThatWereGanks: `${T.earlyGanks.length}/${T.early.length}`, winRateWhenAheadAt15: T.wrAhead, winRateWhenBehindAt15: T.wrBehind });
+      if (Focus.current) out.focus = Focus.current.title;
+      const all = champ ? Archive.rows().filter((r) => r.champ === champ && !r.remake) : [];
+      if (all.length) out.championRecord = { games: all.length, wins: all.filter((r) => r.win).length, since: new Date(Math.min(...all.map((r) => r.end))).toISOString().slice(0, 10) };
+      const v = champ && opp ? Archive.vs(champ, opp) : null;
+      if (v) out.vsThisOpponent = { opponent: (D.dd.champs[opp] || {}).name || opp, games: v.games, wins: v.wins, goldDiff15: v.goldDiff15 != null ? Math.round(v.goldDiff15) : null, deathsBefore14: v.deathsBefore14 != null ? Math.round(v.deathsBefore14 * 10) / 10 : null, soloDeathsBefore14: v.soloDeathsBefore14 != null ? Math.round(v.soloDeathsBefore14 * 10) / 10 : null };
+      return Object.keys(out).length ? out : null;
     } catch { return null; }
   }
 
@@ -147,7 +154,7 @@ const Agent = (() => {
     const facts = champSelectFacts(cs, D);
     start('gameplan', {
       champion: myChamp, championName: facts.me, key: `gameplan-${key}`, patch: patchLabel(D), title: `Game plan: ${facts.me} vs ${facts.enemies.map((e) => e.champ).join(', ')}`,
-      when: 'champ select', lineup: facts, player: playerProfile(),
+      when: 'champ select', lineup: facts, player: playerProfile(myChamp, oppGuess),
     }).then((job) => { if (job) S.csPlanJob = { id: job.id, champ: myChamp }; });
   }
 
@@ -220,7 +227,7 @@ const Agent = (() => {
     const name = Engine.champ(D, A.champ).name;
     const job = await start(type, {
       champion: A.champ, championName: name, key: `${type}-${G.key}`, patch: patchLabel(D), title: `${type === 'gameplan' ? 'Game plan' : 'Reassess'} at ${A.clock}: ${reason}`,
-      when: 'in game', reason, game: snapshot(A, D), history: G.history.map((h) => ({ at: Engine.fmtClock(h.t), headline: h.headline, changes: h.changes || [] })), player: type === 'gameplan' ? playerProfile() : undefined,
+      when: 'in game', reason, game: snapshot(A, D), history: G.history.map((h) => ({ at: Engine.fmtClock(h.t), headline: h.headline, changes: h.changes || [] })), player: type === 'gameplan' ? playerProfile(A.champ, A.P.opp ? A.P.opp.cid : null) : undefined,
     });
     if (job) { G.jobId = job.id; G.jobReason = reason; G.jobT = A.t; }
     changed();
@@ -292,7 +299,7 @@ const Agent = (() => {
         report: R ? { verdict: R.verdict, rating: R.me && R.me.rating, story: R.story, fix: R.fix, moreFix: R.moreFix, good: R.good, stats: R.stats,
           deaths: (R.deaths || []).map((d) => ({ at: Engine.fmtClock(d.t), kind: d.kind, killers: d.killers, zone: d.zone, dashboardSaid: d.mode })) } : null,
       },
-      player: playerProfile(),
+      player: playerProfile(record.champ, record.opp),
     });
   }
   function markProposal(jobId, idx, state) {

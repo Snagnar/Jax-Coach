@@ -1,11 +1,11 @@
 // Jax Coach - post-game review & trends.
-// Imports your recent games on the active champion from match-v5 (+ timelines), analyses each one, and finds patterns.
+// Your games on the active champion (from the match archive, see archive.js): analyses each one and finds patterns.
 // Games recorded live by this app add what the dashboard said when you died.
 
 const Review = (() => {
   const QUEUES = [420, 440, 400, 490];               // solo/duo, flex, draft, quickplay
   const QUEUE_NAME = { 420: 'Solo/Duo', 440: 'Flex', 400: 'Draft', 490: 'Quickplay' };
-  const S = { status: 'idle', me: null, champ: 'Jax', games: [], scanned: 0, toScan: 0, error: null, history: [], open: null };
+  const S = { status: 'idle', me: null, champ: 'Jax', games: [], all: [], range: '30', error: null, history: [], open: null };
   let onChange = () => {};
   const changed = () => onChange();
 
@@ -108,35 +108,23 @@ const Review = (() => {
     return S.me.puuid;
   }
 
-  // ---------- import ----------
-  async function load(D, { want = 20, scanMax = 80 } = {}) {
+  // ---------- games: from your match archive (archive.js imports them in the background) ----------
+  // range: how many of your most recent games on this champion the review looks at ('all' = every archived one)
+  function refresh() {
+    S.all = Archive.rows().filter((r) => r.detail && r.champ === S.champ && !r.remake).map((r) => r.detail);
+    S.games = S.range === 'all' ? S.all : S.all.slice(0, +S.range);
+    attachLiveRecords();
+  }
+  async function load(D) {
     if (S.status === 'loading') return;
     S.status = 'loading'; S.error = null; changed();
     try {
       try { S.history = await (await fetch('/api/history')).json(); } catch { S.history = []; }
       await ensurePuuid(D);
-      const lists = [];
-      for (const q of QUEUES) lists.push(...((await Scout.api('match', `/lol/match/v5/matches/by-puuid/${S.me.puuid}/ids?queue=${q}&count=50`)) || []));
-      const ids = [...new Set(lists)].sort((a, b) => +b.split('_')[1] - +a.split('_')[1]).slice(0, scanMax);
-      S.toScan = ids.length; S.scanned = 0;
-      const games = [];
-      for (const id of ids) {
-        const m = await Scout.api('match', `/lol/match/v5/matches/${id}`);
-        S.scanned++;
-        if (m && m.info) {
-          const p = m.info.participants.find((x) => x.puuid === S.me.puuid);
-          if (p && p.championName === S.champ && !p.gameEndedInEarlySurrender) {
-            const tl = await Scout.api('match', `/lol/match/v5/matches/${id}/timeline`);
-            games.push(analyzeGame(D, m, tl, S.me.puuid));
-            S.games = games.slice(); changed();
-            if (games.length >= want) break;
-          }
-        }
-        if (S.scanned % 5 === 0) changed();
-      }
-      S.games = games;
-      attachLiveRecords();
+      await Archive.load();
+      refresh();
       S.status = 'done';
+      Archive.sync(D);                 // new games (and on the first run: everything Riot still has) arrive in the background
     } catch (e) {
       S.status = 'error';
       S.error = e.message === 'no_identity' ? null : e.message;
@@ -144,6 +132,12 @@ const Review = (() => {
     }
     changed();
   }
+  // follow the archive while it imports (at most every 3 s: the review re-renders on each change)
+  let refreshTimer = null;
+  Archive.onChange(() => {
+    if (S.status !== 'done' || refreshTimer) return;
+    refreshTimer = setTimeout(() => { refreshTimer = null; const n = S.all.length; refresh(); if (S.all.length !== n || !Archive.running) changed(); }, 3000);
+  });
 
   function attachLiveRecords() {
     for (const g of S.games) {
@@ -236,10 +230,11 @@ const Review = (() => {
   }
 
   return {
-    state: S, load, trends, insights, setIdentity, zoneOf, QUEUE_NAME, ensurePuuid,
+    state: S, load, refresh, trends, insights, setIdentity, zoneOf, analyzeGame, QUEUE_NAME, ensurePuuid,
+    setRange: (r) => { S.range = r; refresh(); changed(); },
     onChange: (fn) => { onChange = fn; },
-    reset: () => { S.games = []; S.status = 'idle'; },
-    // the Review follows the active champion; switching clears the imported games
-    setChampion: (cid) => { if (!cid || cid === S.champ) return; S.champ = cid; S.games = []; S.status = 'idle'; S.open = null; changed(); },
+    reset: () => { S.games = []; S.all = []; S.status = 'idle'; },
+    // the Review follows the active champion
+    setChampion: (cid) => { if (!cid || cid === S.champ) return; S.champ = cid; S.open = null; if (S.status === 'done') refresh(); changed(); },
   };
 })();

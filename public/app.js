@@ -97,6 +97,13 @@ async function boot() {
   renderStatic();
   Report.onChange(() => { if (S.view === 'report') renderReport(); else if (S.view === 'live' && !S.game) renderLive(); });
   Review.onChange(() => { if (S.view === 'review') renderReview(); else if (S.view === 'live' && S.cs && Review.state.status === 'done') renderLive(); });
+  // the match archive imports in the background, never while you're queued or playing (scouting needs the API budget)
+  Archive.setBusy(() => (S.game && !S.demo ? 'you are in a game' : ['Matchmaking', 'ReadyCheck', 'ChampSelect', 'GameStart', 'InProgress'].includes(S.clientPhase) ? 'you are in queue or champ select' : null));
+  let archiveTimer = null;
+  Archive.onChange(() => {
+    if (archiveTimer) return;
+    archiveTimer = setTimeout(() => { archiveTimer = null; renderStatus(); if (S.view === 'report' && Report.state.listTried) { Report.refreshList(); renderReport(); } }, 3000);
+  });
   poll();
   pollClient();
   // A worker drives the polling: browsers throttle page timers hard when the window is hidden behind the game.
@@ -107,6 +114,7 @@ async function boot() {
     tick++;
     if (!S.demo && !busy) { busy = true; try { await poll(); } finally { busy = false; } }
     if (!S.game && !S.demo && (tick % 2 === 0 || S.clientPhase === 'ChampSelect') && !clientBusy) { clientBusy = true; try { await pollClient(); } finally { clientBusy = false; } }
+    if (tick % 30 === 5) archiveCheck();
   };
 }
 
@@ -120,7 +128,8 @@ async function useChamp(cid, { quiet = false, fresh = false } = {}) {
   await Playbooks.load(cid, fresh || switching);
   if (S.champ !== cid) return;                     // another switch happened while loading
   applyPlaybook();
-  if (switching && !quiet) { S.muSel = Object.keys(D.matchups).sort()[0] || null; Review.setChampion(cid); }
+  Review.setChampion(cid);
+  if (switching && !quiet) S.muSel = Object.keys(D.matchups).sort()[0] || null;
 }
 function applyPlaybook() {
   const plan = Agent.planFor(S.champ);
@@ -442,6 +451,14 @@ const CLIENT_PHASE = {
   ChampSelect: ['live', 'Champ select'], GameStart: ['live', 'Loading…'], InProgress: ['live', 'In game'], Reconnect: ['warn', 'Reconnect'],
   WaitingForStats: ['ok', 'Post-game'], PreEndOfGame: ['ok', 'Post-game'], EndOfGame: ['ok', 'Post-game'], WatchInProgress: ['ok', 'Watching replay'],
 };
+// import new games (the first time: your whole history) at most every 30 minutes, and only while idle
+function archiveCheck() {
+  const A = Archive.state;
+  if (S.demo || S.game || !D.config.hasKey || !Review.state.me || Archive.running) return;
+  if (Date.now() - (A.lastAttempt || 0) < 30 * 60000) return;
+  if (Review.state.status === 'done') Archive.sync(D); else if (Review.state.status !== 'loading') Review.load(D);
+}
+
 function renderStatus() {
   const pill = (state, label, title) => `<span class="pill ${state}" title="${esc(title)}"><i></i>${esc(label)}</span>`;
   const out = [];
@@ -452,6 +469,8 @@ function renderStatus() {
     if (S.demo) out.push(pill('demo', `Demo · ${S.A ? S.A.clock : ''}`, 'Demo game (not a real game)'));
     else if (S.game) out.push(pill('live', `Live · ${S.A.clock}`, 'Receiving live game data every 2 seconds'));
     const kp = Scout.keyProblem();
+    const AR = Archive.state;
+    if (Archive.running && AR.todo) out.push(pill(AR.pausedFor ? 'off' : 'live', `History ${AR.done}/${AR.todo}`, `Importing your match history into the local archive${AR.pausedFor ? ` (paused: ${AR.pausedFor})` : ''}`));
     out.push(!D.config.hasKey ? pill('off', 'No Riot key', 'Add RIOT_API_KEY=RGAPI-… to ~/.env.txt for rank/mastery scouting and Review')
       : kp === 'invalid_key' ? pill('err', 'Riot key expired', 'Development keys expire every 24h. Paste a new one into ~/.env.txt and restart.')
       : pill('ok', 'Riot API', `Scouting and Review active (key ${D.config.keyHint})`));
@@ -668,7 +687,7 @@ function champSelectHtml(cs) {
   const banSuggest = Object.values(D.matchups).filter((m) => m.winRate != null).sort((a, b) => a.winRate - b.winRate).slice(0, 5);
 
   const L = loadoutFor(opp, enemies);
-  const hist = opp ? (Review.state.games || []).filter((g) => g.opp && D.dd.champByName[g.opp.toLowerCase()] === opp) : [];
+  const hist = opp ? (Review.state.all || []).filter((g) => g.opp && D.dd.champByName[g.opp.toLowerCase()] === opp) : [];
   const histHtml = hist.length ? (() => {
     const w = hist.filter((g) => g.win).length, early = hist.flatMap((g) => g.deaths.filter((d) => d.t < 840));
     const kinds = {}; early.forEach((d) => { kinds[d.kind] = (kinds[d.kind] || 0) + 1; });
@@ -1382,21 +1401,23 @@ function renderReview() {
   const R = Review.state;
   if (!D.config.hasKey) { el.innerHTML = '<div class="notice warn">Review needs a Riot API key (see Settings).</div>'; return; }
   const idForm = `<form class="row" id="idForm"><input class="search" style="max-width:260px" name="rid" placeholder="Your Riot ID, e.g. Name#EUW" value="${R.me ? esc(R.me.gameName + '#' + R.me.tagLine) : ''}"><button class="btn small">Use this Riot ID</button></form>`;
-  let status = '';
-  if (R.status === 'loading') status = `<div class="small muted">Checking your recent games… ${R.scanned}/${R.toScan || '?'} checked · ${R.games.length} ${esc(champName(S.champ))} games found. The first import takes a minute or two (Riot rate limit), after that it's cached.</div><div class="progress"><i style="width:${R.toScan ? Math.round((R.scanned / R.toScan) * 100) : 5}%"></i></div>`;
+  let status = archiveStatus();
+  if (R.status === 'loading') status = '<div class="small muted">Opening your match archive…</div>';
   else if (R.status === 'error') status = `<div class="notice warn">${esc(R.error)}</div>`;
   else if (R.status === 'needs_identity' || !R.me) status = '<div class="small muted">Open the League client (detected automatically) or enter your Riot ID.</div>';
   const head = `<div class="card"><header><h2>Your ${esc(champName(S.champ))} games</h2>${R.me ? `<span class="chip">${esc(R.me.gameName)}#${esc(R.me.tagLine)}</span>` : ''}<span class="grow"></span>
-      ${R.me && R.status !== 'loading' ? `<button class="btn small" data-action="review-load">${R.games.length ? 'Refresh' : 'Load my games'}</button>` : ''}</header>
+      ${R.all.length > 30 ? `<div class="seg" role="group" aria-label="Games to look at">${[['30', 'Last 30'], ['100', 'Last 100'], ['all', `All ${R.all.length}`]].filter(([v]) => v === 'all' || +v < R.all.length).map(([v, l]) => `<button class="${R.range === v ? 'on' : ''}" data-range="${v}">${l}</button>`).join('')}</div>` : ''}
+      ${R.me && R.status !== 'loading' && !Archive.running ? `<button class="btn small" data-action="review-load">${R.all.length ? 'Check for new games' : 'Load my games'}</button>` : ''}</header>
       ${!R.me || R.status === 'needs_identity' ? idForm : ''}${status}
-      <div class="small faint">Ranked Solo/Duo, Flex, Draft and Quickplay games on ${esc(champName(S.champ))}, from Riot's match history (the last ~80 games are checked). Games played with Jax Coach open also record what the dashboard said when you died.</div></div>`;
+      <div class="small faint">Solo/Duo, Flex, Draft and Quickplay games on ${esc(champName(S.champ))} from your match archive: every game Riot still has (about two years), kept on this PC for good. Games played with Jax Coach open also record what the dashboard said when you died.</div></div>`;
   const games = R.games;
-  if (!games.length) { el.innerHTML = head + (R.status === 'done' ? `<div class="notice">No ${esc(champName(S.champ))} games found in your recent match history.</div>` : ''); return; }
+  const hist = historyHtml();
+  if (!games.length) { el.innerHTML = `<div class="grid" style="gap:14px">${head}${R.status === 'done' && !Archive.running ? `<div class="notice">No ${esc(champName(S.champ))} games in your archive yet.</div>` : ''}${hist}</div>`; return; }
 
   const T = Review.trends(games), ins = Review.insights(T, games);
   const tile = (label, value, sub) => `<div class="tile"><div class="l">${label}</div><div class="v">${value}</div>${sub ? `<div class="s">${sub}</div>` : ''}</div>`;
   const tiles = `<div class="tiles">
-    ${tile('Win rate', `${T.wr}%`, `${T.wins}W ${T.n - T.wins}L · last ${T.n} games`)}
+    ${tile('Win rate', `${T.wr}%`, `${T.wins}W ${T.n - T.wins}L · ${R.range === 'all' || T.n >= R.all.length ? `all ${T.n} games` : `last ${T.n} of ${R.all.length}`}`)}
     ${tile('CS at 10', T.cs10 != null ? Math.round(T.cs10) : '–', T.csDiff10 != null ? `${signed(T.csDiff10)} vs lane opponent` : '')}
     ${tile('Gold diff at 15', signed(T.gd15, 'g'), 'vs lane opponent')}
     ${tile('First item', fmtT(T.firstItem), 'average completion')}
@@ -1412,10 +1433,17 @@ function renderReview() {
   const focusHtml = fr.length ? `<div class="card"><header>${FOCUS_ICON}<h2>Focus results</h2><span class="small faint">games played with Jax Coach open</span></header>
     <table><tbody>${fr.map((h) => `<tr><td class="small muted">${new Date(h.endedAt).toLocaleDateString()}</td><td>${h.opp ? `<span class="row">${champImg(h.opp, 'sm')}</span>` : ''}</td><td>${esc(h.focus.title)}</td><td><span class="f-res ${h.focus.passed ? 'pass' : 'fail'}">${h.focus.passed ? 'passed' : 'missed'}</span></td><td class="small muted">${esc(h.focus.detail || '')}</td></tr>`).join('')}</tbody></table></div>` : '';
   const muRows = Object.entries(T.byOpp).sort((a, b) => (b[1].w + b[1].l) - (a[1].w + a[1].l));
-  const muTable = `<div class="card"><header><h2>By opponent</h2></header><table><tbody>
-    ${muRows.map(([name, o]) => { const id = D.dd.champByName[name.toLowerCase()] || name; return `<tr><td><span class="row">${champImg(id, 'sm')}${esc(champName(id))}</span></td><td class="num">${o.w}W ${o.l}L</td><td class="num">${D.matchups[id] && D.matchups[id].winRate != null ? `<span class="${wrClass(D.matchups[id].winRate)}">avg ${(+D.matchups[id].winRate).toFixed(1)}%</span>` : ''}</td></tr>`; }).join('')}
-    </tbody></table></div>`;
-  const rows = games.map((g) => {
+  const muAvg = (name, f) => { const v = games.filter((g) => g.opp === name).map(f).filter((x) => x != null); return v.length ? v.reduce((a, b) => a + b, 0) / v.length : null; };
+  const muTable = `<div class="card"><header><h2>By opponent</h2><span class="small faint">${muRows.length} champions</span></header><div class="table-wrap" style="max-height:420px"><table><thead><tr><th></th><th class="num">You</th><th class="num">Win rate</th><th class="num">GD@15</th><th class="num">Deaths &lt;14:00</th><th class="num">Everyone</th></tr></thead><tbody>
+    ${muRows.map(([name, o]) => {
+      const id = D.dd.champByName[name.toLowerCase()] || name, n = o.w + o.l, gd = muAvg(name, (g) => g.at15 && g.at15.goldDiff), ed = muAvg(name, (g) => g.deaths.filter((d) => d.t < 840).length);
+      return `<tr><td><span class="row">${champImg(id, 'sm')}${esc(champName(id))}</span></td><td class="num">${o.w}W ${o.l}L</td><td class="num">${n >= 3 ? `<span class="${o.w / n >= 0.55 ? 'good-t' : o.w / n <= 0.45 ? 'warn-t' : ''}">${Math.round((o.w / n) * 100)}%</span>` : '<span class="faint">–</span>'}</td>
+        <td class="num">${gd != null ? signed(gd, 'g') : '–'}</td><td class="num">${ed != null ? ed.toFixed(1) : '–'}</td>
+        <td class="num">${D.matchups[id] && D.matchups[id].winRate != null ? `<span class="${wrClass(D.matchups[id].winRate)}">${(+D.matchups[id].winRate).toFixed(1)}%</span>` : ''}</td></tr>`;
+    }).join('')}
+    </tbody></table></div><div class="small faint">Win rate from 3 games up. "Everyone" = this matchup's average win rate from the playbook.</div></div>`;
+  const shown = S.reviewAllRows ? games : games.slice(0, 40);
+  const rows = shown.map((g) => {
     const open = R.open === g.id;
     const ganks = g.deaths.filter((d) => d.kind === 'gank').length;
     const oppId = g.opp ? D.dd.champByName[g.opp.toLowerCase()] || g.opp : null;
@@ -1430,8 +1458,92 @@ function renderReview() {
       <td class="num">${g.at15 && g.at15.goldDiff != null ? signed(g.at15.goldDiff, 'g') : '–'}</td><td class="num">${fmtT(g.firstItemAt)}</td>
       <td class="num">${g.deaths.filter((d) => d.t < 840).length}${ganks ? ` <span class="small warn-t">(${ganks} gank${ganks > 1 ? 's' : ''})</span>` : ''}</td></tr>${detail}`;
   }).join('');
-  const list = `<div class="card"><header><h2>Games</h2><span class="small faint">click a game for details</span></header><div class="table-wrap"><table class="games"><thead><tr><th></th><th>Date</th><th>Vs</th><th class="num">KDA</th><th class="num">CS@10</th><th class="num">GD@15</th><th class="num">1st item</th><th class="num">Deaths &lt;14:00</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
-  el.innerHTML = `<div class="grid" style="gap:14px">${head}${tiles}${focusHtml}<div class="two">${insHtml}<div class="col"><div class="card">${gdChart(games)}${csChart(games)}</div></div></div><div class="two">${deathTable}${muTable}</div>${list}</div>`;
+  const list = `<div class="card"><header><h2>Games</h2><span class="small faint">click a game for details</span></header><div class="table-wrap"><table class="games"><thead><tr><th></th><th>Date</th><th>Vs</th><th class="num">KDA</th><th class="num">CS@10</th><th class="num">GD@15</th><th class="num">1st item</th><th class="num">Deaths &lt;14:00</th></tr></thead><tbody>${rows}</tbody></table></div>${games.length > shown.length ? `<button class="btn small ghost" data-action="review-all-rows">Show all ${games.length} games</button>` : ''}</div>`;
+  const recent = games.slice(0, 40);
+  el.innerHTML = `<div class="grid" style="gap:14px">${head}${tiles}${focusHtml}<div class="two">${insHtml}<div class="col"><div class="card">${gdChart(recent)}${csChart(recent)}${games.length > recent.length ? `<div class="small faint">Charts show your last ${recent.length} games.</div>` : ''}</div></div></div><div class="two">${deathTable}${muTable}</div>${list}${hist}</div>`;
+}
+
+// ---------- your match archive: import status and stats over every game ----------
+function archiveStatus() {
+  const A = Archive.state;
+  if (Archive.running) {
+    const prog = A.todo ? `${A.done} of ${A.todo} games downloaded` : `listing your games… ${A.listed} found so far`;
+    return `<div class="small muted">Importing your match history: ${prog}${A.pausedFor ? ` · <b>paused while ${esc(A.pausedFor)}</b>` : ''}. It runs in the background (20–40 games a minute, gentle on your API key) and continues next time if you close the app.</div>${A.todo ? `<div class="progress"><i style="width:${Math.round((A.done / A.todo) * 100)}%"></i></div>` : ''}`;
+  }
+  if (A.status === 'error') return `<div class="small warn-t">The import stopped: ${esc(A.error)}. It tries again in 30 minutes.</div>`;
+  const n = Archive.rows().length;
+  return n ? `<div class="small faint">${n} games in your archive${A.lastSync ? ` · checked for new games ${ago(A.lastSync)} ago` : ''}.</div>` : '';
+}
+
+// a line over games (oldest -> newest): e.g. a rolling win rate. One axis, a reference line, a tooltip per point.
+function trendChart({ title, note, pts, yMin, yMax, ref, fmt, label }) {
+  if (pts.length < 2) return '';
+  const W = 640, H = 170, L = 40, Rr = 10, T = 10, B = 24;
+  const x = (i) => L + ((W - L - Rr) * i) / (pts.length - 1), y = (v) => T + (H - T - B) * (1 - (v - yMin) / (yMax - yMin));
+  const path = pts.map((p, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(p.v).toFixed(1)}`).join('');
+  const grid = [yMin, (yMin + yMax) / 2, yMax].map((v) => `<line x1="${L}" x2="${W - Rr}" y1="${y(v)}" y2="${y(v)}" class="grid"/><text x="${L - 6}" y="${y(v) + 4}" text-anchor="end" class="ax">${fmt(v)}</text>`).join('');
+  const refLine = ref != null ? `<line x1="${L}" x2="${W - Rr}" y1="${y(ref)}" y2="${y(ref)}" class="avg"/>` : '';
+  const years = []; let lastLabel = '';
+  pts.forEach((p, i) => { const l = new Date(p.t).toLocaleDateString(undefined, { month: 'short', year: '2-digit' }); if (l !== lastLabel && (i === 0 || i - (years.length ? years[years.length - 1].i : -99) > pts.length / 7)) { years.push({ i, l }); lastLabel = l; } });
+  const ticks = years.map((t) => `<text x="${x(t.i)}" y="${H - 6}" text-anchor="${t.i === 0 ? 'start' : 'middle'}" class="ax">${t.l}</text>`).join('');
+  const bw = (W - L - Rr) / pts.length;
+  const hits = pts.map((p, i) => `<rect x="${x(i) - bw / 2}" y="${T}" width="${Math.max(2, bw)}" height="${H - T - B}" fill="transparent" data-tip="${esc(p.tip)}"/>`).join('');
+  const last = pts[pts.length - 1];
+  return `<figure class="chart"><figcaption><b>${esc(title)}</b><span class="legend faint">${esc(note)}</span></figcaption>
+    <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(title)}">${grid}${refLine}${ticks}<path d="${path}" class="ln ln-you"/><circle cx="${x(pts.length - 1)}" cy="${y(last.v)}" r="4" fill="var(--s-you)"/><text x="${x(pts.length - 1) - 6}" y="${y(last.v) - 8}" text-anchor="end" class="ax lbl-you">${esc(label(last.v))}</text>${hits}</svg></figure>`;
+}
+// rolling average over the previous n games (starts once n games exist)
+function rolling(rows, n, f) {
+  const out = [];
+  for (let i = n - 1; i < rows.length; i++) {
+    const win = rows.slice(i - n + 1, i + 1).map(f).filter((v) => v != null);
+    if (win.length >= Math.ceil(n / 2)) out.push({ t: rows[i].end, v: win.reduce((a, b) => a + b, 0) / win.length, row: rows[i] });
+  }
+  return out;
+}
+function wrBar(label, g, base) {
+  if (!g.n) return '';
+  const w = g.wr, cls = g.n < 8 ? '' : w >= base + 5 ? 'up' : w <= base - 5 ? 'down' : '';
+  return `<div class="wrbar ${cls}" title="${g.n} games"><span class="l">${esc(label)}</span><span class="b"><i style="width:${w}%"></i><em style="left:${base}%"></em></span><span class="v num">${w}%</span><span class="n small faint">${g.n}</span></div>`;
+}
+function historyHtml() {
+  const rows = Archive.rows().filter((r) => !r.remake);
+  if (rows.length < 10) return '';
+  const X = Archive.stats(rows);
+  const asc = rows.slice().reverse();
+  const top = rows.filter((r) => r.role === 'TOP'), topWr = top.length ? Math.round((top.filter((r) => r.win).length / top.length) * 100) : null;
+  const tile = (label, value, sub) => `<div class="tile"><div class="l">${label}</div><div class="v">${value}</div>${sub ? `<div class="s">${sub}</div>` : ''}</div>`;
+  const n = Math.min(20, Math.max(5, Math.floor(rows.length / 6)));
+  const wrPts = rolling(asc, n, (r) => (r.win ? 100 : 0)).map((p) => ({ ...p, tip: `${new Date(p.t).toLocaleDateString()} · ${Math.round(p.v)}% over your ${n} games up to here` }));
+  const champRows = asc.filter((r) => r.champ === S.champ && r.detail && r.detail.at10);
+  const cn = Math.min(10, Math.max(3, Math.floor(champRows.length / 5)));
+  const csPts = rolling(champRows, cn, (r) => r.detail.at10.cs).map((p) => ({ ...p, tip: `${new Date(p.t).toLocaleDateString()} · CS at 10: ${Math.round(p.v)} average over ${cn} games` }));
+  const csMax = csPts.length ? Math.max(80, Math.ceil(Math.max(...csPts.map((p) => p.v)) / 20) * 20) : 100;
+  const champTable = `<table><thead><tr><th>Champion</th><th class="num">Games</th><th class="num">Win rate</th><th class="num">KDA</th><th class="num">CS/min</th><th>Role</th><th class="num">Last</th></tr></thead><tbody>
+    ${X.champs.slice(0, 12).map((c) => `<tr><td><span class="row">${champImg(c.champ, 'sm')}${esc(champName(c.champ))}</span></td><td class="num">${c.n}</td><td class="num"><span class="${c.n >= 5 ? (c.wr >= 55 ? 'good-t' : c.wr <= 45 ? 'warn-t' : '') : ''}">${c.wr}%</span></td><td class="num">${c.kda.toFixed(1)}</td><td class="num">${c.csm.toFixed(1)}</td><td class="small muted">${esc(ROLE_LABEL[c.role] || '–')}</td><td class="num small muted">${new Date(c.last).toLocaleDateString()}</td></tr>`).join('')}
+    </tbody></table>${X.champs.length > 12 ? `<div class="small faint">and ${X.champs.length - 12} more champions</div>` : ''}`;
+  const tl = X.tilt, base = X.wr;
+  const champPatches = Archive.stats(rows.filter((r) => r.champ === S.champ)).patches.slice(0, 8);
+  return `<div class="card"><header><h2>All your games</h2><span class="small faint">every champion and role in your archive</span></header>
+    <div class="tiles">
+      ${tile('Games', X.n, X.first ? `since ${new Date(X.first).toLocaleDateString()}` : '')}
+      ${tile('Win rate', `${X.wr}%`, `${rows.filter((r) => r.win).length}W ${rows.filter((r) => !r.win).length}L`)}
+      ${tile('Top lane', topWr != null ? `${topWr}%` : '–', `${top.length} games in top`)}
+      ${tile('Sessions', X.sessions, X.perSession ? `${X.perSession.toFixed(1)} games per session` : '')}
+    </div>
+    <div class="two" style="margin-top:12px">
+      <div>${trendChart({ title: 'Win rate over time', note: `rolling over ${n} games, all champions · dashed line = 50%`, pts: wrPts, yMin: 0, yMax: 100, ref: 50, fmt: (v) => `${v}%`, label: (v) => `${Math.round(v)}%` })}
+        ${trendChart({ title: `CS at 10:00 on ${champName(S.champ)}`, note: `rolling over ${cn} games`, pts: csPts, yMin: 0, yMax: csMax, ref: null, fmt: (v) => String(Math.round(v)), label: (v) => String(Math.round(v)) })}</div>
+      <div>
+        <h3>Streaks and sessions</h3>
+        <div class="small faint" style="margin-bottom:6px">Win rate by situation; the mark is your overall ${base}%. A session = games less than 45 minutes apart.</div>
+        <div class="wrbars">${wrBar('After a win', tl.afterWin, base)}${wrBar('After a loss', tl.afterLoss, base)}${wrBar('After two losses', tl.afterTwoLosses, base)}
+          ${tl.byGameNo.map((g) => wrBar(`${g.label} of a session`, g, base)).join('')}</div>
+        ${tl.afterTwoLosses.n >= 8 && tl.afterTwoLosses.wr <= base - 8 ? `<div class="notice warn small" style="margin-top:8px">After two losses in a row you win ${tl.afterTwoLosses.wr}% (${tl.afterTwoLosses.n} games). A break after the second loss is worth trying.</div>` : ''}
+        ${champPatches.length >= 2 ? `<h3 style="margin-top:12px">${esc(champName(S.champ))} by patch</h3><div class="wrbars">${champPatches.map((p) => wrBar(`Patch ${p.patch}`, p, base)).join('')}</div>` : ''}
+      </div>
+    </div>
+    <h3 style="margin-top:12px">Champions</h3>${champTable}</div>`;
 }
 
 // ---------- GAME REPORT ----------
@@ -1482,7 +1594,7 @@ function renderReport() {
   if (!D.config.hasKey) { el.innerHTML = '<div class="notice warn">The game report needs a Riot API key (see Settings).</div>'; return; }
   if (!Review.state.me) { el.innerHTML = '<div class="notice">Open the League client (you are detected automatically) or set your Riot ID on the Review tab.</div>'; return; }
   ensureReportList();
-  const games = RS.list.map((g) => `<button class="rep-game ${g.id === RS.sel ? 'on' : ''}" data-report="${esc(g.id)}" title="${esc(`${Report.QUEUES[g.queue] || 'Game'} · ${g.kda}`)}">
+  const games = RS.list.slice(0, RS.listLimit).map((g) => `<button class="rep-game ${g.id === RS.sel ? 'on' : ''}" data-report="${esc(g.id)}" title="${esc(`${Report.QUEUES[g.queue] || 'Game'} · ${g.kda}`)}">
       <span class="chip ${g.win ? 'good' : 'warn'}">${g.win ? 'W' : 'L'}</span><span class="row" style="gap:2px">${champImg(g.champ, 'sm')}${g.opp ? `<span class="faint small">vs</span>${champImg(g.opp, 'sm')}` : ''}</span><span class="small">${g.opp ? esc(champName(g.opp)) : esc(champName(g.champ))}</span>
       <span class="small faint">${new Date(g.end).toLocaleDateString(undefined, { weekday: 'short' })} ${new Date(g.end).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span></button>`).join('');
   const waiting = RS.waiting ? `<div class="notice">Waiting for Riot to publish your last game (usually 1–5 minutes)… this page opens it automatically.</div>` : '';
@@ -1492,7 +1604,7 @@ function renderReport() {
   const agentNote = pend.length ? `<div class="notice"><b>${pend.reduce((n, p) => n + arr(p.proposal.changes).filter((c, i) => !p.done[i]).length, 0)} suggested playbook changes</b> from the post-game review${pend[0].proposal.summary ? `: ${esc(pend[0].proposal.summary)}` : ''} <button class="btn small ghost" data-action="goto-playbook" data-champ="${esc(pend[0].champ)}">Review changes</button></div>`
     : reviewing ? `<div class="notice small">A review agent is comparing what the playbook said with how this game went (${ago(reviewing.created)}).</div>` : '';
   const head = `<div class="card"><header><h2>Game report</h2><span class="grow"></span><button class="btn small ghost" data-action="report-refresh">Refresh list</button></header>
-    <div class="rep-games">${games || (RS.listTried ? '<span class="small muted">Loading your recent games…</span>' : '')}</div>${waiting}${agentNote}</div>`;
+    <div class="rep-games">${games || (RS.listTried ? '<span class="small muted">Loading your recent games…</span>' : '')}${RS.list.length > RS.listLimit ? `<button class="rep-game more" data-action="report-more">${RS.list.length - RS.listLimit} older…</button>` : ''}</div>${waiting}${agentNote}</div>`;
   if (RS.status === 'loading' && !R) { el.innerHTML = head + '<div class="empty">Building the report…</div>'; return; }
   if (RS.status === 'error') { el.innerHTML = head + `<div class="notice warn">${esc(RS.error)}</div>`; return; }
   if (!R) { el.innerHTML = head; return; }
@@ -1608,8 +1720,9 @@ function stopDemo() {
 function wireUi() {
   $('#tabs').addEventListener('click', (e) => { const b = e.target.closest('button[data-view]'); if (b) setView(b.dataset.view); });
   document.body.addEventListener('click', (e) => {
-    const t = e.target.closest('[data-opp],[data-mu],[data-phase],[data-goto],[data-action],[data-csopp],[data-game],[data-mu-open],[data-focus],[data-report],[data-jump],[data-replay],[data-nextfocus],[data-pbsel],[data-usechamp],[data-research],[data-activate],[data-cancel],[data-apply],[data-skip],[data-dismiss]');
+    const t = e.target.closest('[data-opp],[data-mu],[data-phase],[data-goto],[data-action],[data-csopp],[data-game],[data-mu-open],[data-focus],[data-report],[data-jump],[data-replay],[data-nextfocus],[data-pbsel],[data-usechamp],[data-research],[data-activate],[data-cancel],[data-apply],[data-skip],[data-dismiss],[data-range]');
     if (!t) return;
+    if (t.dataset.range) { Review.setRange(t.dataset.range); return; }
     // playbooks + research agents
     if (t.dataset.action === 'why') { S.showWhy = !S.showWhy; renderLive(); return; }
     if (t.dataset.action === 'reassess') { Agent.reassessNow(S.A, D); renderLive(); return; }
@@ -1636,7 +1749,9 @@ function wireUi() {
       else Voice.setEnabled(t.dataset.state === 'off');
       renderLive(); renderStatus(); return;
     }
-    if (t.dataset.action === 'review-load') { Review.load(D); return; }
+    if (t.dataset.action === 'review-load') { if (Review.state.status === 'done') Archive.sync(D, { fresh: true }); else Review.load(D); renderReview(); return; }
+    if (t.dataset.action === 'review-all-rows') { S.reviewAllRows = true; renderReview(); return; }
+    if (t.dataset.action === 'report-more') { Report.state.listLimit += 20; renderReport(); return; }
     if (t.dataset.csopp) { S.csOpp = t.dataset.csopp; renderLive(); return; }
     if (t.dataset.game) { Review.state.open = Review.state.open === t.dataset.game ? null : t.dataset.game; renderReview(); return; }
     if (t.dataset.muOpen) { S.muSel = t.dataset.muOpen; renderMatchups(); setView('matchups'); return; }
