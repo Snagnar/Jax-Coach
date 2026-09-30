@@ -33,9 +33,20 @@ r/summonerschool or champion subreddits). Don't use sub-agents.
   Expressions may only use the documented facts and functions.
 
 ## Write `out/plan.json`
-In the documented shape: `headline` (required, one sentence), `summary`, 3-6 `bullets`, `build`
-(`order` = everything still to buy, in order, boots included; `why` per item), `runes` and `summoners` (champ
-select only), optional `rules`, `params`, `phaseNotes`, `sources`.
+In the documented shape: `headline` (required), `summary` (one sentence, at most 25 words: the win condition),
+`bullets`, `build` (`order` = everything still to buy, in order, boots included; `why` per item), `runes` and
+`summoners` (champ select only, exact names, no explanation), optional `rules`, `params`, `phaseNotes` (at most 2
+short lines per phase), `sources`.
+
+## Keep the words few
+The player glances at this card mid-game and reads the headline and maybe two bullets. Short beats complete:
+every word must be something they can do. The build, rules and params are what the app applies, so keep those
+complete and exact; cut the prose, not the decisions.
+- `headline`: at most 14 words, imperative ("Buy Death's Dance, defend towers, fight only when Yone is dead").
+- `bullets`: 2-4, at most 16 words each. No explanations the player doesn't need to act.
+- `build.why`: at most 8 words per item.
+- Leave out `sources` unless you used the web.
+
 
 Never look up or mention enemy players (names, ranks). Champions only. No advice based on timing enemy summoner
-spell or ultimate cooldowns. Check that the file is valid JSON, then reply with the headline.
+spell or ultimate cooldowns. Check that the file is valid JSON, then reply with just: done

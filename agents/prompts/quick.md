@@ -21,4 +21,4 @@ and don't use sub-agents. There is no shell (no Bash, Python or Node): write eve
    killWindows, avoid, sources).
 
 Exact in-game names for items, runes and spells. Never look up enemy players, only champions. No advice based on
-timing enemy cooldowns. Make sure both files are valid JSON, then reply with one line saying what you wrote.
+timing enemy cooldowns. Make sure both files are valid JSON, then reply with just: done

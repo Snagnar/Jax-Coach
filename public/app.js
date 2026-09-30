@@ -1032,9 +1032,8 @@ function planCard(A) {
   return `<div class="card plan-card">
     <header><h2>Game plan</h2><span class="chip">AI · ${esc(when)}</span><span class="grow"></span>${A && !S.demo ? '<button class="btn small ghost" data-action="reassess" title="Ask the agent to look at the game again now">Reassess</button>' : ''}</header>
     <div class="plan-head">${esc(plan.headline)}</div>
-    ${plan.summary ? `<div class="small">${esc(plan.summary)}</div>` : ''}
     ${list(plan.bullets)}
-    ${arr(plan.changes).length ? `<div class="sub"><h3>What changed</h3>${list(plan.changes, 'small')}</div>` : ''}
+    ${plan.summary || arr(plan.changes).length ? `<details class="small muted"><summary>${arr(plan.changes).length ? 'What changed' : 'Why'}</summary>${plan.summary ? `<div>${esc(plan.summary)}</div>` : ''}${list(plan.changes, 'small')}</details>` : ''}
     ${b && b.length ? `<div><h3>Build for this game</h3><div class="row" style="margin-top:6px">${b.map((n) => `<span title="${esc((plan.build.why || {})[n] || '')}">${itemChip(n)}</span>`).join('<span class="arrow">›</span>')}</div>${plan.build.note ? `<div class="small muted">${esc(plan.build.note)}</div>` : ''}</div>` : ''}
     ${!A && (plan.runes || plan.summoners) ? `<dl class="kv">${plan.runes ? `<dt>Runes</dt><dd>${esc(plan.runes)}</dd>` : ''}${plan.summoners ? `<dt>Spells</dt><dd>${esc(plan.summoners)}</dd>` : ''}</dl>` : ''}
     ${arr(plan.rules).length ? `<div class="small muted">Dashboard rules for this game: ${arr(plan.rules).map((r) => esc(r.headline || r.id)).join(' · ')}</div>` : ''}

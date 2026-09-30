@@ -29,10 +29,20 @@ Don't use sub-agents.
   this situation. Expressions may only use the documented facts and functions.
 
 ## Write `out/plan.json`
-The **complete** current plan (it replaces the previous one): `headline` (required: one sentence, the plan from
-now on), `summary`, 3-6 `bullets`, `changes` (what is different from the previous plan and why, 1-4 items),
-`build` (`order` = everything still to buy, in order; `why` per item), optional `rules`, `params`, `phaseNotes`,
-`sources`. Keep what was still right in the previous plan.
+The **complete** current plan (it replaces the previous one): `headline` (required: the plan from now on),
+`bullets`, `changes` (1-2 items, at most 12 words each: what is different from the previous plan), `build`
+(`order` = everything still to buy, in order; `why` per item), optional `rules`, `params`, `phaseNotes`, `sources`.
+No `summary`. Keep what was still right in the previous plan.
+
+## Keep the words few
+The player glances at this card mid-game and reads the headline and maybe two bullets. Short beats complete:
+every word must be something they can do. The build, rules and params are what the app applies, so keep those
+complete and exact; cut the prose, not the decisions.
+- `headline`: at most 14 words, imperative ("Buy Death's Dance, defend towers, fight only when Yone is dead").
+- `bullets`: 2-4, at most 16 words each. No explanations the player doesn't need to act.
+- `build.why`: at most 8 words per item.
+- Leave out `sources` unless you used the web.
+
 
 Never look up or mention enemy players (names, ranks). Champions only. No advice based on timing enemy summoner
-spell or ultimate cooldowns. Check that the file is valid JSON, then reply with the headline.
+spell or ultimate cooldowns. Check that the file is valid JSON, then reply with just: done

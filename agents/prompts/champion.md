@@ -54,4 +54,4 @@ make it about {{CHAMPION_NAME}}:
 ## Before you finish
 Re-read every file in `out/`: it must be valid JSON in the documented shape, `rules.json` must keep the safety
 rules and the `plan` anchor, and every expression must only use documented names and functions. Fix problems.
-Then reply with a 3-5 line summary of what you built and anything you were unsure about.
+Then reply with at most 2 lines: anything you were unsure about (the files speak for themselves).

@@ -177,11 +177,11 @@ function Agent-Models {
 # ---------------- jobs ----------------
 # model: deep (new champion research) or fast; maxMin: the job is stopped after that long
 $JobTypes = @{
-  champion = @{ model = 'deep'; maxMin = 60; installs = $true }
-  quick    = @{ model = 'fast'; maxMin = 10; installs = $true }
-  gameplan = @{ model = 'fast'; maxMin = 10; installs = $false }
-  adapt    = @{ model = 'fast'; maxMin = 8;  installs = $false }
-  review   = @{ model = 'fast'; maxMin = 20; installs = $false }
+  champion = @{ model = 'deep'; maxMin = 60; installs = $true;  tools = 'Read,Write,Edit,Glob,Grep,WebSearch,WebFetch,Agent' }
+  quick    = @{ model = 'fast'; maxMin = 10; installs = $true;  tools = 'Read,Write,Edit,Glob,Grep,WebSearch,WebFetch' }
+  gameplan = @{ model = 'fast'; maxMin = 10; installs = $false; tools = 'Read,Write,Edit,Glob,Grep,WebSearch,WebFetch' }
+  adapt    = @{ model = 'fast'; maxMin = 8;  installs = $false; tools = 'Read,Write,Edit,Glob,Grep,WebSearch,WebFetch' }
+  review   = @{ model = 'fast'; maxMin = 20; installs = $false; tools = 'Read,Write,Edit,Glob,Grep,WebSearch,WebFetch' }
 }
 $script:JobsTickAt = [DateTime]::MinValue
 
@@ -236,7 +236,7 @@ function Start-AgentJob([string]$body) {
   Write-Text (Join-Path $dir 'prompt.md') $prompt
   $models = Agent-Models
   $model = if ($in.model -and "$($in.model)" -match '^[A-Za-z0-9._-]+$') { "$($in.model)" } else { $models[$JobTypes[$type].model] }
-  $tools = 'Read,Write,Edit,Glob,Grep,WebSearch,WebFetch,Agent'
+  $tools = $JobTypes[$type].tools
   $cmd = @(
     '@echo off', 'chcp 65001 >nul',
     "set CLAUDE_CODE_SUBAGENT_MODEL=$($models.sub)",

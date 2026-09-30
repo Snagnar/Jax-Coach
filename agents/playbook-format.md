@@ -221,12 +221,12 @@ Applied immediately for the current game only. The card shows it; the build and 
 
 ```jsonc
 {
-  "headline": "One sentence: how THIS game is won from your seat",      // required
-  "summary": "2-3 sentences of reasoning",
-  "bullets": ["3-6 concrete instructions for the next minutes"],
-  "changes": ["what changed since the previous plan (reassess only)"],
+  "headline": "At most 14 words: how THIS game is won from your seat", // required
+  "summary": "one sentence, the win condition (game plan only)",
+  "bullets": ["2-4 instructions for the next minutes, at most 16 words each"],
+  "changes": ["1-2 short items: what changed since the previous plan (reassess only)"],
   "build": { "order": ["Remaining legendary items and boots in buy order, exact names"],
-             "why": { "Item name": "why, for this game" }, "note": "optional" },
+             "why": { "Item name": "why, at most 8 words" }, "note": "optional" },
   "runes": "rune page for this game (champ select only)", "summoners": "Flash + ...",
   "params": { "guard": { "goldDown": 700 } },        // optional: overrides rules.params for this game
   "rules": [                                          // optional: extra decisions for this game (see rules above)
@@ -247,8 +247,8 @@ Nothing is applied until the player clicks Apply on a change.
 
 ```jsonc
 {
-  "summary": "2-3 sentences: what the playbook got right and wrong in this game",
-  "lessons": ["what the player should take into the next game (not playbook changes)"],
+  "summary": "at most 2 sentences: what the playbook got right and wrong in this game",
+  "lessons": ["1-3 items, at most 20 words: what the player takes into the next game (not playbook changes)"],
   "changes": [
     { "title": "short name", "why": "evidence from this game (and the player's history)", "part": "rules",
       "addRules": [ { ...rule, "before": "rule id" } ], "replaceRules": [ { ...rule } ], "removeRules": ["id"],
