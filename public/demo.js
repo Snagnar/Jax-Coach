@@ -86,7 +86,7 @@ const Demo = (() => {
         isBot: false, isDead: deadFor < respawn, respawnTimer: deadFor < respawn ? respawn - deadFor : 0,
         items, level, position: r.pos,
         riotId: `${r.name}#DEMO`, riotIdGameName: r.name, riotIdTagLine: 'DEMO', summonerName: `${r.name}#DEMO`,
-        scores: { kills, deaths: deaths.length, assists, creepScore: Math.floor(Math.max(0, m - 1.4) * csRate), wardScore: Math.floor(m * 0.8) },
+        scores: { kills, deaths: deaths.length, assists, creepScore: Math.floor(Math.max(0, m - 1.4) * csRate / 10) * 10, wardScore: Math.floor(m * 0.8) },
         summonerSpells: { summonerSpellOne: { displayName: r.spells[0] }, summonerSpellTwo: { displayName: r.spells[1] } },
         team: r.team, skinID: 0,
       };

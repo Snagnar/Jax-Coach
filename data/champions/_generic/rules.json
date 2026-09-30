@@ -13,7 +13,7 @@
     ]
   },
   "params": {
-    "guard": { "enabled": true, "until": 14, "levelDownAfter": 90, "goldDown": 500, "goldAfter": 150, "csDown": 15, "csAfter": 300, "lockDeaths": 2, "lockUntil": 20, "quietSec": 15 }
+    "guard": { "enabled": true, "until": 14, "levelDownAfter": 90, "goldDown": 500, "goldAfter": 150, "csDown": 15, "csAfter": 300, "lockDeaths": 2, "lockAhead": 150, "lockUntil": 20, "quietSec": 15 }
   },
   "fightScore": [
     { "id": "ult_up", "group": "level", "when": "opp && me.level >= 6 && opp.level < 6", "add": 1.5, "why": "you have your ultimate, {oppName} doesn't" },

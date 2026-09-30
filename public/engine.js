@@ -127,10 +127,43 @@ const Engine = (() => {
     return legendaries === 0 ? 'lvl6_first_item' : 'first_item_to_14';
   }
 
+  // ---------- exact CS ----------
+  // The Live Client API only reports CS in steps of 10 (50 means 50-59). Your own exact count comes from your gold:
+  // every jump that minion gold explains (melee 21, caster 14, siege/super 60-90) is a last hit, and each new step of
+  // 10 from Riot resets the count. Everyone else's CS can only be shown as "50+".
+  const csApi = (p) => { const s = (p && p.scores) || {}; return s.creepScoreApi != null ? s.creepScoreApi : s.creepScore || 0; };
+  const csText = (p) => { const s = (p && p.scores) || {}; return s.creepScoreApi != null || !s.creepScore ? String(s.creepScore || 0) : `${s.creepScore}+`; };
+  function lastHits(gain, t) {
+    if (gain < 12 || (t < 840 && gain >= 110)) return 0;   // 110+ at once before 14:00 is a tower plate
+    const siege = Math.min(90, 60 + 3 * Math.floor(Math.max(0, t - 90) / 90));
+    let best = null;
+    for (let c = 0; c <= 2; c++) for (let m = 0; m <= 4; m++) for (let r = 0; r <= 4; r++) {
+      const n = c + m + r, err = Math.abs(gain - (c * siege + m * 21 + r * 14));
+      if (n && (!best || err < best.err - 0.5 || (Math.abs(err - best.err) <= 0.5 && n < best.n))) best = { n, err };
+    }
+    return best && best.err <= 10 ? best.n : 0;   // plates, bounties and the like explain nothing
+  }
+  function exactCs(D, mem, me, ap, t) {
+    const s = me.scores || {}, rep = s.creepScore || 0, gold = ap.currentGold;
+    if (gold == null) return;
+    const iv = itemValue(D, me), kda = `${s.kills}|${s.assists}|${s.deaths}`;
+    const c = mem.cs;
+    if (!c || t < c.t || rep < c.rep) mem.cs = { rep, extra: 0, gold, t, iv, kda };
+    else {
+      // a purchase, sale, kill, assist or death in this poll: the gold change says nothing about CS, just re-anchor
+      const hits = iv === c.iv && kda === c.kda && !me.isDead ? lastHits(gold - c.gold - Math.max(0, t - Math.max(c.t, 65)) * 2.04, t) : 0;
+      // a new step of 10 from Riot is exact; the last hits past it in the same poll still count
+      const est = c.rep + c.extra + hits;
+      Object.assign(c, { rep, extra: Math.max(0, Math.min(9, est - rep)), gold, t, iv, kda });
+    }
+    me.scores = { ...s, creepScoreApi: rep, creepScore: rep + mem.cs.extra };
+  }
+
   // ---------- state: ahead / even / behind ----------
   function laneState(D, me, opp, t, team) {
     const s = me.scores || {}, o = (opp && opp.scores) || {};
-    const csD = (s.creepScore || 0) - (o.creepScore || 0);
+    // yours is exact, theirs is a 10-step: compare against the middle of their step (their "50" is 50-59)
+    const csD = Math.round((s.creepScore || 0) - csApi(opp) - (opp && t >= 90 && (o.creepScoreApi == null) ? 4.5 : 0));
     const lvlD = me.level - (opp ? opp.level : me.level);
     const killGold = ((s.kills || 0) - (o.kills || 0)) * 300 + ((s.assists || 0) - (o.assists || 0)) * 120;
     const itemD = itemValue(D, me) - (opp ? itemValue(D, opp) : 0);
@@ -517,7 +550,7 @@ const Engine = (() => {
   // estimated gold lead of a over b: earned gold from CS/kills/assists, blended with visible item value and levels
   function pairDiff(D, a, b) {
     const s = a.scores || {}, o = b.scores || {};
-    const earned = ((s.creepScore || 0) - (o.creepScore || 0)) * 21 + ((s.kills || 0) - (o.kills || 0)) * 300 + ((s.assists || 0) - (o.assists || 0)) * 120;
+    const earned = (csApi(a) - csApi(b)) * 21 + ((s.kills || 0) - (o.kills || 0)) * 300 + ((s.assists || 0) - (o.assists || 0)) * 120;
     return Math.round(earned * 0.6 + (itemValue(D, a) - itemValue(D, b)) * 0.4 + (a.level - b.level) * 250);
   }
   const isFed = (p) => (p.scores.kills || 0) >= 4 && (p.scores.kills || 0) - (p.scores.deaths || 0) >= 3;
@@ -580,10 +613,14 @@ const Engine = (() => {
 
   // ---------- "don't fight" guard: the numbers already say no ----------
   // From the player's own history: almost every 1v1 death came while a level down, behind in gold or down
-  // in farm. The guard turns those situations into an explicit "don't fight", and after two solo deaths
-  // locks the lane to farm-only until the next item is finished.
+  // in farm. The guard turns those situations into an explicit "don't fight", and after solo deaths (lockDeaths)
+  // locks the lane to farm-only until the next item is finished, but only while you're not ahead: after an early
+  // solo death, games 300+ gold up at 10:00 were won 72% even with more deaths (fighting lanes you're winning),
+  // even lanes 48% vs 67%. So no lock while you win the duels (more kills on your lane opponent than deaths to
+  // them) or the lane estimate is lockAhead up (the estimate counts kills at 60%: 150 is about a 250-300g lead);
+  // an active lock lifts at lockAhead + 200.
   // thresholds come from the playbook (rules.params.guard); these defaults are the tested Jax values
-  const GUARD_DEFAULTS = { enabled: true, until: 14, levelDownAfter: 90, goldDown: 500, goldAfter: 150, csDown: 15, csAfter: 300, lockDeaths: 2, lockUntil: 20, quietSec: 15 };
+  const GUARD_DEFAULTS = { enabled: true, until: 14, levelDownAfter: 90, goldDown: 500, goldAfter: 150, csDown: 15, csAfter: 300, lockDeaths: 2, lockAhead: 150, lockUntil: 20, quietSec: 15 };
   function fightGuard(D, a, mem) {
     const { P, t, events, state, items } = a;
     const { me, opp } = P;
@@ -598,7 +635,11 @@ const Engine = (() => {
     const solo = events.filter((e) => e.EventName === 'ChampionKill' && nameIs(me, e.VictimName) && nameIs(opp, e.KillerName)
       && !(e.Assisters || []).some((n) => P.enemies.some((p) => nameIs(p, n))));
     mem.soloDeaths = solo.length;
-    if (!mem.lock && min < G.until && G.lockDeaths > 0 && solo.length - (mem.lockBase || 0) >= G.lockDeaths) mem.lock = { at: t, leg: lg };
+    const lead = state.est || 0, aheadOk = G.lockAhead != null;
+    const duelKills = events.filter((e) => e.EventName === 'ChampionKill' && nameIs(opp, e.VictimName) && nameIs(me, e.KillerName)).length;
+    const winning = aheadOk && (lead >= G.lockAhead || duelKills > solo.length);
+    if (mem.lock && aheadOk && (lead >= G.lockAhead + 200 || duelKills > solo.length)) { mem.lockBase = solo.length; mem.lock = null; }   // ahead again: lifted
+    if (!mem.lock && min < G.until && G.lockDeaths > 0 && solo.length - (mem.lockBase || 0) >= G.lockDeaths && !winning) mem.lock = { at: t, leg: lg };
     // how long each deficit has lasted, so a level-2 race doesn't make the voice talk
     const since = (k, on) => { if (!on) { mem[k] = null; return null; } if (mem[k] == null) mem[k] = t; return mem[k]; };
     const lvlD = me.level - opp.level;
@@ -610,8 +651,8 @@ const Engine = (() => {
     if (me.isDead) return null;
     if (mem.lock) {
       return { kind: 'lock', strict: true, headline: `Farm only until ${next}`,
-        reason: `${solo.length} solo deaths to ${oppName}. Last-hit, give up contested waves, trade back only if they commit`,
-        voice: `That's ${solo.length === 2 ? 'two' : solo.length} solo deaths. Farm only until your ${next}. Don't fight ${oppName}.`, voiceKey: `lock-${Math.round(mem.lock.at)}` };
+        reason: `${solo.length} solo death${solo.length === 1 ? '' : 's'} to ${oppName} and not ahead. Last-hit, give up contested waves, trade back only if they commit`,
+        voice: `${solo.length === 1 ? `${oppName} killed you and you're not ahead` : `That's ${NUM_WORD[solo.length] || solo.length} solo deaths`}. Farm only until your ${next}. Don't fight ${oppName}.`, voiceKey: `lock-${Math.round(mem.lock.at)}` };
     }
     if (lvlSince != null) {
       const k = quiet(lvlSince, 'lvl');
@@ -628,7 +669,7 @@ const Engine = (() => {
     if (csSince != null) {
       const k = quiet(csSince, `cs${Math.min(3, Math.floor(-state.csD / 15))}`);
       return { kind: 'cs', strict: false, headline: `${-state.csD} CS down: stop trading, just last-hit`,
-        reason: `You ${me.scores.creepScore || 0} vs ${opp.scores.creepScore || 0} CS. Every missed wave delays your item`,
+        reason: `You ${me.scores.creepScore || 0} vs ${csText(opp)} CS. Every missed wave delays your item`,
         voice: /-q-/.test(k) ? null : `You're ${-state.csD} CS down. Stop trading, just last-hit.`, voiceKey: k };
     }
     return null;
@@ -792,6 +833,7 @@ const Engine = (() => {
     const P = players(game, D, opts.overrideOppId);
     const { me, opp } = P;
     if (!me) return null;
+    exactCs(D, mem, me, P.activePlayer, t);
 
     // only react to changes we actually saw happen (the app may be opened mid-game)
     if (mem.prevLevel != null && mem.prevLevel < 6 && me.level >= 6) mem.level6At = t;
@@ -875,5 +917,5 @@ const Engine = (() => {
     return { comp, tags, items };
   }
 
-  return { analyze, newMemory, planForComp, modesFor, profile, fmtClock, parseClock, champ, champIdOf, itemData, isLegendary, legendaryCount, dmgType, nameIs, PHASE_LABEL, MATCHUP_PHASE, STRONG_HEALERS };
+  return { analyze, newMemory, csText, planForComp, modesFor, profile, fmtClock, parseClock, champ, champIdOf, itemData, isLegendary, legendaryCount, dmgType, nameIs, PHASE_LABEL, MATCHUP_PHASE, STRONG_HEALERS };
 })();

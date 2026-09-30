@@ -141,20 +141,21 @@ const Agent = (() => {
     const mine = (cs.myTeam || []).find((p) => p.cellId === cs.localPlayerCellId) || {};
     const myChamp = idOf(mine.championId || mine.championPickIntent);
     const enemies = (cs.theirTeam || []).map((p) => idOf(p.championId)).filter(Boolean);
-    const oppGuess = enemies.find((id) => ((D.dd.champs[id] || {}).tags || []).some((t) => ['Fighter', 'Tank'].includes(t))) || null;
+    // your lane opponent, only when champ select actually says so (ranked hides enemy positions: then it's null and
+    // the plan waits for the game, where positions are known, instead of guessing the wrong opponent)
+    const myPos = String(mine.assignedPosition || '').toLowerCase();
+    const laneOpp = myPos ? idOf(((cs.theirTeam || []).find((p) => p.championId && String(p.assignedPosition || '').toLowerCase() === myPos) || {}).championId) : null;
     // hovering only starts the quick build; the full research starts on lock-in or after 15s on the same champion
     if (myChamp !== S.hover) { S.hover = myChamp; S.hoverSince = Date.now(); }
-    if (myChamp && ready()) ensureChampion(D, myChamp, oppGuess, !!mine.championId || Date.now() - S.hoverSince > 15000);
-    // the game plan, once you're locked in and the enemy team is known
+    if (myChamp && ready()) ensureChampion(D, myChamp, laneOpp, !!mine.championId || Date.now() - S.hoverSince > 15000);
+    // the game plan, once you're locked in, all enemies are picked and your lane opponent is certain
     const key = `${cs.gameId || ''}|${mine.championId || ''}`;
-    if (!mine.championId || !ready()) return;
-    const enoughPicks = enemies.length >= 5 || ((cs.timer || {}).phase === 'FINALIZATION' && enemies.length >= 3);
-    if (!enoughPicks || S.csKey === key) return;
+    if (!mine.championId || !ready() || !laneOpp || enemies.length < 5 || S.csKey === key) return;
     S.csKey = key;
     const facts = champSelectFacts(cs, D);
     start('gameplan', {
       champion: myChamp, championName: facts.me, key: `gameplan-${key}`, patch: patchLabel(D), title: `Game plan: ${facts.me} vs ${facts.enemies.map((e) => e.champ).join(', ')}`,
-      when: 'champ select', lineup: facts, player: playerProfile(myChamp, oppGuess),
+      when: 'champ select', lineup: { ...facts, laneOpponent: (D.dd.champs[laneOpp] || {}).name || laneOpp }, player: playerProfile(myChamp, laneOpp),
     }).then((job) => { if (job) S.csPlanJob = { id: job.id, champ: myChamp }; });
   }
 
@@ -168,12 +169,12 @@ const Agent = (() => {
     G.lastT = A.t; G.ended = null;
     if (!ready()) return;
     ensureChampion(D, A.champ, A.P.opp ? A.P.opp.cid : null);
-    if (A.t < 20) return;
     if (!G.plan && !G.jobId && !G.startedPlan && !(S.csPlanJob && S.csPlanJob.champ === A.champ && running(`gameplan-${S.csKey}`))) {
       G.startedPlan = true;
-      runPlanJob(A, D, 'gameplan', 'Game start: no plan from champ select');
+      runPlanJob(A, D, 'gameplan', 'Game start: lane opponent known now');
       return;
     }
+    if (A.t < 20) return;
     const reason = checkpoint(A, G);
     if (reason) request(A, D, reason.text, reason.urgent);
   }
@@ -214,10 +215,12 @@ const Agent = (() => {
   function request(A, D, reason, urgent) {
     const G = S.game;
     const gap = A.t - G.lastAdaptAt;
-    const queue = () => { if (!String(G.pending || '').includes(reason)) G.pending = G.pending ? `${G.pending}; ${reason}` : reason; };
+    const kind = (r) => r.replace(/[-\d.]+k?/g, '#');
+    const merge = (list, r) => [...String(list || '').split('; ').filter((x) => x && kind(x) !== kind(r)), r].join('; ');
+    const queue = () => { G.pending = merge(G.pending, reason); };
     if (G.jobId || running(`adapt-${G.key}`) || running(`gameplan-${G.key}`)) { queue(); return; }
     if (gap < (urgent ? 60 : MIN_GAP)) { queue(); return; }
-    if (G.pending) reason = `${G.pending}; ${reason}`;
+    if (G.pending) reason = merge(G.pending, reason);
     runPlanJob(A, D, 'adapt', reason);
   }
   async function runPlanJob(A, D, type, reason) {
@@ -227,7 +230,7 @@ const Agent = (() => {
     const name = Engine.champ(D, A.champ).name;
     const job = await start(type, {
       champion: A.champ, championName: name, key: `${type}-${G.key}`, patch: patchLabel(D), title: `${type === 'gameplan' ? 'Game plan' : 'Reassess'} at ${A.clock}: ${reason}`,
-      when: 'in game', reason, game: snapshot(A, D), history: G.history.map((h) => ({ at: Engine.fmtClock(h.t), headline: h.headline, changes: h.changes || [] })), player: type === 'gameplan' ? playerProfile(A.champ, A.P.opp ? A.P.opp.cid : null) : undefined,
+      when: 'in game', reason, game: snapshot(A, D), history: G.history.filter((h) => h.kind !== 'check').map((h) => ({ at: Engine.fmtClock(h.t), headline: h.headline, changes: h.changes || [] })), player: type === 'gameplan' ? playerProfile(A.champ, A.P.opp ? A.P.opp.cid : null) : undefined,
     });
     if (job) { G.jobId = job.id; G.jobReason = reason; G.jobT = A.t; }
     changed();
@@ -268,8 +271,14 @@ const Agent = (() => {
       if (!plan) return;
       plan.at = Date.now(); plan.jobId = j.id; plan.kind = j.type;
       if (G && G.champ === j.champion && (j.key || '').endsWith(G.key)) {
-        G.plan = plan;
-        G.history.push({ t: G.jobT || G.lastT, kind: j.type, headline: plan.headline, changes: plan.changes || [], jobId: j.id });
+        if (j.type === 'adapt' && plan.changed === false && G.plan) {
+          // same decision (maybe reworded): keep the words the player already read; take the build and rules quietly
+          G.plan = { ...G.plan, build: plan.build || G.plan.build, rules: plan.rules || G.plan.rules, params: plan.params || G.plan.params, phaseNotes: plan.phaseNotes || G.plan.phaseNotes, checkedAt: Date.now() };
+          G.history.push({ t: G.jobT || G.lastT, kind: 'check', headline: G.plan.headline, changes: [], jobId: j.id });
+        } else {
+          G.plan = plan;
+          G.history.push({ t: G.jobT || G.lastT, kind: j.type, headline: plan.headline, changes: plan.changes || [], jobId: j.id });
+        }
         applyHook();
       } else if (S.csPlanJob && S.csPlanJob.id === j.id) {
         S.csPlan = { champ: j.champion, plan, at: Date.now(), jobId: j.id };
@@ -350,7 +359,7 @@ const Agent = (() => {
     if (!live && S.csPlan && S.csPlan.champ === champ) return S.csPlan.plan;
     return null;
   }
-  function gameLog() { return S.game ? S.game.history.map((h) => ({ t: Math.round(h.t), kind: h.kind, headline: h.headline, changes: h.changes || [] })) : []; }
+  function gameLog() { return S.game ? S.game.history.filter((h) => h.kind !== 'check').map((h) => ({ t: Math.round(h.t), kind: h.kind, headline: h.headline, changes: h.changes || [] })) : []; }
   function endGame() { if (S.game && !S.game.ended) { S.game.ended = Date.now(); changed(); } }
 
   return {

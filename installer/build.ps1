@@ -16,14 +16,26 @@ $include = @('server.ps1', 'README.md', 'LICENSE', 'Jax Coach.vbs', 'Create desk
 $files = foreach ($pat in $include) { Get-ChildItem (Join-Path $Root $pat) -File -ErrorAction SilentlyContinue }
 $files = $files | Sort-Object FullName -Unique
 
+# app\build.json: the commit this was built from, so the updater can compare it with GitHub (only in the installer)
+$git = { param([string[]]$a) try { $o = & git -C $Root @a 2>$null; if ($LASTEXITCODE -eq 0) { "$o".Trim() } else { '' } } catch { '' } }
+$build = [ordered]@{
+  version = $Version; commit = (& $git @('rev-parse', 'HEAD')); commitDate = (& $git @('log', '-1', '--format=%cI'))
+  dirty = [bool](& $git @('status', '--porcelain')); repo = (& $git @('remote', 'get-url', 'origin'))
+  branch = $(if (($br = & $git @('rev-parse', '--abbrev-ref', 'HEAD')) -and $br -ne 'HEAD') { $br } else { 'main' }); builtAt = (Get-Date).ToString('o')
+}
+$buildJson = Join-Path $Obj 'build.json'
+[IO.File]::WriteAllText($buildJson, ($build | ConvertTo-Json -Compress))
+
 $zipPath = Join-Path $Obj 'app.zip'
 if (Test-Path $zipPath) { Remove-Item $zipPath }
 $zip = [IO.Compression.ZipFile]::Open($zipPath, 'Create')
 try {
   foreach ($f in $files) {
     $rel = $f.FullName.Substring($Root.Length + 1).Replace('\', '/')
+    if ($rel -eq 'app/build.json') { continue }
     [void][IO.Compression.ZipFileExtensions]::CreateEntryFromFile($zip, $f.FullName, $rel, 'Optimal')
   }
+  [void][IO.Compression.ZipFileExtensions]::CreateEntryFromFile($zip, $buildJson, 'app/build.json', 'Optimal')
 } finally { $zip.Dispose() }
 [IO.File]::WriteAllText((Join-Path $Obj 'version.txt'), $Version)
 Write-Host ("Packed {0} files ({1:N0} KB)" -f @($files).Count, ((Get-Item $zipPath).Length / 1KB))
@@ -41,4 +53,4 @@ $out = Join-Path $Dist 'JaxCoachSetup.exe'
   /r:System.Windows.Forms.dll /r:System.Drawing.dll /r:System.IO.Compression.dll /r:System.IO.Compression.FileSystem.dll /r:System.Management.dll `
   (Join-Path $PSScriptRoot 'Installer.cs')
 if ($LASTEXITCODE -ne 0) { throw "csc failed ($LASTEXITCODE)" }
-Write-Host ("Built {0} ({1:N0} KB), version {2}" -f $out, ((Get-Item $out).Length / 1KB), $Version)
+Write-Host ("Built {0} ({1:N0} KB), version {2}, commit {3}{4}" -f $out, ((Get-Item $out).Length / 1KB), $Version, "$($build.commit)".Substring(0, [Math]::Min(7, "$($build.commit)".Length)), $(if ($build.dirty) { ' + local changes' } else { '' }))

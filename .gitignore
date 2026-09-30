@@ -27,3 +27,6 @@ __pycache__/
 # installer build output (attach the exe to a GitHub release instead)
 dist/
 installer/obj/
+
+# written into the installer only (the commit it was built from)
+app/build.json

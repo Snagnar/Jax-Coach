@@ -33,6 +33,10 @@ The **complete** current plan (it replaces the previous one): `headline` (requir
 `bullets`, `changes` (1-2 items, at most 12 words each: what is different from the previous plan), `build`
 (`order` = everything still to buy, in order; `why` per item), optional `rules`, `params`, `phaseNotes`, `sources`.
 No `summary`. Keep what was still right in the previous plan.
+`changed` (required): `false` when the player should keep doing what the previous plan says. Rewording is not a
+change; a different thing to do, a new build order or new rules is. With `false` the app keeps showing the previous
+headline and bullets and applies your build and rules quietly; with `true` it shows and reads out your new headline,
+so only say `true` when the player must do something different.
 
 ## Keep the words few
 The player glances at this card mid-game and reads the headline and maybe two bullets. Short beats complete:

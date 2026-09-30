@@ -85,6 +85,7 @@ async function boot() {
   await useChamp(D.dd.champs[start] || start === 'Jax' ? start : 'Jax', { quiet: true });
 
   await Focus.loadHistory();
+  Archive.load().then(renderToday).catch(() => {});
   Agent.onApply(() => { applyPlaybook(); if (S.view === 'live') renderLive(); });
   let agentRender = 0;
   Agent.onChange(() => {
@@ -106,6 +107,7 @@ async function boot() {
   });
   poll();
   pollClient();
+  loadUpdateInfo().then(() => setTimeout(autoCheckUpdate, 60000));
   // A worker drives the polling: browsers throttle page timers hard when the window is hidden behind the game.
   const ticker = new Worker(URL.createObjectURL(new Blob(['setInterval(() => postMessage(0), 2000)'], { type: 'text/javascript' })));
   let tick = 0;
@@ -193,6 +195,9 @@ async function poll() {
     handleMode(S.A);
     alertVoice(S.A);
     callouts(S.A);
+    warnWatch(S.A);
+    respawnVoice(S.A);
+    planVoice(S.A);
     if (!S.demo) {
       scoutPlayers();
       record(S.A);
@@ -203,6 +208,8 @@ async function poll() {
     if (S.rec) { finishRecording(null); S.rec = null; }
     Agent.endGame();
     S.modeState = { cur: null, pending: null, pendingCount: 0, changedAt: 0 };
+    S.warn = null; S.resp = null;
+    setWash(false, false);
   }
   document.body.dataset.mode = S.A && S.modeState.cur ? S.modeState.cur.mode : '';
   renderStatus();
@@ -385,6 +392,97 @@ function callouts(A) {
   }
 }
 
+// ---------- ignored warnings: losing health while the dashboard says Play safe / Back off ----------
+// Riot's live data has no map positions, so walking forward can't be seen, but taking damage can. Losing 12% of
+// your max health within 4 s on Back off or a "don't fight" guard (20% on Play safe, where some poke is normal),
+// starting 2 s after the warning went up, is a trade you were told not to take: alert tone, "Back. Now.", and
+// the whole window flashes red for 6 s. At most once per 20 s.
+const isWarning = (A) => { const m = S.modeState.cur; return !A.P.me.isDead && (!!(m && (m.mode === 'retreat' || m.mode === 'safe')) || !!(A.guard && A.guard.strict)); };
+function setWash(warn, alarm) {
+  document.body.classList.toggle('wash-warn', !!warn && !alarm);
+  document.body.classList.toggle('wash-alarm', !!alarm);
+  const title = alarm ? '⛔ BACK NOW · Jax Coach' : 'Jax Coach';
+  if (document.title !== title) document.title = title;
+}
+function warnWatch(A) {
+  if (!S.warn || A.t < S.warn.lastT - 5) S.warn = { hp: [], since: null, alarmUntil: 0, lastAt: -1e9, ignored: 0 };
+  const W = S.warn, st = (A.P.activePlayer || {}).championStats || {};
+  W.lastT = A.t;
+  const warn = isWarning(A);
+  if (!warn) { W.since = null; W.hp = []; }
+  else {
+    if (W.since == null) W.since = A.t;
+    if (st.maxHealth) W.hp.push({ t: A.t, hp: st.currentHealth / st.maxHealth });
+    W.hp = W.hp.filter((x) => A.t - x.t <= 4 && x.t >= W.since + 2);
+    const peak = Math.max(...W.hp.map((x) => x.hp)), now = W.hp.length ? W.hp[W.hp.length - 1].hp : 1;
+    const m = S.modeState.cur, hard = (m && m.mode === 'retreat') || !!(A.guard && A.guard.strict);
+    if (W.hp.length >= 2 && peak - now >= (hard ? 0.12 : 0.2) && A.t - W.lastAt >= 20) {
+      W.lastAt = A.t; W.ignored++; W.alarmUntil = Date.now() + 6000; W.hp = [];
+      Voice.announce(['Back. Now.'], { key: `ignored-${Math.round(A.t)}`, alert: true });
+    }
+  }
+  // Back off and the farm-only lock tint the whole window; an ignored warning flashes it
+  const m = S.modeState.cur;
+  setWash(warn && ((m && m.mode === 'retreat') || (A.guard && A.guard.kind === 'lock')), Date.now() < W.alarmUntil);
+}
+
+// ---------- death budget: as many deaths as your own wins have ----------
+// 1 death before 14:00 (with 2+ early deaths your top games are 44% wins, with none 63%), then one more at 14:00
+// and one more per the death pace of your archived top-lane wins after 14:00 (default every 7:30).
+function deathBudget() {
+  if (S.budgetCfg && Date.now() - S.budgetCfg.at < (S.budgetCfg.n >= 15 ? 3600e3 : 60e3)) return S.budgetCfg;   // retry while the archive loads
+  let early = 1, every = 450, n = 0;
+  if (!Archive.state.loaded && !S.budgetArchiveTried) { S.budgetArchiveTried = true; Archive.load().catch(() => {}); }
+  try {
+    const W = Archive.rows().filter((r) => r.role === 'TOP' && r.win && !r.remake && r.detail && r.detail.deaths && r.dur > 1200);
+    n = W.length;
+    if (n >= 15) {
+      const late = W.reduce((s, r) => s + r.detail.deaths.filter((d) => d.t >= 840).length, 0), mins = W.reduce((s, r) => s + (r.dur - 840) / 60, 0);
+      if (late) every = Math.min(900, Math.max(240, Math.round((60 * mins) / late / 30) * 30));
+    }
+  } catch {}
+  return (S.budgetCfg = { early, every, n, at: Date.now() });
+}
+const budgetAt = (B, t) => (t < 840 ? B.early : B.early + 1 + Math.floor((t - 840) / B.every));
+const budgetClear = (B, n) => (n <= B.early ? 0 : 840 + (n - B.early - 1) * B.every);   // first moment n deaths fit
+function budgetState(A) {
+  const B = deathBudget(), d = A.P.me.scores.deaths || 0, allowed = budgetAt(B, A.t);
+  const next = budgetClear(B, d + 1);          // until then, the next death breaks the budget
+  const level = d > allowed ? 'over' : next > A.t ? 'limit' : 'ok';
+  const before = `minute ${Math.ceil(next / 60)}`, far = next - A.t > 600;
+  return { B, d, allowed, next, level,
+    sub: level === 'ok' ? `${allowed - d} to spare` : level === 'over' && far ? 'No more deaths this game' : `No death before ${Engine.fmtClock(next)}`,
+    line: level === 'ok' ? "You're back. Still inside your death budget." : level === 'over' ? `You're back, over your death budget. ${far ? 'Play the rest of this game without dying.' : `Don't die again before ${before}.`}` : `You're back. Don't die again before ${before}.` };
+}
+function budgetChip(A) {
+  const b = budgetState(A), B = b.B;
+  const src = B.n >= 15 ? `After 14:00 from the pace of your ${B.n} top-lane wins` : 'Default';
+  return `<div class="budget b-${b.level}" title="${esc(`${src}: ${B.early} death${B.early > 1 ? 's' : ''} before 14:00, one more at 14:00, then one more every ${Engine.fmtClock(B.every)}.`)}">
+    <div class="small muted">Death budget</div><b class="num">${b.d} / ${b.allowed}</b><div class="small">${esc(b.sub)}</div></div>`;
+}
+
+// ---------- respawn: one line, the time you shouldn't die before (and the farm-only lock) ----------
+function respawnVoice(A) {
+  const me = A.P.me;
+  if (!S.resp || A.t < S.resp.lastT - 5) S.resp = { dead: me.isDead };
+  const R = S.resp;
+  R.lastT = A.t;
+  if (R.dead && !me.isDead && A.t > 60) {
+    const lines = [budgetState(A).line];
+    if (A.guard && A.guard.kind === 'lock') lines.push(`${A.guard.headline}.`);
+    R.say = { lines, key: `respawn-${me.scores.deaths}-${Math.round(A.t)}`, until: A.t + 20 };
+  }
+  R.dead = me.isDead;
+  if (R.say && A.t < R.say.until && Voice.announce(R.say.lines, { key: R.say.key })) R.say = null;
+}
+
+// ---------- a new plan is read out once; a check that changed nothing stays quiet ----------
+function planVoice(A) {
+  const p = D.plan;
+  if (!p || !p.jobId || p.changed === false || Date.now() - p.at > 60000) return;
+  Voice.say(`${p.kind === 'adapt' ? 'New plan' : 'Game plan'}: ${speakable(p.headline, 140)}`, { key: `plan-${p.jobId}`, repeatAfter: 99999 });
+}
+
 // ---------- record live games (what the dashboard said) for the Review tab ----------
 function record(A) {
   const me = A.P.me;
@@ -393,9 +491,11 @@ function record(A) {
   if (r.lastMode) r.modeTime[r.lastMode] = Math.round((r.modeTime[r.lastMode] || 0) + Math.max(0, Math.min(6, A.t - r.lastT)));
   if (me.isDead && !r.wasDead) {
     const ev = A.events.filter((e) => e.EventName === 'ChampionKill' && Engine.nameIs(me, e.VictimName)).pop();
-    r.deaths.push({ t: ev ? ev.EventTime : A.t, mode: r.lastAliveMode || null, jungler: r.lastJg || null });
+    r.deaths.push({ t: ev ? ev.EventTime : A.t, mode: r.lastAliveMode || null, warned: !!r.lastAliveWarn, jungler: r.lastJg || null });
   }
-  if (!me.isDead && cur && cur !== 'dead') { r.lastAliveMode = cur; r.lastJg = A.jungler ? A.jungler.status : null; }
+  if (!me.isDead && cur && cur !== 'dead') { r.lastAliveMode = cur; r.lastAliveWarn = isWarning(A); r.lastJg = A.jungler ? A.jungler.status : null; }
+  r.ignored = S.warn ? S.warn.ignored : 0;
+  const b = budgetState(A); r.budget = { deaths: b.d, allowed: b.allowed };
   r.wasDead = me.isDead; r.lastMode = cur; r.lastT = A.t; r.gameTime = A.t;
   if (A.P.opp) r.opp = A.P.opp.cid;
   r.focus = Focus.result(A);
@@ -411,8 +511,9 @@ function finishRecording(result) {
   const L = S.lastSaved;
   if (L && L.champ === r.champ && L.opp === r.opp && Math.abs(L.gameTime - r.gameTime) < 120 && Date.now() - L.at < 15 * 60000) return;
   S.lastSaved = { champ: r.champ, opp: r.opp, gameTime: r.gameTime, at: Date.now() };
-  const body = { v: 1, endedAt: Date.now(), champ: r.champ, riotId: r.riotId, opp: r.opp, result, gameTime: Math.round(r.gameTime), deaths: r.deaths, modeTime: r.modeTime, focus: r.focus || null, plans: r.plans || [] };
+  const body = { v: 1, endedAt: Date.now(), champ: r.champ, riotId: r.riotId, opp: r.opp, result, gameTime: Math.round(r.gameTime), deaths: r.deaths, modeTime: r.modeTime, focus: r.focus || null, plans: r.plans || [], ignored: r.ignored || 0, budget: r.budget || null };
   S.lastFocus = r.focus || null;
+  if (result === 'Win' || result === 'Lose') S.todayPending = [...(S.todayPending || []), { end: Date.now(), win: result === 'Win', champ: r.champ, opp: r.opp }];
   fetch('/api/history', { method: 'POST', body: JSON.stringify(body) }).then(() => Focus.loadHistory()).catch(() => {});
   // build the game report as soon as Riot publishes the match, and show it if the Live page is idle
   if (D.config.hasKey && Review.state.me) {
@@ -459,9 +560,98 @@ function archiveCheck() {
   if (Review.state.status === 'done') Archive.sync(D); else if (Review.state.status !== 'loading') Review.load(D);
 }
 
+// ---------- today's games in the top bar: wins and losses in order, the game you're in, the score ----------
+// A "day" starts at 5:00 so a late session stays one day. Games come from the match archive; a game that just
+// ended shows from the live result until Riot publishes it.
+function dayStart() { const d = new Date(); if (d.getHours() < 5) d.setDate(d.getDate() - 1); d.setHours(5, 0, 0, 0); return d.getTime(); }
+function renderToday() {
+  const el = $('#today');
+  if (!el) return;
+  const from = dayStart();
+  let rows = [];
+  try { rows = Archive.rows().filter((r) => r.end >= from); } catch {}
+  const games = rows.map((r) => ({ end: r.end, win: r.win, remake: r.remake, champ: r.champ, opp: r.opp, kda: `${r.k}/${r.d}/${r.a}` }));
+  // live results Riot hasn't published yet
+  S.todayPending = (S.todayPending || []).filter((p) => p.end >= from && !games.some((g) => Math.abs(g.end - p.end) < 15 * 60000));
+  games.push(...S.todayPending);
+  games.sort((a, b) => a.end - b.end);
+  const played = games.filter((g) => !g.remake), w = played.filter((g) => g.win).length, l = played.length - w;
+  const now = S.A && !S.demo ? S.A.champ : null;
+  if (!games.length && !now) { el.hidden = true; el.innerHTML = ''; S.todayHtml = ''; return; }
+  const MAX = 10, shown = games.slice(-MAX).reverse();   // newest first
+  const tip = (g) => `${new Date(g.end).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} · ${champName(g.champ)}${g.opp ? ` vs ${champName(g.opp)}` : ''} · ${g.remake ? 'Remake' : g.win ? 'Win' : 'Loss'}${g.kda ? ` · ${g.kda}` : ''}`;
+  const tile = (g) => `<span class="tg ${g.remake ? 'tg-r' : g.win ? 'tg-w' : 'tg-l'}" title="${esc(tip(g))}">${champImg(g.champ, 'sm')}<i>${g.remake ? '–' : g.win ? 'W' : 'L'}</i></span>`;
+  // current streak, only when it's worth saying
+  let streak = 0; for (let i = played.length - 1; i >= 0 && played[i].win === played[played.length - 1].win; i--) streak++;
+  const streakTxt = streak >= 3 ? `<span class="t-streak ${played[played.length - 1].win ? 'good-t' : 'warn-t'}">${streak} ${played[played.length - 1].win ? 'wins' : 'losses'} in a row</span>` : '';
+  const html = `<div class="t-score" title="Today (since 5:00): ${w} win${w === 1 ? '' : 's'}, ${l} loss${l === 1 ? '' : 'es'}${played.length ? `, ${Math.round((100 * w) / played.length)}%` : ''}">
+      <span class="small muted">Today</span><b class="good-t num">${w}</b><span class="faint">–</span><b class="warn-t num">${l}</b></div>
+    <div class="t-games">${now ? `<span class="tg tg-now" title="In game now">${champImg(now, 'sm')}<i>●</i></span>` : ''}${shown.map(tile).join('')}${games.length > MAX ? `<span class="t-more small muted" title="${games.length - MAX} earlier games today">+${games.length - MAX}</span>` : ''}</div>${streakTxt}`;
+  if (html !== S.todayHtml) { el.innerHTML = html; S.todayHtml = html; }
+  el.hidden = false;
+}
+
+// ---------- updates: the latest main branch on GitHub, installed by app\update.ps1 ----------
+// Checked in the background at most every 6 hours (never in a game); Settings has the buttons, the top bar a pill.
+const shortSha = (s) => (s ? String(s).slice(0, 7) : '?');
+async function loadUpdateInfo() {
+  try { const r = await getJSON('/api/update'); S.update = { ...(S.update || {}), current: r.current }; } catch {}
+  renderUpdate();
+}
+async function checkUpdate() {
+  if (S.update && (S.update.checking || S.update.applying)) return;
+  S.update = { ...(S.update || {}), checking: true, status: null }; renderUpdate();
+  let r; try { r = await getJSON('/api/update/check'); } catch (e) { r = { error: e.message }; }
+  S.update = { ...S.update, ...r, current: r.current || S.update.current, checking: false, at: Date.now() };
+  try { localStorage.setItem('jc.updateCheck', String(Date.now())); } catch {}
+  renderUpdate(); renderStatus();
+}
+function autoCheckUpdate() {
+  let last = 0; try { last = +localStorage.getItem('jc.updateCheck') || 0; } catch {}
+  if (!S.game && !['ChampSelect', 'InProgress', 'GameStart'].includes(S.clientPhase) && Date.now() - last > 6 * 3600e3) checkUpdate();
+}
+async function applyUpdate() {
+  if (S.game && !S.demo) { alert("You're in a game. Update after it."); return; }
+  if (!confirm('Update now? Jax Coach closes, installs the new version and starts again (about a minute). Your settings, history and playbooks stay.')) return;
+  try { await fetch('/api/update/apply', { method: 'POST', body: '' }); } catch {}
+  S.update = { ...S.update, applying: true, status: { state: 'starting', message: 'Starting the update…' } };
+  renderUpdate(); renderStatus();
+  let wentDown = false;
+  const tick = async () => {
+    try {
+      S.update.status = await getJSON('/api/update/status');
+      if (wentDown) { location.reload(); return; }            // Jax Coach is back: load the new version
+    } catch { wentDown = true; S.update.status = { state: 'installing', message: 'Installing… this page reloads when Jax Coach is back.' }; }
+    if (['failed', 'current'].includes(S.update.status.state)) S.update.applying = false;
+    renderUpdate(); renderStatus();
+    if (S.update.applying) setTimeout(tick, 2000);
+  };
+  setTimeout(tick, 1500);
+}
+function renderUpdate() {
+  const el = $('#updates');
+  if (!el) return;
+  const u = S.update || {}, c = u.current, st = u.status || {};
+  const ver = c ? `Version ${esc(c.version)} · ${shortSha(c.commit)}${c.dirty ? ' + local changes' : ''}` : 'Development copy: update it with git pull';
+  const note = u.applying ? `<div class="small"><span class="spin"></span> ${esc(st.message || 'Updating…')}</div>`
+    : st.state === 'failed' ? `<div class="small warn-t">Update failed: ${esc(st.message)}</div>`
+    : st.state === 'current' ? `<div class="small muted">${esc(st.message)}</div>`
+    : u.checking ? '<div class="small muted">Asking GitHub…</div>'
+    : u.error ? `<div class="small warn-t">${esc(u.error)}</div>`
+    : u.available ? `<div class="small">A new version is on GitHub (${shortSha(u.latest)}).</div>`
+    : u.at ? `<div class="small good-t">You're up to date.</div>` : '';
+  el.innerHTML = `<div class="row"><span class="small muted grow">${ver}</span>
+    <button type="button" class="btn small ghost" data-upd="check" ${u.checking || u.applying || !c ? 'disabled' : ''}>Check for updates</button>
+    ${u.available && !u.applying ? '<button type="button" class="btn small" data-upd="apply">Update now</button>' : ''}</div>${note}`;
+}
+
 function renderStatus() {
+  renderToday();
   const pill = (state, label, title) => `<span class="pill ${state}" title="${esc(title)}"><i></i>${esc(label)}</span>`;
   const out = [];
+  const U = S.update || {};
+  if (U.applying) out.push(`<button class="pill warn upd-pill" data-action="update-open" title="${esc((U.status || {}).message || '')}"><i></i>Updating…</button>`);
+  else if (U.available) out.push(`<button class="pill ok upd-pill" data-action="update-open" title="A new version of Jax Coach is on GitHub. Click to update."><i></i>Update available</button>`);
   out.push(S.serverDown ? pill('err', 'App offline', 'The Jax Coach server is not reachable. Start it with "Start Jax Coach.bat".') : pill('ok', 'App', 'Local Jax Coach server is running'));
   if (!S.serverDown) {
     const cp = S.clientPhase ? CLIENT_PHASE[S.clientPhase] || ['ok', S.clientPhase] : null;
@@ -505,6 +695,8 @@ function renderLive() {
       <div><div class="small muted">Phase</div><b>${esc(A.phaseLabel)}</b></div>
       <div class="sep"></div>
       <div><span class="chip big ${stateCls}">${stateTxt}</span><div class="state-reasons">${esc(st.reasons.join(' · '))}</div></div>
+      <div class="sep"></div>
+      ${budgetChip(A)}
       <div class="sep"></div>
       <div><div class="small muted">Gold</div><b class="num" style="color:var(--gold)">${A.items.gold}g</b>${A.recall ? `<div class="recall-chip ${A.recall.level}" title="${esc([...A.recall.reasons, A.recall.hold].filter(Boolean).join(' · '))}">${A.recall.level === 'now' ? '↩ Back now' : '↩ Back soon'}</div>` : ''}</div>
       ${buildNextHtml(A)}
@@ -879,7 +1071,7 @@ function opponentCard(A, mu) {
   if (!opp) return '';
   const head = `<div class="opp-head">${champImg(opp.cid, 'lg')}
       <div class="grow"><div class="name">${esc(champName(opp.cid))}</div>
-      <div class="small muted">${esc(opp.name)} · lvl ${opp.level} · ${opp.scores.kills}/${opp.scores.deaths}/${opp.scores.assists} · ${opp.scores.creepScore} CS</div>
+      <div class="small muted">${esc(opp.name)} · lvl ${opp.level} · ${opp.scores.kills}/${opp.scores.deaths}/${opp.scores.assists} · ${Engine.csText(opp)} CS (you ${A.P.me.scores.creepScore || 0})</div>
       ${mu ? `<div class="row small" style="margin-top:4px">${diffDots(mu.difficulty)} <span class="muted">${diffLabel(mu.difficulty)}</span>${mu.winRate != null ? `<span class="chip ${wrClass(mu.winRate)}" title="${esc(mu.winRateSource || '')}">WR ${pct(mu.winRate)}</span>` : ''}</div>` : ''}
       </div></div>`;
   return `<div class="card">
@@ -976,7 +1168,7 @@ function enemyTeamCard(A) {
       ${champImg(p.cid)}
       <div>
         <div class="top"><b>${esc(champName(p.cid))}</b><span class="pn muted small">${esc(p.name)}</span>${p.isDead ? `<span class="chip warn">dead ${Math.ceil(p.respawnTimer)}s</span>` : ''}${p === A.P.opp ? '<span class="chip gold">lane</span>' : ''}</div>
-        <div class="meta num">lvl ${p.level} · ${p.scores.kills}/${p.scores.deaths}/${p.scores.assists} · ${p.scores.creepScore} CS${dmgNote(c, p)}</div>
+        <div class="meta num">lvl ${p.level} · ${p.scores.kills}/${p.scores.deaths}/${p.scores.assists} · ${Engine.csText(p)} CS${dmgNote(c, p)}</div>
         <div class="items" style="margin:4px 0">${arr(p.items).filter((i) => i.itemID < 3340 || i.itemID > 3364).map((i) => itemImg(i.itemID)).join('')}</div>
         ${scoutHtml(p, false)}
       </div>
@@ -1028,8 +1220,9 @@ function planCard(A) {
   const thinking = job && job.status === 'running' ? `<div class="plan-thinking"><span class="spin"></span><div><b>${esc(G && G.jobReason ? `Reassessing: ${G.jobReason}` : 'Preparing the game plan')}</b> · ${ago(job.created)}<div class="small muted">${esc(jobActivity(job))}</div></div></div>` : '';
   if (!plan) return `<div class="card plan-card"><header><h2>Game plan</h2><span class="chip">AI</span></header>${thinking}</div>`;
   const b = plan.build && plan.build.order;
-  const when = plan.kind === 'adapt' ? `updated ${ago(plan.at)} ago` : `made ${ago(plan.at)} ago`;
-  return `<div class="card plan-card">
+  const when = `${plan.kind === 'adapt' ? `updated ${ago(plan.at)} ago` : `made ${ago(plan.at)} ago`}${plan.checkedAt ? ` · checked ${ago(plan.checkedAt)} ago` : ''}`;
+  const fresh = plan.changed !== false && Date.now() - plan.at < 12000;
+  return `<div class="card plan-card ${fresh ? 'fresh' : ''}">
     <header><h2>Game plan</h2><span class="chip">AI · ${esc(when)}</span><span class="grow"></span>${A && !S.demo ? '<button class="btn small ghost" data-action="reassess" title="Ask the agent to look at the game again now">Reassess</button>' : ''}</header>
     <div class="plan-head">${esc(plan.headline)}</div>
     ${list(plan.bullets)}
@@ -1586,6 +1779,20 @@ function reportGoldChart(R) {
       <path d="${path('team')}" class="ln ln-team"/><path d="${path('lane')}" class="ln ln-you"/>${labels}${objMarks}${deathMarks}</svg></figure>`;
 }
 
+// how well you followed the coach: deaths while it warned you, warnings ignored, the death budget, and the trend
+function coachScore(R) {
+  const live = R.live;
+  if (!live || !arr(live.deaths).length && live.budget == null) return '';
+  const warnedOf = (h) => arr(h.deaths).filter((d) => (d.warned != null ? d.warned : d.mode === 'retreat' || d.mode === 'safe')).length;
+  const warned = warnedOf(live), b = live.budget;
+  const trend = arr(Report.state.hist).filter((h) => h.deaths && (h.endedAt || 0) <= live.endedAt).sort((x, y) => x.endedAt - y.endedAt).slice(-10).map(warnedOf);
+  return `<div class="coach-score">
+    <div><div class="small muted">Deaths while the coach said no</div><b class="num ${warned ? 'warn-t' : 'good-t'}">${warned}</b> <span class="small muted">of ${arr(live.deaths).length}</span></div>
+    ${live.ignored != null ? `<div><div class="small muted">Warnings ignored</div><b class="num ${live.ignored ? 'warn-t' : 'good-t'}">${live.ignored}</b> <span class="small muted">lost health on Back off / Play safe</span></div>` : ''}
+    ${b ? `<div><div class="small muted">Death budget</div><b class="num ${b.deaths > b.allowed ? 'warn-t' : 'good-t'}">${b.deaths} / ${b.allowed}</b> <span class="small muted">${b.deaths > b.allowed ? 'broken' : 'kept'}</span></div>` : ''}
+    ${trend.length >= 3 ? `<div><div class="small muted">Deaths while the coach said no, last ${trend.length} games</div><span class="num">${trend.join(' · ')}</span></div>` : ''}
+  </div>`;
+}
 function renderReport() {
   const el = $('#view-report');
   if (!el) return;
@@ -1627,6 +1834,7 @@ function renderReport() {
       ${shareBar}
       <div class="small">${me.best.length ? `Strongest: ${esc(me.best.join(', '))}` : ''}${me.best.length && me.worst.length ? ' · ' : ''}${me.worst.length ? `Weakest: ${esc(me.worst.join(', '))}` : ''}</div>
     </div>
+    ${coachScore(R)}
     <details class="small muted"><summary>How is this estimated?</summary>Every player is compared with the other nine on KDA, deaths per minute, damage share, kill participation, gold income, gold vs their lane opponent at 15:00, tower/objective damage, vision and damage absorbed, weighted by role (supports by vision and participation, junglers by objectives). 5.5 is an average game. "Your part" splits the ${R.win ? 'above' : 'below'}-average play on your team between the five of you. It can't see good calls, roams or wave management, so treat it as an estimate.</details>
   </div>`;
 
@@ -1723,6 +1931,7 @@ function wireUi() {
     if (!t) return;
     if (t.dataset.range) { Review.setRange(t.dataset.range); return; }
     // playbooks + research agents
+    if (t.dataset.action === 'update-open') { $('#settingsBtn').click(); return; }
     if (t.dataset.action === 'why') { S.showWhy = !S.showWhy; renderLive(); return; }
     if (t.dataset.action === 'reassess') { Agent.reassessNow(S.A, D); renderLive(); return; }
     if (t.dataset.action === 'goto-playbook') { S.pbSel = t.dataset.champ || S.champ; setView('playbook'); return; }
@@ -1871,6 +2080,12 @@ function wireUi() {
     fillVoice();
     dlg.showModal();
     loadStorage();
+    if (!S.update || !S.update.current) loadUpdateInfo(); else renderUpdate();
+  });
+  $('#updates').addEventListener('click', (e) => {
+    const b = e.target.closest('[data-upd]');
+    if (b && b.dataset.upd === 'check') checkUpdate();
+    if (b && b.dataset.upd === 'apply') applyUpdate();
   });
   $('#storage').addEventListener('click', async (e) => {
     const b = e.target.closest('[data-clear]');

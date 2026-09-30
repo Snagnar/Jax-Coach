@@ -267,6 +267,7 @@ const Report = (() => {
       const [m, tl] = [await Scout.api('match', `/lol/match/v5/matches/${id}`), await Scout.api('match', `/lol/match/v5/matches/${id}/timeline`)];
       if (!m || !tl) throw new Error('Riot has not published this game yet. Try again in a minute.');
       let hist = []; try { hist = await (await fetch('/api/history')).json(); } catch {}
+      S.hist = Array.isArray(hist) ? hist : [];
       const me = Archive.findMe(m, puuid);
       if (!me) throw new Error('You are not in this game (a different Riot ID?)');
       const live = (hist || []).filter((h) => h.champ === me.championName && Math.abs((h.endedAt || 0) - m.info.gameEndTimestamp) < 15 * 60000).pop() || null;

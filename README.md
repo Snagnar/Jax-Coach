@@ -18,11 +18,13 @@ browser (a second monitor works best):
   - **A playbook for any champion.** Lock in a champion without one and a quick run delivers build and runes within
     about a minute. A full research run (Opus, with Sonnet sub-agents) then writes the whole playbook: matchups,
     game plan and decision rules.
-  - **A game plan for every game.** It's made when picks lock (or at game start), and a card shows how this lineup
-    is won, the build for it and any extra decision rules.
+  - **A game plan for every game.** It's made when picks lock if your lane opponent is certain, otherwise the moment
+    the game loads (ranked champ select hides enemy positions). A card shows how this lineup is won, the build for it
+    and any extra decision rules.
   - **Plan updates during the game.** At moments that change things (your death, an item spike, big gold swings,
     fed enemies, new threats, Baron or Soul, 14:00/20:00/28:00, or the Reassess button), an agent looks at the game
-    again. It updates the build and the plan, including how the game can still be won.
+    again. It updates the build and the plan, including how the game can still be won. The card and the voice only
+    change when the decision changes; a check that changes nothing updates the build quietly.
   - **Suggested playbook changes after the game.** A review agent compares what the playbook said with what
     happened. You approve each change; every change is a new playbook version you can roll back.
 
@@ -46,7 +48,12 @@ can uninstall it. The uninstaller asks whether to keep your game history. Runnin
 updates the app and keeps your settings and history.
 
 Installer options for unattended installs:
-`JaxCoachSetup.exe /dir="D:\Jax Coach" /novoice /noclaude /nodesktop /nolaunch /auto`
+`JaxCoachSetup.exe /dir="D:\Jax Coach" /novoice /noclaude /nodesktop /nolaunch /auto` (`/close` closes setup when done)
+
+**Updates**: right-click the tray icon > **Check for updates...**, or Settings > Updates (the top bar shows "Update
+available" when there is one; it checks at most every 6 hours, never in a game). The latest version is the `main`
+branch on GitHub: Jax Coach downloads it with git (so it needs Git and access to the repository), builds the installer
+from it and runs it. Your settings, history, archive and playbooks stay. Progress is in `logs\update.log`.
 
 ### Option B: from source
 ```bat
@@ -93,14 +100,22 @@ Browsers only allow sound after one click on the page, so click the page once be
   amber Play safe, red Back off, teal Objective. It weighs levels, items, the matchup, your HP, the enemy jungler's last
   sighting, dead players and objective timers. Enemy HP and cooldowns aren't in Riot's data.
 - **Don't-fight guard** (before 14:00): when you're a level down, about 500 gold behind or 15+ CS down, the dashboard
-  says "Don't fight" and why. After two solo deaths to your lane opponent, the lane locks to "Farm only" until your next
-  item is finished.
+  says "Don't fight" and why. After solo deaths to your lane opponent (the playbook's `lockDeaths`), the lane locks to
+  "Farm only" until your next item is finished, unless you're winning the lane: more kills on your opponent than
+  deaths to them, or clearly ahead. Getting ahead again lifts it.
 - **Voice**: speaks only when the play mode changes, or for things you can't see at a glance (the jungler showed bot
   side, an objective spawns in one minute, you can finish an item). The quiet time between lines grows from 8 s in lane
   to 40 s after 25:00. Objective calls use the real names and times: dragons, Dragon Soul, then Elder, grubs, Herald
   and Baron.
 - **Dragon Soul point and Elder**: when a team is on 3 drakes (or Elder is next), a striped banner shows who gets Soul
   and the voice plays an alert tone plus one line 90 s before the spawn and again when it's up, even while you're dead.
+- **Ignored warnings**: on Back off or a "don't fight" guard, losing 12% of your health within 4 seconds (20% on Play
+  safe) means you took a trade you were told not to: an alert tone, "Back. Now.", and the whole window flashes red.
+  Back off and the farm-only lock tint the whole window.
+- **Death budget**: 1 death before 14:00, one more at 14:00, then one more per the death pace of your archived top-lane
+  wins. When you respawn, the voice tells you the time you shouldn't die again before.
+- **Exact CS**: Riot's live data reports CS in steps of 10; your own count is rebuilt from your gold. Other players
+  show as "50+".
 - **Enemy jungler**: last seen only from the kill feed and objective kills. Nothing is predicted.
 - **Lanes**: who is winning each role, plus team item gold, kills, towers and objectives (drakes show soul point).
 - **Enemy damage split**: each champion's usual magic/physical share (`damageProfiles` in `data/shared.json`), moved
@@ -117,6 +132,8 @@ Opens by itself a few minutes after each game, as soon as Riot publishes the mat
   win or loss**, and MVP / ACE when you were the best player. It's an estimate: calls, roams and wave management aren't
   in the data.
 - **Story**: team gold at 15, the biggest lane gap, fed players, throws and comebacks, and a gold chart.
+- **Coach score**: deaths while the coach said no, warnings ignored, whether you kept the death budget, and the
+  deaths-while-warned count over your last 10 games.
 - **Improve next game**: the three biggest leaks with what to do instead. One click makes one of them your next focus.
 - **Replay**: download or open the replay, and jump to 15 seconds before each of your deaths.
 

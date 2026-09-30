@@ -137,7 +137,7 @@ Every two seconds the app computes facts about the game (below), then:
   "notes": "why the rules look like this (for humans)",
   "text": { "level6": "Level 6: Unstoppable Force online", "motivation": ["short pre-game lines", "..."] },
   "params": { "guard": { "enabled": true, "until": 14, "levelDownAfter": 90, "goldDown": 500, "goldAfter": 150,
-              "csDown": 15, "csAfter": 300, "lockDeaths": 2, "lockUntil": 20, "quietSec": 15 } },
+              "csDown": 15, "csAfter": 300, "lockDeaths": 2, "lockAhead": 150, "lockUntil": 20, "quietSec": 15 } },
   "fightScore": [
     { "id": "ult_up", "group": "level", "when": "opp && me.level >= 6 && opp.level < 6", "add": 2, "why": "you have R, {oppName} doesn't" },
     { "id": "item_gold", "when": "opp", "add": "clamp(itemD / 900, -2, 2)", "why": "...", "whyWhen": "abs(itemD) >= 700" },
@@ -225,6 +225,7 @@ Applied immediately for the current game only. The card shows it; the build and 
   "summary": "one sentence, the win condition (game plan only)",
   "bullets": ["2-4 instructions for the next minutes, at most 16 words each"],
   "changes": ["1-2 short items: what changed since the previous plan (reassess only)"],
+  "changed": true,   // reassess only: false = same decision, the app keeps the previous headline and bullets
   "build": { "order": ["Remaining legendary items and boots in buy order, exact names"],
              "why": { "Item name": "why, at most 8 words" }, "note": "optional" },
   "runes": "rune page for this game (champ select only)", "summoners": "Flash + ...",

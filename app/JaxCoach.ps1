@@ -27,6 +27,7 @@ function Start-Server {
 function Stop-Server { if ($script:Server -and -not $script:Server.HasExited) { try { Stop-Process -Id $script:Server.Id -Force } catch {} } }
 function Wait-Up { for ($i = 0; $i -lt 40; $i++) { if (Test-Up) { return $true }; Start-Sleep -Milliseconds 400 }; return $false }
 
+$script:StartedAt = Get-Date
 Start-Server
 $ok = Wait-Up
 
@@ -41,6 +42,32 @@ $mRestart.add_Click({
   Stop-Server; Start-Sleep -Milliseconds 600; Start-Server
   if (Wait-Up) { $tray.ShowBalloonTip(2500, 'Jax Coach', 'Server restarted.', 'Info') }
   else { $tray.ShowBalloonTip(5000, 'Jax Coach', 'The server did not come back. See "Show log".', 'Warning') }
+})
+# updates: check in the background (git asks GitHub), then offer to install
+$mUpdate = $menu.Items.Add('Check for updates...')
+$mUpdate.add_Click({
+  if ($script:UpdateProc -and -not $script:UpdateProc.HasExited) { return }
+  $script:UpdateOut = [IO.Path]::GetTempFileName()
+  $script:UpdateProc = Start-Process powershell.exe -PassThru -WindowStyle Hidden -RedirectStandardOutput $script:UpdateOut `
+    -ArgumentList @('-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', "`"$(Join-Path $PSScriptRoot 'update.ps1')`"", '-Check')
+  $mUpdate.Text = 'Checking for updates...'; $mUpdate.Enabled = $false
+  $script:UpdateTimer.Start()
+})
+$script:UpdateTimer = New-Object System.Windows.Forms.Timer
+$script:UpdateTimer.Interval = 500
+$script:UpdateTimer.add_Tick({
+  if (-not $script:UpdateProc.HasExited) { return }
+  $script:UpdateTimer.Stop(); $mUpdate.Text = 'Check for updates...'; $mUpdate.Enabled = $true
+  $r = $null; try { $r = Get-Content $script:UpdateOut -Raw | ConvertFrom-Json } catch {}
+  Remove-Item $script:UpdateOut -Force -ErrorAction SilentlyContinue
+  $short = { param($s) if ($s) { "$s".Substring(0, [Math]::Min(7, "$s".Length)) } else { '?' } }
+  if (-not $r -or $r.error) { $tray.ShowBalloonTip(6000, 'Jax Coach', "Couldn't check for updates: $(if ($r) { $r.error } else { 'no answer' })", 'Warning'); return }
+  if (-not $r.available) { $tray.ShowBalloonTip(3500, 'Jax Coach', "You're up to date ($(& $short $r.current.commit)).", 'Info'); return }
+  $msg = "A new version is on GitHub ($(& $short $r.latest)); you have $(& $short $r.current.commit).`n`nUpdate now? Jax Coach closes, installs it and starts again (about a minute). Your settings and history stay.`n`nDon't update during a game."
+  if ([System.Windows.Forms.MessageBox]::Show($msg, 'Jax Coach update', 'YesNo', 'Question') -eq 'Yes') {
+    Start-Process powershell.exe -WindowStyle Hidden -ArgumentList @('-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', "`"$(Join-Path $PSScriptRoot 'update.ps1')`"", '-Apply')
+    $tray.ShowBalloonTip(5000, 'Jax Coach', 'Downloading the update. Jax Coach restarts when it is installed.', 'Info')
+  }
 })
 $mLog = $menu.Items.Add('Show log')
 $mLog.add_Click({ $f = Join-Path $LogDir 'server-errors.log'; if (-not (Test-Path $f) -or (Get-Item $f).Length -eq 0) { $f = Join-Path $LogDir 'server.log' }; Start-Process notepad.exe "`"$f`"" })
@@ -59,6 +86,12 @@ $watch.add_Tick({
     $script:warned = $true; $tray.Text = 'Jax Coach (server stopped)'
     $tray.ShowBalloonTip(6000, 'Jax Coach', 'The server stopped. Right-click the icon: Restart server.', 'Warning')
   } elseif (-not $script:Server.HasExited) { $script:warned = $false; $tray.Text = 'Jax Coach (running)' }
+  # an update that failed says why (once)
+  $us = Join-Path $LogDir 'update-status.json'
+  if ((Test-Path $us) -and (Get-Item $us).LastWriteTime -gt $script:StartedAt -and (Get-Item $us).LastWriteTime -ne $script:UpdateSeen) {
+    $script:UpdateSeen = (Get-Item $us).LastWriteTime
+    try { $st = Get-Content $us -Raw | ConvertFrom-Json; if ($st.state -eq 'failed') { $tray.ShowBalloonTip(8000, 'Jax Coach update failed', "$($st.message)", 'Warning') } elseif ($st.state -eq 'current') { $tray.ShowBalloonTip(4000, 'Jax Coach', "$($st.message)", 'Info') } } catch {}
+  }
 })
 $watch.Start()
 

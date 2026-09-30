@@ -44,10 +44,11 @@ namespace JaxCoachSetup
         ProgressBar bar;
         Label status;
         Process child;
-        bool busy, finished, claudeAsked;
+        bool busy, finished, claudeAsked, autoClose;
         string installedRoot;
 
         // Command line (all optional): /dir="C:\Games\Jax Coach" /novoice /noclaude /nodesktop /nolaunch /auto (start right away)
+        // /close (close setup when it succeeded; used by the updater)
         public SetupForm(string[] args)
         {
             version = ReadText("version.txt").Trim();
@@ -110,6 +111,7 @@ namespace JaxCoachSetup
                 else if (arg == "/nodesktop") desktop.Checked = false;
                 else if (arg == "/nolaunch") launch.Checked = false;
                 else if (arg == "/auto") auto = true;
+                else if (arg == "/close") autoClose = true;
             }
             if (auto) Shown += delegate { OnInstall(); };
 
@@ -206,6 +208,7 @@ namespace JaxCoachSetup
             if (launch.Checked) { StartApp(); install.Text = "Open again"; }
             else install.Text = "Start Jax Coach";
             install.Enabled = true;
+            if (autoClose) { var t = new System.Windows.Forms.Timer { Interval = 2500 }; t.Tick += delegate { t.Stop(); Close(); }; t.Start(); }
         }
 
         void StartApp()

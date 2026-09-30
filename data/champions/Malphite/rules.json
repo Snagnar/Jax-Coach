@@ -24,6 +24,7 @@
       "csDown": 15,
       "csAfter": 300,
       "lockDeaths": 2,
+      "lockAhead": 150,
       "lockUntil": 20,
       "quietSec": 15
     }

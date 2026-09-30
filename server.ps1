@@ -471,6 +471,32 @@ function Handle-Storage($ctx, [string]$sub) {
   Send $ctx 200 (ConvertTo-Json @(Get-StorageAreas) -Depth 4 -Compress)
 }
 
+# ---------------- updates (app\update.ps1 does the work) ----------------
+$UpdateScript = Join-Path $Root 'app\update.ps1'
+function Handle-Update($ctx, [string]$sub) {
+  $status = Join-Path $Root 'logs\update-status.json'
+  if ($sub -eq '/check') {
+    $tmp = [IO.Path]::GetTempFileName()
+    try {
+      $p = Start-Process powershell.exe -PassThru -WindowStyle Hidden -RedirectStandardOutput $tmp `
+        -ArgumentList @('-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', "`"$UpdateScript`"", '-Check')
+      if (-not $p.WaitForExit(45000)) { try { $p.Kill() } catch {}; Send $ctx 200 '{"error":"The check took too long (no network?)"}'; return }
+      $out = (Get-Content $tmp -Raw -ErrorAction SilentlyContinue)
+      Send $ctx 200 $(if ($out) { $out.Trim() } else { '{"error":"The check did not answer"}' })
+    } finally { Remove-Item $tmp -Force -ErrorAction SilentlyContinue }
+    return
+  }
+  if ($sub -eq '/apply' -and $ctx.Request.HttpMethod -eq 'POST') {
+    [IO.File]::WriteAllText($status, '{"state":"starting","message":"Starting the update..."}')
+    Start-Process powershell.exe -WindowStyle Hidden -ArgumentList @('-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', "`"$UpdateScript`"", '-Apply')
+    Send $ctx 202 '{"ok":true}'
+    return
+  }
+  if ($sub -eq '/status') { Send $ctx 200 $(if (Test-Path $status) { Get-Content $status -Raw } else { '{"state":"idle"}' }); return }
+  $b = Join-Path $Root 'app\build.json'
+  Send $ctx 200 ('{"current":' + $(if (Test-Path $b) { (Get-Content $b -Raw).Trim() } else { 'null' }) + '}')
+}
+
 # ---------------- router ----------------
 function Handle-Request($ctx) {
   $req = $ctx.Request
@@ -522,6 +548,7 @@ function Handle-Request($ctx) {
   if ($path -eq '/api/history') { Handle-History $ctx; return }
   if ($path -match '^/api/archive(/.*)?$') { Handle-Archive $ctx "$($Matches[1])"; return }
   if ($path -match '^/api/storage(/.*)?$') { Handle-Storage $ctx "$($Matches[1])"; return }
+  if ($path -match '^/api/update(/\w+)?$') { Handle-Update $ctx "$($Matches[1])"; return }
   if ($path -match '^/api/playbooks?(/.*)?$') { Handle-Playbook $ctx "$($Matches[1])"; return }
   if ($path -match '^/api/agent(/.*)$') { Handle-Agent $ctx $Matches[1]; return }
   if ($path -eq '/api/tts') { Handle-Tts $ctx; return }
