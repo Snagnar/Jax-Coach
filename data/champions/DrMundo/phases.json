@@ -1,0 +1,465 @@
+{
+  "champion": "DrMundo",
+  "role": "top",
+  "patch": "26.19",
+  "lastUpdated": "2026-09-30",
+  "sources": [
+    {
+      "name": "Riot - Patch 26.19 Notes (no Summoner's Rift changes to Dr. Mundo, Heartsteel, Warmog's Armor, Titanic Hydra, Spirit Visage; top quest Teleport cooldowns 390s free / 300-210s upgraded)",
+      "url": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-19-notes/"
+    },
+    {
+      "name": "LoL Wiki - Dr. Mundo (kit as of V26.08, older than 26.19: Q and E monster damage caps reduced; no later Summoner's Rift changes found)",
+      "url": "https://wiki.leagueoflegends.com/en-us/Dr._Mundo"
+    },
+    {
+      "name": "LoL Wiki - Dr. Mundo/Strategy (archived page, OLDER than 26.19; used only for general teamfight role, weaknesses like Vayne, Trundle, Katarina; its item list is outdated)",
+      "url": "https://wiki.leagueoflegends.com/en-us/Dr._Mundo/Strategy"
+    },
+    {
+      "name": "Skill Capped - Dr. Mundo Top Build (26.19: Doran's Helm start, health stacking toward Warmog's Armor 2000 bonus HP, matchups)",
+      "url": "https://www.skill-capped.com/lol/guides/builds/drmundo/top"
+    },
+    {
+      "name": "Lolalytics - Dr. Mundo Top (26.19: Heartsteel and Warmog's Armor core, Titanic Hydra or Spirit Visage, Doran's Helm start)",
+      "url": "https://lolalytics.com/lol/drmundo/build/?lane=top"
+    },
+    {
+      "name": "OP.GG - Dr. Mundo Top Build (26.19: Warmog's Armor, Heartsteel, Titanic Hydra, Boots of Swiftness, Ghost + Teleport most common)",
+      "url": "https://www.op.gg/lol/champions/drmundo/build/top"
+    },
+    {
+      "name": "Mobalytics - Dr. Mundo Build (26.19 runes and items via search summary; page itself blocked)",
+      "url": "https://mobalytics.gg/lol/champions/drmundo/build"
+    },
+    {
+      "name": "Season 26 objective timers and role quest facts (reference/shared.json)",
+      "url": "https://www.leagueoflegends.com/en-us/news/game-updates/patch-26-1-notes/"
+    }
+  ],
+  "phases": [
+    {
+      "id": "lvl1_3",
+      "label": "Levels 1-3",
+      "timeHint": "0:00-~4:00",
+      "goals": [
+        "Farm safely with Infected Bonesaw and keep your health high; you scale, they don't.",
+        "Last-hit with Q so it heals you back, and never miss it into an empty lane.",
+        "Reach level 3 without a big trade and with a stable wave."
+      ],
+      "do": [
+        "Start Doran's Helm and a Health Potion; take Grasp of the Undying.",
+        "Have Q, E and W by level 3 and max Q first (see the Build tab); Q is your farm, poke and heal.",
+        "Use Infected Bonesaw on the enemy when it also hits a minion or when they walk up to last-hit.",
+        "Q a caster minion to heal and keep the wave near your tower if the enemy is ranged.",
+        "Trade only for a short W and E burst when the enemy has just used his key skill."
+      ],
+      "dont": [
+        "Don't spam Q at range; it costs health and a miss hurts you more than them.",
+        "Don't leave W on when nothing is hitting you; it also costs current health.",
+        "Don't chase a retreating enemy under their tower at low health."
+      ],
+      "ifAhead": [
+        "Q-poke him off every last-hit and shove the wave to take plates; don't over-chase.",
+        "Shove only when the enemy jungler showed on the other side of the map."
+      ],
+      "ifEven": [
+        "Farm with Q, trade only when they step up for a last-hit, and keep the wave near the middle.",
+        "Check where the enemy jungler is before every trade."
+      ],
+      "ifBehind": [
+        "Farm under your tower with Q and keep your health above half; stay alive to scale.",
+        "Never fight without health; Mundo needs levels, not kills."
+      ]
+    },
+    {
+      "id": "lvl4_5",
+      "label": "Levels 4-5",
+      "timeHint": "~4:00-~7:00",
+      "goals": [
+        "Recall on a crashed wave for your first health items and come back without losing a wave.",
+        "Keep CS and XP even so the role quest and level 6 arrive on time.",
+        "Stay alive for the 5:00 dragon window; don't take unnecessary fights."
+      ],
+      "do": [
+        "Crash the wave before you recall so you lose no minions and no experience.",
+        "Buy Giant's Belt (or the best health component you can afford) with your first back.",
+        "Trade with Q slow, auto, E, then W when the enemy commits to hitting you; heal by hitting champions and monsters with Q.",
+        "Ward the river or tri-brush before you push past the middle."
+      ],
+      "dont": [
+        "Don't take extended fights with low health; your Q costs health.",
+        "Don't recall with the wave pushing against you."
+      ],
+      "ifAhead": [
+        "Freeze near your tower to deny CS or crash the wave for plates, then recall for your first item.",
+        "Group with your jungler for dragon only if the wave is crashed."
+      ],
+      "ifEven": [
+        "Slow push, farm to a crash, recall for health components, and stay level with them.",
+        "Farm safely; Mundo out-scales most top laners."
+      ],
+      "ifBehind": [
+        "Keep the wave near your tower and only last-hit; W and the passive canister keep you healthy.",
+        "Buy health and wait for level 6; avoid 50/50 fights."
+      ]
+    },
+    {
+      "id": "lvl6_first_item",
+      "label": "Level 6 to first item",
+      "timeHint": "~6:00-~13:00",
+      "goals": [
+        "Use Maximum Dosage as a fight tool: its heal and movement speed win extended fights.",
+        "Finish Heartsteel (your first big spike) and finish the top role quest around 12:30.",
+        "Hold your lane and farm; join the 8:00 Voidgrubs only if the wave is crashed first."
+      ],
+      "do": [
+        "Fight with R when the enemy is close: it heals more the more health you miss, so cast it at mid HP, not at the last second.",
+        "Use E, W and Q together: E on the champion, W to absorb damage, Q to slow them.",
+        "Push the wave, then join grubs at 8:00 with your jungler.",
+        "Farm top to finish the quest; out-of-lane points count much less early."
+      ],
+      "dont": [
+        "Don't use R at full health with nobody near you; it heals a percentage of missing health and gets more with enemies nearby.",
+        "Don't roam before the wave is crashed; it slows your quest and loses plates.",
+        "Don't overextend without vision when the enemy jungler is around."
+      ],
+      "ifAhead": [
+        "All-in with R and take plates, then the turret; you are hard to kill with Heartsteel.",
+        "Stay top and keep pushing; don't give free farm back."
+      ],
+      "ifEven": [
+        "Push for priority, help at grubs, and farm safely to Heartsteel.",
+        "Fight only when your Q is up and you have health; R makes long trades in your favor."
+      ],
+      "ifBehind": [
+        "Farm safely toward Heartsteel; your spike is item-based, not level-based.",
+        "Keep vision on your side and don't contest grubs without priority."
+      ]
+    },
+    {
+      "id": "first_item_to_14",
+      "label": "First item to ~14 minutes",
+      "timeHint": "~12:00-~15:00",
+      "goals": [
+        "Use Heartsteel stacks and your health to win lane or take the turret.",
+        "Buy Boots of Swiftness (or Plated Steelcaps against auto-attackers) and start Warmog's Armor.",
+        "Set up the 15:00 Rift Herald and use your quest Teleport to swing plays."
+      ],
+      "do": [
+        "Hit Heartsteel's passive on champions and let your health pool grow; stack it on the enemy laner every time you walk up to him.",
+        "Push turrets with your minions; melee champions deal 20% more damage to turrets.",
+        "Hold Teleport for dragon fights or to rejoin lane after a recall.",
+        "Push top before herald so you arrive first."
+      ],
+      "dont": [
+        "Don't TP into a fight that will be over before you land.",
+        "Don't leave the wave pushing into you before an objective."
+      ],
+      "ifAhead": [
+        "Take the tower (first turret is worth +300g) and start looking for the next objective.",
+        "Invade or hold vision around top-side jungle with your jungler."
+      ],
+      "ifEven": [
+        "Push top, then help at herald or dragon.",
+        "Duel when your Q is up; most top laners can't kill you with Heartsteel and Warmog's Armor."
+      ],
+      "ifBehind": [
+        "Farm safely and finish Warmog's Armor; don't fight the enemy top alone yet.",
+        "Use Teleport to help your team win bot-side fights instead."
+      ]
+    },
+    {
+      "id": "midgame",
+      "label": "Midgame",
+      "timeHint": "~15:00-~25:00",
+      "goals": [
+        "Split push a side lane and front-line at objectives; you win by being too tanky to kill.",
+        "Build Warmog's Armor, then Titanic Hydra or Spirit Visage depending on the enemy.",
+        "Plan around Baron at 20:00 and dragons with TP up."
+      ],
+      "do": [
+        "Push the lane across the map from the next objective and be ready to TP or walk back.",
+        "Take plates on inner and inhibitor turrets; they stay up permanently.",
+        "When Warmog's Armor is active (about 2000 bonus health), walk in and take fights; you out-sustain most damage.",
+        "Buy Spirit Visage when the enemy team is mostly magic damage or has heavy healing on you, otherwise Titanic Hydra."
+      ],
+      "dont": [
+        "Don't split push without vision when three or more enemies are missing.",
+        "Don't stay split while your team fights 4v5 at Baron or Soul with no TP."
+      ],
+      "ifAhead": [
+        "Draw two or more enemies to you, or take turrets for free.",
+        "Group with your team for Baron at 20:00 and take the front-line."
+      ],
+      "ifEven": [
+        "Side lane with TP up, then join fights at objectives.",
+        "Rotate early to the side of the map with the next objective."
+      ],
+      "ifBehind": [
+        "Farm safe side waves and finish Warmog's Armor before you fight.",
+        "Group before objectives and play the front-line with R up."
+      ]
+    },
+    {
+      "id": "lategame",
+      "label": "Lategame",
+      "timeHint": "25:00+",
+      "goals": [
+        "Front-line every fight with R up and walk at the carries; you ignore most of their CC and burst.",
+        "Split push when your team can hold, forcing two enemies to answer.",
+        "Don't get caught alone; death timers are long now."
+      ],
+      "do": [
+        "Keep side waves pushed while Baron or Elder is up so your team has minion pressure.",
+        "Use Q to slow and heal, W to soak damage, and R when the enemies are on you.",
+        "Add defense (Thornmail, Randuin's Omen or Dead Man's Plate) if the enemy team has a fed carry.",
+        "Play near the side of the map with the next objective so you can get there in time."
+      ],
+      "dont": [
+        "Don't face-check jungle brush alone.",
+        "Don't run past the front line at full CC; wait for the enemy to spend it first, then engage."
+      ],
+      "ifAhead": [
+        "1v1 anyone; take inhibitors with your team and end with Baron.",
+        "Split while your team holds mid; answer only for objectives."
+      ],
+      "ifEven": [
+        "Group for Elder or Baron and walk in first with R.",
+        "Split only when your TP is up or your team can safely wait."
+      ],
+      "ifBehind": [
+        "Group with your team and stay in front; your health pool still makes you a great tank.",
+        "Don't split alone; look for picks on lone side laners from brush instead."
+      ]
+    }
+  ],
+  "trading": [
+    "Infected Bonesaw is your poke: 20-30% of current health, minimum damage 80-280, and it slows for 2 seconds. Q costs health, so land it.",
+    "Q from range when it will hit both a minion and the enemy; you heal 100% of the health cost on champions and monsters, 50% on minions.",
+    "Q on cooldown is every 4 seconds; if the enemy dodges it, back off and wait rather than throw a second one.",
+    "Short trade: Q to slow, auto with E (the empowered auto), then W to soak damage; step out and repeat when the enemy walks up to last-hit.",
+    "W stores damage and heals 50% of it (100% if you hit a champion or large monster); detonate on the enemy with a second W press at the end.",
+    "W costs 8% of your current health: don't use it below 25% health or when nothing is hitting you.",
+    "Level 6 with R makes long trades in your favor: R heals over 10 seconds and gives movement speed.",
+    "Never trade into a champion who beats you in all-ins early (for example Gwen, Aatrox or Yone) unless you have levels and R."
+  ],
+  "waveManagement": [
+    "Farm with Q under your tower against ranged and skirmisher matchups; keep the wave near your side.",
+    "Slow push into a big wave and crash it before every recall so you lose no minions.",
+    "Crash before every objective (5:00 dragon, 8:00 grubs, 15:00 herald, 20:00 Baron) so you arrive first.",
+    "When ahead, freeze near your tower or crash into the turret for plates; plates no longer fall at 14:00.",
+    "Farm in top lane to finish the role quest faster: 2 points per minion and 40 per plate in top.",
+    "Use Q to last-hit cannon minions from range; it heals you every time."
+  ],
+  "splitPush": {
+    "when": [
+      "After Heartsteel and Warmog's Armor, when you win a 1v1 against whoever usually answers.",
+      "When your team can safely play 4v4 or hold mid without you.",
+      "When the next objective is on the other side of the map and your TP is up."
+    ],
+    "rules": [
+      "Push the lane opposite the next objective: if Baron is up and TP is ready, split bot; if TP is down, split top.",
+      "Look at the map: if 3 or more enemies are missing, back off to a safe spot.",
+      "If one enemy comes, duel them with Q, E and W; if two come, walk away and ping your team to take an objective.",
+      "Keep a ward near your lane so you can see them coming and walk out of range.",
+      "Hit the turret with your minions and use Q on minions to heal while you push."
+    ],
+    "tpUsage": [
+      "Save TP for dragon, herald or Baron fights instead of walking back to lane.",
+      "TP to a ward or minion on a flank, not straight in front of the enemy team.",
+      "After the quest you get a free Teleport (390s cooldown) or, if you took Teleport, an upgraded TP (300-210s); plan splits around it.",
+      "Don't TP into a fight that will be over before you land, and make sure you'll actually reach the enemy."
+    ]
+  },
+  "teamfight": {
+    "role": "Front-line tank and engage: walk in first with R up, absorb damage with W, slow with Q, and ignore most crowd control (the passive grants immunity to the next immobilizing effect when it is up).",
+    "rules": [
+      "Don't Q blind into a fight; wait until you can hit a champion so you heal.",
+      "Use W to absorb burst as the fight starts, then detonate it on the enemies near you.",
+      "Cast R once enemies are on you or in range: its heal grows with more enemy champions nearby.",
+      "Walk at the enemy carries after their key CC is used; don't run in first against a full comp of hard CC.",
+      "Against heavy AD, buy Thornmail or Randuin's Omen; against heavy AP, Spirit Visage."
+    ],
+    "targetPriority": [
+      "Carries you can reach: the ADC or mid laner in range of Q and E.",
+      "Whoever is closest and dealing the most damage to your team.",
+      "Otherwise the closest enemy to your allies; Q them to slow and peel."
+    ]
+  },
+  "objectives": [
+    "Dragon spawns at 5:00 (5:00 respawn); Soul needs 4 drakes, and Elder comes 6:00 later. Push top first so you can TP bot.",
+    "Voidgrubs: one camp of 3 at 8:00, despawns 14:45. Crash the wave and help take them; each grub adds bonus turret damage.",
+    "Rift Herald: once at 15:00, despawns 19:45. Use the Eye of the Herald on a top turret when you can.",
+    "Baron: 20:00, then 6:00 after each kill. Be near it with R up and your team grouped; don't be dead or far away at 20:00.",
+    "Atakhan was removed in 2026; plan around dragon and Baron at 20:00 instead.",
+    "Plates are permanent and on inner and inhibitor turrets too. Every turret hit matters for Mundo (melee bonus 20%).",
+    "Q monsters for sustain: Q heals 100% on large monsters, but its damage against monsters is capped (250-550)."
+  ],
+  "mechanics": [
+    "Q Infected Bonesaw costs 50-90 health and heals 100% of that if it hits a champion or monster (50% on minions).",
+    "W Heart Zapper stores 80-95% of damage taken for up to 3 seconds and heals 50% of it (100% on champion or large monster hit); press it again to detonate.",
+    "E Blunt Force Trauma gives bonus damage from your max health; the empowered auto knocks back killed targets.",
+    "R Maximum Dosage: 120 second cooldown, 10 seconds, heals over time, gives 15-35% movement speed, and +5% extra per enemy champion nearby at rank 3.",
+    "Passive Goes Where He Pleases: immune to the next immobilizing effect; pick up the canister to heal 4% max health and reduce the cooldown.",
+    "Your passive also gives health regeneration that grows with level (0.4% to 2.3% of max health every 5 seconds); items with bonus health scale it.",
+    "Warmog's Armor needs about 2000 bonus health for its regeneration; count your health runes and Doran's Shield/Helm toward it.",
+    "Q and E monster damage caps were reduced in V26.08; don't rely on burst against big monsters."
+  ],
+  "recallTimings": [
+    {
+      "gold": 900,
+      "buy": "Giant's Belt (or a Doran's item plus Health Potions if you are short)",
+      "note": "Your first back: health components toward Heartsteel. Crash the wave first."
+    },
+    {
+      "gold": 1100,
+      "buy": "Kindlegem or Giant's Belt toward Heartsteel plus a Control Ward",
+      "note": "Heartsteel is your first big spike."
+    },
+    {
+      "gold": 2000,
+      "buy": "Heartsteel (or two components)",
+      "note": "Good after a kill or a long lane stay."
+    },
+    {
+      "gold": 1100,
+      "buy": "Boots of Swiftness (or Plated Steelcaps vs auto-attackers)",
+      "note": "Buy after Heartsteel; Boots of Swiftness is the most common pick."
+    },
+    {
+      "gold": 1500,
+      "buy": "Giant's Belt toward Warmog's Armor",
+      "note": "Second item; reach about 2000 bonus health."
+    },
+    {
+      "gold": 3000,
+      "buy": "Warmog's Armor",
+      "note": "Third item; pair with Titanic Hydra or Spirit Visage."
+    },
+    {
+      "gold": 400,
+      "buy": "Long Sword or Boots + Control Ward",
+      "note": "Only if you have to recall early."
+    }
+  ],
+  "commonMistakes": [
+    "Throwing Infected Bonesaw at nothing; every miss costs health and cooldown.",
+    "Leaving Heart Zapper on with no damage coming in; it drains your current health.",
+    "Fighting without enough health; Mundo needs a healthy pool to scale.",
+    "Recalling without crashing the wave.",
+    "Using Maximum Dosage at full health with no enemy nearby; you waste its heal.",
+    "Splitting without vision or TP while the enemy starts Baron or Soul.",
+    "Running past the front line into a full CC team instead of waiting for it to be used.",
+    "Buying damage items too early; health first, then Titanic Hydra."
+  ],
+  "triggers": {
+    "enemy_laner_dead": [
+      "Push the wave into their turret and take plates.",
+      "Recall after crashing if you need items, or help your jungler at the next objective."
+    ],
+    "you_died_to_gank": [
+      "Ward the river or tri-brush and keep the wave closer to your tower.",
+      "Track the enemy jungler; keep your health high and your passive canister up."
+    ],
+    "you_died_solo": [
+      "Keep your health above half before you fight; don't trade into their power spike.",
+      "Farm safely under tower and play for Heartsteel and level 6."
+    ],
+    "opp_level_lead": [
+      "They're a level up; don't fight until you catch up.",
+      "Farm safely with Q under tower."
+    ],
+    "you_level_lead": [
+      "You're a level up; take a Q, E and W trade before they catch up.",
+      "Watch for their jungler first."
+    ],
+    "you_hit_level_2_first": [
+      "Level 2 first: Q the enemy, auto with E and step out."
+    ],
+    "you_hit_6": [
+      "Maximum Dosage ready: long trades now favor you. Cast R at half HP, not at the last second.",
+      "Watch for the enemy jungler before you commit."
+    ],
+    "first_item_done": [
+      "Heartsteel done: push and fight with your health pool; buy Boots of Swiftness next.",
+      "Start Warmog's Armor components."
+    ],
+    "second_item_done": [
+      "Two items: walk in at fights and split push a side lane when your team is grouped."
+    ],
+    "three_items_done": [
+      "Three items: you're a walking tank; force two enemies to answer you or front-line with R."
+    ],
+    "you_are_fed": [
+      "Stay top and keep your lead: crash waves, take turrets, and force them to send two.",
+      "Don't overextend without vision; your bounty is high."
+    ],
+    "you_are_behind": [
+      "Farm safely and don't fight; Mundo scales well into the late game.",
+      "Group before objectives and front-line instead of splitting alone."
+    ],
+    "enemy_laner_fed": [
+      "Don't 1v1 them; freeze near your tower and ask your jungler for help.",
+      "Build defense early (Plated Steelcaps or Thornmail) and farm to your late game."
+    ],
+    "enemy_team_numbers_down": [
+      "You have more players; push a turret or take the next objective now.",
+      "Crash your wave on the way."
+    ],
+    "your_team_numbers_down": [
+      "Your team is down players; don't fight. Clear waves under your turret and wait."
+    ],
+    "baron_up_soon": [
+      "Baron soon: push your side lane now so you can join or split opposite with TP up.",
+      "If your TP is down, split top so you can walk to Baron."
+    ],
+    "dragon_up_soon": [
+      "Dragon soon: crash top and keep TP ready to join bot.",
+      "If you can't make it, push top to pull an enemy away."
+    ],
+    "grubs_soon": [
+      "Grubs at 8:00: crash your wave and help your jungler take them.",
+      "Don't go if the enemy top and jungler get there first."
+    ],
+    "herald_soon": [
+      "Herald at 15:00: push top first, then help take it and use the Eye of the Herald on a top turret."
+    ],
+    "enemy_jungler_ganked_top_repeatedly": [
+      "Keep the wave near your tower and ward the river and tri-brush.",
+      "Keep your health high and let your passive canister and W cover the gank."
+    ],
+    "long_death_timers": [
+      "Death timers are long: don't split without vision; one death can lose Baron or the game.",
+      "Group near the objective or split with TP up."
+    ],
+    "enemy_has_heavy_healing": [
+      "Heavy healing: buy Thornmail for Grievous Wounds.",
+      "Fight them in long trades with R; your sustain outlasts theirs once they are cut."
+    ],
+    "enemy_heavy_ap": [
+      "Heavy AP: buy Spirit Visage and Mercury's Treads.",
+      "Use W to absorb their burst and heal back."
+    ],
+    "enemy_heavy_ad": [
+      "Heavy AD: Plated Steelcaps and Thornmail or Randuin's Omen.",
+      "Use W when their ADC or auto-attackers engage you."
+    ],
+    "enemy_many_tanks": [
+      "Many tanks: Titanic Hydra and your max-health damage from E are good against them.",
+      "Split push so they have to send a tank to you, and take turrets."
+    ],
+    "enemy_heavy_cc": [
+      "Heavy CC: the passive blocks the first immobilizing effect; use it on their best engage.",
+      "Wait for the key CC to be spent, then walk in with R."
+    ],
+    "turret_lost": [
+      "Your turret is down: don't push without vision; play side lanes near your next turret.",
+      "Move to a safer lane or group with your team."
+    ],
+    "enemy_turret_taken": [
+      "Turret taken: the map is open, so move to the next side lane or objective.",
+      "Keep hitting their inner turrets; plates stay up and pay out."
+    ]
+  }
+}

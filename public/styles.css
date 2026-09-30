@@ -401,3 +401,70 @@ button.cs-slot:hover { border-color: var(--line); }
 .chart .death-x { stroke: var(--warn); stroke-width: 2.2; stroke-linecap: round; }
 .chart g[data-tip] { cursor: default; }
 .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; vertical-align: -1px; margin-right: 4px; }
+
+/* ---------- playbooks + research agents ---------- */
+.champ-chip { display: inline-flex; align-items: center; gap: 6px; background: var(--panel-2); border: 1px solid var(--line); color: var(--text); border-radius: 999px; padding: 2px 10px 2px 3px; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
+.champ-chip:hover { border-color: var(--accent-2); }
+.champ-chip .caret { color: var(--muted); font-size: 10px; }
+.champ-chip i { font-style: normal; font-weight: 500; }
+.ci.xs { width: 20px; height: 20px; border-radius: 50%; }
+.pb-notice { margin-bottom: 14px; display: flex; flex-direction: column; gap: 4px; }
+.plan-card { border-color: rgba(182, 156, 255, .45); box-shadow: inset 3px 0 0 var(--accent); }
+.plan-head { font-size: 16px; font-weight: 700; line-height: 1.35; }
+.plan-thinking { display: flex; gap: 10px; align-items: flex-start; background: var(--panel-2); border-radius: 8px; padding: 8px 10px; font-size: 13px; }
+.spin { width: 14px; height: 14px; margin-top: 2px; border-radius: 50%; border: 2px solid var(--line); border-top-color: var(--accent); animation: spin 0.9s linear infinite; flex: none; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .spin { animation: none; border-top-color: var(--accent); } }
+.why-btn { background: none; border: 1px solid var(--line); color: var(--muted); border-radius: 8px; padding: 4px 10px; font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; margin-left: 6px; }
+.why-btn:hover, .why-btn.on { color: var(--text); border-color: var(--accent-2); }
+.card.why { margin-bottom: 14px; }
+.rchks { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+.rchk { font-size: 11px; font-family: ui-monospace, Consolas, monospace; padding: 1px 6px; border-radius: 6px; background: var(--panel-2); color: var(--faint); }
+.rchk.on { color: var(--muted); }
+.rchk.hit { color: var(--good); background: var(--good-bg); font-weight: 700; }
+.rchk.err { color: var(--warn); }
+.pb-layout { display: grid; grid-template-columns: minmax(260px, 340px) 1fr; gap: 14px; align-items: start; }
+@media (max-width: 900px) { .pb-layout { grid-template-columns: 1fr; } }
+.pb-list { display: flex; flex-direction: column; gap: 4px; }
+.pb-champ { display: flex; align-items: center; gap: 8px; background: var(--panel-2); border: 1px solid transparent; border-radius: 8px; padding: 5px 8px; color: var(--text); font: inherit; font-size: 13px; text-align: left; cursor: pointer; }
+.pb-champ:hover { border-color: var(--line); }
+.pb-champ.on { border-color: var(--accent-2); }
+.pb-champ .grow { flex: 1; }
+#pbAdd { width: 100%; margin-top: 4px; }
+.job { border-left: 3px solid var(--line); padding: 6px 10px; background: var(--panel-2); border-radius: 0 8px 8px 0; display: flex; flex-direction: column; gap: 3px; }
+.job.j-running { border-color: var(--info); }
+.job.j-done { border-color: var(--good); }
+.job.j-failed { border-color: var(--warn); }
+.rules { display: flex; flex-direction: column; gap: 3px; }
+.rule { background: var(--panel-2); border-radius: 6px; padding: 5px 9px; font-size: 13px; }
+.rule summary { cursor: pointer; }
+.rule.anchor { background: none; border: 1px dashed var(--accent-2); color: var(--accent); }
+.rule.from-plan { box-shadow: inset 3px 0 0 var(--accent); }
+.rule.off { opacity: .45; text-decoration: line-through; }
+.rule dl { margin-top: 6px; }
+.proposal { display: flex; gap: 8px; align-items: center; padding: 6px 0; border-top: 1px solid var(--line); }
+.proposal.applied, .proposal.skipped { opacity: .6; }
+pre { white-space: pre-wrap; background: var(--panel-2); border-radius: 8px; padding: 8px 10px; margin: 0; overflow-x: auto; }
+
+/* ---------- game-deciding alerts (Dragon Soul point, Elder) ---------- */
+.alert-banner { --a: var(--gold); display: flex; align-items: center; gap: 14px; margin-bottom: 10px; padding: 10px 16px; border-radius: var(--radius);
+  background: repeating-linear-gradient(135deg, color-mix(in srgb, var(--a) 18%, var(--panel)) 0 14px, color-mix(in srgb, var(--a) 11%, var(--panel)) 14px 28px);
+  border: 2px solid var(--a); animation: alertpulse 1.6s ease-in-out infinite; }
+.alert-banner.warn { --a: var(--warn); }
+.alert-banner.good { --a: var(--good); }
+.ab-icon { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; font-size: 20px; background: var(--a); color: #0c0b12; flex: none; }
+.ab-title { font-size: 18px; font-weight: 700; }
+.ab-drakes { text-align: center; display: grid; }
+.ab-drakes b { font-size: 20px; }
+@keyframes alertpulse { 0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--a) 45%, transparent); } 50% { box-shadow: 0 0 0 6px transparent; } }
+@media (prefers-reduced-motion: reduce) { .alert-banner { animation: none; } }
+.dmg-note { white-space: nowrap; }
+.dmg-note .dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 4px; vertical-align: 1px; }
+.rule.from-shared summary code { color: var(--gold); }
+
+/* ---------- settings: storage ---------- */
+.storage { display: grid; gap: 6px; margin: 6px 0 4px; }
+.st-row { display: grid; grid-template-columns: 1fr auto auto; gap: 10px; align-items: center; padding: 6px 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel-2); }
+.st-row .st-size { font-variant-numeric: tabular-nums; color: var(--muted); font-size: 12px; min-width: 64px; text-align: right; }
+.st-row.kept { opacity: .8; }
+.st-total { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); }

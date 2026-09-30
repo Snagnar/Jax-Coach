@@ -9,6 +9,11 @@ cache/
 history/
 logs/
 
+# research agents: their runs, and the playbooks they made on this PC
+jobs/
+playbooks/
+.claude/
+
 # local voice: downloaded by voice/setup-voice.ps1 (the model alone is 310 MB)
 voice/.venv/
 voice/python/

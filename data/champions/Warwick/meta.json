@@ -1,0 +1,503 @@
+{
+  "champion": "Warwick",
+  "role": "top",
+  "patch": "26.19",
+  "lastUpdated": "2026-09-30",
+  "sources": [
+    {
+      "name": "OP.GG Warwick top build (Emerald+, patch 16.19 = 26.19)",
+      "url": "https://op.gg/lol/champions/warwick/build/top",
+      "usedFor": "Win/pick/ban rate, Lethal Tempo page, Doran's Blade start, Plated Steelcaps, skill order, best full build (BotRK / Stridebreaker / Death's Dance), matchup win rates"
+    },
+    {
+      "name": "Lolalytics Warwick top (Emerald+, 16.19)",
+      "url": "https://lolalytics.com/lol/warwick/build/?lane=top&tier=emerald_plus",
+      "usedFor": "Cross-check (re-fetched 2026-09-30, 16.19): 53.41% WR, 1.42% PR, 1.88% BR, B tier; Doran's Blade start, Blade of The Ruined King then Kraken Slayer, W first, Press the Attack keystone"
+    },
+    {
+      "name": "Skill Capped Warwick top guide (26.19)",
+      "url": "https://www.skill-capped.com/lol/guides/builds/warwick/top",
+      "usedFor": "Cross-check stats (51.9% WR / 1.5% PR / 2.3% BR, S tier), rune variants, Flash + Barrier, Doran's Bow start, 4th/5th item options, hard matchups"
+    },
+    {
+      "name": "Mobalytics Warwick top (26.19, search snippet only; page blocked)",
+      "url": "https://mobalytics.gg/lol/champions/warwick/build/top",
+      "usedFor": "Cross-check: 51.7% WR / 1.4% PR Emerald+, B tier, Lethal Tempo + Revitalize / Second Wind, BotRK, Steelcaps, Stridebreaker, Death's Dance, Spirit Visage"
+    },
+    {
+      "name": "League of Legends Wiki - Warwick",
+      "url": "https://wiki.leagueoflegends.com/en-us/Warwick",
+      "usedFor": "Ability numbers (passive heal 100%/250%, W active mark, E 35-55% reduction, R 175-525)"
+    },
+    {
+      "name": "League of Legends Wiki - Warwick patch history",
+      "url": "https://wiki.leagueoflegends.com/en-us/Warwick/Patch_history",
+      "usedFor": "Last change V26.09 (passive on-hit damage 6-46 -> 6-55); no changes since"
+    },
+    {
+      "name": "Shared season facts (reference/shared.json, 26.19)",
+      "url": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-19-notes/",
+      "usedFor": "Role quest, objective timers, season rules. u.gg was blocked (403)."
+    }
+  ],
+  "overview": {
+    "tier": "B (Lolalytics, OP.GG) / S (Skill Capped)",
+    "winRate": 51.94,
+    "pickRate": 1.41,
+    "banRate": 1.88,
+    "rankFilter": "Emerald+ (OP.GG, patch 26.19). Lolalytics 53.41% WR / 1.42% PR / 1.88% BR (ban rate from Lolalytics); Skill Capped 51.9% / 1.5% / 2.3%; Mobalytics 51.7% / 1.4%. Warwick is mostly a jungler; top is a low-pick off-meta lane.",
+    "playstyle": "You are a sustain bruiser who wins by staying in fights. Your passive heals hugely below 50% and even more below 25% health, so keep committing at low HP. Trade with Q (heal) and W, fear with E, and use R as a long suppress to catch or dive one target. Pick fights when you have the Q heal up, then scale into an on-hit, tanky duelist with Blade of The Ruined King and Stridebreaker."
+  },
+  "seasonNotes": [
+    "26.9 (last Warwick change): passive Eternal Hunger on-hit damage raised to 6-55 (was 6-46) by level. No Warwick changes in 26.10-26.19.",
+    "26.19: Emerald+ top Warwick sits around 52% win rate at ~1.4% pick rate: strong but rarely picked, so many opponents do not know the matchup.",
+    "26.1: Role Quests. Your top quest (1200 pts) completes around 12-14 min and gives bonus XP, +11% XP, level cap 20 and a free Unleashed Teleport (390 s cooldown as of 26.19), so Flash + Barrier or Flash + Ignite are both fine.",
+    "26.9: Doran's Bow and Doran's Helm added as starters; Gluttonous Greaves added. Sundered Sky nerfed in 26.16/26.17 (not part of the Warwick build).",
+    "26.16: Sterak's Gage bonus AD raised to 50% base AD, making it a stronger defensive pick for you.",
+    "26.1: Minions spawn 0:30, Baron back at 20:00, Atakhan removed, melee champions deal 20% more damage to turrets."
+  ],
+  "abilities": [
+    {
+      "key": "P",
+      "name": "Eternal Hunger",
+      "summary": "Basic attacks deal bonus magic damage (6-55 by level, plus 15% bonus AD and 10% AP) and heal you for 100% of it below 50% health, and 250% below 25% health.",
+      "tips": [
+        "Keep auto-attacking at low HP: below 25% your heal is at its largest, so do not back off if you are winning the trade.",
+        "Auto minions while low to heal back up between trades.",
+        "On-hit items (Blade of The Ruined King) multiply this heal."
+      ]
+    },
+    {
+      "key": "Q",
+      "name": "Jaws of the Beast",
+      "summary": "Lunge at an enemy and bite for magic damage (6-10% of their max health plus AD) and heal for 25-75% of the damage dealt. Hold Q to charge and leap behind the target with displacement immunity. Costs 80-100 mana.",
+      "tips": [
+        "Hold Q to close distance, tap it for a quick heal trade on a nearby target.",
+        "Use Q to catch a target that steps back after using a spell.",
+        "Save Q to reach a fleeing enemy or heal in a long fight; the cooldown is short (8 to 6 s)."
+      ]
+    },
+    {
+      "key": "W",
+      "name": "Blood Hunt",
+      "summary": "Passive: bonus attack speed, vision and move speed toward enemy champions below 50% health (doubled below 25%). Active: mark the nearest enemy champion for 8 s so you get those bonuses on them at any health. Cooldown 40-80 s.",
+      "tips": [
+        "Cast W to mark the nearest enemy and get attack speed and move speed on him even at full health.",
+        "Use it to chase a low-health enemy across the map: you get move speed while following the trail.",
+        "You max Q or W first (both are fine); W first is Skill Capped, Q first is OP.GG."
+      ]
+    },
+    {
+      "key": "E",
+      "name": "Primal Howl",
+      "summary": "Take 35-55% less damage for up to 2.75 s. Recast after 1 s (or let it end) to howl: nearby enemies are feared for 1 s and slowed. Cooldown 11-15 s.",
+      "tips": [
+        "Pop E at the start of an all-in to take less damage, then let it run out to fear.",
+        "Use it as a defensive tool when a burst combo is coming.",
+        "Keep E up for the fear in teamfights so you can save or peel."
+      ]
+    },
+    {
+      "key": "R",
+      "name": "Infinite Duress",
+      "summary": "Leap in a direction (range scales with your move speed) and suppress the first enemy champion hit for up to 1.5 s, dealing 175-525 magic damage plus bonus AD and healing for 100% of it. Cooldown 70-110 s.",
+      "tips": [
+        "Aim R at a squishy or a high-priority target; it channels, so make sure no stun can cancel it.",
+        "You can use R to close a huge gap and finish a low enemy the moment you reach level 6.",
+        "Combine with E (fear) and Q to chain crowd control on one target."
+      ]
+    }
+  ],
+  "combos": [
+    {
+      "name": "Short trade",
+      "input": "Q > AA > AA > step back",
+      "when": "You are at full HP and want to heal off a Q while the enemy walks up for a minion."
+    },
+    {
+      "name": "Standard all-in",
+      "input": "W > Q > E > AA > AA > E recast (fear)",
+      "when": "Level 3 and up, the enemy is below about 60% health or has used their key ability."
+    },
+    {
+      "name": "Level 6 kill",
+      "input": "Q > R > AA > E recast (fear)",
+      "when": "Opponent is low and cannot escape; R suppress plus Q heal finishes the fight."
+    },
+    {
+      "name": "Teamfight dive",
+      "input": "R on the backline target > AA > Q > E on landing",
+      "when": "Late game with your team ready to fight: pick out a carry and survive with the heal."
+    },
+    {
+      "name": "Escape or chase low target",
+      "input": "W (follow the trail) > Q on arrival",
+      "when": "A wounded enemy runs off; follow the Blood Hunt trail to catch them."
+    }
+  ],
+  "runes": [
+    {
+      "id": "standard",
+      "name": "Lethal Tempo + Resolve (default)",
+      "when": "Default into most matchups (92.8% of games on OP.GG, 52.2% WR; page 52.16% WR over 15,156 games). Legend: Haste, Bloodline or Coup de Grace are alternative 2nd/3rd picks.",
+      "primary": {
+        "tree": "Precision",
+        "keystone": "Lethal Tempo",
+        "runes": [
+          "Presence of Mind",
+          "Legend: Alacrity",
+          "Last Stand"
+        ]
+      },
+      "secondary": {
+        "tree": "Resolve",
+        "runes": [
+          "Second Wind",
+          "Revitalize"
+        ]
+      },
+      "shards": [
+        "Attack Speed",
+        "Adaptive Force",
+        "Health Scaling"
+      ],
+      "winRate": 52.16,
+      "pickRate": null
+    },
+    {
+      "id": "vs-ranged",
+      "name": "Press the Attack + Resolve (vs ranged / short trades)",
+      "when": "Vs ranged or kiting tops where you only get short windows to hit hard (Press the Attack and Fleet Footwork listed on Skill Capped; Lolalytics lists Press the Attack). Rates not available. Lolalytics 16.19 lists Press the Attack as its keystone.",
+      "primary": {
+        "tree": "Precision",
+        "keystone": "Press the Attack",
+        "runes": [
+          "Presence of Mind",
+          "Legend: Alacrity",
+          "Last Stand"
+        ]
+      },
+      "secondary": {
+        "tree": "Resolve",
+        "runes": [
+          "Second Wind",
+          "Revitalize"
+        ]
+      },
+      "shards": [
+        "Attack Speed",
+        "Adaptive Force",
+        "Health Scaling"
+      ],
+      "winRate": null,
+      "pickRate": null
+    }
+  ],
+  "summoners": [
+    {
+      "spells": [
+        "Flash",
+        "Barrier"
+      ],
+      "when": "Default (Lolalytics and Skill Capped): survive burst, then win the low-HP fight with your passive heal."
+    },
+    {
+      "spells": [
+        "Flash",
+        "Ignite"
+      ],
+      "when": "Winnable melee lanes where you want to threaten a kill; the quest gives you Teleport later anyway."
+    },
+    {
+      "spells": [
+        "Flash",
+        "Teleport"
+      ],
+      "when": "Vs ranged or poke lanes where you will lose health; the quest upgrades it with a shield."
+    }
+  ],
+  "skillOrder": {
+    "first3": [
+      "Q",
+      "W",
+      "E"
+    ],
+    "max": [
+      "Q",
+      "W",
+      "E"
+    ],
+    "notes": "OP.GG: Q > W > E max (E W Q at 1-3 varies). Skill Capped and Lolalytics (16.19) prefer W first, then Q, then E. Both are close; Q first gives more heal in lane, W first gives more attack speed. R at 6/11/16."
+  },
+  "startingItems": [
+    {
+      "items": [
+        "Doran's Blade",
+        "Health Potion"
+      ],
+      "when": "Default (61.84% pick on OP.GG, also Lolalytics)."
+    },
+    {
+      "items": [
+        "Doran's Shield",
+        "Health Potion"
+      ],
+      "when": "Vs ranged or poke tops where you take chip damage."
+    },
+    {
+      "items": [
+        "Doran's Bow",
+        "Health Potion",
+        "Health Potion"
+      ],
+      "when": "Aggressive attack-speed start (Skill Capped) in winnable melee lanes."
+    }
+  ],
+  "coreBuild": {
+    "firstItemOptions": [
+      {
+        "item": "Blade of The Ruined King",
+        "when": "Default first item: on-hit heal is huge with your passive and it melts tanks.",
+        "winRate": 57.61
+      },
+      {
+        "item": "Stridebreaker",
+        "when": "Chase and dive power; pick when you need to catch or fight in the side lanes.",
+        "winRate": null
+      },
+      {
+        "item": "Kraken Slayer",
+        "when": "Lolalytics core alternative for extra on-hit damage in duels.",
+        "winRate": null
+      }
+    ],
+    "typicalOrder": [
+      "Blade of The Ruined King",
+      "Plated Steelcaps",
+      "Stridebreaker",
+      "Death's Dance",
+      "Spirit Visage",
+      "Sterak's Gage"
+    ],
+    "boots": [
+      {
+        "item": "Plated Steelcaps",
+        "when": "Default vs AD and auto-attackers (56.18% pick, 52.50% WR on OP.GG)."
+      },
+      {
+        "item": "Mercury's Treads",
+        "when": "Vs heavy CC or AP damage (Skill Capped core build uses it)."
+      }
+    ],
+    "firstBackBuys": [
+      {
+        "gold": 700,
+        "buy": "Recurve Bow - first component of Blade of The Ruined King (on-hit and attack speed for your passive)."
+      },
+      {
+        "gold": 1100,
+        "buy": "Phage - health and the component for Stridebreaker; buy it if you need HP more than damage."
+      }
+    ]
+  },
+  "items": [
+    {
+      "name": "Blade of The Ruined King",
+      "role": "core",
+      "buildWhen": [
+        "early_game",
+        "vs_tanks",
+        "vs_healing",
+        "ahead",
+        "behind"
+      ],
+      "why": "%HP on-hit damage and lifesteal that stacks with your passive heal."
+    },
+    {
+      "name": "Stridebreaker",
+      "role": "core",
+      "buildWhen": [
+        "splitpush",
+        "vs_squishies",
+        "ahead"
+      ],
+      "why": "Active slow and dash to catch targets; pairs with R and Q."
+    },
+    {
+      "name": "Kraken Slayer",
+      "role": "damage",
+      "buildWhen": [
+        "vs_tanks",
+        "early_game"
+      ],
+      "why": "Extra on-hit true damage on every third hit; alternate first item on Lolalytics."
+    },
+    {
+      "name": "Death's Dance",
+      "role": "defensive",
+      "buildWhen": [
+        "vs_heavy_ad",
+        "vs_burst",
+        "teamfight"
+      ],
+      "why": "Delays damage and heals you; strong third item."
+    },
+    {
+      "name": "Spirit Visage",
+      "role": "defensive",
+      "buildWhen": [
+        "vs_heavy_ap",
+        "teamfight",
+        "late_game"
+      ],
+      "why": "MR and bonus healing that boosts your passive and Q."
+    },
+    {
+      "name": "Sterak's Gage",
+      "role": "defensive",
+      "buildWhen": [
+        "vs_burst",
+        "vs_cc_heavy",
+        "teamfight",
+        "late_game"
+      ],
+      "why": "Shield when low, tenacity, health; great with your low-HP style."
+    },
+    {
+      "name": "Hullbreaker",
+      "role": "situational",
+      "buildWhen": [
+        "splitpush",
+        "ahead"
+      ],
+      "why": "Default 4th item for side-lane split pushing."
+    },
+    {
+      "name": "Guardian Angel",
+      "role": "defensive",
+      "buildWhen": [
+        "late_game",
+        "teamfight",
+        "vs_burst"
+      ],
+      "why": "Revive that keeps you in the fight after you dive."
+    },
+    {
+      "name": "Jak'Sho, The Protean",
+      "role": "defensive",
+      "buildWhen": [
+        "late_game",
+        "teamfight",
+        "vs_heavy_ap"
+      ],
+      "why": "Late-game tank stats and resists for sustained front-line fights."
+    },
+    {
+      "name": "Terminus",
+      "role": "damage",
+      "buildWhen": [
+        "late_game",
+        "vs_tanks",
+        "vs_armor_stacking"
+      ],
+      "why": "On-hit damage and resist shred for long fights against tanks."
+    },
+    {
+      "name": "Maw of Malmortius",
+      "role": "defensive",
+      "buildWhen": [
+        "vs_heavy_ap",
+        "vs_burst"
+      ],
+      "why": "MR plus a magic damage shield when you must survive AP burst."
+    },
+    {
+      "name": "Force of Nature",
+      "role": "defensive",
+      "buildWhen": [
+        "vs_heavy_ap",
+        "vs_poke",
+        "late_game"
+      ],
+      "why": "Big MR and move speed against sustained magic damage."
+    },
+    {
+      "name": "Thornmail",
+      "role": "antiheal",
+      "buildWhen": [
+        "vs_heavy_ad",
+        "vs_healing",
+        "vs_crit_ad"
+      ],
+      "why": "Armor plus Grievous Wounds on enemies that hit you."
+    },
+    {
+      "name": "Randuin's Omen",
+      "role": "defensive",
+      "buildWhen": [
+        "vs_crit_ad",
+        "vs_heavy_ad",
+        "vs_cc_heavy"
+      ],
+      "why": "Armor, health and a slow to stop marksmen and assassins."
+    },
+    {
+      "name": "Black Cleaver",
+      "role": "damage",
+      "buildWhen": [
+        "vs_tanks",
+        "vs_armor_stacking"
+      ],
+      "why": "Armor shred and health when the enemy stacks armor."
+    },
+    {
+      "name": "Plated Steelcaps",
+      "role": "core",
+      "buildWhen": [
+        "vs_heavy_ad",
+        "vs_crit_ad",
+        "early_game"
+      ],
+      "why": "Default boots against auto-attackers."
+    },
+    {
+      "name": "Mercury's Treads",
+      "role": "situational",
+      "buildWhen": [
+        "vs_cc_heavy",
+        "vs_heavy_ap"
+      ],
+      "why": "Tenacity and MR against CC and magic damage."
+    }
+  ],
+  "powerSpikes": [
+    {
+      "when": "Level 1-2",
+      "what": "Q gives a heal trade; play for short trades and avoid long fights against ranged champions."
+    },
+    {
+      "when": "Level 3",
+      "what": "Q, W and E together: first real trade window when the enemy wastes a key ability."
+    },
+    {
+      "when": "Level 6",
+      "what": "R suppress: you can kill a low target or dive with your jungler."
+    },
+    {
+      "when": "First item (Blade of The Ruined King)",
+      "what": "Big spike: on-hit damage and lifesteal turn every fight into a heal-fest, especially below 50% health."
+    },
+    {
+      "when": "Top role quest done (~12-14 min)",
+      "what": "Bonus XP, level cap 20 and a free Teleport: use it for Herald (15:00) and drake fights."
+    },
+    {
+      "when": "Stridebreaker + Blade of The Ruined King",
+      "what": "Catch and kill anyone; you can force fights and split push."
+    },
+    {
+      "when": "Three items with Death's Dance / Spirit Visage",
+      "what": "Very hard to kill: dive backlines and stay in fights."
+    }
+  ]
+}

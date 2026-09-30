@@ -1,0 +1,299 @@
+{
+  "champion": "DrMundo",
+  "role": "top",
+  "version": 1,
+  "lastUpdated": "2026-09-30",
+  "notes": "Dr. Mundo is a scaling juggernaut tank: weak levels 1-5 against most bruisers, a sustain spike at 6 (Maximum Dosage) and a real power spike from two HP items on, so level leads count less than for Jax and item/HP leads and game time count more. He has no burst, so the all-in bar is higher (e >= 2.5) and fighter/assassin lanes before 10 minutes get a penalty. After laning he side-lanes only while he clearly wins the 1v1 and no fed enemy can collapse; from 25 minutes he groups and walks in first as the front line.",
+  "text": {
+    "level6": "Level 6: Maximum Dosage online",
+    "motivation": [
+      "Mundo goes where he pleases. Farm now, win later.",
+      "Throw cleavers, take CS, grow big. This lane is a waiting game.",
+      "Every HP item makes Mundo harder to kill. Be patient.",
+      "Don't fight early for pride. Mundo wins at two items.",
+      "Walk in first, soak everything, never stop walking.",
+      "Mundo says: good luck, have fun."
+    ]
+  },
+  "params": {
+    "guard": {
+      "enabled": true,
+      "until": 14,
+      "levelDownAfter": 90,
+      "goldDown": 500,
+      "goldAfter": 150,
+      "csDown": 15,
+      "csAfter": 300,
+      "lockDeaths": 2,
+      "lockUntil": 20,
+      "quietSec": 15
+    }
+  },
+  "fightScore": [
+    {
+      "id": "ult_up",
+      "group": "level",
+      "when": "opp && me.level >= 6 && opp.level < 6",
+      "add": 1.2,
+      "why": "you have Maximum Dosage, {oppName} has no R"
+    },
+    {
+      "id": "ult_down",
+      "group": "level",
+      "when": "opp && opp.level >= 6 && me.level < 6",
+      "add": -1.5,
+      "why": "{oppName} has R, you don't"
+    },
+    {
+      "id": "level_early",
+      "group": "level",
+      "when": "opp && lvlD != 0 && min < 4",
+      "add": "lvlD * (lvlD > 0 ? 0.8 : 1.2)",
+      "why": "{lvlD > 0 ? 'you are a level up' : oppName + ' is a level up'}"
+    },
+    {
+      "id": "level",
+      "group": "level",
+      "when": "opp && lvlD != 0",
+      "add": "lvlD * (lvlD > 0 ? 0.6 : 0.9)",
+      "why": "{lvlD > 0 ? '+' + lvlD + ' level' : -lvlD + ' level down'}"
+    },
+    {
+      "id": "items",
+      "when": "opp && legD != 0",
+      "add": "1.3 * legD",
+      "why": "{legD > 0 ? 'you have more HP items' : oppName + ' has more items'}"
+    },
+    {
+      "id": "item_gold",
+      "when": "opp",
+      "add": "clamp(itemD / 900, -2, 1.5)",
+      "why": "{(itemD > 0 ? '+' : '−') + abs(round(itemD)) + 'g in items'}",
+      "whyWhen": "abs(itemD) >= 700 && legD == 0"
+    },
+    {
+      "id": "matchup",
+      "when": "opp",
+      "add": "(3 - (matchup.difficulty || 3)) * 0.6"
+    },
+    {
+      "id": "early_bruiser",
+      "when": "opp && min < 10 && !opp.ranged && (opp.class == 'Fighter' || opp.class == 'Assassin') && me.legendaries == 0",
+      "add": -0.7,
+      "why": "{oppName} out-duels Mundo before items"
+    },
+    {
+      "id": "ranged_lane",
+      "when": "opp && opp.ranged && min < 10",
+      "add": -0.5,
+      "why": "ranged lane: farm with Infected Bonesaw"
+    },
+    {
+      "id": "scaling",
+      "when": "opp && me.legendaries >= 2 && legD >= 0",
+      "add": 0.7,
+      "why": "two HP items: Mundo out-sustains {oppName}"
+    },
+    {
+      "id": "opp_fed",
+      "when": "opp && opp.kills - opp.deaths >= 3",
+      "add": -1,
+      "why": "{oppName} is fed"
+    },
+    {
+      "id": "hp",
+      "when": "true",
+      "add": "(me.hp - 0.7) * 2.5",
+      "why": "you're at {round(me.hp * 100)}% HP",
+      "whyWhen": "me.hp < 0.5"
+    },
+    {
+      "id": "jungler_near",
+      "when": "jg && jg.status == 'near'",
+      "add": -2,
+      "why": "{jg.name} showed top side",
+      "first": true
+    },
+    {
+      "id": "jungler_away",
+      "when": "jg && (jg.status == 'dead' || jg.status == 'far')",
+      "add": 0.5
+    }
+  ],
+  "modes": [
+    {
+      "id": "dead",
+      "when": "me.dead",
+      "mode": "dead",
+      "headline": "Dead: plan your next move",
+      "reason": "{buyNow}"
+    },
+    {
+      "id": "numbers",
+      "when": "min >= 8",
+      "use": "numbers",
+      "note": "Built-in: enemies dead -> the biggest objective that fits the window; your team down numbers -> back off."
+    },
+    {
+      "id": "opp_dead",
+      "when": "opp && opp.dead",
+      "mode": "push",
+      "headline": "{oppName} dead · {ceil(opp.respawn)}s",
+      "reason": "{recall.text}",
+      "voiceKey": "oppdead-{round((t + opp.respawn) / 10)}",
+      "note": "Dashboard only: you see your opponent die yourself."
+    },
+    {
+      "id": "low_hp",
+      "when": "me.hp < 0.25",
+      "mode": "retreat",
+      "headline": "Low HP: back off",
+      "reason": "Step out of range or recall",
+      "note": "You can see this yourself: no voice."
+    },
+    {
+      "id": "lane_jungler_near",
+      "when": "min < 14 && jg && jg.status == 'near'",
+      "mode": "{e >= 2.5 ? 'trade' : e >= 0 ? 'safe' : 'retreat'}",
+      "headline": "{e >= 0 ? 'Careful: jungler nearby' : 'Back off: jungler nearby'}",
+      "reason": "{reason}",
+      "voice": "{jg.withMe ? null : 'Careful. ' + jg.name + ' showed top side.'}",
+      "voiceKey": "{jg.key}",
+      "note": "The kill feed shows the jungler only after a fight: if you were in it, you already know."
+    },
+    {
+      "id": "lane_objective_soon",
+      "when": "min < 14 && soon && soon.in > 0",
+      "mode": "group",
+      "headline": "{soon.label} in {clock(soon.in)}",
+      "reason": "{soon.key == 'dragon' ? 'Shove your wave first; keep Teleport for the fight if your team contests' : 'Get priority: push your wave so you can move first'}",
+      "voice": "{soon.label} in one minute.",
+      "voiceKey": "obj-{soon.key}-{round(soon.next)}"
+    },
+    {
+      "id": "lane_guard",
+      "when": "min < 14 && guard && (guard.strict || e < 1.5)",
+      "mode": "{e < -2 ? 'retreat' : 'safe'}",
+      "headline": "{guard.headline}",
+      "reason": "{guard.reason}",
+      "voice": "{guard.voice}",
+      "voiceKey": "{guard.voiceKey}",
+      "note": "The fight guard: a level down, about 500 gold behind, 15+ CS down, or locked to farm-only after two solo deaths."
+    },
+    {
+      "id": "objective",
+      "when": "min >= 14 && soon",
+      "mode": "group",
+      "headline": "{soon.status == 'up' ? soon.label + ' is up' : soon.label + ' in ' + clock(soon.in)}",
+      "reason": "{soon.status == 'up' ? 'Group with your team, or pressure the opposite side lane if you have Teleport' : 'Push your side wave now so you can join (or Teleport) in time'}",
+      "voice": "{soon.status == 'up' ? soon.label + ' is up.' : soon.label + ' in one minute.'}",
+      "voiceKey": "obj-{soon.key}-{round(soon.next)}{soon.status == 'up' ? '-up' : ''}"
+    },
+    {
+      "id": "late_lock",
+      "when": "min >= 14 && guard && guard.kind == 'lock'",
+      "mode": "safe",
+      "headline": "{guard.headline}",
+      "reason": "{guard.reason}",
+      "voice": "{guard.voice}",
+      "voiceKey": "{guard.voiceKey}"
+    },
+    {
+      "id": "plan",
+      "anchor": true,
+      "note": "Rules from this game's plan (research agent) are inserted here: after the safety and objective calls, before the Mundo lane and macro logic."
+    },
+    {
+      "id": "lane_allin",
+      "when": "min < 14 && e >= 2.5 && !(jgNote && e < 3)",
+      "mode": "allin",
+      "headline": "All-in on {oppName}",
+      "reason": "{reason}{me.level >= 6 ? ' · R early, keep walking at him' : ''}",
+      "voice": "All in window. {first}.",
+      "note": "Higher bar than a duelist: Mundo has no burst and needs a clear lead to finish a kill."
+    },
+    {
+      "id": "lane_trade",
+      "when": "min < 14 && e >= -0.5",
+      "mode": "trade",
+      "headline": "Cleaver trades & farm",
+      "reason": "{reason || 'Hit ' + oppName + ' with Infected Bonesaw when he walks up to last-hit; E trade only when he wastes a key spell'}"
+    },
+    {
+      "id": "lane_scale",
+      "when": "min < 14 && e >= -2",
+      "mode": "safe",
+      "headline": "Farm with cleavers, scale",
+      "reason": "{reason || 'Last-hit with Q from range; Mundo wins later'}",
+      "voice": "{hpReason && count(why) == 1 ? null : 'Farm and scale. ' + first + '.'}"
+    },
+    {
+      "id": "lane_retreat",
+      "when": "min < 14",
+      "mode": "retreat",
+      "headline": "Stay under tower",
+      "reason": "{reason}",
+      "voice": "{hpReason && count(why) == 1 ? null : 'Stay under tower. ' + first + '.'}"
+    },
+    {
+      "id": "side_careful",
+      "when": "e >= 1.5 && (fed.count > 0 || team.goldDiff < -2500)",
+      "mode": "trade",
+      "headline": "You beat {oppName}, but {fed.count > 0 ? fed.names + ' ' + fed.verb + ' fed' : 'your team is behind'}",
+      "reason": "Farm side lanes only on your half of the map. Walk back to your team as soon as {fed.count > 0 ? fed.names : 'two of them'} {fed.verb} missing",
+      "voice": "You beat {oppName}, but {fed.count > 0 ? fed.names + ' ' + fed.verb + ' fed' : 'your team is behind'}. Stay on your half.",
+      "voiceKey": "side-careful-{fed.key || 'team'}"
+    },
+    {
+      "id": "side_win",
+      "when": "min < 25 && e >= 1.5",
+      "mode": "push",
+      "headline": "Side lane: you beat {oppName}",
+      "reason": "{reason || 'You win the 1v1'} · push a side opposite the next objective; Maximum Dosage lets you walk out of a collapse",
+      "voice": "You beat {oppName}. Pressure a side lane.",
+      "voiceKey": "side-win"
+    },
+    {
+      "id": "late_side",
+      "when": "min >= 25 && e >= 2.5 && team.goldDiff >= 0 && fed.count == 0",
+      "mode": "push",
+      "headline": "Pressure a side lane",
+      "reason": "Nobody on their team beats you alone: draw two to you, then join the next fight",
+      "voiceKey": "late-side"
+    },
+    {
+      "id": "late_group",
+      "when": "min >= 25",
+      "mode": "group",
+      "headline": "Group: be the front line",
+      "reason": "Walk in first, soak their cooldowns, R before you drop low, then run at their carry",
+      "voice": "Group up. Walk in first for your team.",
+      "voiceKey": "late-group",
+      "note": "Late game Mundo is most valuable as the unkillable front line, not alone in a side lane."
+    },
+    {
+      "id": "fed_careful",
+      "when": "fed.count > 0",
+      "mode": "group",
+      "headline": "{fed.names} {fed.verb} fed: stay with your team",
+      "reason": "Farm the side lane only up to the river; tank for your team instead of getting caught alone",
+      "voice": "{fed.names} {fed.verb} fed. Stay near your team.",
+      "voiceKey": "fed-{fed.key}"
+    },
+    {
+      "id": "side_farm",
+      "when": "e >= -1",
+      "mode": "trade",
+      "headline": "Farm side, join fights",
+      "reason": "Catch side waves with vision, then walk to the next fight as the front line{jgNote ? ' · ' + jgNote : ''}"
+    },
+    {
+      "id": "dont_duel",
+      "mode": "group",
+      "headline": "Don't 1v1 {oppName}: group",
+      "reason": "{reason || 'Farm near your team and tank the next fight'}",
+      "voice": "Don't duel {oppName}. Group with your team.",
+      "voiceKey": "duel-lose"
+    }
+  ]
+}

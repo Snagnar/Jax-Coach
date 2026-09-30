@@ -1,0 +1,304 @@
+{
+  "champion": "Malphite",
+  "role": "top",
+  "version": 2,
+  "lastUpdated": "2026-09-30",
+  "notes": "Malphite is a tank with low sustained dueling damage whose whole threat is Unstoppable Force, so the fight score weights level 6 heavily but keeps level, item and gold leads smaller than for a duelist: a Malphite a level up still can't out-trade most bruisers. Before 6 ranged tops kite him and he can't kill tanks, so those lanes lean toward Q-poke-and-farm; after 6 his R answers ranged champions and Ground Slam cripples auto-attackers. After laning he does not split and duel: he pushes a side wave only when ahead or before an objective, then groups, sets up objectives, looks for a multi-target R and holds it to counter-engage when his team is behind.",
+  "text": {
+    "level6": "Level 6: Unstoppable Force online",
+    "motivation": [
+      "Be the rock. Farm, stack armor, and wait for the perfect ultimate.",
+      "Q, walk away, let the shield come back. Patience wins this lane.",
+      "One good Unstoppable Force wins the game. Save it for the right moment.",
+      "They can't scratch what they can't cut. Stay calm and scale.",
+      "Clean waves, full shield, big ult. Let's go."
+    ]
+  },
+  "params": {
+    "guard": {
+      "enabled": true,
+      "until": 14,
+      "levelDownAfter": 90,
+      "goldDown": 500,
+      "goldAfter": 150,
+      "csDown": 15,
+      "csAfter": 300,
+      "lockDeaths": 2,
+      "lockUntil": 20,
+      "quietSec": 15
+    }
+  },
+  "fightScore": [
+    {
+      "id": "ult_up",
+      "group": "level",
+      "when": "opp && me.level >= 6 && opp.level < 6",
+      "add": 2,
+      "why": "you have Unstoppable Force, {oppName} has no R"
+    },
+    {
+      "id": "ult_down",
+      "group": "level",
+      "when": "opp && opp.level >= 6 && me.level < 6",
+      "add": -2,
+      "why": "{oppName} has R, you don't"
+    },
+    {
+      "id": "level_early",
+      "group": "level",
+      "when": "opp && lvlD != 0 && min < 4",
+      "add": "lvlD * 1",
+      "why": "{lvlD > 0 ? 'you are a level up' : oppName + ' is a level up'}"
+    },
+    {
+      "id": "level",
+      "group": "level",
+      "when": "opp && lvlD != 0",
+      "add": "lvlD * 0.7",
+      "why": "{lvlD > 0 ? '+' + lvlD + ' level' : -lvlD + ' level down'}"
+    },
+    {
+      "id": "items",
+      "when": "opp && legD != 0",
+      "add": "0.8 * legD",
+      "why": "{legD > 0 ? 'you have more items' : oppName + ' has more items'}"
+    },
+    {
+      "id": "item_gold",
+      "when": "opp",
+      "add": "clamp(itemD / 1200, -1.5, 1.5)",
+      "why": "{(itemD > 0 ? '+' : '−') + abs(round(itemD)) + 'g in items'}",
+      "whyWhen": "abs(itemD) >= 800 && legD == 0"
+    },
+    {
+      "id": "matchup",
+      "when": "opp",
+      "add": "(3 - (matchup.difficulty || 3)) * 0.6"
+    },
+    {
+      "id": "opp_ranged_pre6",
+      "group": "range",
+      "when": "opp && opp.ranged && me.level < 6",
+      "add": -0.5,
+      "why": "no R yet: {oppName} kites you"
+    },
+    {
+      "id": "opp_ranged_post6",
+      "group": "range",
+      "when": "opp && opp.ranged && me.level >= 6",
+      "add": 0.5,
+      "why": "R reaches {oppName} from 1000 range"
+    },
+    {
+      "id": "opp_marksman",
+      "when": "opp && opp.class == 'Marksman' && me.level >= 3",
+      "add": 0.5,
+      "why": "Ground Slam cripples {oppName}'s attacks"
+    },
+    {
+      "id": "opp_tank",
+      "when": "opp && opp.class == 'Tank' && min < 14",
+      "add": -0.5,
+      "why": "tank vs tank: you can't kill {oppName}, farm and scale"
+    },
+    {
+      "id": "opp_fed",
+      "when": "opp && opp.kills - opp.deaths >= 3",
+      "add": -1,
+      "why": "{oppName} is fed"
+    },
+    {
+      "id": "hp",
+      "when": "true",
+      "add": "(me.hp - 0.7) * 2.5",
+      "why": "you're at {round(me.hp * 100)}% HP",
+      "whyWhen": "me.hp < 0.5"
+    },
+    {
+      "id": "jungler_near",
+      "when": "jg && jg.status == 'near'",
+      "add": -2,
+      "why": "{jg.name} showed top side",
+      "first": true
+    },
+    {
+      "id": "jungler_away",
+      "when": "jg && (jg.status == 'dead' || jg.status == 'far')",
+      "add": 0.5
+    }
+  ],
+  "modes": [
+    {
+      "id": "dead",
+      "when": "me.dead",
+      "mode": "dead",
+      "headline": "Dead: plan your next move",
+      "reason": "{buyNow}"
+    },
+    {
+      "id": "numbers",
+      "when": "min >= 8",
+      "use": "numbers",
+      "note": "Built-in: enemies dead -> the biggest objective that fits the window; your team down numbers -> back off."
+    },
+    {
+      "id": "opp_dead",
+      "when": "opp && opp.dead",
+      "mode": "push",
+      "headline": "{oppName} dead · {ceil(opp.respawn)}s",
+      "reason": "{recall.text}",
+      "voiceKey": "oppdead-{round((t + opp.respawn) / 10)}",
+      "note": "Dashboard only: you see your opponent die yourself."
+    },
+    {
+      "id": "low_hp",
+      "when": "me.hp < 0.25",
+      "mode": "retreat",
+      "headline": "Low HP: back off",
+      "reason": "Step out of range or recall",
+      "note": "You can see this yourself: no voice."
+    },
+    {
+      "id": "lane_jungler_near",
+      "when": "min < 14 && jg && jg.status == 'near'",
+      "mode": "{e >= 2.5 ? 'trade' : e >= 0 ? 'safe' : 'retreat'}",
+      "headline": "{e >= 0 ? 'Careful: jungler nearby' : 'Back off: jungler nearby'}",
+      "reason": "{reason}",
+      "voice": "{jg.withMe ? null : 'Careful. ' + jg.name + ' showed top side.'}",
+      "voiceKey": "{jg.key}",
+      "note": "The kill feed shows the jungler only after a fight: if you were in it, you already know."
+    },
+    {
+      "id": "lane_objective_soon",
+      "when": "min < 14 && soon && soon.in > 0",
+      "mode": "group",
+      "headline": "{soon.label} in {clock(soon.in)}",
+      "reason": "{soon.key == 'dragon' ? 'Shove your wave first; keep Teleport for the fight if your team contests' : 'Get priority: push your wave so you can move first'}",
+      "voice": "{soon.label} in one minute.",
+      "voiceKey": "obj-{soon.key}-{round(soon.next)}"
+    },
+    {
+      "id": "lane_guard",
+      "when": "min < 14 && guard && (guard.strict || e < 1.5)",
+      "mode": "{e < -2 ? 'retreat' : 'safe'}",
+      "headline": "{guard.headline}",
+      "reason": "{guard.reason}",
+      "voice": "{guard.voice}",
+      "voiceKey": "{guard.voiceKey}",
+      "note": "The fight guard: a level down, about 500 gold behind, 15+ CS down, or locked to farm-only after two solo deaths."
+    },
+    {
+      "id": "objective",
+      "when": "min >= 14 && soon",
+      "mode": "group",
+      "headline": "{soon.status == 'up' ? soon.label + ' is up' : soon.label + ' in ' + clock(soon.in)}",
+      "reason": "{soon.status == 'up' ? 'Group with your team, or pressure the opposite side lane if you have Teleport' : 'Push your side wave now so you can join (or Teleport) in time'}",
+      "voice": "{soon.status == 'up' ? soon.label + ' is up.' : soon.label + ' in one minute.'}",
+      "voiceKey": "obj-{soon.key}-{round(soon.next)}{soon.status == 'up' ? '-up' : ''}"
+    },
+    {
+      "id": "late_lock",
+      "when": "min >= 14 && guard && guard.kind == 'lock'",
+      "mode": "safe",
+      "headline": "{guard.headline}",
+      "reason": "{guard.reason}",
+      "voice": "{guard.voice}",
+      "voiceKey": "{guard.voiceKey}"
+    },
+    {
+      "id": "plan",
+      "anchor": true,
+      "note": "Rules from this game's plan (research agent) are inserted here: after the safety and objective calls, before the Malphite logic."
+    },
+    {
+      "id": "lane_allin",
+      "when": "min < 14 && e >= (me.level >= 6 ? 2 : 2.5) && !(jgNote && e < 2.5)",
+      "mode": "allin",
+      "headline": "{me.level >= 6 ? 'Unstoppable Force on ' + oppName : 'All-in on ' + oppName}",
+      "reason": "{reason}",
+      "voice": "{me.level >= 6 ? 'Kill window. Q, then ult onto ' + oppName + '. ' + first + '.' : 'All in window. ' + first + '.'}",
+      "note": "Before 6 Malphite needs a bigger edge to all-in: without R his damage is low. After 6 Q > R > E > W is his kill combo."
+    },
+    {
+      "id": "lane_trade",
+      "when": "min < 14 && e >= -0.5",
+      "mode": "trade",
+      "headline": "Poke with Q & farm",
+      "reason": "{reason || 'Q ' + oppName + ', walk away, let Granite Shield come back'}"
+    },
+    {
+      "id": "lane_safe",
+      "when": "min < 14 && e >= -2",
+      "mode": "safe",
+      "headline": "Play safe: farm and scale",
+      "reason": "{reason || 'Last-hit with Q and E; you outscale with armor'}",
+      "voice": "{hpReason && count(why) == 1 ? null : 'Play safe. ' + first + '.'}"
+    },
+    {
+      "id": "lane_retreat",
+      "when": "min < 14",
+      "mode": "retreat",
+      "headline": "Stay under tower",
+      "reason": "{reason}",
+      "voice": "{hpReason && count(why) == 1 ? null : 'Stay under tower. ' + first + '.'}"
+    },
+    {
+      "id": "fed_peel",
+      "when": "fed.count > 0",
+      "mode": "group",
+      "headline": "{fed.names} {fed.verb} fed: stay with your team",
+      "reason": "Don't farm alone past river. Hold R for {fed.names} when {fed.count > 1 ? 'they dive' : 'they overstep'} and peel for your carries",
+      "voice": "{fed.names} {fed.verb} fed. Stay with your team and save your ult for them.",
+      "voiceKey": "fed-{fed.key}",
+      "note": "A tank caught alone gives a fed carry a free kill and a free objective; in the group Malphite's R is their answer."
+    },
+    {
+      "id": "team_behind",
+      "when": "team.goldDiff <= -2500",
+      "mode": "safe",
+      "headline": "Team behind: defend and counter-engage",
+      "reason": "Don't engage first. Farm side waves only on your half, and hold R for enemies who dive your team",
+      "voice": "Your team is behind. Hold your ult to counter-engage.",
+      "voiceKey": "team-behind"
+    },
+    {
+      "id": "team_ahead",
+      "when": "team.goldDiff >= 2000",
+      "mode": "group",
+      "headline": "Team ahead: group and force fights",
+      "reason": "Walk in front with your team. R 3+ enemies at a choke or their carry, then E and W",
+      "voice": "Your team is ahead. Group and look for a big ult.",
+      "voiceKey": "team-ahead"
+    },
+    {
+      "id": "side_ahead",
+      "when": "min < 20 && e >= 2",
+      "mode": "push",
+      "headline": "Shove the side wave, then flank",
+      "reason": "You beat {oppName} now: take plates with Sunfire Aegis clear, then walk or Teleport to a flank for R{jgNote ? ' · ' + jgNote : ''}",
+      "note": "Malphite's lead is best spent on towers and flank ultimates, not on chasing 1v1 kills in a side lane."
+    },
+    {
+      "id": "dont_duel",
+      "when": "e <= -1.5 && min < 25",
+      "mode": "safe",
+      "headline": "Don't 1v1 {oppName}",
+      "reason": "{reason || 'Farm side waves only up to river, and leave when ' + oppName + ' shows'}"
+    },
+    {
+      "id": "side_farm",
+      "when": "min < 20",
+      "mode": "trade",
+      "headline": "Farm the side wave, then group",
+      "reason": "Push to river with vision; join your team before the next objective{jgNote ? ' · ' + jgNote : ''}"
+    },
+    {
+      "id": "group_engage",
+      "mode": "group",
+      "headline": "Group and look for Unstoppable Force",
+      "reason": "Frontline for your team. R when 3+ are close or their carry steps up; save it to counter-engage if they dive",
+      "voice": "Group with your team. Look for a multi-man ult.",
+      "voiceKey": "group-late"
+    }
+  ]
+}

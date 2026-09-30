@@ -1,0 +1,55 @@
+{
+  "champion": "Jax",
+  "role": "top",
+  "version": 1,
+  "lastUpdated": "2026-09-30",
+  "notes": "Hand-tuned from the player's own games: almost every 1v1 death came while a level down, behind in gold or down in farm, so the fight guard turns those into an explicit 'don't fight'. Jax spikes hard at level 6 (Grandmaster's Might) and with Trinity Force; after laning he wins most side-lane duels unless fed enemies can collapse.",
+  "text": {
+    "level6": "Level 6: Grandmaster's Might online",
+    "motivation": [
+      "Stay patient, stack your passive, and let Jax scale. You've got this.",
+      "Respect the early game, own the late game. Good luck, have fun.",
+      "One trade at a time. Every wave you farm is a step toward Trinity Force.",
+      "Play your windows, not your emotions. Let's go.",
+      "Counter Strike wins fights. Use it on their commit, not yours. Let's go.",
+      "Calm lane, clean waves, big spikes. This one is yours."
+    ]
+  },
+  "params": {
+    "guard": { "enabled": true, "until": 14, "levelDownAfter": 90, "goldDown": 500, "goldAfter": 150, "csDown": 15, "csAfter": 300, "lockDeaths": 2, "lockUntil": 20, "quietSec": 15 }
+  },
+  "fightScore": [
+    { "id": "ult_up", "group": "level", "when": "opp && me.level >= 6 && opp.level < 6", "add": 2, "why": "you have R, {oppName} doesn't" },
+    { "id": "ult_down", "group": "level", "when": "opp && opp.level >= 6 && me.level < 6", "add": -2, "why": "{oppName} has R, you don't" },
+    { "id": "level_early", "group": "level", "when": "opp && lvlD != 0 && min < 4", "add": "lvlD * 1.5", "why": "{lvlD > 0 ? 'you are a level up' : oppName + ' is a level up'}" },
+    { "id": "level", "group": "level", "when": "opp && lvlD != 0", "add": "lvlD", "why": "{lvlD > 0 ? '+' + lvlD + ' level' : -lvlD + ' level down'}" },
+    { "id": "items", "when": "opp && legD != 0", "add": "1.2 * legD", "why": "{legD > 0 ? 'you have more items' : oppName + ' has more items'}" },
+    { "id": "item_gold", "when": "opp", "add": "clamp(itemD / 900, -2, 2)", "why": "{(itemD > 0 ? '+' : '−') + abs(round(itemD)) + 'g in items'}", "whyWhen": "abs(itemD) >= 700 && legD == 0" },
+    { "id": "matchup", "when": "opp", "add": "(3 - (matchup.difficulty || 3)) * 0.5" },
+    { "id": "opp_fed", "when": "opp && opp.kills - opp.deaths >= 3", "add": -1, "why": "{oppName} is fed" },
+    { "id": "hp", "when": "true", "add": "(me.hp - 0.7) * 2.5", "why": "you're at {round(me.hp * 100)}% HP", "whyWhen": "me.hp < 0.5" },
+    { "id": "jungler_near", "when": "jg && jg.status == 'near'", "add": -2, "why": "{jg.name} showed top side", "first": true },
+    { "id": "jungler_away", "when": "jg && (jg.status == 'dead' || jg.status == 'far')", "add": 0.5 }
+  ],
+  "modes": [
+    { "id": "dead", "when": "me.dead", "mode": "dead", "headline": "Dead: plan your next move", "reason": "{buyNow}" },
+    { "id": "numbers", "when": "min >= 8", "use": "numbers", "note": "Built-in: enemies dead -> the biggest objective that fits the window; your team down numbers -> back off." },
+    { "id": "opp_dead", "when": "opp && opp.dead", "mode": "push", "headline": "{oppName} dead · {ceil(opp.respawn)}s", "reason": "{recall.text}", "voiceKey": "oppdead-{round((t + opp.respawn) / 10)}", "note": "Dashboard only: you see your opponent die yourself." },
+    { "id": "low_hp", "when": "me.hp < 0.25", "mode": "retreat", "headline": "Low HP: back off", "reason": "Step out of range or recall", "note": "You can see this yourself: no voice." },
+    { "id": "lane_jungler_near", "when": "min < 14 && jg && jg.status == 'near'", "mode": "{e >= 2.5 ? 'trade' : e >= 0 ? 'safe' : 'retreat'}", "headline": "{e >= 0 ? 'Careful: jungler nearby' : 'Back off: jungler nearby'}", "reason": "{reason}", "voice": "{jg.withMe ? null : 'Careful. ' + jg.name + ' showed top side.'}", "voiceKey": "{jg.key}", "note": "The kill feed shows the jungler only after a fight: if you were in it, you already know." },
+    { "id": "lane_objective_soon", "when": "min < 14 && soon && soon.in > 0", "mode": "group", "headline": "{soon.label} in {clock(soon.in)}", "reason": "{soon.key == 'dragon' ? 'Shove your wave first; keep Teleport for the fight if your team contests' : 'Get priority: push your wave so you can move first'}", "voice": "{soon.label} in one minute.", "voiceKey": "obj-{soon.key}-{round(soon.next)}" },
+    { "id": "lane_guard", "when": "min < 14 && guard && (guard.strict || e < 1.5)", "mode": "{e < -2 ? 'retreat' : 'safe'}", "headline": "{guard.headline}", "reason": "{guard.reason}", "voice": "{guard.voice}", "voiceKey": "{guard.voiceKey}", "note": "The fight guard: a level down, about 500 gold behind, 15+ CS down, or locked to farm-only after two solo deaths." },
+    { "id": "objective", "when": "min >= 14 && soon", "mode": "group", "headline": "{soon.status == 'up' ? soon.label + ' is up' : soon.label + ' in ' + clock(soon.in)}", "reason": "{soon.status == 'up' ? 'Group with your team, or pressure the opposite side lane if you have Teleport' : 'Push your side wave now so you can join (or Teleport) in time'}", "voice": "{soon.status == 'up' ? soon.label + ' is up.' : soon.label + ' in one minute.'}", "voiceKey": "obj-{soon.key}-{round(soon.next)}{soon.status == 'up' ? '-up' : ''}" },
+    { "id": "late_lock", "when": "min >= 14 && guard && guard.kind == 'lock'", "mode": "safe", "headline": "{guard.headline}", "reason": "{guard.reason}", "voice": "{guard.voice}", "voiceKey": "{guard.voiceKey}" },
+    { "id": "plan", "anchor": true, "note": "Rules from this game's plan (research agent) are inserted here: after the safety and objective calls, before the duel logic." },
+    { "id": "lane_allin", "when": "min < 14 && e >= 2 && !(jgNote && e < 2.5)", "mode": "allin", "headline": "All-in on {oppName}", "reason": "{reason}", "voice": "All in window. {first}." },
+    { "id": "lane_trade", "when": "min < 14 && e >= -0.5", "mode": "trade", "headline": "Trade & farm", "reason": "{reason || 'Even lane: short trades when ' + oppName + ' uses a key spell'}" },
+    { "id": "lane_safe", "when": "min < 14 && e >= -2", "mode": "safe", "headline": "Play safe", "reason": "{reason}", "voice": "{hpReason && count(why) == 1 ? null : 'Play safe. ' + first + '.'}" },
+    { "id": "lane_retreat", "when": "min < 14", "mode": "retreat", "headline": "Stay under tower", "reason": "{reason}", "voice": "{hpReason && count(why) == 1 ? null : 'Stay under tower. ' + first + '.'}" },
+    { "id": "duel_careful", "when": "e >= 1.5 && (fed.count > 0 || team.goldDiff < -2500)", "mode": "trade", "headline": "You beat {oppName} 1v1, but {fed.count > 0 ? fed.names + ' ' + fed.verb + ' fed' : 'your team is behind'}", "reason": "Split only on your half of the map or with a ward ahead. Back off as soon as {fed.count > 0 ? fed.names : 'two of them'} {fed.verb} missing. Dying now loses the game", "voice": "You win the one versus one, but {fed.count > 0 ? fed.names + ' ' + fed.verb + ' fed' : 'your team is behind'}. Don't split past the river.", "voiceKey": "duel-careful-{fed.key || 'team'}", "note": "Winning the 1v1 means nothing if a fed carry can collapse on you: after laning, side-lane fights are rarely 1v1." },
+    { "id": "split_win", "when": "e >= 1.5", "mode": "allin", "headline": "Split: you win the 1v1 vs {oppName}", "reason": "{reason}", "voice": "You win the one versus one against {oppName}. Split push.", "voiceKey": "duel-win" },
+    { "id": "fed_careful", "when": "fed.count > 0 && e >= -1", "mode": "safe", "headline": "{fed.names} {fed.verb} fed: don't get caught", "reason": "Farm the side lane only up to the river, or stay with your team. Leave as soon as {fed.names} {fed.verb} missing", "voice": "{fed.names} {fed.verb} fed. Don't get caught alone.", "voiceKey": "fed-{fed.key}" },
+    { "id": "split_vision", "when": "e >= -1", "mode": "trade", "headline": "Split with vision", "reason": "Push a side lane opposite the next objective; leave if two come{jgNote ? ' · ' + jgNote : ''}" },
+    { "id": "dont_duel", "when": "true", "mode": "safe", "headline": "Don't 1v1 {oppName}", "reason": "{reason || \"Stay near your team; split only where he isn't\"}", "voice": "Don't duel {oppName}. {first}.", "voiceKey": "duel-lose" }
+  ]
+}

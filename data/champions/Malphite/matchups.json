@@ -1,0 +1,1756 @@
+{
+  "champion": "Malphite",
+  "role": "top",
+  "_notes": {
+    "note": "Win rates are MALPHITE's win rate, from OP.GG Malphite top counters (Emerald+, patch 16.19 = 26.19), re-checked 2026-09-30 (Jayce 56.75 and Fiora 56.16 confirmed on the live page; the other values were kept from the earlier pull of the same patch). Lolalytics Malphite vs pages (Emerald+, 16.19) show slightly higher numbers with larger samples and are given as a cross-check. Patch 26.19 changes checked: Aatrox buffed (Infernal Chains cooldown 18/16.5/15/13.5/12, Umbral Dash healing up), Fiora buffed (health growth 105, Grand Challenge heal range 600 and stronger heal), Nasus nerfed (Siphoning Strike base damage 30/50/70/90/110); Jayce, Yone (bug fix only), Mordekaiser, Teemo, Sett and Malphite unchanged. Difficulty is set from win rate and the feel of the lane. Per-matchup rune and item hints come from small samples.",
+    "sources": [
+      "https://www.op.gg/lol/champions/malphite/counters/top",
+      "https://lolalytics.com/lol/malphite/counters/",
+      "https://www.riftpatchnotes.com/lol/patch/26-19",
+      "https://www.skill-capped.com/lol/guides/builds/malphite/top"
+    ]
+  },
+  "matchups": {
+    "Jayce": {
+      "name": "Jayce",
+      "difficulty": 2,
+      "winRate": 56.75,
+      "winRateSource": "OP.GG Malphite top counters, Emerald+, patch 16.19 (= 26.19), 3,787 games (lolalytics Emerald+ 16.19 shows about 57.7%, about 5,100 games)",
+      "summary": "A favorable lane, even though OP.GG lists Jayce among the champions that pressure you. His ranged stance chunks you a little, but it costs him mana, and he has no answer to an armored tank once you close the gap. Stay healthy, catch him with Seismic Shard (Q) and win with Unstoppable Force (R) in fights.",
+      "runes": "Arcane Comet (Manaflow Band, Scorch or Gathering Storm) with Resolve secondary (Conditioning or Second Wind, Overgrowth). Summon Aery is also fine.",
+      "summoners": "Flash + Ignite for a kill lane, or Flash + Teleport to play safe",
+      "start": "Doran's Shield + Health Potion",
+      "buildNotes": "Sunfire Aegis > Plated Steelcaps > Frozen Heart > Thornmail > Jak'Sho, The Protean. Jayce is mostly physical damage, so build armor first. Buy Thornmail earlier if he builds lifesteal.",
+      "skillNotes": "Q first, then E, then W. Max Q for the slow and poke; E slows his attack speed when he goes to hammer stance.",
+      "phases": {
+        "lvl1_3": [
+          "Stand behind the wave so his Shock Blast (Q) hits minions first.",
+          "Q him when he steps up to last hit, then E > auto and back off.",
+          "Don't chase him out of the wave in hammer stance. To the Skies! (Q) and Thundering Blow (E) punish you away from your minions."
+        ],
+        "lvl4_5": [
+          "Step out of the line when you see Acceleration Gate (E) placed on his Shock Blast.",
+          "Trade when his mana is low: Q > W > E, then walk away.",
+          "Freeze near your tower so he has to walk up to farm and your Q connects."
+        ],
+        "post6": [
+          "Use Unstoppable Force (R) when he lands in melee range with To the Skies! (Q). He has no way out once you are on him.",
+          "Don't R with his Thundering Blow (E) ready. It knocks you back and cancels your follow-up.",
+          "Save R for a fight at your tower so your jungler can help kill him."
+        ],
+        "midgame": [
+          "Look for flank fights. Jayce cannot poke you down with Sunfire Aegis and Frozen Heart.",
+          "In teamfights, R the enemy backline and cut Jayce's team off."
+        ],
+        "lategame": [
+          "Be the front line and walk onto his team before he gets free poke."
+        ]
+      },
+      "threats": [
+        "Shock Blast (Q) plus Acceleration Gate (E) burst at long range.",
+        "Thundering Blow (E) knockback ruins your R follow-up.",
+        "Early low-mana poke when you stand alone in front of the wave."
+      ],
+      "killWindows": [
+        "After he wastes his hammer abilities on your minions.",
+        "Post-6 next to your tower with jungle help.",
+        "When his mana is low and he is stuck in the wave."
+      ],
+      "avoid": [
+        "Standing alone in front of the wave taking free Shock Blasts.",
+        "Using R when his Thundering Blow is ready.",
+        "Chasing him far from your minions."
+      ],
+      "sources": [
+        "https://www.op.gg/lol/champions/malphite/counters/top",
+        "https://lolalytics.com/lol/malphite/vs/jayce/build/"
+      ]
+    },
+    "Yone": {
+      "name": "Yone",
+      "difficulty": 3,
+      "winRate": 52.51,
+      "winRateSource": "OP.GG Malphite top counters, Emerald+, patch 16.19 (= 26.19), 2,967 games (lolalytics Emerald+ 16.19 shows about 54.4%, about 4,400 games)",
+      "summary": "A slightly favorable lane that stays close early. Yone pokes with Mortal Steel (Q) and bursts with Soul Unbound (E) plus autos. Your armor, slow and R win the fight if you don't get chunked before level 6. Only a Fate Sealed bug fix this patch.",
+      "runes": "Arcane Comet (Manaflow Band, Scorch or Gathering Storm) with Resolve secondary (Bone Plating, Overgrowth)",
+      "summoners": "Flash + Teleport",
+      "start": "Doran's Shield + Health Potion",
+      "buildNotes": "Sunfire Aegis > Plated Steelcaps > Frozen Heart > Thornmail > Jak'Sho, The Protean. Yone is mostly physical, so Plated Steelcaps stay. Frozen Heart cuts his crit auto damage. Buy Kaenic Rookern only if his team is mostly AP.",
+      "skillNotes": "Q first, then E, then W. Max Q; take E at level 2 to cut his attack speed in short trades.",
+      "phases": {
+        "lvl1_3": [
+          "Q him when he goes for the wave and E when he stacks Mortal Steel (Q) to three.",
+          "Stay near your minions. He can trade Q through the wave without entering your range.",
+          "Don't trade into his Spirit Cleave (W) shield. Wait until it is gone."
+        ],
+        "lvl4_5": [
+          "Sidestep the Steel Tempest (Q3) tornado, then Q him after he throws it.",
+          "Trade when his W is down: Q > E > W and walk out."
+        ],
+        "post6": [
+          "Stay out of a straight line with him. Fate Sealed (R) knocks you up along a line.",
+          "Use Unstoppable Force (R) when he dashes into your range. He has few ways out.",
+          "When he is in spirit form (Soul Unbound), step out of range. He replays the damage when it ends."
+        ],
+        "midgame": [
+          "Group and hit him first. He has high damage but no tank buffer.",
+          "Don't side lane alone into a Yone with two items."
+        ],
+        "lategame": [
+          "Aim R at the backline, tank his dive and E him when he commits."
+        ]
+      },
+      "threats": [
+        "Steel Tempest (Q3) knockup used to start burst.",
+        "Soul Unbound (E) replaying damage when it ends.",
+        "Spirit Cleave (W) shield for longer trades.",
+        "Fate Sealed (R) line knockup."
+      ],
+      "killWindows": [
+        "After he uses Q3 and E on the wave or on you.",
+        "Post-6 when you can R him with your jungler nearby."
+      ],
+      "avoid": [
+        "Letting him poke you down at the wave with Q.",
+        "Fighting him while he is in spirit form.",
+        "Standing in a straight line with him after level 6."
+      ],
+      "sources": [
+        "https://www.op.gg/lol/champions/malphite/counters/top",
+        "https://lolalytics.com/lol/malphite/vs/yone/build/"
+      ]
+    },
+    "Aatrox": {
+      "name": "Aatrox",
+      "difficulty": 3,
+      "winRate": 54.88,
+      "winRateSource": "OP.GG Malphite top counters, Emerald+, patch 16.19 (= 26.19), 2,181 games (lolalytics Emerald+ 16.19 shows about 56.3%, about 3,100 games)",
+      "summary": "A favorable lane on paper, but Aatrox bullies you in the first levels if you walk into his Q sweet spots. Patch 26.19 buffed him (Infernal Chains cooldown and Umbral Dash healing), so expect more pulls and more healing. Armor beats his physical damage: survive levels 1-5, then win with your item and R.",
+      "runes": "Grasp of the Undying (Demolish, Conditioning, Overgrowth) with Sorcery secondary for a safe lane; Arcane Comet is fine if you keep your distance.",
+      "summoners": "Flash + Teleport (Ignite if you want to fight)",
+      "start": "Doran's Shield + Health Potion",
+      "buildNotes": "Sunfire Aegis > Plated Steelcaps > Thornmail > Frozen Heart > Jak'Sho, The Protean. Buy Thornmail second: it cuts his healing from World Ender, Umbral Dash and his passive. Skip magic resistance unless his team is very AP.",
+      "skillNotes": "Q first, then E, then W. Max Q. Keep E for after his third Darkin Blade.",
+      "phases": {
+        "lvl1_3": [
+          "Don't stand at the edge of Darkin Blade (Q). Step toward him or aside so the sweet spot misses.",
+          "Q him when he walks up. The slow makes his second and third Q harder to land.",
+          "Trade right after his third Q. He has nothing left for several seconds."
+        ],
+        "lvl4_5": [
+          "Leave the Infernal Chains (W) area right away. The pull puts you in his Q.",
+          "Farm under your tower if you get bullied and keep the wave on your side."
+        ],
+        "post6": [
+          "Use Unstoppable Force (R) on him after he used his Q and W. Umbral Dash can't escape the knockup.",
+          "Don't fight inside World Ender (R) without Thornmail. Back off until it ends."
+        ],
+        "midgame": [
+          "Group and fight around your team. Don't duel him alone once he has Death's Dance.",
+          "R his backline and E him when he dives."
+        ],
+        "lategame": [
+          "Peel with R and stand in front. Thornmail decides teamfights against his healing."
+        ]
+      },
+      "threats": [
+        "Darkin Blade (Q) sweet-spot knockups.",
+        "Infernal Chains (W) pull into his combo, now up more often.",
+        "Umbral Dash (E) repositions and heals more than before.",
+        "World Ender (R) healing and move speed."
+      ],
+      "killWindows": [
+        "Right after he misses his third Q.",
+        "When his W is down and you have R ready.",
+        "When he is low after a dive under your tower."
+      ],
+      "avoid": [
+        "Fighting on the edge of his Q range.",
+        "Walking into his chains.",
+        "Fighting inside his R without Thornmail."
+      ],
+      "sources": [
+        "https://www.op.gg/lol/champions/malphite/counters/top",
+        "https://lolalytics.com/lol/malphite/vs/aatrox/build/",
+        "https://www.riftpatchnotes.com/lol/patch/26-19"
+      ]
+    },
+    "Mordekaiser": {
+      "name": "Mordekaiser",
+      "difficulty": 4,
+      "winRate": 48.09,
+      "winRateSource": "OP.GG Malphite top counters, Emerald+, patch 16.19 (= 26.19), 2,015 games (lolalytics Emerald+ 16.19 shows about 49.6%, about 3,000 games)",
+      "summary": "A slightly losing lane. Mordekaiser deals magic damage that ignores your armor, and Realm of Death (R) turns a fight into a 1v1 that he wins with your stats. Play for waves, buy magic resistance early and fight him with your team around.",
+      "runes": "Arcane Comet (Manaflow Band, Scorch or Gathering Storm) with Resolve secondary (Second Wind, Overgrowth). Second Wind handles his poke.",
+      "summoners": "Flash + Teleport (Ignite only if your jungler is on the side)",
+      "start": "Doran's Shield + Health Potion (Doran's Ring + 2 Health Potions if you want to trade)",
+      "buildNotes": "Sunfire Aegis > Mercury's Treads > Kaenic Rookern > Force of Nature > Jak'Sho, The Protean. Rush magic resistance because his damage is magic. Add Frozen Heart later only if he builds attack speed.",
+      "skillNotes": "Q first, then E, then W. Max Q. Use Q to slow him after his Q, not before.",
+      "phases": {
+        "lvl1_3": [
+          "Fight near your minions. Obliterate (Q) does much more damage to a lone target.",
+          "Q him when he steps up. He has no dash, so walk out of trades and keep the wave.",
+          "Don't stand in front of the wave when his Q is up."
+        ],
+        "lvl4_5": [
+          "Sidestep Death's Grasp (E) or stand behind a minion. If pulled, Q him and leave.",
+          "Don't hit his Indestructible (W) shield. Wait until it expires."
+        ],
+        "post6": [
+          "Realm of Death (R) puts you alone with him and steals your stats. Take that fight only with full health, and never at low health.",
+          "Unstoppable Force (R) hits him first and cuts off his pull. Use it when he commits Death's Grasp."
+        ],
+        "midgame": [
+          "Stay with your team. He wins side-lane duels against you but loses a 5v5 where you R the backline.",
+          "Stay near your team when his ultimate can pick your carry."
+        ],
+        "lategame": [
+          "Front-line for your team. Make him spend Realm of Death on you instead of your carry, then let your team fight around it."
+        ]
+      },
+      "threats": [
+        "Realm of Death (R) 1v1 that steals your stats.",
+        "Death's Grasp (E) pull.",
+        "Obliterate (Q) triple hit on an isolated target.",
+        "Indestructible (W) shield and heal."
+      ],
+      "killWindows": [
+        "After his Q and W are used, with your jungler nearby.",
+        "When you land R while his Death's Grasp is down."
+      ],
+      "avoid": [
+        "Standing alone in front of the wave.",
+        "Trading when his Darkness Rise passive is stacked in a long fight.",
+        "Split pushing alone into him."
+      ],
+      "sources": [
+        "https://www.op.gg/lol/champions/malphite/counters/top",
+        "https://lolalytics.com/lol/malphite/vs/mordekaiser/build/"
+      ]
+    },
+    "Nasus": {
+      "name": "Nasus",
+      "difficulty": 4,
+      "winRate": 46.78,
+      "winRateSource": "OP.GG Malphite top counters, Emerald+, patch 16.19 (= 26.19), 1,969 games (lolalytics Emerald+ 16.19 shows about 49.5%, about 2,900 games)",
+      "summary": "One of Malphite's worst lanes. Wither (W) shuts down your chase, Spirit Fire (E) shreds armor and he scales into Fury of the Sands (R). Patch 26.19 nerfed his Siphoning Strike (Q) base damage, so denying his Q stacks early is easier. End the game before he becomes unstoppable.",
+      "runes": "Arcane Comet (Manaflow Band, Scorch or Gathering Storm) with Resolve secondary (Bone Plating, Overgrowth).",
+      "summoners": "Flash + Teleport, or Flash + Ignite if you can bully with your jungler",
+      "start": "Doran's Shield + Health Potion",
+      "buildNotes": "Sunfire Aegis > Plated Steelcaps > Frozen Heart > Thornmail > Jak'Sho, The Protean. Frozen Heart cuts his attack speed and Thornmail reflects his autos. Sunfire Aegis first punishes him for staying near the wave.",
+      "skillNotes": "Q first, then E, then W. Max Q. Save E for when he walks in to last hit.",
+      "phases": {
+        "lvl1_3": [
+          "Q him every time he goes for a Siphoning Strike (Q) last hit. Make him lose stacks.",
+          "Trade with Q > E > auto. He does little damage early but out-heals long fights.",
+          "Push the wave so he has to farm under your tower."
+        ],
+        "lvl4_5": [
+          "Trade first and stay out of Wither (W) range. It slows you and cuts your attack speed.",
+          "Crash waves into his tower to make him lose CS."
+        ],
+        "post6": [
+          "Use Unstoppable Force (R) on him when he uses Wither or Siphoning Strike, then finish with Q and E. If he Withers you first, back off.",
+          "Don't fight inside Fury of the Sands (R). Walk away and come back when it ends."
+        ],
+        "midgame": [
+          "Group and force fights before he has three items.",
+          "In teamfights, R the backline and let your team burst Nasus down."
+        ],
+        "lategame": [
+          "Don't duel him. Let your team kill him after Wither is used and stay in front of your carries."
+        ]
+      },
+      "threats": [
+        "Siphoning Strike (Q) stack scaling.",
+        "Wither (W) slow and attack speed reduction.",
+        "Spirit Fire (E) armor shred.",
+        "Fury of the Sands (R) makes him tanky."
+      ],
+      "killWindows": [
+        "Levels 3-5 with your jungler, before he has stacks.",
+        "After Wither is used on someone else."
+      ],
+      "avoid": [
+        "Letting him farm stacks under tower.",
+        "Fighting inside Fury of the Sands.",
+        "Long duels after he has two items."
+      ],
+      "sources": [
+        "https://www.op.gg/lol/champions/malphite/counters/top",
+        "https://lolalytics.com/lol/malphite/vs/nasus/build/",
+        "https://www.riftpatchnotes.com/lol/patch/26-19"
+      ]
+    },
+    "Teemo": {
+      "name": "Teemo",
+      "difficulty": 3,
+      "winRate": 50.69,
+      "winRateSource": "OP.GG Malphite top counters, Emerald+, patch 16.19 (= 26.19), 1,967 games (lolalytics Emerald+ 16.19 shows about 54.1%, about 3,000 games)",
+      "summary": "An even lane. Teemo's Blinding Dart (Q) makes your autos miss, and poison and mushrooms grind you down, but he has no burst against a tank. Play patient and tanky, and use Seismic Shard (Q) to shut down his kiting.",
+      "runes": "Arcane Comet (Manaflow Band, Scorch or Gathering Storm) with Resolve secondary (Second Wind, Overgrowth). Second Wind handles his poke.",
+      "summoners": "Flash + Teleport",
+      "start": "Doran's Shield + Health Potion",
+      "buildNotes": "Sunfire Aegis > Mercury's Treads > Kaenic Rookern or Force of Nature > Frozen Heart > Jak'Sho, The Protean. His damage is mostly magic and Mercury's Treads shorten the blind. Buy Control Wards and a Farsight Alteration or Oracle Lens for mushrooms.",
+      "skillNotes": "Q first, then E, then W. Use Q to poke and steal move speed so he can't walk back.",
+      "phases": {
+        "lvl1_3": [
+          "Q him whenever he steps up to last hit. Use E to lower his attack speed so poison ticks less.",
+          "Look at the brush before you walk in. Don't fight him inside it.",
+          "Blind wastes your autos, so trade with abilities."
+        ],
+        "lvl4_5": [
+          "Clear Noxious Trap (R) mushrooms with abilities or a Control Ward before you push in.",
+          "Push the wave to your tower when he shrooms the lane and use E to trade back."
+        ],
+        "post6": [
+          "Use Unstoppable Force (R) when he steps up for a last hit. He has no escape.",
+          "Wait until Blinding Dart (Q) is used, so you can fight with autos."
+        ],
+        "midgame": [
+          "Group with your team. Teemo is weak in a 5v5 and R makes you the engage.",
+          "Don't push a side lane into fresh mushrooms."
+        ],
+        "lategame": [
+          "Watch for mushrooms around objectives and R the carries, not Teemo."
+        ]
+      },
+      "threats": [
+        "Blinding Dart (Q) blind and damage.",
+        "Toxic Shot (E) poison damage over time.",
+        "Noxious Trap (R) mushrooms around lane and objectives."
+      ],
+      "killWindows": [
+        "Post-6 when you R him after his Q is used.",
+        "When he steps up to last hit and his Q is down."
+      ],
+      "avoid": [
+        "Walking into brush or unwarded ground.",
+        "Auto attacking while blinded.",
+        "Chasing him away from your minions."
+      ],
+      "sources": [
+        "https://www.op.gg/lol/champions/malphite/counters/top",
+        "https://lolalytics.com/lol/malphite/vs/teemo/build/"
+      ]
+    },
+    "Fiora": {
+      "name": "Fiora",
+      "difficulty": 2,
+      "winRate": 56.16,
+      "winRateSource": "OP.GG Malphite top counters, Emerald+, patch 16.19 (= 26.19), 1,882 games (lolalytics Emerald+ 16.19 shows about 56.7%, about 2,600 games)",
+      "summary": "A favorable lane. Fiora relies on autos and vital procs, which your armor and Thornmail beat, and Unstoppable Force (R) locks her down. Patch 26.19 buffed her (more health growth and a stronger Grand Challenge heal), so don't get greedy. Watch Riposte (W): it can parry your R.",
+      "runes": "Grasp of the Undying (Demolish, Conditioning, Overgrowth) with Sorcery secondary; Arcane Comet also works.",
+      "summoners": "Flash + Teleport (Ignite if you can kill)",
+      "start": "Doran's Shield + Health Potion",
+      "buildNotes": "Sunfire Aegis > Plated Steelcaps > Thornmail > Frozen Heart > Jak'Sho, The Protean. Thornmail cuts her vital healing and Grand Challenge heal.",
+      "skillNotes": "Q first, then E, then W. Max Q. Use E after she wastes Riposte or dashes in.",
+      "phases": {
+        "lvl1_3": [
+          "Fight her in the wave. Q her when she goes for a vital and E her before she can auto you.",
+          "Step back when a vital is exposed so she can't hit it for free.",
+          "You win trades after she used Lunge (Q)."
+        ],
+        "lvl4_5": [
+          "Riposte (W) blocks your first crowd control. Bait it with Q, then E and go in.",
+          "Buy Thornmail early if she is ahead."
+        ],
+        "post6": [
+          "Never use R while Riposte is up. Bait it with Q first, then R.",
+          "When Grand Challenge (R) is on you, leave the vitals and fight when it ends."
+        ],
+        "midgame": [
+          "Don't split alone against a Fiora with a lead. Your R makes you the stronger teamfighter.",
+          "R her carry and Q her when she dives."
+        ],
+        "lategame": [
+          "In teamfights, wait for her to use W on someone else, then R the backline."
+        ]
+      },
+      "threats": [
+        "Riposte (W) parry that stops your R.",
+        "Vital procs that heal and speed her up.",
+        "Grand Challenge (R) heals her and nearby allies, now with more range."
+      ],
+      "killWindows": [
+        "After she wastes Riposte on your Q or a minion.",
+        "After she used Lunge (Q) to trade."
+      ],
+      "avoid": [
+        "Using R while her W is up.",
+        "Standing next to her vitals.",
+        "Long fights without Thornmail once her ultimate is active."
+      ],
+      "sources": [
+        "https://www.op.gg/lol/champions/malphite/counters/top",
+        "https://lolalytics.com/lol/malphite/vs/fiora/build/",
+        "https://www.riftpatchnotes.com/lol/patch/26-19"
+      ]
+    },
+    "Sett": {
+      "name": "Sett",
+      "difficulty": 3,
+      "winRate": 54.17,
+      "winRateSource": "OP.GG Malphite top counters, Emerald+, patch 16.19 (= 26.19), 1,798 games (lolalytics Emerald+ 16.19 shows about 55.7%, about 2,700 games)",
+      "summary": "A favorable lane, but not free. Sett is strong in the first levels with Pit Grit (passive) autos, and Haymaker (W) does big true damage in its center. Slow him, keep your armor high and win once you have R and your item.",
+      "runes": "Grasp of the Undying (Demolish, Conditioning, Overgrowth) with Sorcery secondary; Arcane Comet is fine if you keep your distance.",
+      "summoners": "Flash + Teleport",
+      "start": "Doran's Shield + Health Potion",
+      "buildNotes": "Sunfire Aegis > Plated Steelcaps > Frozen Heart > Thornmail > Jak'Sho, The Protean. Frozen Heart cuts his fast autos and Thornmail cuts his healing.",
+      "skillNotes": "Q first, then E, then W. Max Q. Use E when he steps in to hit you.",
+      "phases": {
+        "lvl1_3": [
+          "Q him when he walks up for an auto and use E to cut his attack speed so his passive punch lands less.",
+          "Don't stand between him and a wall or a minion when Facebreaker (E) is ready.",
+          "Avoid long trades. Haymaker (W) grows with the damage he has taken."
+        ],
+        "lvl4_5": [
+          "Walk out of the center when Haymaker winds up. The edges deal less.",
+          "Trade after he used W. He has little damage left."
+        ],
+        "post6": [
+          "Use Unstoppable Force (R) after he used his E or W. He can't escape the knockup.",
+          "The Show Stopper (R) throws you, so keep your health high above his burst."
+        ],
+        "midgame": [
+          "Group and fight with your team. He is a strong side-lane duelist, so R the backline and don't fight alone.",
+          "Keep your armor up when his team dives."
+        ],
+        "lategame": [
+          "Be the front line. Slow him and let your team kill him."
+        ]
+      },
+      "threats": [
+        "Haymaker (W) true damage in the center.",
+        "Facebreaker (E) stun when pulled from both sides.",
+        "The Show Stopper (R) throws you into your team."
+      ],
+      "killWindows": [
+        "After he used W and E.",
+        "Post-6 when you land R and his W is down."
+      ],
+      "avoid": [
+        "Standing in the center of Haymaker.",
+        "Standing between him and a wall or a minion.",
+        "Long trades before level 6."
+      ],
+      "sources": [
+        "https://www.op.gg/lol/champions/malphite/counters/top",
+        "https://lolalytics.com/lol/malphite/vs/sett/build/"
+      ]
+    },
+    "Gnar": {
+      "name": "Gnar",
+      "difficulty": 2,
+      "winRate": 55.65,
+      "winRateSource": "OP.GG Malphite top counters, Emerald+, patch 16.19 (= 26.19), 1,770 games (lolalytics Emerald+ 16.19: 57.34%, 2,534 games)",
+      "summary": "You are favored overall, but Gnar pokes you out early with Boomerang Throw (Q) and Hyper (W). Stay behind minions in the first levels, keep Granite Shield up, and win once you have Sunfire Aegis and Unstoppable Force. Mini Gnar has range, Mega Gnar has CC, so fight when he has neither.",
+      "runes": "Arcane Comet (Sorcery) + Resolve secondary; Grasp of the Undying if he keeps walking up to trade",
+      "summoners": "Flash + Teleport",
+      "start": "Doran's Shield + Health Potion (regen against his poke)",
+      "buildNotes": "Sunfire Aegis > Plated Steelcaps > Thornmail (if he builds Trinity Force and hits you with autos) > Frozen Heart > Jak'Sho, The Protean. Kaenic Rookern is good if his team is heavy AP.",
+      "skillNotes": "Q first, E second, W third. Max Q, then E. Q his minions from range and to slow him when he tries to close.",
+      "phases": {
+        "lvl1_3": [
+          "Stand behind minions so Boomerang Throw (Q) hits them first. Sidestep it when it has a clear line.",
+          "Don't let him hit you with three Hyper autos in a row. Step out of his range after two.",
+          "Trade with Seismic Shard (Q) into Thunderclap (W) auto only when his Q is on cooldown."
+        ],
+        "lvl4_5": [
+          "Use Ground Slam (E) on his autos in a trade to cut his attack speed. Use it when he steps up for a last hit.",
+          "Shove the wave when your jungler shows so he cannot poke you under your tower.",
+          "Watch his rage bar. Back off when he is close to Mega Gnar and fight after he shrinks."
+        ],
+        "post6": [
+          "Keep Unstoppable Force (R) for after Mega Gnar shrinks back, or use it to start the fight when he is a Mini with no Q.",
+          "Don't fight next to a wall when he is Mega. GNAR! (R) slams you into it.",
+          "Q, E, W plus R kills Mini Gnar if his Q is down and your jungler is close."
+        ],
+        "midgame": [
+          "Push waves with Q and E, then rotate to teamfights. He clears waves fast, so don't overextend for a lone side-lane push.",
+          "Kill Mini Gnar before he transforms. Mega Gnar is tanky and hard to burst."
+        ],
+        "lategame": [
+          "In teamfights, wait until his GNAR! (R) is used, then dive with Unstoppable Force on the carries.",
+          "Peel with Ground Slam on Mega Gnar, since it cuts his attack speed."
+        ]
+      },
+      "threats": [
+        "Boomerang Throw (Q) poke and slow, which resets when he catches it.",
+        "Hyper (W) third-auto percentage health damage.",
+        "Mega Gnar: Wallop (W) stun and GNAR! (R) knockback into walls.",
+        "Hop (E) lets him hit you with a free auto and escape."
+      ],
+      "killWindows": [
+        "Right after he misses Q and Hop (E) is used, when he is Mini and without escapes.",
+        "After Mega Gnar shrinks back and he is low.",
+        "When your jungler is close: R onto him, then Q, W, E."
+      ],
+      "avoid": [
+        "Trading in the open with his Q up.",
+        "Standing next to a wall or your own tower wall when he is Mega.",
+        "Chasing him past your minions into his jungler."
+      ],
+      "sources": [
+        "https://www.op.gg/lol/champions/malphite/counters/top",
+        "https://lolalytics.com/lol/malphite/vs/gnar/build/",
+        "https://mobalytics.gg/lol/champions/malphite/counters/top/vs-gnar"
+      ]
+    },
+    "Gangplank": {
+      "name": "Gangplank",
+      "difficulty": 4,
+      "winRate": 48.85,
+      "winRateSource": "OP.GG Malphite top counters, Emerald+, patch 16.19 (= 26.19), 1,693 games (lolalytics Emerald+ 16.19: 50.91%, 2,424 games)",
+      "summary": "A poke lane where Gangplank hits you with Parrrley (Q) and Powder Kegs (E) combos from range, and the stats are close to even. Play safe and scale. You win teamfights with Unstoppable Force and can break barrels to stop his zoning.",
+      "runes": "Arcane Comet (Sorcery) + Resolve secondary; Grasp of the Undying if you can reach him to trade",
+      "summoners": "Flash + Teleport (Teleport also gets you back after his poke). Ghost is an option to close the gap",
+      "start": "Doran's Shield + Health Potion",
+      "buildNotes": "Sunfire Aegis > Plated Steelcaps > Thornmail (his autos and Q) > Frozen Heart > Jak'Sho, The Protean. Buy Kaenic Rookern or Mercury's Treads only if his team is AP heavy.",
+      "skillNotes": "Q first, E second, W third. Max Q. Use Q to slow him and to poke back, and E to cut his attack speed in trades.",
+      "phases": {
+        "lvl1_3": [
+          "Stay at the edge of your minions and don't stand still in his Q range. Recover with Doran's Shield regen.",
+          "Hit a Powder Keg with an auto to break it before it explodes, or walk out of the ring.",
+          "Slow him with Seismic Shard (Q) and Thunderclap (W) auto if he walks up for a last hit."
+        ],
+        "lvl4_5": [
+          "Don't let him place three barrels on the wave. Break or step around them.",
+          "Trade when his Parrrley (Q) is on cooldown and no barrel is close.",
+          "Push the wave to force him to walk to it, then farm safely."
+        ],
+        "post6": [
+          "Cannon Barrage (R) is a global slow and damage. Ignore it in teamfights and keep your position.",
+          "Use Unstoppable Force onto him when he has no barrel close. Follow with Q, E, W.",
+          "Don't dive him while Remove Scurvy (W) is ready to heal and cleanse. Wait until it is used."
+        ],
+        "midgame": [
+          "Group for objectives, because your R is stronger in fights than in a duel against him.",
+          "Break barrels in fights with autos so he cannot chain them."
+        ],
+        "lategame": [
+          "Hit him first in teamfights with R when his barrels are not up.",
+          "Play as the front line. Don't walk into a barrel corridor."
+        ]
+      },
+      "threats": [
+        "Powder Kegs (E) plus Parrrley (Q) combo that pokes through your shield.",
+        "Remove Scurvy (W) heals and cleanses, so early CC does not stop him.",
+        "Cannon Barrage (R) global slow that sets up ganks and zoning.",
+        "He scales into critical strikes and Lord Dominik's Regards."
+      ],
+      "killWindows": [
+        "After he uses Remove Scurvy (W) and has no barrels near.",
+        "When your jungler arrives and you land R on him.",
+        "Early, if his Q is on cooldown and he steps up for a last hit."
+      ],
+      "avoid": [
+        "Standing next to a barrel.",
+        "Chasing him after his W heal.",
+        "Free trades with his Q up."
+      ],
+      "sources": [
+        "https://www.op.gg/lol/champions/malphite/counters/top",
+        "https://lolalytics.com/lol/malphite/vs/gangplank/build/",
+        "https://mobalytics.gg/lol/champions/gangplank/counters/top/vs-malphite"
+      ]
+    },
+    "Jax": {
+      "name": "Jax",
+      "difficulty": 3,
+      "winRate": 51.14,
+      "winRateSource": "OP.GG Malphite top counters, Emerald+, patch 16.19 (= 26.19), 1,664 games (lolalytics Emerald+ 16.19: 54.22%, 2,464 games)",
+      "summary": "Close lane that you win a little more often than not. Jax's Counter Strike (E) dodges your basic attacks, including Thunderclap (W), so use Seismic Shard (Q) and Unstoppable Force, which it cannot dodge. He outscales in long fights once he has Trinity Force, so use armor and your team.",
+      "runes": "Arcane Comet (Sorcery) + Resolve secondary; Grasp of the Undying if he keeps trading with autos",
+      "summoners": "Flash + Teleport (Ignite if your jungler is ready to gank)",
+      "start": "Doran's Ring + 2 Health Potion, or Doran's Shield + Health Potion if he likes to trade",
+      "buildNotes": "Sunfire Aegis > Plated Steelcaps > Thornmail (autos, Grievous Wounds) > Frozen Heart > Randuin's Omen. Jak'Sho, The Protean later if he builds a lot of health.",
+      "skillNotes": "Q first, E second, W third. Max Q. Use Q as your main damage into Counter Strike, and E to cut his attack speed.",
+      "phases": {
+        "lvl1_3": [
+          "When he uses Counter Strike (E), don't auto into it. Wait, then Seismic Shard (Q) him.",
+          "Counter Strike dodges your Thunderclap (W) auto, so save W until his E is gone.",
+          "Keep Granite Shield up and trade with Q when Leap Strike (Q) is down."
+        ],
+        "lvl4_5": [
+          "Ground Slam (E) reduces his attack speed. Use it while he is trying to stack Relentless Assault.",
+          "Back off if he has full Relentless Assault stacks. Step out of range when his stun is about to land."
+        ],
+        "post6": [
+          "Unstoppable Force (R) is not dodged by Counter Strike. Use it when he uses E or right after his Leap Strike.",
+          "Fight after his Grandmaster's Might (R) ends, and respect its resists while it is on.",
+          "Don't all-in without your jungler when he has E ready."
+        ],
+        "midgame": [
+          "Match his split with Teleport and group for your R. Thornmail helps you win the 1v1 if he has autos.",
+          "Don't fight him alone once he has Trinity Force. Wait for teamfights."
+        ],
+        "lategame": [
+          "Knock up his backline carries, or R him after he has used Counter Strike.",
+          "Peel with Ground Slam when he leaps into your carries."
+        ]
+      },
+      "threats": [
+        "Counter Strike (E) dodges your autos and stuns you.",
+        "Relentless Assault stacks in long fights.",
+        "Leap Strike (Q) lets him escape or chase.",
+        "Grandmaster's Might (R) makes him tanky in fights."
+      ],
+      "killWindows": [
+        "Right after he wastes Counter Strike on your minion wave or an ability.",
+        "When your jungler is close and your R is up.",
+        "Early, when he is low and you have Q and Thunderclap (W)."
+      ],
+      "avoid": [
+        "Casting Thunderclap (W) into his Counter Strike.",
+        "Long fights with him at full Relentless Assault stacks.",
+        "Standing in his stun radius."
+      ],
+      "sources": [
+        "https://www.op.gg/lol/champions/malphite/counters/top",
+        "https://lolalytics.com/lol/malphite/vs/jax/build/"
+      ]
+    },
+    "Darius": {
+      "name": "Darius",
+      "difficulty": 3,
+      "winRate": 53.86,
+      "winRateSource": "OP.GG Malphite top counters, Emerald+, patch 16.19 (= 26.19), 1,658 games (lolalytics Emerald+ 16.19: 55.52%, 2,520 games)",
+      "summary": "You are favored on the stats. Early on Darius wins any long trade with Hemorrhage stacks, but Seismic Shard slows him and armor makes him weak. Keep him off your wave, stay out of Apprehend range, and scale with armor.",
+      "runes": "Grasp of the Undying (Shield Bash, Bone Plating, Overgrowth) + Sorcery secondary for a safe lane; Arcane Comet + Resolve if you can poke from range",
+      "summoners": "Flash + Teleport. Ghost or Ignite if your jungler is close",
+      "start": "Doran's Shield + Health Potion",
+      "buildNotes": "Sunfire Aegis > Plated Steelcaps > Thornmail (Grievous Wounds against his Q heal) > Frozen Heart > Randuin's Omen. Build Thornmail early if he is ahead.",
+      "skillNotes": "Q first, E second, W third. Max Q. Use Q to slow when he closes, and E on his autos.",
+      "phases": {
+        "lvl1_3": [
+          "Poke him with Seismic Shard (Q) when he steps up for a last hit. The slow lets you kite him.",
+          "Don't take long trades. Three Hemorrhage stacks beat you. Trade once, then leave.",
+          "Stay near your minions so his Decimate (Q) has less area to hit."
+        ],
+        "lvl4_5": [
+          "Ground Slam (E) reduces his attack speed. Use it when he walks in.",
+          "Stay out of Apprehend (E) range. His pull is his main gap closer.",
+          "Play near your tower until you have Sunfire Aegis."
+        ],
+        "post6": [
+          "Noxian Guillotine (R) is true damage. Don't stay at low health near him.",
+          "Use Unstoppable Force (R) when his Apprehend is down and your jungler is close, then Q, E, W.",
+          "After he used his ultimate, he has no execute, so you can fight."
+        ],
+        "midgame": [
+          "Match his split with Teleport. Thornmail and Frozen Heart make you win the 1v1 when he has autos.",
+          "Group for teamfights. Your R is better there than in a duel."
+        ],
+        "lategame": [
+          "Use R on his carries and stay away from his Apprehend pull.",
+          "He is a diver. Peel with Ground Slam and Thornmail."
+        ]
+      },
+      "threats": [
+        "Decimate (Q) heals him at the blade edge.",
+        "Apprehend (E) pull.",
+        "Hemorrhage bleed and stacked autos.",
+        "Noxian Guillotine (R) true damage execute."
+      ],
+      "killWindows": [
+        "After Decimate (Q) and Apprehend (E) are used.",
+        "When he dives you under tower and is low.",
+        "Post-6 with your jungler close."
+      ],
+      "avoid": [
+        "Fighting at 5 bleed stacks.",
+        "Standing at the edge of his Apprehend range.",
+        "Long trades far from your tower."
+      ],
+      "sources": [
+        "https://www.op.gg/lol/champions/malphite/counters/top",
+        "https://lolalytics.com/lol/malphite/vs/darius/build/"
+      ]
+    },
+    "Irelia": {
+      "name": "Irelia",
+      "difficulty": 2,
+      "winRate": 54.36,
+      "winRateSource": "OP.GG Malphite top counters, Emerald+, patch 16.19 (= 26.19), 1,571 games (lolalytics Emerald+ 16.19: 55.74%, 2,266 games)",
+      "summary": "You are favored. Irelia depends on autos and Bladesurge (Q) resets, and armor with the Seismic Shard slow shuts her down. Survive the first levels, then punish her when she dashes in with no reset.",
+      "runes": "Arcane Comet (Sorcery) + Resolve secondary; Grasp of the Undying if she is winning early trades",
+      "summoners": "Flash + Teleport (Ignite is fine if you want a kill)",
+      "start": "Doran's Ring + 2 Health Potion, or Doran's Shield + Health Potion",
+      "buildNotes": "Plated Steelcaps early, then Sunfire Aegis > Thornmail > Frozen Heart > Randuin's Omen (crits) > Jak'Sho, The Protean.",
+      "skillNotes": "Q first, E second, W third. Max Q. Q slows her before Flawless Duet lands.",
+      "phases": {
+        "lvl1_3": [
+          "Don't let her stack Bladesurge (Q) on your wave for free. Poke with Seismic Shard so she has to trade.",
+          "When Defiant Dance (W) is on, stop hitting her and wait. It reduces damage.",
+          "Stay out of the line of Flawless Duet (E). Step sideways when the first blade is placed."
+        ],
+        "lvl4_5": [
+          "Ground Slam (E) reduces her attack speed when she stacks Ionian Fervor.",
+          "Trade after she uses Q on a minion and has no reset.",
+          "Sunfire Aegis and Plated Steelcaps make her damage low. Take the wave under your tower."
+        ],
+        "post6": [
+          "Use Unstoppable Force (R) for a knockup when she has used Flawless Duet (E).",
+          "Stay out of Vanguard's Edge (R) when she is on you. It blocks your escape and slows you.",
+          "Don't chase her through the blades."
+        ],
+        "midgame": [
+          "Match her split with Teleport. Thornmail hurts her autos.",
+          "In teamfights, R her carries and cut her attack speed with E."
+        ],
+        "lategame": [
+          "Buy Randuin's Omen if she crits. Knock up her team and stay in front."
+        ]
+      },
+      "threats": [
+        "Bladesurge (Q) resets on marked targets and kills.",
+        "Flawless Duet (E) stun.",
+        "Defiant Dance (W) damage reduction and heal.",
+        "Vanguard's Edge (R) slow and wall."
+      ],
+      "killWindows": [
+        "After she uses Flawless Duet (E) and misses.",
+        "When she has no minions to reset Q on.",
+        "Post-6 with R plus Q, E, W."
+      ],
+      "avoid": [
+        "Hitting her during Defiant Dance (W).",
+        "Standing in the line of Flawless Duet (E).",
+        "Fighting when she is fully stacked and has E."
+      ],
+      "sources": [
+        "https://www.op.gg/lol/champions/malphite/counters/top",
+        "https://lolalytics.com/lol/malphite/vs/irelia/build/"
+      ]
+    },
+    "Tryndamere": {
+      "name": "Tryndamere",
+      "difficulty": 2,
+      "winRate": 55.23,
+      "winRateSource": "OP.GG Malphite top counters, Emerald+, patch 16.19 (= 26.19), 1,557 games (lolalytics Emerald+ 16.19: 57.13%, 2,349 games)",
+      "summary": "You are favored. Tryndamere is all autos, so armor, Thornmail and your Ground Slam attack speed cut win most trades. The danger is Undying Rage (R) and a crit-heavy snowball, so don't throw your damage into his ultimate.",
+      "runes": "Arcane Comet (Sorcery) + Resolve secondary; Grasp of the Undying if he beats you in early trades",
+      "summoners": "Flash + Teleport (Ghost or Ignite if you want to fight)",
+      "start": "Doran's Shield + Health Potion",
+      "buildNotes": "Plated Steelcaps > Sunfire Aegis > Thornmail > Frozen Heart > Randuin's Omen (crit damage) > Jak'Sho, The Protean.",
+      "skillNotes": "Q first, E second, W third. Max Q. Use E on him when he autos you.",
+      "phases": {
+        "lvl1_3": [
+          "Poke with Seismic Shard (Q) when he is low on Fury, since his crits and sustain need it.",
+          "Use Ground Slam (E) in every trade. It cuts his attack speed.",
+          "Don't let him farm Fury on the wave for free. Trade when he steps up."
+        ],
+        "lvl4_5": [
+          "Mocking Shout (W) reduces your damage and slows you. Wait it out or leave.",
+          "Fight when he has no Spinning Slash (E), since it is his gap closer.",
+          "Keep the wave near your tower and let him come."
+        ],
+        "post6": [
+          "Undying Rage (R) makes him unkillable for a few seconds. Don't spend your damage into it. Walk away or knock him up after it ends.",
+          "Unstoppable Force (R) is a dash, and Spinning Slash can dodge it. Cast it after he used E.",
+          "After he used his ultimate, fight him."
+        ],
+        "midgame": [
+          "Match his split with Teleport. Thornmail and Frozen Heart beat his autos.",
+          "Buy Randuin's Omen once he crits. Don't get stuck alone when he is fed."
+        ],
+        "lategame": [
+          "Knock him up after Undying Rage and kill him with the team.",
+          "Peel your carries with Ground Slam and R when he dives."
+        ]
+      },
+      "threats": [
+        "Undying Rage (R).",
+        "Spinning Slash (E) dash that dodges your Unstoppable Force.",
+        "Critical strikes plus Bloodlust (Q) healing at high Fury.",
+        "Mocking Shout (W) slow when you try to leave."
+      ],
+      "killWindows": [
+        "After he wastes Undying Rage or after it ends.",
+        "When Spinning Slash (E) is on cooldown and you land R.",
+        "When his Fury is low."
+      ],
+      "avoid": [
+        "Throwing your combo into Undying Rage.",
+        "Casting R before he has used E.",
+        "Letting him get free Fury on the wave."
+      ],
+      "sources": [
+        "https://www.op.gg/lol/champions/malphite/counters/top",
+        "https://lolalytics.com/lol/malphite/vs/tryndamere/build/"
+      ]
+    },
+    "DrMundo": {
+      "name": "Dr. Mundo",
+      "difficulty": 4,
+      "winRate": 45.45,
+      "winRateSource": "OP.GG Malphite top counters, Emerald+, patch 16.19 (= 26.19), 1,518 games (lolalytics Emerald+ 16.19: 47.35%, 2,097 games; mobalytics 26.19: Dr. Mundo 55.7% vs Malphite)",
+      "summary": "Your hardest matchup on this list. Dr. Mundo has tank stats, heals and percentage health damage, so you cannot kill him alone. Dodge Infected Bonesaw (Q), farm safely, and win through teamfights and your ultimate.",
+      "runes": "Arcane Comet (Sorcery) + Resolve secondary; Grasp of the Undying if he keeps walking up to trade",
+      "summoners": "Flash + Teleport (Ignite is fine for the anti-heal in early trades)",
+      "start": "Doran's Shield + Health Potion (his Q is a skillshot poke)",
+      "buildNotes": "Sunfire Aegis > Mercury's Treads or Plated Steelcaps (magic early, physical later) > Frozen Heart > Thornmail > Jak'Sho, The Protean. Kaenic Rookern and Force of Nature help against his magic damage. Morellonomicon is an option if you need Grievous Wounds.",
+      "skillNotes": "Q first, E second, W third. Max Q. Use Q to slow him and steal his speed, so he cannot chase you.",
+      "phases": {
+        "lvl1_3": [
+          "Stay behind minions so Infected Bonesaw (Q) hits them first. Each miss costs him health, so make him miss.",
+          "Poke with Seismic Shard (Q) and walk away. Don't fight in his Heart Zapper (W) aura.",
+          "Keep Granite Shield up. Don't take long trades."
+        ],
+        "lvl4_5": [
+          "Use Ground Slam (E) when he hits with Blunt Force Trauma (E). It reduces his attack speed.",
+          "Freeze the wave near your tower and let him come. Don't take fights for wave control.",
+          "Hit him with Q whenever he misses one of his Qs."
+        ],
+        "post6": [
+          "Don't use Unstoppable Force (R) to duel him. Maximum Dosage (R) heals and speeds him up. Save R for teamfights.",
+          "After he used his ultimate, he has less sustain in the fight, so it is a better window to trade."
+        ],
+        "midgame": [
+          "Group with your team. He beats you in side lane, so answer his split with Teleport and your team.",
+          "Don't chase him at low health. He heals back."
+        ],
+        "lategame": [
+          "Use Unstoppable Force on his team's carries, not on him.",
+          "Stay in front and let your team damage him. Frozen Heart and Thornmail lower his damage."
+        ]
+      },
+      "threats": [
+        "Infected Bonesaw (Q) percentage health magic damage.",
+        "Heart Zapper (W) aura damage in long fights.",
+        "Maximum Dosage (R) heal and speed.",
+        "He scales into health and is very hard to kill."
+      ],
+      "killWindows": [
+        "Only with your jungler, when he has missed Q a few times and is low.",
+        "In teamfights, with R onto his carries while he is busy."
+      ],
+      "avoid": [
+        "1v1 fights in the side lane after he has Heartsteel or Titanic Hydra.",
+        "Standing in a line with Q behind no minions.",
+        "Casting R just to duel him."
+      ],
+      "sources": [
+        "https://www.op.gg/lol/champions/malphite/counters/top",
+        "https://lolalytics.com/lol/malphite/vs/drmundo/build/",
+        "https://mobalytics.gg/lol/champions/malphite/counters/top/vs-drmundo"
+      ]
+    },
+    "Garen": {
+      "name": "Garen",
+      "difficulty": 3,
+      "winRate": 49.93,
+      "winRateSource": "OP.GG Malphite top counters, Emerald+, patch 16.19 (= 26.19), 1,476 games (lolalytics Emerald+ 16.19: 51.92%, 2,296 games)",
+      "summary": "Even lane. Garen is a melee bruiser with Decisive Strike (Q) that removes your slow and silences you, so short trades are not free. Keep your armor up, poke when he has no Q, and use your team for kills.",
+      "runes": "Grasp of the Undying (Shield Bash, Bone Plating, Overgrowth) + Sorcery for a safe lane; Arcane Comet + Resolve secondary if you can poke",
+      "summoners": "Flash + Teleport (Ignite if your jungler is close)",
+      "start": "Doran's Shield + Health Potion",
+      "buildNotes": "Sunfire Aegis > Plated Steelcaps > Thornmail (Grievous Wounds vs his passive regen) > Frozen Heart > Randuin's Omen. Add Kaenic Rookern if his team is AP heavy.",
+      "skillNotes": "Q first, E second, W third. Max Q. Use Q when his Decisive Strike is down, since it cancels slows.",
+      "phases": {
+        "lvl1_3": [
+          "Poke with Seismic Shard (Q) and step back. His passive regen returns after a few seconds without damage.",
+          "Decisive Strike (Q) removes slows and silences you. Don't Q into it. Wait for it to be used.",
+          "Stay near minions and keep the wave even so he cannot use Judgment (E) on you."
+        ],
+        "lvl4_5": [
+          "Ground Slam (E) cuts his attack speed. Use it when he walks in.",
+          "Fight when his Q is on cooldown. Courage (W) cuts his damage taken, so wait it out.",
+          "Let him push and farm under tower until you have Sunfire Aegis."
+        ],
+        "post6": [
+          "Demacian Justice (R) is true damage based on your missing health. Stay above half health near him.",
+          "Use Unstoppable Force (R) when his Decisive Strike is used, then Q, E, W.",
+          "After he used his ultimate, he cannot execute."
+        ],
+        "midgame": [
+          "Match his split with Teleport. Thornmail and Frozen Heart beat his autos.",
+          "Group for teamfights, where your R is worth more."
+        ],
+        "lategame": [
+          "R his team and peel with Ground Slam. Stay away from him at low health."
+        ]
+      },
+      "threats": [
+        "Decisive Strike (Q) silence and slow removal.",
+        "Judgment (E) spin damage.",
+        "Demacian Justice (R) execute (true damage).",
+        "Perseverance (passive) regen when he is not being hit."
+      ],
+      "killWindows": [
+        "After his Q is used and his W is on cooldown.",
+        "When your jungler is close and you land R.",
+        "After he uses Judgment (E) on the wave."
+      ],
+      "avoid": [
+        "Getting silenced when you need your Q or R.",
+        "Fighting at low health near his R.",
+        "Standing in Judgment (E) with no armor."
+      ],
+      "sources": [
+        "https://www.op.gg/lol/champions/malphite/counters/top",
+        "https://lolalytics.com/lol/malphite/vs/garen/build/"
+      ]
+    },
+    "Renekton": {
+      "name": "Renekton",
+      "difficulty": 3,
+      "winRate": 53.03,
+      "winRateSource": "lolalytics Malphite top counters, Emerald+, patch 16.19 (client 26.19), 1,944 games; op.gg Emerald+ 16.19 earlier: 52.4%",
+      "summary": "Renekton bullies levels 1-5 with Ruthless Predator (W) stun and Slice and Dice (E), but he falls off and cannot kill through Granite Shield and armor. Survive the early game, slow him with Seismic Shard (Q), and outscale him.",
+      "runes": "Grasp of the Undying (Demolish, Second Wind, Overgrowth) + Inspiration secondary (Magical Footwear, Cosmic Insight).",
+      "summoners": "Flash + Teleport",
+      "start": "Doran's Shield + Health Potion",
+      "buildNotes": "Sunfire Aegis > Plated Steelcaps > Thornmail (if he heals) > Frozen Heart > Randuin's Omen or Jak'Sho, The Protean. He is all physical, so stack armor.",
+      "skillNotes": "Q at 1, E at 2 (or W at 2 if he keeps trading), max Q then E. Put a point in W early if he all-ins you on the wave.",
+      "phases": {
+        "lvl1_3": [
+          "Stand behind the wave so he must walk through minions to reach you. Do not trade at level 1-2.",
+          "Cast Seismic Shard (Q) on him as he dashes in, then walk back to soak with Granite Shield up.",
+          "Expect his level 3 all-in (E > W > Q). Do not fight without Granite Shield ready."
+        ],
+        "lvl4_5": [
+          "Trade after he uses Slice and Dice (E). Without it he cannot close the gap on your Q slow.",
+          "Freeze the wave near your tower and let him waste fury on minions."
+        ],
+        "post6": [
+          "Use Unstoppable Force (R) when his E is used, then Ground Slam (E) + Thunderclap (W) while he is knocked up.",
+          "Do not fight into his Dominus (R) health. Kite it out with Q."
+        ],
+        "midgame": [
+          "You outscale him. Group for objectives and hold R for his backline.",
+          "Skip side-lane duels when he has a big item lead. Use Teleport to join your team."
+        ],
+        "lategame": [
+          "He is a fringe flank threat. Peel with Q slow and R his team's carries in a fight."
+        ]
+      },
+      "threats": [
+        "Ruthless Predator (W) stun, especially with full fury.",
+        "Slice and Dice (E) double dash to reach you and escape.",
+        "Dominus (R) health and damage.",
+        "Level 3 all-in and jungle dives."
+      ],
+      "killWindows": [
+        "After he wastes Slice and Dice (E) and has no fury.",
+        "When he is low after trading into your Granite Shield and you have R up.",
+        "Post-6 when you knock him up with R after his E is used."
+      ],
+      "avoid": [
+        "Trading at level 1-3 when he has fury.",
+        "Fighting with Granite Shield already broken.",
+        "Standing in front of the wave where he can E in for free."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/malphite/vs/renekton/build/",
+        "https://www.op.gg/lol/champions/malphite/counters/top"
+      ]
+    },
+    "Chogath": {
+      "name": "Cho'Gath",
+      "difficulty": 4,
+      "winRate": 48.22,
+      "winRateSource": "lolalytics Malphite top counters, Emerald+, patch 16.19 (client 26.19), 1,966 games; op.gg Emerald+ 16.19 earlier: 44.5%",
+      "summary": "Cho'Gath outranges you with Rupture (Q) and Vorpal Spikes (E) and outgrows you in health. Malphite has no easy way to close on him, so play the long game and avoid free poke.",
+      "runes": "Arcane Comet (Manaflow Band, Transcendence, Scorch) + Resolve secondary (Bone Plating, Overgrowth) to poke back; Grasp of the Undying if he plays melee.",
+      "summoners": "Flash + Teleport; Flash + Ignite is also common",
+      "start": "Doran's Ring + 2 Health Potion",
+      "buildNotes": "Sunfire Aegis > Plated Steelcaps > Frozen Heart or Jak'Sho, The Protean > Kaenic Rookern or Force of Nature if he goes AP. His damage is mixed, so buy resist for his biggest threat.",
+      "skillNotes": "Q at 1, E at 2, W at 3. Max Q then E. Use Q to kite his approach.",
+      "phases": {
+        "lvl1_3": [
+          "Walk diagonally, not straight at him, to dodge Rupture (Q). Stay behind minions.",
+          "Poke with Seismic Shard (Q) when his Q is used. Do not take his auto attack trades."
+        ],
+        "lvl4_5": [
+          "Trade with Q + Comet when he steps up to last hit. Stay out of Vorpal Spikes (E) range.",
+          "Freeze the wave in front of your tower so he cannot farm Feast stacks for free."
+        ],
+        "post6": [
+          "Hold Unstoppable Force (R) until he used Feral Scream (W). The silence stops you from casting R.",
+          "His Feast (R) executes at low HP. Do not fight below 40% HP."
+        ],
+        "midgame": [
+          "He grows faster than you. Use Teleport to group and force fights before he stacks Feast.",
+          "R his squishies instead of trying to duel him."
+        ],
+        "lategame": [
+          "He is a giant tank that can Feast a low carry. Peel him with Q and E, and keep R for his carries."
+        ]
+      },
+      "threats": [
+        "Rupture (Q) knockup at range.",
+        "Feral Scream (W) silence blocks your R.",
+        "Vorpal Spikes (E) poke and wave clear.",
+        "Feast (R) true damage execute that grows him."
+      ],
+      "killWindows": [
+        "After Rupture misses and he is inside your Q range.",
+        "When he is low from poke and you have R + Ignite.",
+        "Once he steps up to last hit and his Q is used."
+      ],
+      "avoid": [
+        "Standing in a straight line for Rupture.",
+        "Fighting him without Granite Shield when he has Q and W ready.",
+        "Letting him farm freely and stack Feast."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/malphite/vs/chogath/build/",
+        "https://www.op.gg/lol/champions/malphite/counters/top"
+      ]
+    },
+    "Yasuo": {
+      "name": "Yasuo",
+      "difficulty": 2,
+      "winRate": 53.24,
+      "winRateSource": "lolalytics Malphite top counters, Emerald+, patch 16.19 (client 26.19), 1,835 games; op.gg Emerald+ 16.19 earlier: 53.5%",
+      "summary": "You are favored. Ground Slam (E) cuts his attack speed, Seismic Shard (Q) slows him, and Thornmail and Frozen Heart blunt his crit autos. Do not throw Q into Wind Wall, and make him dash into your wave.",
+      "runes": "Grasp of the Undying (Demolish, Second Wind, Overgrowth) + Inspiration secondary (Magical Footwear, Cosmic Insight).",
+      "summoners": "Flash + Teleport; Flash + Ignite is also common",
+      "start": "Doran's Shield + Health Potion",
+      "buildNotes": "Sunfire Aegis > Plated Steelcaps > Frozen Heart > Thornmail > Randuin's Omen (vs crit) > Jak'Sho, The Protean. Buy Frozen Heart early if he has attack speed.",
+      "skillNotes": "Q at 1, E at 2, W at 3. Max Q then E. Take R at 6 for a sure engage.",
+      "phases": {
+        "lvl1_3": [
+          "Do not cast Seismic Shard (Q) into Wind Wall. Wait until it is gone.",
+          "Pop his Way of the Wanderer shield with an auto or Q first, then commit E and Q.",
+          "Stand next to the wave so his Sweeping Blade (E) lands him in your Sunfire range."
+        ],
+        "lvl4_5": [
+          "When Steel Tempest Q3 is ready, sidestep the tornado before trading.",
+          "Q him after he dashes on a minion. Trade back with Thunderclap (W) autos."
+        ],
+        "post6": [
+          "Unstoppable Force (R) knocks him up for a follow-up kill. Cast it after he used Wind Wall.",
+          "Do not R into a Yasuo who has minions to dash on and Wind Wall ready."
+        ],
+        "midgame": [
+          "Group with your team. He is weak when he cannot dash on minions, so use E and R on his team.",
+          "Frozen Heart and Thornmail blunt his crit autos. Stay in front."
+        ],
+        "lategame": [
+          "Hit R on his team, not on him. Q after Wind Wall, or Q the tank instead."
+        ]
+      },
+      "threats": [
+        "Wind Wall (W) blocks your Q and any poke.",
+        "Steel Tempest Q3 tornado knockup.",
+        "Way of the Wanderer shield absorbs your first trade.",
+        "Crit autos once he has 2 items."
+      ],
+      "killWindows": [
+        "After he used Wind Wall and Sweeping Blade (E) with no minions left to dash to.",
+        "When the wave is small and he has to walk to trade.",
+        "Post-6 when his shield is gone and you have R + E."
+      ],
+      "avoid": [
+        "Casting Seismic Shard (Q) into Wind Wall.",
+        "Fighting on top of a big wave where he has E targets.",
+        "Ignoring his Q3 when trading."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/malphite/vs/yasuo/build/",
+        "https://www.op.gg/lol/champions/malphite/counters/top"
+      ]
+    },
+    "Sion": {
+      "name": "Sion",
+      "difficulty": 4,
+      "winRate": 47.87,
+      "winRateSource": "lolalytics Malphite top counters, Emerald+, patch 16.19 (client 26.19), 1,571 games; op.gg Emerald+ 16.19 earlier: 45.9%",
+      "summary": "Sion stacks Soul Furnace shield and health while soaking your poke, and his uncontrollable ultimate makes ganks scary. You lose the trade war because Malphite cannot burst a tank. Stay safe, manage the wave, and win in team fights.",
+      "runes": "Grasp of the Undying (Demolish, Second Wind, Overgrowth) + Inspiration secondary (Magical Footwear, Cosmic Insight).",
+      "summoners": "Flash + Teleport; Flash + Ignite is also common",
+      "start": "Doran's Shield + Health Potion",
+      "buildNotes": "Sunfire Aegis > Plated Steelcaps > Frozen Heart > Thornmail (if he heals) > Randuin's Omen or Jak'Sho, The Protean. Wit's End is a fringe option if he goes AP.",
+      "skillNotes": "Q at 1, E at 2, W at 3. Max Q then E. Use Q to keep him off you.",
+      "phases": {
+        "lvl1_3": [
+          "Walk out of the Decimating Smash (Q) zone as soon as he starts charging. It is slow to cast.",
+          "Trade Seismic Shard (Q) + Thunderclap (W) while he charges. Do not fight without Granite Shield.",
+          "Stay near your wave and do not push. He wants to shove and dive you."
+        ],
+        "lvl4_5": [
+          "Trade when his Q is used. Ground Slam (E) slows his attacks and cuts his damage.",
+          "Do not stand behind a minion in line with Roar of the Body Count (E): the knocked-back minion slows you and shreds your armor."
+        ],
+        "post6": [
+          "Unstoppable Onslaught (R) makes him unstoppable, so wait until it ends before Unstoppable Force (R).",
+          "Step out of his path and walk sideways to dodge the R knockup."
+        ],
+        "midgame": [
+          "He is a better side laner than you. Use Teleport to group with your team.",
+          "Do not chase him at low HP. His Glory in Death passive lets him fight on after dying."
+        ],
+        "lategame": [
+          "R his backline and let your team kill Sion's carries. Kill him only after Glory in Death ran out."
+        ]
+      },
+      "threats": [
+        "Decimating Smash (Q) knockup with the charge.",
+        "Soul Furnace (W) shield that scales.",
+        "Unstoppable Onslaught (R) long-range engage.",
+        "Glory in Death passive lets him fight through death."
+      ],
+      "killWindows": [
+        "After his Q whiffs and he has no shield.",
+        "When you knock him up with R before he can charge Q.",
+        "After Glory in Death ended and he has no shield."
+      ],
+      "avoid": [
+        "Fighting when his W shield is fully charged.",
+        "Standing in his Q path.",
+        "Chasing him during Glory in Death."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/malphite/vs/sion/build/",
+        "https://www.op.gg/lol/champions/malphite/counters/top"
+      ]
+    },
+    "Ambessa": {
+      "name": "Ambessa",
+      "difficulty": 2,
+      "winRate": 53.94,
+      "winRateSource": "lolalytics Malphite top counters, Emerald+, patch 16.19 (client 26.19), 1,550 games; op.gg Emerald+ 16.19 earlier: 53.6%",
+      "summary": "You are favored. Her damage is physical autos and dashes, which Granite Shield, Sunfire Aegis and armor blunt. She wins short trades early, so keep Grasp up, slow her with Q, and stun her after her dashes are used.",
+      "runes": "Grasp of the Undying (Demolish, Second Wind, Overgrowth) + Inspiration secondary (Magical Footwear, Cosmic Insight).",
+      "summoners": "Flash + Teleport; Flash + Ignite is also common",
+      "start": "Doran's Shield + Health Potion",
+      "buildNotes": "Sunfire Aegis > Plated Steelcaps > Frozen Heart > Thornmail > Randuin's Omen. She is physical, so armor beats magic resist.",
+      "skillNotes": "Q at 1, E at 2, W at 3. Max Q then E. Put a point in W early if she keeps trading.",
+      "phases": {
+        "lvl1_3": [
+          "Do not fight her while Drakehound's Step is active. She dashes for the empowered auto and chains it.",
+          "Cast Seismic Shard (Q) to slow her when she dashes at you and walk back into your wave.",
+          "Trade with Grasp when she spends energy on the wave."
+        ],
+        "lvl4_5": [
+          "Trade after she used Cunning Sweep / Sundering Slam (Q) and Lacerate (E). She has few ways out after.",
+          "Break her Repudiation (W) shield with one Thunderclap auto and step back. Do not spend Q on it."
+        ],
+        "post6": [
+          "Public Execution (R) targets you. Keep Flash or Unstoppable Force (R) for after she casts it.",
+          "R + E her once her dashes are used."
+        ],
+        "midgame": [
+          "Do not split against her; she beats you in a long duel with a lead. Group and hold R for her dive.",
+          "R her carries when she is in the fight and after she used her ultimate."
+        ],
+        "lategame": [
+          "Her burst kills you if you are alone. Stay with your team and R her backline."
+        ]
+      },
+      "threats": [
+        "Dashes (Q, E) that chain into empowered autos.",
+        "Repudiation (W) shield and slam.",
+        "Public Execution (R) blink and burst.",
+        "Early trades and jungle dives."
+      ],
+      "killWindows": [
+        "After she used her dashes and W in a trade.",
+        "Post-6 after she used her ultimate and her dashes are used.",
+        "When she is low after trading into Sunfire Aegis."
+      ],
+      "avoid": [
+        "Fighting while Drakehound's Step is empowered.",
+        "Wasting Q on her W shield.",
+        "Being alone against her R."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/malphite/vs/ambessa/build/",
+        "https://www.op.gg/lol/champions/malphite/counters/top"
+      ]
+    },
+    "Shen": {
+      "name": "Shen",
+      "difficulty": 4,
+      "winRate": 47.52,
+      "winRateSource": "lolalytics Malphite top counters, Emerald+, patch 16.19 (client 26.19), 1,513 games; op.gg Emerald+ 16.19 earlier: 45.2%",
+      "summary": "Shen is a tank Malphite cannot kill. His Spirit's Refuge (W) blocks your autos and his Shadow Dash (E) taunts you into his team. Avoid free damage and use Teleport to make plays elsewhere.",
+      "runes": "Grasp of the Undying (Demolish, Second Wind, Overgrowth) + Inspiration secondary (Magical Footwear, Cosmic Insight).",
+      "summoners": "Flash + Teleport",
+      "start": "Doran's Ring + 2 Health Potion, or Doran's Shield + Health Potion",
+      "buildNotes": "Sunfire Aegis > Plated Steelcaps > Frozen Heart > Randuin's Omen > Thornmail if he heals > Jak'Sho, The Protean. Mercury's Treads is an option if his team has AP.",
+      "skillNotes": "Q at 1, E at 2, W at 3. Max Q then E. Use Q to keep him off you.",
+      "phases": {
+        "lvl1_3": [
+          "Stay out of Twilight Assault (Q) range and give him no free auto trades.",
+          "Poke with Seismic Shard (Q) when he stands next to the wave. Step back once he has his Q shield.",
+          "Do not trade into Spirit's Refuge (W). It blocks your Thunderclap (W) autos."
+        ],
+        "lvl4_5": [
+          "Trade after his Q is used. He has few ways to catch you without E.",
+          "Do not overextend. His jungler and Shadow Dash (E) taunt make dives easy."
+        ],
+        "post6": [
+          "Unstoppable Force (R) is an unstoppable dash. Use it to engage or to escape after his taunt.",
+          "Stand United (R) lets him teleport to an ally. Expect a gank elsewhere and be ready."
+        ],
+        "midgame": [
+          "He is a better splitter and roamer. Keep your wave neutral and use Teleport to join fights.",
+          "Do not chase him into his team. Use R only on his carries."
+        ],
+        "lategame": [
+          "Fight him only after he used Stand United. R his squishies and peel with E."
+        ]
+      },
+      "threats": [
+        "Shadow Dash (E) taunt into his team.",
+        "Spirit's Refuge (W) blocks your autos.",
+        "Stand United (R) global shield and gank.",
+        "Ki Strike passive on you."
+      ],
+      "killWindows": [
+        "After he used Shadow Dash (E) with no allies near.",
+        "When he is low after trading and his W is used.",
+        "Post-6 after he used Stand United on an ally."
+      ],
+      "avoid": [
+        "Auto attacking into Spirit's Refuge (W).",
+        "Standing in front of his E when his team is near.",
+        "Overextending without jungle vision."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/malphite/vs/shen/build/",
+        "https://www.op.gg/lol/champions/malphite/counters/top"
+      ]
+    },
+    "Camille": {
+      "name": "Camille",
+      "difficulty": 3,
+      "winRate": 51.49,
+      "winRateSource": "lolalytics Malphite top counters, Emerald+, patch 16.19 (client 26.19), 1,480 games; op.gg Emerald+ 16.19 earlier: 50.9%",
+      "summary": "An even matchup. Camille wins early trades with Precision Protocol (Q) and Hookshot (E), but armor and Granite Shield blunt her physical damage. She kills you only if you let her hit you for free.",
+      "runes": "Grasp of the Undying (Demolish, Second Wind, Overgrowth) + Inspiration secondary (Magical Footwear, Cosmic Insight).",
+      "summoners": "Flash + Teleport",
+      "start": "Doran's Shield + Health Potion",
+      "buildNotes": "Sunfire Aegis > Plated Steelcaps > Thornmail > Frozen Heart > Randuin's Omen > Jak'Sho, The Protean. Thornmail early is strong because her Q2 heals her.",
+      "skillNotes": "Q at 1, E at 2, W at 3. Max Q then E.",
+      "phases": {
+        "lvl1_3": [
+          "Avoid the outer edge of Tactical Sweep (W) so you are not slowed and she does not heal.",
+          "Cast Q on her when she Hookshots (E) onto a wall. Then back off and let Granite Shield absorb.",
+          "Do not take a long trade into her Precision Protocol (Q) second hit true damage."
+        ],
+        "lvl4_5": [
+          "Trade after her E is used. Without it she cannot reach you easily.",
+          "Use Ground Slam (E) to cut her attack speed and Thunderclap (W) to trade back."
+        ],
+        "post6": [
+          "Hextech Ultimatum (R) traps you inside, so you cannot dash out with R. Fight her inside with Sunfire Aegis and armor.",
+          "Use Unstoppable Force (R) to knock her up when she jumps in with Hookshot (E)."
+        ],
+        "midgame": [
+          "She is a better splitter. Keep your wave neutral and Teleport to fights.",
+          "R her in a fight after her E is used. She has no other way out."
+        ],
+        "lategame": [
+          "She flanks your backline with R. Keep Q and R ready for her and peel."
+        ]
+      },
+      "threats": [
+        "Precision Protocol (Q) second hit does true damage and heals her.",
+        "Hookshot (E) engage and escape.",
+        "Hextech Ultimatum (R) locks you in a 1v1.",
+        "Tactical Sweep (W) slow and heal."
+      ],
+      "killWindows": [
+        "After Hookshot (E) is used and she has no escape.",
+        "When you knock her up with R and follow with E after her Hookshot.",
+        "When her Q is used and she is low."
+      ],
+      "avoid": [
+        "Standing on the outer edge of her W.",
+        "Fighting when her Q and E are both ready.",
+        "Standing near a wall she can Hookshot to."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/malphite/vs/camille/build/",
+        "https://www.op.gg/lol/champions/malphite/counters/top"
+      ]
+    },
+    "Gwen": {
+      "name": "Gwen",
+      "difficulty": 3,
+      "winRate": 48.8,
+      "winRateSource": "lolalytics Malphite top counters, Emerald+, patch 16.19 (client 26.19), 1,414 games; op.gg Emerald+ 16.19 earlier: 48.4%",
+      "summary": "Slightly unfavorable. Gwen's Hallowed Mist (W) makes her untargetable from outside, and her on-hit magic damage and true damage Snip Snip! (Q) ignore your armor. Fight her inside the mist, buy magic resist, and use Teleport to leave long duels.",
+      "runes": "Grasp of the Undying (Demolish, Second Wind, Overgrowth) + Inspiration secondary (Magical Footwear, Cosmic Insight).",
+      "summoners": "Flash + Teleport; Flash + Ignite is also common",
+      "start": "Doran's Shield + Health Potion (Doran's Ring if she plays safe)",
+      "buildNotes": "Sunfire Aegis > Mercury's Treads > Kaenic Rookern > Force of Nature > Frozen Heart > Jak'Sho, The Protean. Buy magic resist first, since she is mostly AP.",
+      "skillNotes": "Q at 1, E at 2, W at 3. Max Q then E. Use Q to slow her after Skip 'n Slash (E).",
+      "phases": {
+        "lvl1_3": [
+          "Stay out of the center of Snip Snip! (Q). That is where the true damage hits.",
+          "Trade Seismic Shard (Q) + Thunderclap (W) autos after she used E. Stay near your wave.",
+          "Do not chase her into the mist. It blocks your Q from outside."
+        ],
+        "lvl4_5": [
+          "Walk into Hallowed Mist (W) to hit her. Q only works when you stand inside it.",
+          "Trade after her W is used. Ground Slam (E) slows her attack speed."
+        ],
+        "post6": [
+          "Unstoppable Force (R) is ground-targeted, so it can hit her inside the mist. Use it after she cast Skip 'n Slash (E).",
+          "Needlework (R) slows and pokes you. Fight her up close where it does less."
+        ],
+        "midgame": [
+          "Stay near your team. She beats you in a long side-lane duel without magic resist.",
+          "R her when she is in the fight and after she used her W."
+        ],
+        "lategame": [
+          "Her true damage grows late. Keep Kaenic Rookern and R ready, and R her team, not her alone."
+        ]
+      },
+      "threats": [
+        "Snip Snip! (Q) center true damage.",
+        "Hallowed Mist (W) untargetability and resist buff.",
+        "Skip 'n Slash (E) attack speed and dash.",
+        "Needlework (R) slow and burst."
+      ],
+      "killWindows": [
+        "After she used Skip 'n Slash (E) and her W.",
+        "When she is low and you have R + E.",
+        "Post-6 after her mist ended."
+      ],
+      "avoid": [
+        "Casting Q into her Hallowed Mist from outside.",
+        "Standing in the center of Snip Snip! (Q).",
+        "Long trades without magic resist."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/malphite/vs/gwen/build/",
+        "https://www.op.gg/lol/champions/malphite/counters/top"
+      ]
+    },
+    "Ornn": {
+      "name": "Ornn",
+      "difficulty": 4,
+      "winRate": 48.16,
+      "winRateSource": "op.gg Malphite top counters, Emerald+, patch 16.19 (= 26.19), 978 games (lolalytics Emerald+ 16.19: about 50.2, 1,377 games)",
+      "summary": "The hardest lane of this group. Ornn is a tank that out-bulks you and wins long fights, and his pillars and Searing Charge (E) make your Unstoppable Force (R) harder to land. Play a slow, safe lane, poke with Seismic Shard (Q), and save your R for teamfights.",
+      "runes": "Grasp of the Undying (Demolish, Conditioning, Overgrowth) + Inspiration or Resolve secondary; Arcane Comet is fine if you poke him with Q",
+      "summoners": "Flash + Teleport",
+      "start": "Doran's Shield + Health Potion (Doran's Ring + 2 Health Potion if you want to poke with Q)",
+      "buildNotes": "Sunfire Aegis > Plated Steelcaps > Frozen Heart > Thornmail > Jak'Sho, The Protean. Kaenic Rookern if his team builds magic damage.",
+      "skillNotes": "Q first, then E, then W. Max Q. Q is your poke and your way to slow him when he closes in.",
+      "phases": {
+        "lvl1_3": [
+          "Poke with Seismic Shard (Q) when he steps up to farm. It slows him and gives you move speed.",
+          "Step out of Volcanic Rupture (Q) lines. The pillar stays and can block your path, so don't walk into a lane with a pillar behind you.",
+          "Don't take even trades. Use Ground Slam (E) to cut his attack speed, hit a Q, and back off."
+        ],
+        "lvl4_5": [
+          "His Searing Charge (E) knocks you up if you stand near a wall or pillar. Don't stand next to terrain when his E is up.",
+          "Freeze near your tower and let him come to you. He has little burst, so losing a little farm is safe."
+        ],
+        "post6": [
+          "Your R is a poor trade tool into a tank. Save it for his engage or to catch him after he used his E.",
+          "Call of the Forge God (R) sends a wave toward you and knocks up on the second hit. Walk out of the line early."
+        ],
+        "midgame": [
+          "Group with your team for the first objective. You don't win a side-lane duel against a stacked Ornn.",
+          "Hold your Teleport for an objective fight. Your R on his backline is worth more than a side wave."
+        ],
+        "lategame": [
+          "Aim your R at his carries, not at Ornn. He stays in front and keeps you off his backline.",
+          "Stay in one group with your team and use Frozen Heart and Thornmail to punish his auto-attackers."
+        ]
+      },
+      "threats": [
+        "Volcanic Rupture (Q) pillar that blocks your path.",
+        "Searing Charge (E) knock-up when he charges into a wall or pillar.",
+        "Call of the Forge God (R) charging wave with a second knock-up.",
+        "His bulk in a long fight."
+      ],
+      "killWindows": [
+        "Right after Ornn wastes his E and Q on the wave and you have your E and R up.",
+        "In a teamfight after he commits his ultimate."
+      ],
+      "avoid": [
+        "Standing near walls or pillars when his E is up.",
+        "Long trades where he wins with his bulk and Bellows Breath (W).",
+        "Wasting your R on him alone in lane."
+      ],
+      "sources": [
+        "https://www.op.gg/lol/champions/malphite/counters/top",
+        "https://lolalytics.com/lol/malphite/vs/ornn/build/"
+      ]
+    },
+    "Pantheon": {
+      "name": "Pantheon",
+      "difficulty": 3,
+      "winRate": 54.03,
+      "winRateSource": "op.gg Malphite top counters, Emerald+, patch 16.19 (= 26.19), 955 games (lolalytics Emerald+ 16.19: about 55.7)",
+      "summary": "Pantheon bullies you for the first five levels with Comet Spear (Q) and Shield Vault (W), but you win from mid game because he can't beat armor and health. Survive early with Grasp of the Undying, then use Unstoppable Force to win fights.",
+      "runes": "Grasp of the Undying (Demolish, Conditioning, Overgrowth) + Inspiration or Resolve secondary",
+      "summoners": "Flash + Ignite, or Flash + Teleport if you want to play safe",
+      "start": "Doran's Shield + Health Potion",
+      "buildNotes": "Plated Steelcaps > Sunfire Aegis or Frozen Heart > Thornmail > Jak'Sho, The Protean > Randuin's Omen. Boots first because most of his damage is physical.",
+      "skillNotes": "Q first, then E, then W. Max Q (take E earlier if he keeps fighting you).",
+      "phases": {
+        "lvl1_3": [
+          "Stay near your minions. His Comet Spear (Q) hits harder when charged, so step sideways while he holds it.",
+          "Shield Vault (W) stuns on contact. Q or E him as he dashes in, then walk away instead of trading.",
+          "Don't fight into his Aegis Assault (E) while it is up. It blocks damage from the front."
+        ],
+        "lvl4_5": [
+          "Trade with Q > E > auto when his W is down. You out-tank him in a short fight.",
+          "Freeze the wave near your tower and reach level 6 safely. Don't chase him."
+        ],
+        "post6": [
+          "At level 6 you win all-ins when his W and E are down. Use R when he commits to a Q or a stun.",
+          "Grand Starfall (R) lets him roam. Look at the map when he disappears and stay near your tower."
+        ],
+        "midgame": [
+          "Group and fight around your R. He doesn't deal enough damage into Frozen Heart and Thornmail.",
+          "Take a side lane only when he is on the other side of the map."
+        ],
+        "lategame": [
+          "Let him dive first. Hit him with R when he lands on your team and reset the fight."
+        ]
+      },
+      "threats": [
+        "Shield Vault (W) stun.",
+        "Comet Spear (Q) when charged.",
+        "Aegis Assault (E) blocking your damage from the front.",
+        "Grand Starfall (R) roams and dives."
+      ],
+      "killWindows": [
+        "After his W stun is used and his E is down.",
+        "Right after he lands from his ultimate and his abilities are down."
+      ],
+      "avoid": [
+        "Trading into a charged Q or W in the first three levels.",
+        "Throwing Q and E into his Aegis Assault front block.",
+        "Chasing him past your minions."
+      ],
+      "sources": [
+        "https://www.op.gg/lol/champions/malphite/counters/top",
+        "https://lolalytics.com/lol/malphite/vs/pantheon/build/"
+      ]
+    },
+    "KSante": {
+      "name": "K'Sante",
+      "difficulty": 3,
+      "winRate": 50.7,
+      "winRateSource": "op.gg Malphite top counters, Emerald+, patch 16.19 (= 26.19), 852 games (lolalytics Emerald+ 16.19: about 52.7-52.9)",
+      "summary": "An even tank versus tank lane where whoever lands their skillshots wins the trades. Slow him with Seismic Shard (Q) and cut his attack speed with Ground Slam (E). Watch for All Out (R), when he has low resists and you can burst him.",
+      "runes": "Grasp of the Undying (Demolish, Conditioning, Overgrowth) + Inspiration or Resolve secondary; Arcane Comet for a poke lane",
+      "summoners": "Flash + Teleport (Flash + Ignite if you want to win the early lane)",
+      "start": "Doran's Shield + Health Potion (Doran's Ring + 2 Health Potion if you plan to poke)",
+      "buildNotes": "Sunfire Aegis > Plated Steelcaps > Thornmail > Frozen Heart > Jak'Sho, The Protean. Kaenic Rookern if he builds magic damage.",
+      "skillNotes": "Q first, then E, then W. Max Q.",
+      "phases": {
+        "lvl1_3": [
+          "Poke with Seismic Shard (Q) whenever he walks up. It slows him and stops his Footwork (E) chase.",
+          "Dodge Ntofo Strikes (Q) by walking sideways. The third hit pulls and knocks you up.",
+          "Don't get pulled into a trade next to his minions. Use E to cut his attack speed and walk away."
+        ],
+        "lvl4_5": [
+          "Trade when his Q and E are down. He can't reach you or leave the fight easily.",
+          "Path Makers (W) charges and knocks you back. Step out of the direction he is facing when he starts it."
+        ],
+        "post6": [
+          "When he pops All Out (R), his resists drop and he deals more damage. Q and E him, then use R to finish the burst.",
+          "Don't stand next to walls. His R can knock you back into terrain."
+        ],
+        "midgame": [
+          "Play the objective game. You win teamfights with R on his carries while he is stuck in front.",
+          "If you both split push, use Teleport to join your team instead of a duel."
+        ],
+        "lategame": [
+          "Hold R for the moment he goes All Out. Otherwise aim it at backline targets."
+        ]
+      },
+      "threats": [
+        "Ntofo Strikes (Q) third hit pulls and knocks up.",
+        "Path Makers (W) charge and knock-back.",
+        "All Out (R) wall knock-back and burst mode.",
+        "Footwork (E) shield and dash."
+      ],
+      "killWindows": [
+        "When he is in All Out mode and his resists are low.",
+        "After he wastes his E and Q on the wave."
+      ],
+      "avoid": [
+        "Fighting next to walls when his R is up.",
+        "Walking into his Q3 in a straight line.",
+        "Long trades while he has his E shield."
+      ],
+      "sources": [
+        "https://www.op.gg/lol/champions/malphite/counters/top",
+        "https://lolalytics.com/lol/malphite/vs/ksante/build/"
+      ]
+    },
+    "Urgot": {
+      "name": "Urgot",
+      "difficulty": 3,
+      "winRate": 51.05,
+      "winRateSource": "op.gg Malphite top counters, Emerald+, patch 16.19 (= 26.19), 813 games (lolalytics Emerald+ 16.19: about 52.2, 1,186 games)",
+      "summary": "An even lane. Urgot wins if he stays at range and uses Purge (W) plus Corrosive Charge (Q). Seismic Shard (Q) slows him and he is slow himself, so close on him when his E is down and win short trades with your armor.",
+      "runes": "Arcane Comet (Sorcery) + Resolve secondary was the best page on lolalytics; Grasp of the Undying if he is aggressive",
+      "summoners": "Flash + Teleport",
+      "start": "Doran's Ring + 2 Health Potion, or Doran's Shield + Health Potion",
+      "buildNotes": "Plated Steelcaps > Sunfire Aegis > Thornmail > Frozen Heart > Jak'Sho, The Protean. Rush boots and armor because his damage is physical.",
+      "skillNotes": "Q first, then W, then E (lolalytics), or the normal Q > E > W. Max Q.",
+      "phases": {
+        "lvl1_3": [
+          "Dodge Corrosive Charge (Q). It is a slow skillshot, so sidestep it and Q back.",
+          "Trade when his Purge (W) is off. Purge fires by itself at range and wins long fights, so don't stand in its range for long.",
+          "Use Ground Slam (E) to cut his attack speed and walk away after two auto attacks."
+        ],
+        "lvl4_5": [
+          "Disdain (E) dashes and flips you if it hits. Stay out of his E line and punish him after it is used.",
+          "Fight when Purge is off. His Echoing Flames (passive) legs shoot at you while you are close, so don't stay long."
+        ],
+        "post6": [
+          "Fear Beyond Death (R) pulls you in and executes below 25% health. Don't fight near 30% health.",
+          "Use Unstoppable Force (R) when his E is down so he can't flip you out of the fight."
+        ],
+        "midgame": [
+          "Fight around your ultimate. He is slow and easy to hit with it.",
+          "Don't split push into his range. He beats you in a long duel with Purge active."
+        ],
+        "lategame": [
+          "Hit him with R when he dives or goes to execute someone. Otherwise focus his backline."
+        ]
+      },
+      "threats": [
+        "Purge (W) shooting at range.",
+        "Corrosive Charge (Q) slow skillshot.",
+        "Disdain (E) dash and flip.",
+        "Fear Beyond Death (R) execute below 25% health."
+      ],
+      "killWindows": [
+        "After Disdain (E) is used or missed and you have your E up.",
+        "When Purge is off and you are inside his range."
+      ],
+      "avoid": [
+        "Fighting at low health in his R range.",
+        "Long trades in Purge range.",
+        "Standing in a straight line with his Q and E."
+      ],
+      "sources": [
+        "https://www.op.gg/lol/champions/malphite/counters/top",
+        "https://lolalytics.com/lol/malphite/vs/urgot/build/"
+      ]
+    },
+    "Volibear": {
+      "name": "Volibear",
+      "difficulty": 3,
+      "winRate": 51.05,
+      "winRateSource": "op.gg Malphite top counters, Emerald+, patch 16.19 (= 26.19), 809 games (lolalytics Emerald+ 16.19: about 52.5-52.7, 1,197-1,239 games)",
+      "summary": "Slightly in your favor if you survive levels 1-5. Volibear wins early trades with Thundering Smash (Q) and Frenzied Maul (W), but Ground Slam (E) cuts his attack speed and your armor scales better. Take Grasp of the Undying and fight him when his Q is down.",
+      "runes": "Grasp of the Undying (Demolish, Conditioning, Overgrowth) + Inspiration or Resolve secondary, since he is a melee bully",
+      "summoners": "Flash + Ignite, or Flash + Teleport",
+      "start": "Doran's Shield + Health Potion",
+      "buildNotes": "Plated Steelcaps > Sunfire Aegis > Thornmail > Frozen Heart > Jak'Sho, The Protean. Mercury's Treads if his team has heavy magic damage and CC.",
+      "skillNotes": "Q first, then E, then W. Max Q; take E earlier if he is very aggressive.",
+      "phases": {
+        "lvl1_3": [
+          "He wins the first trades. Step back from Thundering Smash (Q) and use Ground Slam (E) to cut his attack speed.",
+          "Don't stand still for Frenzied Maul (W). The bite heals him more when he is hurt, so leave after one.",
+          "Use Seismic Shard (Q) to slow him when he dashes in."
+        ],
+        "lvl4_5": [
+          "Sky Splitter (E) marks the ground. Walk out of the circle so you don't take damage or let him get the shield.",
+          "Trade when his Q is on cooldown. Your armor plus E beats his autos."
+        ],
+        "post6": [
+          "Stormbringer (R) leap can't be stopped in the air, so don't waste R on the jump. Use R right after he lands.",
+          "Fight only when his Q and W are down. Otherwise you take too much damage."
+        ],
+        "midgame": [
+          "Group with your team and use R on him or his carries. Sunfire Aegis and Thornmail beat his auto-attack style.",
+          "Watch for his R disabling your towers."
+        ],
+        "lategame": [
+          "He is a diver. Hold R for when he leaps onto your carry and knock him up to save them."
+        ]
+      },
+      "threats": [
+        "Thundering Smash (Q) stun and speed.",
+        "Frenzied Maul (W) double bite that heals.",
+        "Sky Splitter (E) lightning zone and shield.",
+        "Stormbringer (R) tower disable and dive."
+      ],
+      "killWindows": [
+        "After his Q is used and his W bite is done.",
+        "When his ultimate has landed and he is in your team."
+      ],
+      "avoid": [
+        "Trading into his Q > W burst at levels 1-3.",
+        "Standing in the E circle.",
+        "Using R while he is in the air."
+      ],
+      "sources": [
+        "https://www.op.gg/lol/champions/malphite/counters/top",
+        "https://lolalytics.com/lol/malphite/vs/volibear/build/"
+      ]
+    },
+    "Riven": {
+      "name": "Riven",
+      "difficulty": 2,
+      "winRate": 54.25,
+      "winRateSource": "op.gg Malphite top counters, Emerald+, patch 16.19 (= 26.19), 789 games (lolalytics Emerald+ 16.19: about 53.4-53.6, 1,116-1,127 games)",
+      "summary": "You are favored. Riven's damage is physical and she must stay in melee range, so Ground Slam (E) cuts her attack speed, Seismic Shard (Q) slows her, and your armor blunts her burst. Trade when her Valor (E) shield is down and don't get caught by the Ki Burst (W) stun.",
+      "runes": "Grasp of the Undying (Demolish, Conditioning, Overgrowth) + Inspiration or Resolve secondary (best keystone on lolalytics in this lane)",
+      "summoners": "Flash + Teleport (Flash + Exhaust also worked on lolalytics, small sample)",
+      "start": "Doran's Shield + Health Potion",
+      "buildNotes": "Plated Steelcaps > Sunfire Aegis or Iceborn Gauntlet > Thornmail > Frozen Heart > Randuin's Omen or Jak'Sho, The Protean. Rush boots and armor because her damage is physical.",
+      "skillNotes": "Q first, then E, then W. Max Q.",
+      "phases": {
+        "lvl1_3": [
+          "Her Ki Burst (W) stuns in a short circle. Step back or Q her as she walks in.",
+          "Use Ground Slam (E) to cut her attack speed and hit her with Seismic Shard (Q) when she tries Broken Wings (Q3).",
+          "Don't trade into her Broken Wings combo while her dashes are up. Wait until her Q or E is used."
+        ],
+        "lvl4_5": [
+          "Trade after her Valor (E) shield is gone. Q, then E, then autos, and back off.",
+          "Your passive shield and Sunfire Aegis make her poke bounce off."
+        ],
+        "post6": [
+          "Use Unstoppable Force (R) when her E and Q are down. She can dodge with a dash, so cast when she is committed.",
+          "Blade of the Exile (R) gives her range and burst. Don't stay at low health near her Wind Slash."
+        ],
+        "midgame": [
+          "Group with your team and use R on her team's carries. She does little into your armor.",
+          "Split push only if she is away. She can duel you when she has a lead."
+        ],
+        "lategame": [
+          "Knock her up with R when she dives. She is squishy without her shield."
+        ]
+      },
+      "threats": [
+        "Ki Burst (W) stun.",
+        "Broken Wings (Q3) knock-up.",
+        "Valor (E) shield and dash.",
+        "Blade of the Exile (R) Wind Slash execute."
+      ],
+      "killWindows": [
+        "After she uses her E and Q3.",
+        "When your Q slows her, your E cuts her attack speed and her shield is gone."
+      ],
+      "avoid": [
+        "Standing next to her when W is up.",
+        "Using R when she has her dash ready.",
+        "Fighting at low health near her R."
+      ],
+      "sources": [
+        "https://www.op.gg/lol/champions/malphite/counters/top",
+        "https://lolalytics.com/lol/malphite/vs/riven/build/"
+      ]
+    },
+    "Zaahen": {
+      "name": "Zaahen",
+      "difficulty": 3,
+      "winRate": 52.51,
+      "winRateSource": "op.gg Malphite top counters, Emerald+, patch 16.19 (= 26.19), 756 games (lolalytics Emerald+ 16.19: about 55.0, 1,089-1,125 games)",
+      "summary": "Zaahen is a new bruiser with lots of sustain, an on-hit Darkin Glaive (Q) and a revive at max Determination stacks. You are slightly favored with armor and Ground Slam (E), which cuts his attack speed. Keep trades short and don't let him stack Determination for free.",
+      "runes": "Arcane Comet (Sorcery) + Resolve secondary; Summon Aery also did well on lolalytics. Grasp of the Undying if he bullies you",
+      "summoners": "Flash + Ignite, or Flash + Teleport",
+      "start": "Doran's Ring + 2 Health Potion, or Doran's Shield + Health Potion",
+      "buildNotes": "Plated Steelcaps > Sunfire Aegis or Iceborn Gauntlet > Thornmail (his Q and R heal) > Frozen Heart > Randuin's Omen. Thornmail early to cut his healing.",
+      "skillNotes": "Q first, then E, then W. Max Q.",
+      "phases": {
+        "lvl1_3": [
+          "His The Darkin Glaive (Q) makes his next auto hit twice and heals him; the recast after 1.5 seconds knocks you up. Step away from the recast.",
+          "Use Ground Slam (E) to cut his attack speed and Seismic Shard (Q) to slow him. He must stay on you to build Determination.",
+          "Don't take long trades. Every hit on your champion builds his Determination stacks."
+        ],
+        "lvl4_5": [
+          "Dreaded Return (W) stuns and pulls you in if it hits at max range. Sidestep it or stay away from the tip.",
+          "Aureate Rush (E) hits hardest on the outer edge. When he dashes at you, back away from the edge.",
+          "Let his stacks fall off. Stay out of his range for a few seconds, then trade again."
+        ],
+        "post6": [
+          "During Grim Deliverance (R) he can't be crowd controlled on the cast and takes less damage. Use Unstoppable Force (R) after he lands, not during the jump.",
+          "At max Determination stacks he revives instead of dying. Kill him while his stacks are low, or expect him to come back."
+        ],
+        "midgame": [
+          "Group and fight around your ultimate. Frozen Heart and Thornmail cut his auto damage and healing.",
+          "Don't duel him in a side lane without a lead."
+        ],
+        "lategame": [
+          "Peel with your E and R when he dives. Kill his team first, then finish him after his revive."
+        ]
+      },
+      "threats": [
+        "The Darkin Glaive (Q) healing and knock-up recast.",
+        "Dreaded Return (W) stun and pull.",
+        "Grim Deliverance (R) crowd-control immunity on cast and damage reduction.",
+        "Cultivation of War (passive): Determination stacks give him AD and a revive at max stacks."
+      ],
+      "killWindows": [
+        "When his Determination stacks have dropped and his Q and W are on cooldown.",
+        "Right after he lands from his ultimate."
+      ],
+      "avoid": [
+        "Long trades that build his Determination stacks.",
+        "Using R while he is casting his own R.",
+        "Standing on the outer edge of Aureate Rush."
+      ],
+      "sources": [
+        "https://www.op.gg/lol/champions/malphite/counters/top",
+        "https://lolalytics.com/lol/malphite/vs/zaahen/build/",
+        "https://wiki.leagueoflegends.com/en-us/Zaahen"
+      ]
+    },
+    "Vayne": {
+      "name": "Vayne",
+      "difficulty": 1,
+      "winRate": 62.23,
+      "winRateSource": "op.gg Malphite top counters, Emerald+, patch 16.19 (= 26.19), 752 games (lolalytics Emerald+ 16.19 counters page: about 63.5, 1,125 games; the per-matchup page showed a lower figure on a different sample)",
+      "summary": "Your best matchup by far. Vayne is a ranged carry with no armor and no way to stop Unstoppable Force. Ground Slam (E) cuts her attack speed and Seismic Shard (Q) slows her. Beware Condemn (E) into walls and kill her before she has three items.",
+      "runes": "Arcane Comet (Sorcery) + Resolve secondary; Summon Aery also did well on lolalytics. Grasp of the Undying is fine if she isn't poking you",
+      "summoners": "Flash + Teleport (Ignite if you want to kill her early)",
+      "start": "Doran's Ring + 2 Health Potion, or Doran's Shield + Health Potion",
+      "buildNotes": "Plated Steelcaps > Sunfire Aegis > Frozen Heart > Thornmail > Jak'Sho, The Protean. Frozen Heart shuts down her attack speed. Silver Bolts (W) deal true damage based on max health, so keep your health up.",
+      "skillNotes": "Q first, then E, then W. Max Q for poke, or E if she trades with you.",
+      "phases": {
+        "lvl1_3": [
+          "Poke her with Seismic Shard (Q) and steal her move speed. She has no good reason to fight you.",
+          "Keep away from walls. Condemn (E) pushes you and stuns if you hit terrain.",
+          "Trade with Q > E > auto and walk away. Every third Silver Bolts (W) hit is true damage, so don't stay in a long fight."
+        ],
+        "lvl4_5": [
+          "Ground Slam (E) slows her autos. Look for an all-in with Q, E and autos once she has used Tumble (Q).",
+          "Keep the wave near your tower. She is weak into a slow push."
+        ],
+        "post6": [
+          "Use Unstoppable Force (R) when she Tumbles or after Condemn. Aim where she is going, not where she stands.",
+          "Final Hour (R) gives her stealth and speed. Don't chase her in the dark; keep the wave pushed."
+        ],
+        "midgame": [
+          "Kill her before she has three items. Look for a flank with Teleport and use R on her.",
+          "Don't group in a straight line in front of her. Stay out of range, then engage with R."
+        ],
+        "lategame": [
+          "She is a late-game carry. Dive her with R when she is out of position and after Condemn is used, or she shreds you."
+        ]
+      },
+      "threats": [
+        "Condemn (E) push into walls and stun.",
+        "Silver Bolts (W) third-hit true damage by max health.",
+        "Tumble (Q) dodges your R.",
+        "Final Hour (R) stealth and damage late."
+      ],
+      "killWindows": [
+        "After she uses Tumble and Condemn.",
+        "Any time you land Seismic Shard (Q) and Ground Slam (E) and she is away from walls."
+      ],
+      "avoid": [
+        "Standing next to a wall when Condemn is up.",
+        "Letting her farm three items in peace.",
+        "Trading autos with her for long."
+      ],
+      "sources": [
+        "https://www.op.gg/lol/champions/malphite/counters/top",
+        "https://lolalytics.com/lol/malphite/counters/",
+        "https://lolalytics.com/lol/malphite/vs/vayne/build/"
+      ]
+    }
+  }
+}

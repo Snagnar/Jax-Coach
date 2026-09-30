@@ -12,7 +12,7 @@ New-Item -ItemType Directory -Force $Obj, $Dist | Out-Null
 
 # what goes in: the app, never your settings, keys, history, caches or the downloaded voice
 $include = @('server.ps1', 'README.md', 'LICENSE', 'Jax Coach.vbs', 'Create desktop shortcut.bat', 'Start Jax Coach.bat',
-  'Install local voice.bat', 'app\*', 'data\*', 'public\*', 'voice\*.py', 'voice\*.ps1')
+  'Install local voice.bat', 'app\*', 'data\*', 'data\champions\*\*', 'agents\*', 'agents\prompts\*', 'public\*', 'voice\*.py', 'voice\*.ps1')
 $files = foreach ($pat in $include) { Get-ChildItem (Join-Path $Root $pat) -File -ErrorAction SilentlyContinue }
 $files = $files | Sort-Object FullName -Unique
 

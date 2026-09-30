@@ -1,0 +1,455 @@
+{
+  "champion": "Warwick",
+  "role": "top",
+  "patch": "26.19",
+  "lastUpdated": "2026-09-30",
+  "sources": [
+    {
+      "name": "OP.GG - Warwick Top Build (patch 26.19: 51.94% WR, Doran's Blade, Lethal Tempo, Flash + Barrier, BotRK > Stridebreaker > Death's Dance, Plated Steelcaps)",
+      "url": "https://www.op.gg/lol/champions/warwick/build/top"
+    },
+    {
+      "name": "LoLalytics - Warwick Top (patch 26.19, Emerald+, 53.41% WR, BotRK core, Death's Dance / Sterak's Gage defensive)",
+      "url": "https://lolalytics.com/lol/warwick/build/?lane=top"
+    },
+    {
+      "name": "LoL Wiki - Warwick (ability details, re-checked 2026-09-30; last Warwick change V26.09)",
+      "url": "https://wiki.leagueoflegends.com/en-us/Warwick"
+    },
+    {
+      "name": "LoL Wiki - Warwick/Strategy (ability tips; general, not patch specific)",
+      "url": "https://wiki.leagueoflegends.com/en-us/Warwick/Strategy"
+    },
+    {
+      "name": "Riot - Patch 26.19 Notes (top quest Teleport cooldowns)",
+      "url": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-19-notes/"
+    },
+    {
+      "name": "Riot - Patch 26.1 Notes (2026 season: role quests, objectives, turrets)",
+      "url": "https://www.leagueoflegends.com/en-us/news/game-updates/patch-26-1-notes/"
+    },
+    {
+      "name": "reference/shared.json (objective timers and season facts, patch 26.19)",
+      "url": "reference/shared.json"
+    }
+  ],
+  "phases": [
+    {
+      "id": "lvl1_3",
+      "label": "Levels 1-3",
+      "timeHint": "0:00-~4:00",
+      "goals": [
+        "Trade with autos so your passive and Q heal you, and keep your HP above theirs.",
+        "Hit level 2 and 3 first; Warwick wins short all-ins once E and Q are both up.",
+        "Farm toward your first back with 900+ gold."
+      ],
+      "do": [
+        "Skill Q level 1, W at 2, E at 3 (max Q, then W, then E).",
+        "Auto the enemy whenever it is safe: Eternal Hunger heals you more the lower you are.",
+        "Trade with auto, Q (hold it to stick to them), auto, then walk out; fight longer once they drop under 50% HP.",
+        "Level 3 all-in: Q, autos, then recast E to fear when they try to leave.",
+        "Blood Hunt gives you bonus attack speed automatically against targets below 50% HP: that is your kill window."
+      ],
+      "dont": [
+        "Don't fight ranged poke champions from range; farm under your turret and wait for a gank or level 3.",
+        "Don't waste E early just to fear; it is your escape and your finisher.",
+        "Don't chase a kiting champion past your wave without Q ready."
+      ],
+      "ifAhead": [
+        "Force trades and zone them off CS; a low target is an easy kill with Q and Blood Hunt.",
+        "Crash the wave into their turret for plates before your first back."
+      ],
+      "ifEven": [
+        "Farm, take auto trades when their key spell is down, and play for level 3.",
+        "Keep the wave near the middle so the enemy jungler cannot easily catch you."
+      ],
+      "ifBehind": [
+        "Let the wave come to you and farm under your turret; heal with autos on minions.",
+        "Keep E up as your escape and wait for level 6."
+      ]
+    },
+    {
+      "id": "lvl4_5",
+      "label": "Levels 4-5",
+      "timeHint": "~4:00-~7:00",
+      "goals": [
+        "Recall on a crashed wave with 900+ gold and start Blade of The Ruined King.",
+        "Stay even in CS and levels so your top quest and level 6 arrive on time.",
+        "Keep Q and E up as an answer to the enemy jungler."
+      ],
+      "do": [
+        "Crash the wave before you recall so you lose no CS.",
+        "Buy Vampiric Scepter or Recurve Bow toward Blade of The Ruined King, plus a Control Ward with leftovers.",
+        "Trade with autos when you are on the bigger wave; the heal from autos wins long trades.",
+        "Join a dragon fight only if your jungler starts it and you can arrive first."
+      ],
+      "dont": [
+        "Don't walk up in their ranged poke range with low HP.",
+        "Don't play far from your turret without a ward; Warwick cannot escape a gank without E or Q."
+      ],
+      "ifAhead": [
+        "Slow push and force trades; kill them once they drop below 50% HP.",
+        "Ping your jungler for a gank from your side when the enemy is low."
+      ],
+      "ifEven": [
+        "Farm and trade autos; save E for a gank or a kill.",
+        "Hold the wave near your side and keep your HP high."
+      ],
+      "ifBehind": [
+        "Farm under your turret and buy Vampiric Scepter for sustain.",
+        "Wait for level 6 and a jungler visit."
+      ]
+    },
+    {
+      "id": "lvl6_first_item",
+      "label": "Level 6 to first item",
+      "timeHint": "~6:00-~13:00",
+      "goals": [
+        "Threaten kills with Infinite Duress: R the enemy when they are below half HP or out of position.",
+        "Finish Blade of The Ruined King and your top quest around 12-13 minutes.",
+        "Join Voidgrubs at 8:00 with your jungler when your wave is crashed."
+      ],
+      "do": [
+        "Kill combo: Q, autos, R when they turn to run, then recast E to fear after the suppression.",
+        "R range scales with your movement speed: Blood Hunt speed toward a low target makes it reach further.",
+        "Push the wave, then use Blood Hunt's active out of combat to find a low target mid or in the river.",
+        "Join Voidgrubs at 8:00 if your wave is crashed and you can arrive first."
+      ],
+      "dont": [
+        "Don't use R on a full-HP target in front of their team; the suppression ends and you are stuck there.",
+        "Don't leave the lane with a big wave coming to your turret unless the roam kills something.",
+        "Don't R into a stun or knock-up that can interrupt you."
+      ],
+      "ifAhead": [
+        "Roam for a kill mid with R and Blood Hunt, then return to your lane to take plates.",
+        "Take the top turret quickly; melee champions deal extra damage to turrets."
+      ],
+      "ifEven": [
+        "Push the wave, then use R to gank when you see the enemy laner low or overextended.",
+        "Trade with autos in lane and use R only for a sure kill."
+      ],
+      "ifBehind": [
+        "Farm safely toward Blade of The Ruined King; avoid fights until the item.",
+        "R is only for a safe pick when their laner is low, not to fix a losing lane."
+      ]
+    },
+    {
+      "id": "first_item_to_14",
+      "label": "First item to ~14 minutes",
+      "timeHint": "~12:00-~15:00",
+      "goals": [
+        "Use Blade of The Ruined King to duel and to shred tanks with percent HP damage.",
+        "Buy Plated Steelcaps next, then Stridebreaker.",
+        "Set up the 15:00 Rift Herald and use your quest Teleport for a pick."
+      ],
+      "do": [
+        "Duel when the enemy is below 50% HP: Blood Hunt attack speed plus Blade of The Ruined King melts them.",
+        "Push top before Herald so your jungler can take it; hit the top turret with the Eye of the Herald.",
+        "Hold your quest Teleport for a bot fight or a gank on a low target with R.",
+        "Buy a Control Ward at every back and put it in the river or tri-brush."
+      ],
+      "dont": [
+        "Don't Teleport into a fight that is already over before you land.",
+        "Don't fight the enemy top into their jungler without a ward on their approach."
+      ],
+      "ifAhead": [
+        "Take the top turret and rotate to help your jungler with dragon or Herald.",
+        "Look for kills on anyone below 50% HP: Blood Hunt makes them hard to escape you."
+      ],
+      "ifEven": [
+        "Push, then join Herald and use Teleport for a pick or a dragon fight.",
+        "Duel when Q, E and R are up and their escape is used."
+      ],
+      "ifBehind": [
+        "Farm safely and get Plated Steelcaps versus AD or Mercury's Treads versus heavy AP and CC.",
+        "Use Teleport to join team fights instead of fighting alone."
+      ]
+    },
+    {
+      "id": "midgame",
+      "label": "Midgame",
+      "timeHint": "~15:00-~25:00",
+      "goals": [
+        "Push a side wave, then join your team and pick off their carry with R before each objective.",
+        "Build Stridebreaker, then Death's Dance or Sterak's Gage.",
+        "Be at Baron at 20:00 with Teleport ready or already in position."
+      ],
+      "do": [
+        "Hunt the enemy carry: wait in fog or jungle, then R the target and fear with E for a free pick.",
+        "Push a side wave first, then join the objective when it starts; use Teleport to land next to your team.",
+        "Duel a lone side laner when he drops below 50% HP.",
+        "Use Stridebreaker's active (dash and slow) on a runner, then R when you are close.",
+        "Ping your team before you go for a pick so they follow up."
+      ],
+      "dont": [
+        "Don't split push without vision; Warwick has no safe escape once caught.",
+        "Don't walk first into 5v5 fights; you are a flanker, not the front line.",
+        "Don't use R on a tank; keep it for a carry."
+      ],
+      "ifAhead": [
+        "Force fights around dragons and Baron and R the carry as soon as the fight starts.",
+        "Take plates and turrets with your team; your healing lets you fight 1v2 when they are low."
+      ],
+      "ifEven": [
+        "Stay near your team, push a wave and arrive first at each objective.",
+        "Wait in the fog for a target below 50% HP, then R."
+      ],
+      "ifBehind": [
+        "Farm, avoid solo fights, and follow your team to fights from the side.",
+        "Buy Death's Dance to survive burst and heal back from kills."
+      ]
+    },
+    {
+      "id": "lategame",
+      "label": "Lategame",
+      "timeHint": "25:00+",
+      "goals": [
+        "Pick off the enemy carry with R and let your team take Baron or Elder.",
+        "Play in fog with your team and only fight when you can reach the carry.",
+        "Don't die first; death timers are long now."
+      ],
+      "do": [
+        "Finish with Sterak's Gage, Spirit Visage or Guardian Angel if you get focused.",
+        "Stack Blade of The Ruined King's three hits on the carry after the R.",
+        "Wait for their CC to be used, then R the carry or the mage and fear with E.",
+        "Hold Q to stick to a target that dashes or flashes away; you follow their movement.",
+        "Buy Chempunk Chainsword or Thornmail for Grievous Wounds against heavy healers."
+      ],
+      "dont": [
+        "Don't stand alone in the jungle; enemies with CC kill you.",
+        "Don't R into their frontline; it wastes the ultimate and takes you out of the fight."
+      ],
+      "ifAhead": [
+        "Hunt the carry each fight; then take turrets and Baron with your team.",
+        "Split only if your team has vision and you win the duel."
+      ],
+      "ifEven": [
+        "Group for Baron and Elder and flank to the enemy backline.",
+        "Save R for the enemy who would otherwise kill your team."
+      ],
+      "ifBehind": [
+        "Stay with your team, peel with E fear, and R their assassin when he jumps in.",
+        "Play for picks on their lone side laner instead of 5v5."
+      ]
+    }
+  ],
+  "trading": [
+    "Trade with autos: Eternal Hunger heals you on every hit, much more below 50% and 25% HP.",
+    "Short trade: auto, Q (hold it to stick to him), auto, then walk away.",
+    "Blood Hunt passive gives you attack speed against anyone below 50% HP: that is when you commit.",
+    "E reduces damage while active; recast after a moment to fear him off you or to stop his escape.",
+    "Best all-in: Q, autos, keep E for his counter-engage or his escape, and stay on him.",
+    "Don't trade long when the enemy has Grievous Wounds; your sustain drops a lot.",
+    "Vs ranged: farm and heal with autos; Q only to catch him after he uses his key spell."
+  ],
+  "waveManagement": [
+    "Your sustain lets you stay on the wave; slow push when you are stronger and fight on the bigger wave.",
+    "Crash the wave before every recall and before every objective (dragon 5:00, grubs 8:00, Herald 15:00, Baron 20:00).",
+    "Keep the wave near your tower in a bad matchup; give up CS instead of a fight you cannot win.",
+    "When ahead, push the wave into the enemy turret for plates before you roam.",
+    "Plates are permanent on all turrets; hit them for role quest points (top: +40 per plate)."
+  ],
+  "splitPush": {
+    "when": [
+      "When the enemy top cannot beat you 1v1 and your team can hold without you.",
+      "When the next objective is on the other side and your Teleport is up."
+    ],
+    "rules": [
+      "Warwick is not a pure split pusher: push a wave, take a plate or turret, then rotate back to your team.",
+      "If one enemy comes, fight him once he drops below 50% HP; if two come, walk away and let your team take something.",
+      "Keep a ward in the jungle to see them come; you can't escape without E or Q.",
+      "Use Stridebreaker's dash to move fast between waves."
+    ],
+    "tpUsage": [
+      "Save Teleport for a fight or a pick with R at Baron or dragon.",
+      "Teleport to a ward or minion on a flank and R the carry as soon as you land.",
+      "After the quest you get a free Teleport (390 s cooldown at 26.19) or an upgraded one; plan your plays around it."
+    ]
+  },
+  "teamfight": {
+    "role": "Flanking diver and pick-off: hide in fog, then R the enemy carry, and heal by attacking in the fight.",
+    "rules": [
+      "Wait for their CC to be used, then R the carry.",
+      "Recast E after the suppression so the carry can't walk away from you.",
+      "Blood Hunt shows anyone below 50% HP and speeds you toward them: chase those first.",
+      "Hold Q to follow a target through dashes and Flash.",
+      "Stay with your team if their carry is not reachable; fight the closest low-HP enemy."
+    ],
+    "targetPriority": [
+      "The enemy carry you can reach with R.",
+      "The mage or assassin who is out of position.",
+      "Anyone below 50% HP (Blood Hunt shows them)."
+    ]
+  },
+  "objectives": [
+    "Dragon spawns at 5:00 (respawn 5:00); Elder comes 6:00 after the fourth drake. Crash top first so you can Teleport.",
+    "Voidgrubs: 3 at 8:00, despawn 14:45; help take them after you crash your wave.",
+    "Rift Herald: 15:00, despawns 19:45; push top first, then use the Eye on the top turret.",
+    "Baron: 20:00, then 6:00 after each kill; be alive and near with Teleport up. R the carry that tries to steal.",
+    "Atakhan was removed in 2026; plan around Baron and dragons.",
+    "Plates are permanent on inner and inhibitor turrets too; push waves with your team when you are ahead."
+  ],
+  "mechanics": [
+    "Q (Jaws of the Beast): tap to bite and heal; hold it to attach and follow the target's dashes, then land behind them.",
+    "W (Blood Hunt): passive attack speed against targets below 50% HP and move speed toward them; the active (out of combat) marks the nearest enemy.",
+    "E (Primal Howl): damage reduction for up to 2.75 s, then a fear; recast after 1 s to fear early.",
+    "R (Infinite Duress): long leap that suppresses the first champion hit; range scales with your move speed; hard CC stops the leap.",
+    "Eternal Hunger: every auto heals you below 50% HP, and far more below 25%; Grievous Wounds cut it a lot.",
+    "Blade of The Ruined King: three hits on a champion slow them and steal their move speed."
+  ],
+  "recallTimings": [
+    {
+      "gold": 700,
+      "buy": "Recurve Bow",
+      "note": "Minimum back: attack speed toward Blade of The Ruined King."
+    },
+    {
+      "gold": 900,
+      "buy": "Vampiric Scepter",
+      "note": "Sustain back: lifesteal toward Blade of The Ruined King."
+    },
+    {
+      "gold": 1600,
+      "buy": "Recurve Bow + Vampiric Scepter",
+      "note": "Crash the wave first."
+    },
+    {
+      "gold": 3200,
+      "buy": "Blade of The Ruined King",
+      "note": "Your first item; your strongest duel spike."
+    },
+    {
+      "gold": 1100,
+      "buy": "Plated Steelcaps (vs AD) or Mercury's Treads (vs AP or CC)",
+      "note": "Right after Blade of The Ruined King."
+    },
+    {
+      "gold": 3300,
+      "buy": "Stridebreaker",
+      "note": "Second legendary; dash, slow and move speed for R."
+    },
+    {
+      "gold": 3300,
+      "buy": "Death's Dance or Sterak's Gage",
+      "note": "Third: Death's Dance vs AD burst, Sterak's Gage vs CC and burst."
+    }
+  ],
+  "commonMistakes": [
+    "Using R on a tank or on a full-HP target.",
+    "Using E fear too early and having no answer when the target runs or engages.",
+    "Fighting champions with Grievous Wounds and heavy CC without a plan.",
+    "Chasing a kiting target far from your team.",
+    "Recalling without crashing the wave.",
+    "Splitting without vision and dying to a pick.",
+    "Backing off at low HP when your passive heal would win the fight."
+  ],
+  "triggers": {
+    "enemy_laner_dead": [
+      "Push the wave into their turret and take plates before you recall.",
+      "Buy your components and come back, or Teleport to help your jungler."
+    ],
+    "you_died_to_gank": [
+      "Ward the river and keep the wave near your turret.",
+      "Save E and Q as your escape before you walk up."
+    ],
+    "you_died_solo": [
+      "Trade only when your Q and E are up and his key spell is down.",
+      "Farm under turret and play for the first item and level 6."
+    ],
+    "opp_level_lead": [
+      "They are a level up; farm under your turret and don't trade.",
+      "Wait for level 3 or 6 and a jungler visit."
+    ],
+    "you_level_lead": [
+      "You are a level up; trade with autos, Q and E before they catch up.",
+      "Watch for the enemy jungler first."
+    ],
+    "you_hit_level_2_first": [
+      "Level 2 first: auto, Q and hold it, auto, then back out."
+    ],
+    "you_hit_6": [
+      "R online: look for a kill when they are below half HP or after a push.",
+      "Check the enemy jungler before you leap."
+    ],
+    "first_item_done": [
+      "Blade of The Ruined King done: duel and shred tanks; push and take the turret.",
+      "Buy boots next, then Stridebreaker."
+    ],
+    "second_item_done": [
+      "Two items: push side, then pick off the carry with R; join objectives with Teleport."
+    ],
+    "three_items_done": [
+      "Three items: flank and R the carry, then heal and stay alive."
+    ],
+    "you_are_fed": [
+      "Push waves and take turrets with your team; hunt the carry with R.",
+      "Don't walk alone without vision; your bounty is high."
+    ],
+    "you_are_behind": [
+      "Farm safely, heal with autos and group with your team.",
+      "Wait for a low-HP target and pick it with R; avoid front-line fights."
+    ],
+    "enemy_laner_fed": [
+      "Don't duel him; group with your team and R him when he steps up first.",
+      "Buy Plated Steelcaps or Mercury's Treads and a defensive item."
+    ],
+    "enemy_team_numbers_down": [
+      "You have more players; push a turret or take the next objective now.",
+      "Crash your wave on the way."
+    ],
+    "your_team_numbers_down": [
+      "Your team is down players; clear waves under your turret and don't fight."
+    ],
+    "baron_up_soon": [
+      "Baron soon: push a wave and stand in fog near the pit with Teleport ready.",
+      "R the carry when the fight starts."
+    ],
+    "dragon_up_soon": [
+      "Dragon soon: crash top and keep Teleport ready to join.",
+      "If you can't make it, push top to pull an enemy away."
+    ],
+    "grubs_soon": [
+      "Grubs at 8:00: crash your wave and help your jungler take them.",
+      "Don't go if the enemy top and jungler will arrive first."
+    ],
+    "herald_soon": [
+      "Herald at 15:00: push top first, then help take it and use the Eye on your top turret."
+    ],
+    "enemy_jungler_ganked_top_repeatedly": [
+      "Keep the wave near your turret and ward the river and tri-brush.",
+      "Keep E and Q for the gank; don't spend them on a trade."
+    ],
+    "long_death_timers": [
+      "Death timers are long: don't walk alone; one pick can lose Baron or the game.",
+      "Stay with your team and wait in fog."
+    ],
+    "enemy_has_heavy_healing": [
+      "Heavy healing: buy Chempunk Chainsword or Thornmail; burst them so they can't heal back.",
+      "Don't trade long when your sustain is not enough."
+    ],
+    "enemy_heavy_ap": [
+      "Heavy AP: buy Mercury's Treads and Spirit Visage or Maw of Malmortius.",
+      "Use E in fights to reduce damage."
+    ],
+    "enemy_heavy_ad": [
+      "Heavy AD: Plated Steelcaps and Death's Dance.",
+      "Use E when the ADC and auto-attackers hit you."
+    ],
+    "enemy_many_tanks": [
+      "Many tanks: Blade of The Ruined King does percent HP damage; R the carry behind them.",
+      "Don't waste R on a tank."
+    ],
+    "enemy_heavy_cc": [
+      "Heavy CC: Mercury's Treads and Sterak's Gage.",
+      "Wait for their CC to be used before you R."
+    ],
+    "turret_lost": [
+      "Your turret is down: don't push without vision; play near your next turret.",
+      "Group with your team."
+    ],
+    "enemy_turret_taken": [
+      "Turret taken: push the next lane or join the next objective with Teleport.",
+      "Keep hitting their inner turrets; plates stay up."
+    ]
+  }
+}

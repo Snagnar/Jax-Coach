@@ -1,12 +1,11 @@
 // Jax Coach - post-game review & trends.
-// Imports your recent Jax games from match-v5 (+ timelines), analyses each one, and finds patterns.
+// Imports your recent games on the active champion from match-v5 (+ timelines), analyses each one, and finds patterns.
 // Games recorded live by this app add what the dashboard said when you died.
 
 const Review = (() => {
-  const JAX_KEY = 24;
   const QUEUES = [420, 440, 400, 490];               // solo/duo, flex, draft, quickplay
   const QUEUE_NAME = { 420: 'Solo/Duo', 440: 'Flex', 400: 'Draft', 490: 'Quickplay' };
-  const S = { status: 'idle', me: null, games: [], scanned: 0, toScan: 0, error: null, history: [], open: null };
+  const S = { status: 'idle', me: null, champ: 'Jax', games: [], scanned: 0, toScan: 0, error: null, history: [], open: null };
   let onChange = () => {};
   const changed = () => onChange();
 
@@ -126,7 +125,7 @@ const Review = (() => {
         S.scanned++;
         if (m && m.info) {
           const p = m.info.participants.find((x) => x.puuid === S.me.puuid);
-          if (p && p.championId === JAX_KEY && !p.gameEndedInEarlySurrender) {
+          if (p && p.championName === S.champ && !p.gameEndedInEarlySurrender) {
             const tl = await Scout.api('match', `/lol/match/v5/matches/${id}/timeline`);
             games.push(analyzeGame(D, m, tl, S.me.puuid));
             S.games = games.slice(); changed();
@@ -148,7 +147,7 @@ const Review = (() => {
 
   function attachLiveRecords() {
     for (const g of S.games) {
-      const rec = S.history.find((h) => h.champ === 'Jax' && Math.abs((h.endedAt || 0) - g.end) < 15 * 60000);
+      const rec = S.history.find((h) => h.champ === S.champ && Math.abs((h.endedAt || 0) - g.end) < 15 * 60000);
       if (!rec) continue;
       g.live = rec;
       // match each timeline death to the dashboard mode recorded at that moment (same game clock)
@@ -227,7 +226,7 @@ const Review = (() => {
     if (T.firstItem != null) {
       const fast = games.filter((g) => g.firstItemAt && g.firstItemAt <= T.firstItem), slow = games.filter((g) => g.firstItemAt && g.firstItemAt > T.firstItem);
       const wf = fast.length ? Math.round((fast.filter((g) => g.win).length / fast.length) * 100) : null, ws = slow.length ? Math.round((slow.filter((g) => g.win).length / slow.length) * 100) : null;
-      out.push({ k: 'info', title: `First item at ${fmt(T.firstItem)} on average`, text: wf != null && ws != null ? `Win rate when it's faster than that: ${wf}% (${fast.length} games), slower: ${ws}% (${slow.length} games).` : '', tip: T.firstItem > 15 * 60 ? 'Faster items come from CS: every wave you miss delays Trinity Force.' : '' });
+      out.push({ k: 'info', title: `First item at ${fmt(T.firstItem)} on average`, text: wf != null && ws != null ? `Win rate when it's faster than that: ${wf}% (${fast.length} games), slower: ${ws}% (${slow.length} games).` : '', tip: T.firstItem > 15 * 60 ? 'Faster items come from CS: every wave you miss delays your first item.' : '' });
     }
     const worst = Object.entries(T.byOpp).filter(([, o]) => o.l >= 2 && o.l > o.w).sort((a, b) => b[1].l - a[1].l)[0];
     if (worst) out.push({ k: 'warn', title: `Trouble matchup: ${worst[0]} (${worst[1].w}W ${worst[1].l}L)`, text: 'Read the matchup page before your next game against this champion.', tip: '', mu: worst[0] });
@@ -240,5 +239,7 @@ const Review = (() => {
     state: S, load, trends, insights, setIdentity, zoneOf, QUEUE_NAME, ensurePuuid,
     onChange: (fn) => { onChange = fn; },
     reset: () => { S.games = []; S.status = 'idle'; },
+    // the Review follows the active champion; switching clears the imported games
+    setChampion: (cid) => { if (!cid || cid === S.champ) return; S.champ = cid; S.games = []; S.status = 'idle'; S.open = null; changed(); },
   };
 })();

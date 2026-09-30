@@ -16,7 +16,7 @@ using Microsoft.Win32;
 
 [assembly: AssemblyTitle("Jax Coach Setup")]
 [assembly: AssemblyProduct("Jax Coach")]
-[assembly: AssemblyDescription("Installs Jax Coach, a local coaching app for Jax top in League of Legends")]
+[assembly: AssemblyDescription("Installs Jax Coach, a local coaching app for top lane in League of Legends")]
 
 namespace JaxCoachSetup
 {
@@ -39,15 +39,15 @@ namespace JaxCoachSetup
 
         readonly string version;
         TextBox dir, log;
-        CheckBox voice, desktop, launch;
+        CheckBox voice, claude, desktop, launch;
         Button browse, install, close;
         ProgressBar bar;
         Label status;
         Process child;
-        bool busy, finished;
+        bool busy, finished, claudeAsked;
         string installedRoot;
 
-        // Command line (all optional): /dir="C:\Games\Jax Coach" /novoice /nodesktop /nolaunch /auto (start right away)
+        // Command line (all optional): /dir="C:\Games\Jax Coach" /novoice /noclaude /nodesktop /nolaunch /auto (start right away)
         public SetupForm(string[] args)
         {
             version = ReadText("version.txt").Trim();
@@ -59,7 +59,7 @@ namespace JaxCoachSetup
             FormBorderStyle = FormBorderStyle.FixedDialog;
             MaximizeBox = false;
             StartPosition = FormStartPosition.CenterScreen;
-            ClientSize = new Size(560, 500);
+            ClientSize = new Size(560, 526);
             BackColor = Color.White;
             using (var s = Res("icon.ico")) Icon = new Icon(s);
 
@@ -67,7 +67,7 @@ namespace JaxCoachSetup
             var logo = new PictureBox { Location = new Point(18, 14), Size = new Size(56, 56), SizeMode = PictureBoxSizeMode.Zoom };
             using (var s = Res("icon.ico")) logo.Image = new Icon(s, 64, 64).ToBitmap();
             var title = new Label { Text = "Jax Coach", ForeColor = Color.White, Font = new Font("Segoe UI Semibold", 17F), Location = new Point(84, 14), AutoSize = true };
-            var sub = new Label { Text = "Live coaching for Jax top  ·  version " + version, ForeColor = Accent, Location = new Point(87, 50), AutoSize = true };
+            var sub = new Label { Text = "Live coaching for top lane  ·  version " + version, ForeColor = Accent, Location = new Point(87, 50), AutoSize = true };
             header.Controls.AddRange(new Control[] { logo, title, sub });
 
             var dirLabel = new Label { Text = "Install folder (no admin rights needed):", Location = new Point(16, 100), AutoSize = true };
@@ -76,24 +76,26 @@ namespace JaxCoachSetup
             browse.Click += delegate { PickFolder(); };
 
             voice = new CheckBox { Text = "Local voice (Kokoro): natural offline voice for the callouts. Downloads about 420 MB.", Location = new Point(16, 158), Size = new Size(530, 24), Checked = true };
-            desktop = new CheckBox { Text = "Desktop shortcut (the Start menu entry is always added)", Location = new Point(16, 184), Size = new Size(530, 24), Checked = true };
-            launch = new CheckBox { Text = "Start Jax Coach when setup is done", Location = new Point(16, 210), Size = new Size(530, 24), Checked = true };
+            bool hasClaude = ClaudeInstalled();
+            claude = new CheckBox { Text = hasClaude ? "Claude Code (AI research agents): already installed" : "Claude Code (AI research agents: game plans, new champions). Anthropic's official installer.", Location = new Point(16, 184), Size = new Size(530, 24), Checked = !hasClaude, Enabled = !hasClaude };
+            desktop = new CheckBox { Text = "Desktop shortcut (the Start menu entry is always added)", Location = new Point(16, 210), Size = new Size(530, 24), Checked = true };
+            launch = new CheckBox { Text = "Start Jax Coach when setup is done", Location = new Point(16, 236), Size = new Size(530, 24), Checked = true };
 
-            status = new Label { Text = "Ready to install.", Location = new Point(16, 246), Size = new Size(530, 20) };
-            bar = new ProgressBar { Location = new Point(16, 268), Size = new Size(528, 16), Maximum = 100 };
+            status = new Label { Text = "Ready to install.", Location = new Point(16, 272), Size = new Size(530, 20) };
+            bar = new ProgressBar { Location = new Point(16, 294), Size = new Size(528, 16), Maximum = 100 };
             log = new TextBox
             {
-                Location = new Point(16, 294), Size = new Size(528, 150), Multiline = true, ReadOnly = true,
+                Location = new Point(16, 320), Size = new Size(528, 150), Multiline = true, ReadOnly = true,
                 ScrollBars = ScrollBars.Vertical, Font = new Font("Consolas", 8.5F), BackColor = Color.FromArgb(247, 246, 251)
             };
 
-            install = new Button { Text = "Install", Location = new Point(348, 456), Size = new Size(96, 30) };
-            close = new Button { Text = "Cancel", Location = new Point(452, 456), Size = new Size(92, 30) };
+            install = new Button { Text = "Install", Location = new Point(348, 482), Size = new Size(96, 30) };
+            close = new Button { Text = "Cancel", Location = new Point(452, 482), Size = new Size(92, 30) };
             install.Click += delegate { OnInstall(); };
             close.Click += delegate { Close(); };
             AcceptButton = install;
 
-            Controls.AddRange(new Control[] { header, dirLabel, dir, browse, voice, desktop, launch, status, bar, log, install, close });
+            Controls.AddRange(new Control[] { header, dirLabel, dir, browse, voice, claude, desktop, launch, status, bar, log, install, close });
             FormClosing += OnClosing;
 
             ResumeLayout(false);     // applies the DPI scaling to everything above
@@ -104,6 +106,7 @@ namespace JaxCoachSetup
                 string arg = a.ToLowerInvariant();
                 if (arg.StartsWith("/dir=")) dir.Text = a.Substring(5).Trim('"');
                 else if (arg == "/novoice") voice.Checked = false;
+                else if (arg == "/noclaude") claude.Checked = false;
                 else if (arg == "/nodesktop") desktop.Checked = false;
                 else if (arg == "/nolaunch") launch.Checked = false;
                 else if (arg == "/auto") auto = true;
@@ -115,6 +118,17 @@ namespace JaxCoachSetup
         }
 
         // ---------- UI ----------
+
+        static bool ClaudeInstalled()
+        {
+            string home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+            if (File.Exists(Path.Combine(home, @".local\bin\claude.exe"))) return true;
+            foreach (var d in (Environment.GetEnvironmentVariable("PATH") ?? "").Split(';'))
+            {
+                try { if (d.Length > 0 && (File.Exists(Path.Combine(d, "claude.exe")) || File.Exists(Path.Combine(d, "claude.cmd")))) return true; } catch { }
+            }
+            return false;
+        }
 
         static string DefaultRoot()
         {
@@ -167,9 +181,10 @@ namespace JaxCoachSetup
             }
 
             busy = true;
-            install.Enabled = browse.Enabled = dir.Enabled = voice.Enabled = desktop.Enabled = launch.Enabled = false;
-            bool wantVoice = voice.Checked, wantDesktop = desktop.Checked;
-            var t = new Thread(delegate () { Run(root, wantVoice, wantDesktop); }) { IsBackground = true };
+            install.Enabled = browse.Enabled = dir.Enabled = voice.Enabled = claude.Enabled = desktop.Enabled = launch.Enabled = false;
+            bool wantVoice = voice.Checked, wantClaude = claude.Checked && claude.Enabled, wantDesktop = desktop.Checked;
+            claudeAsked = wantClaude;
+            var t = new Thread(delegate () { Run(root, wantVoice, wantClaude, wantDesktop); }) { IsBackground = true };
             t.Start();
         }
 
@@ -185,7 +200,7 @@ namespace JaxCoachSetup
             if (InvokeRequired) { BeginInvoke(new Action<bool, string>(Done), ok, message); return; }
             busy = false;
             Status(message, ok ? 100 : -1);
-            if (!ok) { install.Text = "Retry"; install.Enabled = browse.Enabled = dir.Enabled = voice.Enabled = desktop.Enabled = launch.Enabled = true; close.Text = "Close"; return; }
+            if (!ok) { install.Text = "Retry"; install.Enabled = browse.Enabled = dir.Enabled = voice.Enabled = desktop.Enabled = launch.Enabled = true; claude.Enabled = claudeAsked; close.Text = "Close"; return; }
             finished = true;
             close.Text = "Close";
             if (launch.Checked) { StartApp(); install.Text = "Open again"; }
@@ -201,7 +216,7 @@ namespace JaxCoachSetup
 
         // ---------- install ----------
 
-        void Run(string root, bool wantVoice, bool wantDesktop)
+        void Run(string root, bool wantVoice, bool wantClaude, bool wantDesktop)
         {
             try
             {
@@ -232,6 +247,13 @@ namespace JaxCoachSetup
                 Log("Added to Windows Settings > Apps (uninstall from there).");
                 Status(null, 15);
 
+                string claudeNote = "";
+                if (wantClaude)
+                {
+                    Status("Installing Claude Code…", 16);
+                    code = RunPowerShell(Path.Combine(root, @"agents\setup-claude.ps1"), "", null);
+                    claudeNote = code == 0 ? " Sign in to Claude once in the app (Playbook tab)." : " Claude Code could not be installed; see the log.";
+                }
                 string voiceNote = "";
                 if (wantVoice)
                 {
@@ -240,7 +262,7 @@ namespace JaxCoachSetup
                     if (code != 0) voiceNote = " The local voice failed; run \"Install local voice.bat\" later. Jax Coach falls back to Windows voices.";
                 }
                 Log("Done.");
-                Done(true, "Jax Coach is installed." + voiceNote);
+                Done(true, "Jax Coach is installed." + voiceNote + claudeNote);
             }
             catch (Exception ex)
             {

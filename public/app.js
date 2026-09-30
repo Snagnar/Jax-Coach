@@ -1,8 +1,8 @@
-// Jax Coach - UI. Loads research data + Data Dragon, polls the live game, renders all views.
+// Jax Coach - UI. Loads the champion playbooks + Data Dragon, polls the live game, renders all views.
 
-const D = { dd: { champs: {}, champByName: {}, keyToId: {}, items: {}, itemByName: {}, version: '' }, meta: null, phases: null, matchups: {}, config: {} };
+const D = { dd: { champs: {}, champByName: {}, keyToId: {}, items: {}, itemByName: {}, version: '' }, shared: {}, meta: null, phases: null, matchups: {}, rules: null, overlayRules: null, playbook: null, plan: null, config: {} };
 const S = {
-  view: 'live', game: null, A: null, demo: false, demoT: 330, demoTimer: null, overrideOpp: null,
+  view: 'live', champ: null, showWhy: false, pbSel: null, pbRule: null, game: null, A: null, demo: false, demoT: 330, demoTimer: null, overrideOpp: null,
   memory: Engine.newMemory(), muSel: null, muFilter: '', planPhase: 'lvl1_3', serverDown: false, liveStatus: 0,
   modeState: { cur: null, pending: null, pendingCount: 0, changedAt: 0 },
   clientPhase: null, cs: null, csOpp: null, meChecked: false, rec: null, reviewStale: true,
@@ -50,14 +50,11 @@ const diffLabel = (d) => ['', 'Very easy', 'Easy', 'Skill matchup', 'Hard', 'Ver
 
 // ---------- boot ----------
 async function boot() {
-  const [meta, phases, a, b, c, champs, items, cfg] = await Promise.allSettled([
-    getJSON('/data/meta.json'), getJSON('/data/phases.json'),
-    getJSON('/data/matchups_a.json'), getJSON('/data/matchups_b.json'), getJSON('/data/matchups_c.json'),
-    getJSON('/api/dd/champion'), getJSON('/api/dd/item'), getJSON('/api/config'),
+  const [shared, champs, items, cfg] = await Promise.allSettled([
+    getJSON('/data/shared.json'), getJSON('/api/dd/champion'), getJSON('/api/dd/item'), getJSON('/api/config'),
   ]);
   const val = (r) => (r.status === 'fulfilled' ? r.value : null);
-  D.meta = val(meta) || {};
-  D.phases = val(phases) || {};
+  D.shared = val(shared) || {};
   D.config = val(cfg) || {};
   Voice.setAvailable({ groq: D.config.hasGroq, kokoro: D.config.hasKokoro, kokoroPort: D.config.kokoroPort });
   const ch = val(champs), it = val(items);
@@ -82,18 +79,20 @@ async function boot() {
       if (!D.dd.itemByName[k] || better(id, D.dd.itemByName[k])) D.dd.itemByName[k] = id;
     }
   }
-  for (const src of [a, b, c].map(val).filter(Boolean)) {
-    for (const [k, v] of Object.entries(src)) {
-      if (k.startsWith('_') || !v || typeof v !== 'object') continue;
-      const id = D.dd.champs[k] ? k : D.dd.champByName[String(v.name || k).toLowerCase()] || k;
-      D.matchups[id] = { ...v, id };
-    }
-  }
-  $('#patchChip').textContent = `Patch ${D.meta.patch || '?'} · ${Object.keys(D.matchups).length} matchups`;
-  $('#patchChip').title = `Research data: ${D.meta.lastUpdated || '?'} · Data Dragon ${D.dd.version || 'unavailable'}`;
-  S.muSel = Object.keys(D.matchups).sort()[0];
+  await Promise.allSettled([Playbooks.loadGeneric(), Playbooks.refreshList()]);
+  let start = 'Jax';
+  try { start = localStorage.getItem('jc.champ') || start; } catch {}
+  await useChamp(D.dd.champs[start] || start === 'Jax' ? start : 'Jax', { quiet: true });
 
   await Focus.loadHistory();
+  Agent.onApply(() => { applyPlaybook(); if (S.view === 'live') renderLive(); });
+  let agentRender = 0;
+  Agent.onChange(() => {
+    if (agentRender) return;
+    agentRender = setTimeout(() => { agentRender = 0; renderStatus(); if (S.view === 'playbook') renderPlaybook(); if (S.view === 'live' && !S.A) renderLive(); }, 200);
+  });
+  Playbooks.onChange(() => { if (S.view === 'playbook') renderPlaybook(); });
+  Agent.refreshStatus().then(() => Agent.refreshJobs());
   wireUi();
   renderStatic();
   Report.onChange(() => { if (S.view === 'report') renderReport(); else if (S.view === 'live' && !S.game) renderLive(); });
@@ -111,6 +110,30 @@ async function boot() {
   };
 }
 
+// ---------- the active champion's playbook ----------
+// S.champ is whose playbook the page shows: your champ select pick, the champion you're playing, or your choice.
+async function useChamp(cid, { quiet = false, fresh = false } = {}) {
+  if (!cid) return;
+  const switching = cid !== S.champ;
+  S.champ = cid;
+  try { localStorage.setItem('jc.champ', cid); } catch {}
+  await Playbooks.load(cid, fresh || switching);
+  if (S.champ !== cid) return;                     // another switch happened while loading
+  applyPlaybook();
+  if (switching && !quiet) { S.muSel = Object.keys(D.matchups).sort()[0] || null; Review.setChampion(cid); }
+}
+function applyPlaybook() {
+  const plan = Agent.planFor(S.champ);
+  const e = Playbooks.effective(S.champ, D.dd, plan);
+  Object.assign(D, { meta: e.meta, phases: e.phases, rules: e.rules, matchups: e.matchups, overlayRules: e.overlayRules, playbook: e.playbook, plan: plan || null });
+  if (!S.muSel || !D.matchups[S.muSel]) S.muSel = Object.keys(D.matchups).sort()[0] || null;
+  const pb = D.playbook;
+  $('#champChip').innerHTML = `${champImg(S.champ, 'xs')}<span>${esc(champName(S.champ))}</span>${pb.generic ? '<i class="faint">· no playbook</i>' : pb.draft ? '<i class="faint">· draft</i>' : ''}<span class="caret">▾</span>`;
+  $('#patchChip').textContent = `Patch ${D.meta.patch || D.shared.patch || '?'} · ${Object.keys(D.matchups).length} matchups`;
+  $('#patchChip').title = `Research data: ${D.meta.lastUpdated || '?'} · Data Dragon ${D.dd.version || 'unavailable'}`;
+  renderStatic();
+}
+
 // ---------- League client: champ select + who you are ----------
 async function pollClient() {
   let phase = null;
@@ -122,7 +145,13 @@ async function pollClient() {
   }
   if (phase === 'ChampSelect') {
     try { S.cs = await getJSON('/api/lcu/lol-champ-select/v1/session'); S.csFetchedAt = Date.now(); } catch { S.cs = null; }
-    // load your Jax history once in the background (cached on disk) for "your record vs X"
+    if (S.cs) {
+      const mine = (S.cs.myTeam || []).find((p) => p.cellId === S.cs.localPlayerCellId) || {};
+      const pick = D.dd.keyToId[String(mine.championId || mine.championPickIntent || '')];
+      if (pick && pick !== S.champ) await useChamp(pick);
+      Agent.onChampSelect(S.cs, D);
+    }
+    // load your history on this champion once in the background (cached on disk) for "your record vs X"
     if (!S.csReviewTried && D.config.hasKey && Review.state.me && !Review.state.games.length && Review.state.status !== 'loading') { S.csReviewTried = true; Review.load(D); }
   }
   else { S.cs = null; S.csOpp = null; }
@@ -146,10 +175,14 @@ async function poll() {
     } catch { if (S.demo) return; S.serverDown = true; S.game = null; }
   }
   S.A = S.game ? Engine.analyze(S.game, D, { memory: S.memory, overrideOppId: S.overrideOpp }) : null;
+  if (S.A && S.A.champ !== S.champ && D.dd.champs[S.A.champ]) { await useChamp(S.A.champ); S.A = Engine.analyze(S.game, D, { memory: S.memory, overrideOppId: S.overrideOpp }); }
+  if (S.A && !S.demo) Agent.onGame(S.A, D);
+  Agent.tick(S.demo ? null : S.A, D);
   if (S.A) {
     Voice.setMinGap(S.A.t < 14 * 60 ? 8 : S.A.t < 25 * 60 ? 20 : 40);   // less talk once laning is over
     gamePlanVoice(S.A);
     handleMode(S.A);
+    alertVoice(S.A);
     callouts(S.A);
     if (!S.demo) {
       scoutPlayers();
@@ -159,11 +192,31 @@ async function poll() {
     }
   } else if (!S.game) {
     if (S.rec) { finishRecording(null); S.rec = null; }
+    Agent.endGame();
     S.modeState = { cur: null, pending: null, pendingCount: 0, changedAt: 0 };
   }
   document.body.dataset.mode = S.A && S.modeState.cur ? S.modeState.cur.mode : '';
   renderStatus();
   if (S.view === 'live') renderLive();
+}
+
+// ---------- settings: storage per category ----------
+const fmtBytes = (n) => (n >= 1e9 ? `${(n / 1e9).toFixed(1)} GB` : n >= 1e6 ? `${(n / 1e6).toFixed(n >= 1e8 ? 0 : 1)} MB` : n >= 1e3 ? `${Math.round(n / 1e3)} KB` : `${n} B`);
+async function loadStorage(clear) {
+  const el = $('#storage');
+  let areas;
+  try {
+    const r = await fetch(clear ? `/api/storage/clear/${clear}` : '/api/storage', { method: clear ? 'POST' : 'GET', cache: 'no-store' });
+    areas = await r.json();
+    if (!r.ok) throw new Error(areas.error || r.status);
+    areas = areas.filter((a) => a.clear || a.size.files);      // e.g. no local voice installed
+  } catch (e) { el.innerHTML = `<div class="small warn-t">Couldn't read storage (${esc(e.message)}).</div>`; return; }
+  const total = areas.reduce((s, a) => s + a.size.bytes, 0), freeable = areas.filter((a) => a.clear).reduce((s, a) => s + a.size.bytes, 0);
+  el.innerHTML = areas.map((a) => `<div class="st-row ${a.clear ? '' : 'kept'}" data-label="${esc(a.label)}" data-size="${esc(fmtBytes(a.size.bytes))}" data-note="${esc(a.note)}">
+      <div><b>${esc(a.label)}</b><div class="small muted">${esc(a.note)}</div></div>
+      <span class="st-size">${fmtBytes(a.size.bytes)}<br><span class="faint">${a.size.files} file${a.size.files === 1 ? '' : 's'}</span></span>
+      ${a.clear ? `<button type="button" class="btn small ghost" data-clear="${esc(a.id)}" ${a.size.bytes ? '' : 'disabled'}>Clear</button>` : '<span class="small faint">kept</span>'}
+    </div>`).join('') + `<div class="st-total"><span>Total ${fmtBytes(total)}</span><span>Caches ${fmtBytes(freeable)}</span></div>`;
 }
 
 // ---------- play mode (with hysteresis so it doesn't flicker) + voice ----------
@@ -191,14 +244,7 @@ function handleMode(A) {
   speak(m);
 }
 // ---------- spoken game plan: start briefing, phase changes, state flips, item spikes ----------
-const MOTIVATION = [
-  "Stay patient, stack your passive, and let Jax scale. You've got this.",
-  'Respect the early game, own the late game. Good luck, have fun.',
-  'One trade at a time. Every wave you farm is a step toward Trinity Force.',
-  'Play your windows, not your emotions. Let\'s go.',
-  'Counter Strike wins fights. Use it on their commit, not yours. Let\'s go.',
-  'Calm lane, clean waves, big spikes. This one is yours.',
-];
+const MOTIVATION = () => { const m = ((D.rules || {}).text || {}).motivation; return Array.isArray(m) && m.length ? m : ["Play your windows, not your emotions. Let's go.", 'Calm lane, clean waves, big spikes. This one is yours.']; };
 // turn guide text into something that sounds right when read aloud (and never contains Orpheus [directions])
 function speakable(s, max = 170) {
   let t = String(s || '').replace(/\[[^\]]*\]/g, '').replace(/\([^)]*\)/g, '')
@@ -230,7 +276,7 @@ function briefingLines(A) {
     `Early game: ${speakable(planLine(A, 'early'), 160)}`,
     `Mid game: ${speakable(planLine(A, 'mid'), 160)}`,
     F ? '' : `Late game: ${speakable(planLine(A, 'late'), 160)}`,
-    MOTIVATION[Math.floor(Math.random() * MOTIVATION.length)],
+    (() => { const m = MOTIVATION(); return m[Math.floor(Math.random() * m.length)]; })(),
   ].filter((l) => l && !/: $/.test(l));
 }
 const reviewTrends = () => (Review.state.games.length >= 3 ? Review.trends(Review.state.games) : null);
@@ -279,6 +325,17 @@ function gamePlanVoice(A) {
   // 5) power spikes: an item just finished
   const spike = A.triggers.find((t) => /_items?_done$/.test(t.id));
   if (spike && spike.detail && A.legendaries <= 3) Voice.say(`${spike.detail} done. ${speakable(arr(spike.advice)[0], 150)}`, { key: `spike-${vg.id}-${spike.detail}`, repeatAfter: 99999 });
+}
+
+// Dragon Soul point / Elder: an alert tone and one line, 90 s before and at the spawn (also while you're dead:
+// plan where to respawn). Retried every tick until it plays, keyed so it plays once.
+function alertVoice(A) {
+  for (const x of A.alerts || []) if (!Voice.wasSaid(x.key)) { Voice.announce([x.voice], { key: x.key, alert: true, repeatAfter: 99999 }); break; }
+}
+function alertBanner(A) {
+  return (A.alerts || []).map((x) => `<div class="alert-banner ${x.level}" role="alert"><div class="ab-icon" aria-hidden="true">${x.id === 'elder' ? '🜂' : '◆'}</div>
+    <div class="grow"><div class="ab-title">${esc(x.title)}</div><div class="small">${esc(x.detail)}</div></div>
+    ${x.drakes ? `<div class="ab-drakes" title="Drakes taken (you – them)"><span class="small muted">Drakes</span><b class="num">${x.drakes.ours}–${x.drakes.theirs}</b></div>` : ''}</div>`).join('');
 }
 
 // generate this game's most likely lines up front so they play without delay (Groq voices only)
@@ -333,6 +390,7 @@ function record(A) {
   r.wasDead = me.isDead; r.lastMode = cur; r.lastT = A.t; r.gameTime = A.t;
   if (A.P.opp) r.opp = A.P.opp.cid;
   r.focus = Focus.result(A);
+  r.plans = Agent.gameLog();
   const end = A.events.find((e) => e.EventName === 'GameEnd');
   if (end) finishRecording(end.Result || null);
 }
@@ -344,14 +402,18 @@ function finishRecording(result) {
   const L = S.lastSaved;
   if (L && L.champ === r.champ && L.opp === r.opp && Math.abs(L.gameTime - r.gameTime) < 120 && Date.now() - L.at < 15 * 60000) return;
   S.lastSaved = { champ: r.champ, opp: r.opp, gameTime: r.gameTime, at: Date.now() };
-  const body = { v: 1, endedAt: Date.now(), champ: r.champ, riotId: r.riotId, opp: r.opp, result, gameTime: Math.round(r.gameTime), deaths: r.deaths, modeTime: r.modeTime, focus: r.focus || null };
+  const body = { v: 1, endedAt: Date.now(), champ: r.champ, riotId: r.riotId, opp: r.opp, result, gameTime: Math.round(r.gameTime), deaths: r.deaths, modeTime: r.modeTime, focus: r.focus || null, plans: r.plans || [] };
   S.lastFocus = r.focus || null;
   fetch('/api/history', { method: 'POST', body: JSON.stringify(body) }).then(() => Focus.loadHistory()).catch(() => {});
   // build the game report as soon as Riot publishes the match, and show it if the Live page is idle
   if (D.config.hasKey && Review.state.me) {
     Report.state.listTried = true;
-    Report.waitForNew(D, body.endedAt).then((id) => { if (id && S.view === 'live' && !S.game) setView('report'); });
-  }
+    Report.waitForNew(D, body.endedAt).then((id) => {
+      // the review agent reads the finished report, so it starts once Riot has published the match
+      Agent.startReview(D, body, id && Report.state.R && Report.state.R.id === id ? Report.state.R : null);
+      if (id && S.view === 'live' && !S.game) setView('report');
+    });
+  } else Agent.startReview(D, body, null);
   S.reviewStale = true;
 }
 
@@ -393,6 +455,10 @@ function renderStatus() {
     out.push(!D.config.hasKey ? pill('off', 'No Riot key', 'Add RIOT_API_KEY=RGAPI-… to ~/.env.txt for rank/mastery scouting and Review')
       : kp === 'invalid_key' ? pill('err', 'Riot key expired', 'Development keys expire every 24h. Paste a new one into ~/.env.txt and restart.')
       : pill('ok', 'Riot API', `Scouting and Review active (key ${D.config.keyHint})`));
+    const ast = Agent.state.status, nRun = Agent.state.jobs.filter((j) => j.status === 'running').length;
+    out.push(!ast ? '' : !ast.installed ? pill('off', 'AI off', 'Claude Code is not installed: research agents are off (see the Playbook tab)')
+      : !ast.loggedIn ? pill('warn', 'AI: sign in', 'Claude Code needs you to sign in (Playbook tab)')
+        : pill(nRun ? 'live' : 'ok', nRun ? `AI · ${nRun} running` : 'AI', nRun ? Agent.state.jobs.filter((j) => j.status === 'running').map((j) => j.title).join(' · ') : 'Research agents ready'));
     const eng = Voice.engine(), vc = Voice.config();
     const vName = eng === 'kokoro' ? `${parseMix(vc.kokoroVoice).map((p) => ((Voice.kokoroVoices.find((v) => v.id === p.id) || {}).name || p.id).replace(/ \(.*/, '')).join(' + ')} (local)`
       : eng === 'groq' ? (Voice.groqVoices.find((v) => v.id === vc.groqVoice) || {}).name || 'Groq' : 'system voice';
@@ -428,13 +494,11 @@ function renderLive() {
         ${enemies.map((p) => `<button data-opp="${esc(p.cid)}" class="${p === opp ? 'on' : ''}">${champImg(p.cid, 'sm')}</button>`).join('')}
       </div>
     </div>`;
-  const notJax = !A.isJax ? `<div class="notice warn" style="margin-bottom:14px">You're playing ${esc(champName(me.cid))}. The advice here is written for Jax, so the matchup and build tips won't fit.</div>` : '';
-
-  el.innerHTML = `${modeBanner(A)}${gamebar}${notJax}
+  el.innerHTML = `${alertBanner(A)}${modeBanner(A)}${whyPanel(A)}${gamebar}${playbookNotice(me.cid)}
     <div class="grid live-grid">
-      <div class="col">${nowCard(A)}${matchupPhaseCard(A, mu)}${phasePlanCard(A)}</div>
+      <div class="col">${planCard(A)}${nowCard(A)}${matchupPhaseCard(A, mu)}${phasePlanCard(A)}</div>
       <div class="col">${opponentCard(A, mu)}${buildCard(A, mu)}</div>
-      <div class="col">${lanesCard(A)}${objectivesCard(A)}${enemyTeamCard(A)}</div>
+      <div class="col">${lanesCard(A)}${enemyTeamCard(A)}</div>
     </div>`;
 }
 
@@ -449,9 +513,9 @@ function buildNextHtml(A) {
   }
   const p = A.items.priority;
   if (!p) return '';
-  const label = { core: 'Build next', boots: 'Build next · boots', adapted: 'Build next · adapted' }[p.kind] || 'Build next';
+  const label = { core: 'Build next', boots: 'Build next · boots', adapted: 'Build next · adapted', plan: 'Build next · game plan' }[p.kind] || 'Build next';
   return `<div class="sep"></div>
-    <div class="buildnext ${p.kind === 'adapted' ? 'adapted' : ''}" title="${esc(p.reason)}">
+    <div class="buildnext ${p.kind === 'adapted' || p.kind === 'plan' ? 'adapted' : ''}" title="${esc(p.reason)}">
       ${p.id ? itemImg(p.id, 'md') : ''}
       <div class="bn-text"><div class="small muted">${label}</div><b>${esc(p.name)}</b><div class="bn-why">${esc(p.reason)}${p.then ? ` · then ${esc(p.then)}` : ''}</div></div>
     </div>`;
@@ -475,7 +539,7 @@ function modeBanner(A) {
       <div class="mode-icon" aria-hidden="true">${meta.icon}</div>
       <div class="mode-main"><div class="mode-name">${esc(meta.name)}</div><div class="mode-head">${esc(m.headline)}</div>${m.reason ? `<div class="mode-reason">${esc(m.reason)}</div>` : ''}</div>
       ${jg}
-      <div class="mode-side">${voiceBtn()}</div>
+      <div class="mode-side">${voiceBtn()}<button class="why-btn ${S.showWhy ? 'on' : ''}" data-action="why" title="Show which rule decided this and why">Why?</button></div>
     </div>`;
 }
 
@@ -578,7 +642,8 @@ function champSelectHtml(cs) {
   const myLocked = !!mine.championId;
   const enemies = (cs.theirTeam || []).map((p) => idOf(p.championId)).filter(Boolean);
   let opp = S.csOpp && enemies.includes(S.csOpp) ? S.csOpp : null;
-  if (!opp) opp = enemies.find((id) => D.matchups[id] && !['Marksman', 'Support'].includes(((D.dd.champs[id] || {}).tags || [])[0])) || enemies.find((id) => D.matchups[id]) || null;
+  if (!opp) opp = enemies.find((id) => D.matchups[id] && !['Marksman', 'Support'].includes(((D.dd.champs[id] || {}).tags || [])[0])) || enemies.find((id) => D.matchups[id])
+    || enemies.find((id) => ['Fighter', 'Tank'].includes(((D.dd.champs[id] || {}).tags || [])[0])) || enemies[0] || null;
   const mu = opp ? D.matchups[opp] : null;
   const POS = { top: 'Top', jungle: 'Jungle', middle: 'Mid', bottom: 'Bot', utility: 'Support' };
 
@@ -597,10 +662,10 @@ function champSelectHtml(cs) {
     const isMe = !enemy && p.cellId === cs.localPlayerCellId;
     const inner = `${id ? champImg(id) : '<span class="ci empty-slot"></span>'}
       <span class="small ${isMe ? '' : 'muted'}">${id ? esc(champName(id)) : 'picking…'}${!enemy && p.championPickIntent && !p.championId ? ' <i class="faint">(hover)</i>' : ''}</span>
-      ${enemy ? (m && m.jaxWinRate != null ? `<span class="small ${wrClass(m.jaxWinRate)}">Jax ${(+m.jaxWinRate).toFixed(1)}%</span>` : '<span class="small faint">&nbsp;</span>') : `<span class="small faint">${esc(POS[String(p.assignedPosition || '').toLowerCase()] || '')}${isMe ? ' · you' : ''}</span>`}`;
+      ${enemy ? (m && m.winRate != null ? `<span class="small ${wrClass(m.winRate)}" title="${esc(champName(S.champ))}'s win rate in this matchup">${(+m.winRate).toFixed(1)}%</span>` : '<span class="small faint">&nbsp;</span>') : `<span class="small faint">${esc(POS[String(p.assignedPosition || '').toLowerCase()] || '')}${isMe ? ' · you' : ''}</span>`}`;
     return enemy && id ? `<button class="cs-slot ${id === opp ? 'on' : ''}" data-csopp="${esc(id)}" title="Set as your lane opponent">${inner}</button>` : `<div class="cs-slot ${isMe ? 'me' : ''}">${inner}</div>`;
   };
-  const banSuggest = Object.values(D.matchups).filter((m) => m.jaxWinRate != null).sort((a, b) => a.jaxWinRate - b.jaxWinRate).slice(0, 5);
+  const banSuggest = Object.values(D.matchups).filter((m) => m.winRate != null).sort((a, b) => a.winRate - b.winRate).slice(0, 5);
 
   const L = loadoutFor(opp, enemies);
   const hist = opp ? (Review.state.games || []).filter((g) => g.opp && D.dd.champByName[g.opp.toLowerCase()] === opp) : [];
@@ -616,8 +681,8 @@ function champSelectHtml(cs) {
       ${T.strongHeal.length ? `<span class="warn-t">Healing: ${esc(T.strongHeal.join(', '))}</span>` : ''}${T.tanks.length ? `<span>Tanks: ${esc(T.tanks.join(', '))}</span>` : ''}${T.cc.length >= 2 ? `<span>Hard CC: ${T.cc.length}</span>` : ''}</div></div>` : '';
 
   const matchup = mu ? `<div class="card">
-      <div class="opp-head">${champImg(opp, 'lg')}<div class="grow"><div class="name">Jax vs ${esc(mu.name || champName(opp))}</div>
-        <div class="row small" style="margin-top:4px">${diffDots(mu.difficulty)} <span class="muted">${diffLabel(mu.difficulty)}</span>${mu.jaxWinRate != null ? `<span class="chip ${wrClass(mu.jaxWinRate)}" title="${esc(mu.winRateSource || '')}">Jax ${pct(mu.jaxWinRate)}</span>` : ''}</div></div></div>
+      <div class="opp-head">${champImg(opp, 'lg')}<div class="grow"><div class="name">${esc(champName(S.champ))} vs ${esc(mu.name || champName(opp))}</div>
+        <div class="row small" style="margin-top:4px">${diffDots(mu.difficulty)} <span class="muted">${diffLabel(mu.difficulty)}</span>${mu.winRate != null ? `<span class="chip ${wrClass(mu.winRate)}" title="${esc(mu.winRateSource || '')}">WR ${pct(mu.winRate)}</span>` : ''}</div></div></div>
       ${histHtml}
       <div>${esc(mu.summary)}</div>
       <div class="phase-cols">
@@ -631,18 +696,19 @@ function champSelectHtml(cs) {
     </div>`
     : `<div class="card"><header><h2>${opp ? `Vs ${esc(champName(opp))}` : 'Waiting for enemy picks'}</h2></header>
       <div class="muted">${opp ? 'No specific matchup research for this champion yet. The loadout shows the standard setup adjusted for their range and team.' : 'Enemy champions appear as they lock in. Your matchup prep opens here automatically.'}</div>
-      <div class="small muted">Jax's worst matchups right now (ban candidates): ${banSuggest.map((m) => `${esc(m.name)} ${(+m.jaxWinRate).toFixed(1)}%`).join(' · ')}</div></div>`;
+      ${banSuggest.length ? `<div class="small muted">${esc(champName(S.champ))}'s worst matchups right now (ban candidates): ${banSuggest.map((m) => `${esc(m.name)} ${(+m.winRate).toFixed(1)}%`).join(' · ')}</div>` : ''}</div>`;
 
   return `
     <div class="card cs-head">
       <header><h2>${phaseName}</h2>${left != null ? `<span class="chip gold num">${Engine.fmtClock(left)}</span>` : ''}
-        ${myChamp ? `<span class="chip">${myLocked ? 'Locked' : 'Hovering'}: ${esc(champName(myChamp))}</span>` : ''}${myChamp && myChamp !== 'Jax' ? '<span class="chip warn">Not Jax: tips are for Jax</span>' : ''}</header>
+        ${myChamp ? `<span class="chip">${myLocked ? 'Locked' : 'Hovering'}: ${esc(champName(myChamp))}</span>` : ''}${myChamp && !Playbooks.has(myChamp) ? '<span class="chip warn">No playbook yet: general tips</span>' : ''}</header>
       <div class="cs-teams">
         <div><h3>Your team</h3><div class="cs-row">${(cs.myTeam || []).map((p) => slot(p, false)).join('')}</div></div>
         <div><h3>Enemy team <span class="faint" style="text-transform:none;letter-spacing:0">· click your lane opponent</span></h3><div class="cs-row">${(cs.theirTeam || []).map((p) => slot(p, true)).join('')}</div>${compHtml}</div>
       </div>
       ${banIds.length ? `<div class="row small"><span class="muted">Bans</span>${banIds.map((id) => `<span class="ban">${champImg(id, 'sm')}</span>`).join('')}</div>` : ''}
     </div>
+    ${playbookNotice(myChamp)}${planCard(null)}
     ${focusCardHtml()}
     <div class="grid cs-grid">${matchup}${loadoutHtml(L)}</div>`;
 }
@@ -730,7 +796,7 @@ function matchupPhaseCard(A, mu) {
   if (!mu) {
     const tags = (D.dd.champs[opp.cid] || {}).tags || [];
     return `<div class="card"><header><h2>Vs ${esc(champName(opp.cid))}</h2><span class="chip">no matchup data</span></header>
-      <div class="muted small">No specific research for this champion yet (${esc(tags.join(' / ') || 'unknown class')}). Use the general phase plan below${tags.includes('Marksman') || ((D.dd.champs[opp.cid] || {}).range || 0) > 300 ? '. Ranged laner: take your time, use Leap Strike on minions to close distance, and look for all-ins when their key spell is down' : ''}.</div></div>`;
+      <div class="muted small">No specific research for this champion yet (${esc(tags.join(' / ') || 'unknown class')}). Use the general phase plan below${tags.includes('Marksman') || ((D.dd.champs[opp.cid] || {}).range || 0) > 300 ? '. Ranged laner: take your time, farm safely and look for all-ins when their key spell is down' : ''}.</div></div>`;
   }
   const tips = (mu.phases || {})[A.matchupPhase] || [];
   const laning = ['lvl1_3', 'lvl4_5', 'post6'].includes(A.matchupPhase);
@@ -785,7 +851,7 @@ function playerRead(r) {
   const m = r.mastery || {}, x = r.recent;
   const one = x && x.games >= 8 && x.onChamp / x.games >= 0.6;
   if (m.points >= 150000 || one) return `<div class="notice warn">Expect a player who knows this matchup well. Respect their level 1-3 trades and don't count on them misusing their main cooldown. Win through wave control and your scaling.</div>`;
-  if (m.points != null && m.points < 20000) return `<div class="notice">Little experience on this champion. Bait their key ability early and punish the mistakes. They're likely to misjudge your Counter Strike.</div>`;
+  if (m.points != null && m.points < 20000) return `<div class="notice">Little experience on this champion. Bait their key ability early and punish the mistakes. They're likely to misjudge your trades.</div>`;
   return '';
 }
 
@@ -795,7 +861,7 @@ function opponentCard(A, mu) {
   const head = `<div class="opp-head">${champImg(opp.cid, 'lg')}
       <div class="grow"><div class="name">${esc(champName(opp.cid))}</div>
       <div class="small muted">${esc(opp.name)} · lvl ${opp.level} · ${opp.scores.kills}/${opp.scores.deaths}/${opp.scores.assists} · ${opp.scores.creepScore} CS</div>
-      ${mu ? `<div class="row small" style="margin-top:4px">${diffDots(mu.difficulty)} <span class="muted">${diffLabel(mu.difficulty)}</span>${mu.jaxWinRate != null ? `<span class="chip ${wrClass(mu.jaxWinRate)}" title="${esc(mu.winRateSource || '')}">Jax ${pct(mu.jaxWinRate)}</span>` : ''}</div>` : ''}
+      ${mu ? `<div class="row small" style="margin-top:4px">${diffDots(mu.difficulty)} <span class="muted">${diffLabel(mu.difficulty)}</span>${mu.winRate != null ? `<span class="chip ${wrClass(mu.winRate)}" title="${esc(mu.winRateSource || '')}">WR ${pct(mu.winRate)}</span>` : ''}</div>` : ''}
       </div></div>`;
   return `<div class="card">
     <header><h2>Lane opponent</h2></header>
@@ -832,17 +898,13 @@ function buildCard(A, mu) {
   return `<div class="card"><header><h2>Build</h2></header>${start}${buy}${core}${boots}${muNote}${sit}</div>`;
 }
 
-function objectivesCard(A) {
-  const cells = A.objs.map((o) => {
-    const cls = o.status === 'taken' ? 'taken' : o.status === 'up' ? 'up' : o.in <= 60 ? 'soon' : '';
-    const v = o.gone ? 'Gone' : o.status === 'taken' ? 'Taken' : o.status === 'up' ? 'Up' : Engine.fmtClock(o.in);
-    return `<div class="obj ${cls}"><div class="l">${esc(o.label)}${o.killed && o.repeat ? ` ×${o.killed}` : ''}</div><div class="v">${v}</div></div>`;
-  }).join('');
-  return `<div class="card"><header><h2>Objectives</h2></header>
-    <div class="objs">${cells}</div>
-    <div class="small faint">Worked out from the kill feed: 5:00 dragon respawn, Elder 6:00 after a team's 4th drake (Dragon Soul), Baron 6:00.</div></div>`;
+// drakes with the Dragon Soul state (soul point / who has soul)
+function soulChip(A) {
+  const dr = A.objs.find((o) => o.key === 'dragon');
+  if (!dr || !(dr.soul || dr.soulPoint)) return '';
+  const txt = dr.soul ? (dr.soul === 'ours' ? 'You have Dragon Soul' : 'They have Dragon Soul') : dr.soulPoint === 'both' ? 'Both on soul point' : dr.soulPoint === 'ours' ? 'Your soul point' : 'Their soul point';
+  return `<span class="chip ${(dr.soul || dr.soulPoint) === 'ours' ? 'good' : 'warn'}">Drakes ${dr.drakes.ours}–${dr.drakes.theirs} · ${txt}</span>`;
 }
-
 const ROLE_LABEL = { TOP: 'Top', JUNGLE: 'Jungle', MIDDLE: 'Mid', BOTTOM: 'Bot', UTILITY: 'Support' };
 function lanesCard(A) {
   const Ln = A.lanes, T = A.team;
@@ -864,11 +926,19 @@ function lanesCard(A) {
   }).join('');
   const ob = (label, c) => (c.mine + c.theirs ? `<span class="chip">${label} ${c.mine}–${c.theirs}</span>` : '');
   return `<div class="card"><header><h2>Lanes</h2><span class="chip ${g > 1000 ? 'good' : g < -1000 ? 'warn' : ''}">Team ${g >= 0 ? '+' : '−'}${k(g)} item gold</span></header>
-    <div class="flags"><span class="chip">Kills ${T.kills}–${T.ekills}</span><span class="chip">Towers ${T.towers}–${T.etowers}</span>${ob('Drakes', Ln.dragons)}${ob('Grubs', Ln.grubs)}${ob('Herald', Ln.heralds)}${ob('Baron', Ln.barons)}</div>
+    <div class="flags"><span class="chip">Kills ${T.kills}–${T.ekills}</span><span class="chip">Towers ${T.towers}–${T.etowers}</span>${soulChip(A) || ob('Drakes', Ln.dragons)}${ob('Grubs', Ln.grubs)}${ob('Herald', Ln.heralds)}${ob('Baron', Ln.barons)}</div>
     <div class="lanes"><div class="lane lh"><span></span><span class="small muted">You</span><span class="small faint" style="text-align:center">bar grows toward the side that's ahead</span><span class="small muted">Them</span><span></span></div>${rows}</div>
     <div class="small faint">Lead estimated from CS, kills, assists, levels and items on the scoreboard (unspent enemy gold isn't visible).</div></div>`;
 }
 
+// one enemy's damage: magic share and share of their team's damage
+function dmgNote(c, p) {
+  const x = arr(c.dmg).find((d) => d.cid === p.cid);
+  if (!x) return '';
+  const m = Math.round(x.magic * 100);
+  const kind = m >= 65 ? `${m}% magic` : m <= 35 ? `${100 - m}% physical` : `mixed (${m}% magic)`;
+  return ` · <span class="dmg-note" title="${esc(`About ${Math.round(x.share * 100)}% of their team's damage${x.byItems ? ', judged from their items' : ''}`)}"><i class="dot" style="background:${m >= 50 ? 'var(--ap)' : 'var(--ad)'}"></i>${kind}${x.byItems ? ' (items)' : ''}</span>`;
+}
 function enemyTeamCard(A) {
   const c = A.comp;
   const apP = Math.round(c.apShare * 100);
@@ -887,7 +957,7 @@ function enemyTeamCard(A) {
       ${champImg(p.cid)}
       <div>
         <div class="top"><b>${esc(champName(p.cid))}</b><span class="pn muted small">${esc(p.name)}</span>${p.isDead ? `<span class="chip warn">dead ${Math.ceil(p.respawnTimer)}s</span>` : ''}${p === A.P.opp ? '<span class="chip gold">lane</span>' : ''}</div>
-        <div class="meta num">lvl ${p.level} · ${p.scores.kills}/${p.scores.deaths}/${p.scores.assists} · ${p.scores.creepScore} CS</div>
+        <div class="meta num">lvl ${p.level} · ${p.scores.kills}/${p.scores.deaths}/${p.scores.assists} · ${p.scores.creepScore} CS${dmgNote(c, p)}</div>
         <div class="items" style="margin:4px 0">${arr(p.items).filter((i) => i.itemID < 3340 || i.itemID > 3364).map((i) => itemImg(i.itemID)).join('')}</div>
         ${scoutHtml(p, false)}
       </div>
@@ -895,9 +965,192 @@ function enemyTeamCard(A) {
   return `<div class="card"><header><h2>Enemy team</h2></header>
     <div class="dmgbar"><div class="ad" style="width:${100 - apP}%"></div><div class="ap" style="width:${apP}%"></div></div>
     <div class="legend"><span><i style="background:var(--ad)"></i>Physical ${100 - apP}%</span><span><i style="background:var(--ap)"></i>Magic ${apP}%</span></div>
+    <div class="small faint">Each champion's usual damage, moved by what they actually build and weighted by their gold. Updates as they buy items.</div>
     ${flags ? `<div class="flags">${flags}</div>` : ''}
     ${compAdvice.length ? list(compAdvice, 'small') : ''}
     <div class="plist">${rows}</div></div>`;
+}
+
+// ---------- playbooks + research agents on the dashboard ----------
+const ago = (ts) => { const s = Math.max(0, Math.round((Date.now() - new Date(ts).getTime()) / 1000)); return s < 90 ? `${s}s` : s < 5400 ? `${Math.round(s / 60)} min` : `${Math.round(s / 3600)} h`; };
+const TOOL_VERB = { WebSearch: 'Searching', WebFetch: 'Reading', Agent: 'Sub-agent', Task: 'Sub-agent', Write: 'Writing', Edit: 'Editing', Read: 'Reading file', Glob: 'Looking at files', Grep: 'Searching files' };
+function jobActivity(j) {
+  const a = j && j.activity && j.activity.recent;
+  const last = a && a[a.length - 1];
+  if (!last) return j && j.status === 'running' ? 'starting…' : '';
+  const arg = last.tool === 'WebFetch' ? hostOf(last.arg) : last.arg;
+  return `${TOOL_VERB[last.tool] || last.tool}: ${arg.length > 80 ? arg.slice(0, 77) + '…' : arg}`;
+}
+const JOB_KIND = { champion: 'Full research', quick: 'Quick build', gameplan: 'Game plan', adapt: 'Reassess', review: 'Post-game review' };
+function playbookNotice(cid) {
+  if (!cid) return '';
+  const name = champName(cid), has = Playbooks.has(cid), draft = Playbooks.isDraft(cid);
+  const full = Agent.running(`champion-${cid}`), quick = Agent.running(`quick-${cid}`);
+  if (has && !draft && !full) return '';
+  const st = Agent.state.status;
+  if (!has && !full && !quick) {
+    const why = !st ? '' : !st.installed ? 'Install Claude Code to let a research agent build one (see the Playbook tab).' : !st.loggedIn ? 'Sign in to Claude Code on the Playbook tab and a research agent builds one automatically.' : 'Research starts automatically.';
+    return `<div class="notice warn pb-notice">No playbook for ${esc(name)} yet: general top-lane advice for now. ${esc(why)} <button class="btn small ghost" data-action="goto-playbook" data-champ="${esc(cid)}">Playbook</button></div>`;
+  }
+  const jobs = [quick, full].filter(Boolean);
+  const line = jobs.map((j) => `<div class="small"><b>${JOB_KIND[j.type]}</b> · ${ago(j.created)} · <span class="muted">${esc(jobActivity(j))}</span></div>`).join('');
+  const lead = !has ? `Researching ${esc(name)}… general top-lane advice until the first results arrive (about 1–2 minutes for the build).`
+    : draft ? `${esc(name)}: draft playbook from the quick research. The full research is still running and replaces it part by part.`
+      : `Refreshing the ${esc(name)} playbook in the background. The current version stays active until it's done.`;
+  return `<div class="notice pb-notice"><div>${lead}</div>${line}</div>`;
+}
+function planCard(A) {
+  const st = Agent.state.status;
+  if (!st || !st.installed || !st.loggedIn) return '';
+  const G = Agent.state.game;
+  const plan = D.plan;
+  const job = G && G.jobId ? Agent.state.jobs.find((j) => j.id === G.jobId) : (!A && Agent.state.csPlanJob ? Agent.state.jobs.find((j) => j.id === Agent.state.csPlanJob.id && j.status === 'running') : null);
+  if (!plan && !job) return A ? '<div class="card plan-card"><header><h2>Game plan</h2><span class="chip">AI</span></header><div class="small muted">A plan for this game is being prepared.</div></div>' : '';
+  const thinking = job && job.status === 'running' ? `<div class="plan-thinking"><span class="spin"></span><div><b>${esc(G && G.jobReason ? `Reassessing: ${G.jobReason}` : 'Preparing the game plan')}</b> · ${ago(job.created)}<div class="small muted">${esc(jobActivity(job))}</div></div></div>` : '';
+  if (!plan) return `<div class="card plan-card"><header><h2>Game plan</h2><span class="chip">AI</span></header>${thinking}</div>`;
+  const b = plan.build && plan.build.order;
+  const when = plan.kind === 'adapt' ? `updated ${ago(plan.at)} ago` : `made ${ago(plan.at)} ago`;
+  return `<div class="card plan-card">
+    <header><h2>Game plan</h2><span class="chip">AI · ${esc(when)}</span><span class="grow"></span>${A && !S.demo ? '<button class="btn small ghost" data-action="reassess" title="Ask the agent to look at the game again now">Reassess</button>' : ''}</header>
+    <div class="plan-head">${esc(plan.headline)}</div>
+    ${plan.summary ? `<div class="small">${esc(plan.summary)}</div>` : ''}
+    ${list(plan.bullets)}
+    ${arr(plan.changes).length ? `<div class="sub"><h3>What changed</h3>${list(plan.changes, 'small')}</div>` : ''}
+    ${b && b.length ? `<div><h3>Build for this game</h3><div class="row" style="margin-top:6px">${b.map((n) => `<span title="${esc((plan.build.why || {})[n] || '')}">${itemChip(n)}</span>`).join('<span class="arrow">›</span>')}</div>${plan.build.note ? `<div class="small muted">${esc(plan.build.note)}</div>` : ''}</div>` : ''}
+    ${!A && (plan.runes || plan.summoners) ? `<dl class="kv">${plan.runes ? `<dt>Runes</dt><dd>${esc(plan.runes)}</dd>` : ''}${plan.summoners ? `<dt>Spells</dt><dd>${esc(plan.summoners)}</dd>` : ''}</dl>` : ''}
+    ${arr(plan.rules).length ? `<div class="small muted">Dashboard rules for this game: ${arr(plan.rules).map((r) => esc(r.headline || r.id)).join(' · ')}</div>` : ''}
+    ${thinking}
+  </div>`;
+}
+function whyPanel(A) {
+  if (!S.showWhy || !A.trace) return '';
+  const T = A.trace, m = A.mode;
+  const terms = T.terms.filter((x) => x.on || x.error).map((x) => `<tr><td><code>${esc(x.id)}</code></td><td class="num">${x.add > 0 ? '+' : ''}${x.add}</td><td class="small muted">${esc(x.why || '')}${x.error ? ` <span class="warn-t">${esc(x.error)}</span>` : ''}</td></tr>`).join('');
+  const rules = T.rules.map((r) => `<span class="rchk ${r.decided ? 'hit' : r.on ? 'on' : ''} ${r.error ? 'err' : ''}" title="${esc(r.error || (r.used ? `built-in: ${r.used}` : ''))}">${r.decided ? '✓' : r.error ? '!' : '✗'} ${esc(r.id)}</span>`).join('');
+  const pb = D.playbook || {};
+  return `<div class="card why">
+    <header><h2>Why "${esc((MODE_META[m.mode] || {}).name || m.mode)}"?</h2><span class="chip">rule ${esc(m.rule || '–')}</span>${String(m.rule || '').startsWith('plan:') ? '<span class="chip info">from the game plan</span>' : ''}<span class="chip">fight score ${T.score}</span><span class="grow"></span><span class="small faint">playbook: ${esc(champName(pb.champion))}${pb.generic ? ' (generic)' : pb.version ? ` v${pb.version}` : ' (built-in)'}</span></header>
+    <div class="two tight"><div><h3>Fight score (you vs your lane opponent)</h3><table><tbody>${terms || '<tr><td class="muted small">no terms apply</td></tr>'}</tbody></table></div>
+    <div><h3>Rules checked, in order</h3><div class="rchks">${rules}</div><div class="small faint" style="margin-top:6px">The first rule whose condition holds decides. The Playbook tab shows every rule.</div></div></div>
+  </div>`;
+}
+
+// ---------- PLAYBOOK ----------
+function renderPlaybook() {
+  const el = $('#view-playbook');
+  if (!el) return;
+  const cid = S.pbSel || S.champ;
+  if (!Playbooks.raw(cid) && Playbooks.has(cid) && S.pbLoading !== cid) { S.pbLoading = cid; Playbooks.load(cid).then(() => { S.pbLoading = null; if (S.view === 'playbook') renderPlaybook(); }); }
+  const st = Agent.state.status;
+  const info = Playbooks.info(cid);
+  const pool = [...new Set([cid, S.champ, ...Playbooks.list.map((p) => p.champion), ...arr(Agent.state.jobs).filter((j) => j.champion && ['champion', 'quick'].includes(j.type)).map((j) => j.champion)])].filter((c) => D.dd.champs[c]).sort((a, b) => champName(a).localeCompare(champName(b)));
+  const pill = (c) => {
+    const i = Playbooks.info(c), run = Agent.running(`champion-${c}`) || Agent.running(`quick-${c}`);
+    const tag = run ? '<span class="chip info">researching</span>' : i && i.draft ? '<span class="chip">draft</span>' : i && i.active ? `<span class="chip">v${i.active}</span>` : i && i.shipped ? '<span class="chip">built-in</span>' : '<span class="chip warn">none</span>';
+    return `<button class="pb-champ ${c === cid ? 'on' : ''}" data-pbsel="${esc(c)}">${champImg(c, 'sm')}<span class="grow">${esc(champName(c))}${c === S.champ ? ' <i class="faint">· on dashboard</i>' : ''}</span>${tag}</button>`;
+  };
+  const allChamps = Object.values(D.dd.champs).sort((a, b) => a.name.localeCompare(b.name));
+  const agentBox = !st ? '<div class="small muted">Checking Claude Code…</div>'
+    : !st.installed ? '<div class="notice warn">Claude Code isn\'t installed. The research agents run through it. Install it once (PowerShell):<pre>irm https://claude.ai/install.ps1 | iex</pre>then sign in and click Check again. <button class="btn small ghost" data-action="agent-check">Check again</button></div>'
+      : !st.loggedIn ? '<div class="notice warn">Claude Code is installed but not signed in. <button class="btn small" data-action="agent-login">Sign in</button> opens a window: follow the link, sign in, and paste the code back into that window. Then <button class="btn small ghost" data-action="agent-check">Check again</button></div>'
+        : `<div class="small good-t">Claude Code is ready · new champions: ${esc(st.models.deep)} · everything else and all sub-agents: ${esc(st.models.fast)}</div>`;
+  const jobs = arr(Agent.state.jobs);
+  const jobRow = (j) => `<div class="job j-${j.status}">
+      <div class="row"><b>${esc(JOB_KIND[j.type] || j.type)}</b>${j.champion ? `<span class="row" style="gap:4px">${champImg(j.champion, 'xs')}<span class="small">${esc(champName(j.champion))}</span></span>` : ''}<span class="chip ${j.status === 'done' ? 'good' : j.status === 'failed' ? 'warn' : j.status === 'running' ? 'info' : ''}">${esc(j.status)}</span>
+        <span class="small faint">${ago(j.created)} ago${j.durationSec ? ` · took ${Math.round(j.durationSec / 6) / 10} min` : ''}</span><span class="grow"></span>${j.status === 'running' ? `<button class="btn small ghost" data-cancel="${esc(j.id)}">Stop</button>` : ''}</div>
+      <div class="small muted">${esc(j.title || '')}</div>
+      ${j.status === 'running' ? `<div class="small">${esc(jobActivity(j))} <span class="faint">(${(j.activity || {}).count || 0} steps)</span></div>` : ''}
+      ${j.error ? `<div class="small warn-t">${esc(j.error)}</div>` : ''}${arr(j.warnings).length ? `<div class="small warn-t">${esc(arr(j.warnings).join(' · '))}</div>` : ''}
+    </div>`;
+  const mine = jobs.filter((j) => j.champion === cid).slice(0, 8);
+  const others = jobs.filter((j) => j.champion !== cid).slice(0, 6);
+
+  // post-game review proposals
+  const props = Agent.state.proposals.filter((p) => p.champ === cid);
+  const propHtml = props.map((p) => `<div class="sub">
+      <div class="row"><b>Review from ${ago(p.at)} ago</b><span class="grow"></span><button class="btn small ghost" data-dismiss="${esc(p.jobId)}">Dismiss</button></div>
+      ${p.proposal.summary ? `<div class="small">${esc(p.proposal.summary)}</div>` : ''}
+      ${arr(p.proposal.lessons).length ? list(p.proposal.lessons, 'small') : ''}
+      ${arr(p.proposal.changes).map((c, i) => `<div class="proposal ${p.done[i] || ''}"><div class="grow"><b>${esc(c.title || 'Change')}</b> <span class="chip">${esc(c.part || 'rules')}</span><div class="small muted">${esc(c.why || '')}</div></div>
+        ${p.done[i] === 'applied' ? '<span class="chip good">applied</span>' : p.done[i] === 'skipped' ? '<span class="chip">skipped</span>' : `<button class="btn small" data-apply="${esc(p.jobId)}" data-idx="${i}">Apply</button><button class="btn small ghost" data-skip="${esc(p.jobId)}" data-idx="${i}">Skip</button>`}</div>`).join('')}
+    </div>`).join('');
+
+  // rules explorer
+  const raw = Playbooks.raw(cid) || {};
+  const R = cid === S.champ ? D.rules : (raw.rules || {});
+  const problems = Rules.check(R);
+  const modes = Engine.modesFor(D, R, cid === S.champ ? D.overlayRules : null);
+  const ruleRow = (r) => (r.anchor ? `<div class="rule anchor"><b>▸ ${esc(r.id)}</b> <span class="small muted">${esc(r.note || '')}</span></div>`
+    : `<details class="rule ${r.source === 'plan' || String(r.id).startsWith('plan:') ? 'from-plan' : ''} ${r.source === 'shared' ? 'from-shared' : ''} ${r.disabled ? 'off' : ''}"><summary><code>${esc(r.id)}</code>${r.source === 'shared' ? ' <span class="chip">all champions</span>' : ''} <span class="muted">${r.use ? `built-in: ${esc(r.use)}` : `→ ${esc(r.mode)}`}</span> <span class="small">${esc(r.headline || '')}</span></summary>
+        <dl class="kv small"><dt>when</dt><dd><code>${esc(r.when || 'always')}</code></dd>${r.reason ? `<dt>reason</dt><dd>${esc(r.reason)}</dd>` : ''}${r.voice ? `<dt>voice</dt><dd>${esc(r.voice)}</dd>` : ''}${r.note ? `<dt>note</dt><dd>${esc(r.note)}</dd>` : ''}</dl></details>`);
+  const scoreRow = (x) => `<tr><td><code>${esc(x.id)}</code>${x.group ? ` <span class="faint small">${esc(x.group)}</span>` : ''}</td><td><code class="small">${esc(x.when)}</code></td><td class="num"><code>${esc(x.add)}</code></td><td class="small muted">${esc(x.why || '')}</td></tr>`;
+  const versions = info ? arr(info.versions).slice().reverse() : [];
+  const src = raw.source || {};
+
+  el.innerHTML = `<div class="pb-layout">
+    <div class="col">
+      <div class="card"><header><h2>Champions</h2></header>
+        <div class="pb-list">${pool.map(pill).join('')}</div>
+        <label class="small muted">Add a champion (starts research)
+          <select id="pbAdd"><option value="">Choose…</option>${allChamps.filter((c) => !pool.includes(c.id)).map((c) => `<option value="${esc(c.id)}">${esc(c.name)}</option>`).join('')}</select></label>
+      </div>
+      <div class="card"><header><h2>Research agents</h2></header>${agentBox}
+        ${others.length ? `<h3>Other recent runs</h3>${others.map(jobRow).join('')}` : ''}</div>
+    </div>
+    <div class="col">
+      <div class="card">
+        <header>${champImg(cid, 'lg')}<div class="grow"><h2>${esc(champName(cid))} playbook</h2>
+          <div class="small muted">${info ? `${info.active ? `version ${info.active}${info.draft ? ' (draft)' : ''}` : 'built-in version'} · patch ${esc(info.patch || '?')} · build: ${esc(src.meta || '–')} · plan: ${esc(src.phases || '–')} · matchups: ${esc(src.matchups || '–')} · rules: ${esc(src.rules || '–')}` : 'no playbook yet'}</div></div>
+          ${cid !== S.champ ? `<button class="btn small" data-usechamp="${esc(cid)}">Show on dashboard</button>` : ''}
+          ${Agent.ready() ? `<button class="btn small ghost" data-research="${esc(cid)}" ${Agent.running(`champion-${cid}`) ? 'disabled' : ''}>${Playbooks.has(cid) ? 'Refresh research' : 'Research now'}</button>` : ''}
+        </header>
+        ${playbookNotice(cid)}
+        ${versions.length ? `<div class="row small"><span class="muted">Versions:</span>${versions.map((v) => `<button class="btn small ${v.v === info.active ? '' : 'ghost'}" data-activate="${esc(cid)}" data-v="${v.v}" title="${esc(`${v.created} · ${v.source} · ${v.note || ''}`)}">v${v.v}</button>`).join('')}${info.shipped ? `<button class="btn small ${info.active ? 'ghost' : ''}" data-activate="${esc(cid)}" data-v="0" title="The version that ships with the app">built-in</button>` : ''}</div>` : ''}
+        ${mine.length ? `<h3>Research runs</h3>${mine.map(jobRow).join('')}` : ''}
+      </div>
+      ${propHtml ? `<div class="card"><header><h2>Suggested changes after your games</h2></header><div class="small muted">A review agent compared what the playbook said with what happened. Applying a change saves a new playbook version (you can switch back any time).</div>${propHtml}</div>` : ''}
+      <div class="card"><header><h2>Decision rules</h2><span class="chip">${arr(R.modes).length} rules · ${arr(R.fightScore).length} score terms</span>${problems.length ? `<span class="chip warn">${problems.length} broken</span>` : ''}</header>
+        ${R.notes ? `<div class="small muted">${esc(R.notes)}</div>` : ''}
+        ${problems.length ? `<div class="notice warn small">${problems.map((p) => `${esc(p.where)}: ${esc(p.error)}`).join('<br>')}</div>` : ''}
+        <div class="small muted">Every two seconds the dashboard computes a <b>fight score</b> (how good a fight with your lane opponent is right now) and then checks the rules from top to bottom: the first one that holds sets the play mode, the text and the voice line. Rules from this game's plan are inserted at <b>plan</b>.</div>
+        <h3>Fight score</h3><div class="table-wrap"><table><tbody>${arr(R.fightScore).map(scoreRow).join('')}</tbody></table></div>
+        <h3>Rules, in order</h3><div class="rules">${modes.map(ruleRow).join('')}</div>
+        ${R.params ? `<h3>Parameters</h3><pre class="small">${esc(JSON.stringify(R.params, null, 1))}</pre>` : ''}
+      </div>
+    </div>
+  </div>`;
+}
+async function applyProposal(jobId, idx) {
+  const p = Agent.state.proposals.find((x) => x.jobId === jobId);
+  const c = p && arr(p.proposal.changes)[idx];
+  if (!c) return;
+  const champ = p.champ, part = c.part || 'rules';
+  await Playbooks.load(champ, true);
+  const eff = Playbooks.effective(champ, D.dd, null);
+  const base = (Playbooks.raw(champ) || {})[part] || (part === 'matchups' ? { champion: champ, matchups: {} } : part === 'meta' ? eff.meta : part === 'phases' ? eff.phases : eff.rules);
+  const next = c.patch ? Rules.merge(base, c.patch) : { ...base };
+  if (part === 'rules') {
+    let modes = arr(next.modes).slice();
+    for (const id of arr(c.removeRules)) modes = modes.filter((r) => r.id !== id);
+    for (const r of arr(c.replaceRules)) { const i = modes.findIndex((x) => x.id === r.id); if (i >= 0) modes[i] = r; }
+    for (const r of arr(c.addRules)) {
+      if (!r || !r.id || Rules.check({ modes: [r] }).length) continue;
+      modes = modes.filter((x) => x.id !== r.id);
+      let i = r.before ? modes.findIndex((x) => x.id === r.before) : -1;
+      if (i < 0) i = modes.findIndex((x) => x.anchor && x.id === 'plan');
+      const { before, ...rule } = r;
+      modes.splice(i < 0 ? modes.length : i, 0, rule);
+    }
+    next.modes = modes;
+    const bad = Rules.check(next);
+    if (bad.length) { alert(`This change has broken rules and wasn't applied:\n${bad.map((b) => `${b.where}: ${b.error}`).join('\n')}`); return; }
+  }
+  try {
+    await Playbooks.saveVersion(champ, { [part]: next }, `Review: ${c.title || 'change'}`, `review:${jobId}`);
+    Agent.markProposal(jobId, idx, 'applied');
+    if (champ === S.champ) await useChamp(champ, { fresh: true });
+  } catch (e) { alert(`Couldn't save: ${e.message}`); }
+  renderPlaybook();
 }
 
 // ---------- MATCHUPS ----------
@@ -908,11 +1161,11 @@ function renderMatchups() {
   const f = S.muFilter.toLowerCase();
   const tiles = ids.filter((id) => !f || champName(id).toLowerCase().includes(f)).map((id) => {
     const m = D.matchups[id];
-    return `<button class="mu-tile ${id === S.muSel ? 'on' : ''}" data-mu="${esc(id)}">${champImg(id)}<span class="nm">${esc(champName(id))}</span><span class="wr ${wrClass(m.jaxWinRate)}">${m.jaxWinRate != null ? (+m.jaxWinRate).toFixed(1) + '%' : '–'}</span></button>`;
+    return `<button class="mu-tile ${id === S.muSel ? 'on' : ''}" data-mu="${esc(id)}">${champImg(id)}<span class="nm">${esc(champName(id))}</span><span class="wr ${wrClass(m.winRate)}">${m.winRate != null ? (+m.winRate).toFixed(1) + '%' : '–'}</span></button>`;
   }).join('');
   el.innerHTML = `<div class="mu-layout">
     <div class="card"><input class="search" id="muSearch" placeholder="Search champion…" value="${esc(S.muFilter)}">
-      <div class="small faint">Percentages are Jax's win rate in the matchup.</div>
+      <div class="small faint">Percentages are ${esc(champName(S.champ))}'s win rate in the matchup.</div>
       <div class="mu-list">${tiles}</div></div>
     <div id="muDetail">${matchupDetail(S.muSel)}</div></div>`;
 }
@@ -924,9 +1177,9 @@ function matchupDetail(id) {
     .filter(([k]) => arr(ph[k]).length).map(([k, l]) => `<div class="sub"><h3>${l}</h3>${list(ph[k])}</div>`).join('');
   return `<div class="card">
     <div class="opp-head">${champImg(id, 'lg')}<div class="grow">
-      <div class="name">Jax vs ${esc(m.name || champName(id))}</div>
+      <div class="name">${esc(champName(S.champ))} vs ${esc(m.name || champName(id))}</div>
       <div class="row small" style="margin-top:4px">${diffDots(m.difficulty)} <span class="muted">${diffLabel(m.difficulty)}</span>
-        ${m.jaxWinRate != null ? `<span class="chip ${wrClass(m.jaxWinRate)}">Jax win rate ${pct(m.jaxWinRate)}</span>` : ''}
+        ${m.winRate != null ? `<span class="chip ${wrClass(m.winRate)}">${esc(champName(S.champ))} win rate ${pct(m.winRate)}</span>` : ''}
         ${m.winRateSource ? `<span class="faint">${esc(m.winRateSource)}</span>` : ''}</div></div></div>
     <div>${esc(m.summary)}</div>
     <dl class="kv">
@@ -971,7 +1224,7 @@ function renderBuild() {
   const cb = m.coreBuild || {};
   el.innerHTML = `
   <div class="grid" style="gap:14px">
-    <div class="card"><header><h2>Jax top · patch ${esc(m.patch)}</h2>
+    ${playbookNotice(S.champ)}<div class="card"><header><h2>${esc(champName(S.champ))} top · patch ${esc(m.patch || '?')}</h2>
       ${o.tier ? `<span class="chip gold">Tier ${esc(o.tier)}</span>` : ''}
       ${o.winRate != null ? `<span class="chip ${wrClass(o.winRate)}">WR ${pct(o.winRate)}</span>` : ''}
       ${o.pickRate != null ? `<span class="chip">Pick ${pct(o.pickRate)}</span>` : ''}
@@ -1016,7 +1269,7 @@ function renderBuild() {
           <table><tbody>${arr(m.combos).map((c) => `<tr><td><b>${esc(c.name)}</b><div class="small muted">${esc(c.when)}</div></td><td class="num">${esc(c.input)}</td></tr>`).join('')}</tbody></table></div>
         <div class="card"><header><h2>Power spikes</h2></header>
           <table><tbody>${arr(m.powerSpikes).map((p) => `<tr><td><b>${esc(p.when)}</b></td><td>${esc(p.what)}</td></tr>`).join('')}</tbody></table></div>
-        ${m.jungle ? `<div class="card"><header><h2>Jungle Jax</h2>${m.jungle.playRate != null ? `<span class="chip">${pct(m.jungle.playRate)} of games</span>` : ''}</header>
+        ${m.jungle ? `<div class="card"><header><h2>Jungle ${esc(champName(S.champ))}</h2>${m.jungle.playRate != null ? `<span class="chip">${pct(m.jungle.playRate)} of games</span>` : ''}</header>
           <dl class="kv"><dt>Runes</dt><dd>${esc(m.jungle.runes)}</dd><dt>Build</dt><dd>${esc(m.jungle.build)}</dd><dt>Clear</dt><dd>${esc(m.jungle.clear)}</dd></dl><div class="small muted">${esc(m.jungle.notes)}</div></div>` : ''}
       </div>
     </div>
@@ -1071,7 +1324,7 @@ function renderSources() {
         <dt>Matchups</dt><dd>${Object.keys(D.matchups).length} champions</dd>
         <dt>Item / champion data</dt><dd>Data Dragon ${esc(D.dd.version || 'unavailable')}, fetched live from Riot</dd>
       </dl>
-      <div class="small muted">To refresh the research, re-run the research step (ask Claude to "update the Jax Coach data for the new patch"). It rewrites the JSON files in the <code>data</code> folder. Item names that no longer exist show with a dashed border.</div>
+      <div class="small muted">To refresh the research, use <b>Refresh research</b> on the Playbook tab: a research agent collects the new patch data and saves it as a new playbook version (the old one stays available). Item names that no longer exist show with a dashed border.</div>
     </div>
     <div class="card"><header><h2>Build, runes & game plan sources</h2></header>
       <table><thead><tr><th>Source</th><th>Used for</th></tr></thead><tbody>
@@ -1130,20 +1383,20 @@ function renderReview() {
   if (!D.config.hasKey) { el.innerHTML = '<div class="notice warn">Review needs a Riot API key (see Settings).</div>'; return; }
   const idForm = `<form class="row" id="idForm"><input class="search" style="max-width:260px" name="rid" placeholder="Your Riot ID, e.g. Name#EUW" value="${R.me ? esc(R.me.gameName + '#' + R.me.tagLine) : ''}"><button class="btn small">Use this Riot ID</button></form>`;
   let status = '';
-  if (R.status === 'loading') status = `<div class="small muted">Checking your recent games… ${R.scanned}/${R.toScan || '?'} checked · ${R.games.length} Jax games found. The first import takes a minute or two (Riot rate limit), after that it's cached.</div><div class="progress"><i style="width:${R.toScan ? Math.round((R.scanned / R.toScan) * 100) : 5}%"></i></div>`;
+  if (R.status === 'loading') status = `<div class="small muted">Checking your recent games… ${R.scanned}/${R.toScan || '?'} checked · ${R.games.length} ${esc(champName(S.champ))} games found. The first import takes a minute or two (Riot rate limit), after that it's cached.</div><div class="progress"><i style="width:${R.toScan ? Math.round((R.scanned / R.toScan) * 100) : 5}%"></i></div>`;
   else if (R.status === 'error') status = `<div class="notice warn">${esc(R.error)}</div>`;
   else if (R.status === 'needs_identity' || !R.me) status = '<div class="small muted">Open the League client (detected automatically) or enter your Riot ID.</div>';
-  const head = `<div class="card"><header><h2>Your Jax games</h2>${R.me ? `<span class="chip">${esc(R.me.gameName)}#${esc(R.me.tagLine)}</span>` : ''}<span class="grow"></span>
+  const head = `<div class="card"><header><h2>Your ${esc(champName(S.champ))} games</h2>${R.me ? `<span class="chip">${esc(R.me.gameName)}#${esc(R.me.tagLine)}</span>` : ''}<span class="grow"></span>
       ${R.me && R.status !== 'loading' ? `<button class="btn small" data-action="review-load">${R.games.length ? 'Refresh' : 'Load my games'}</button>` : ''}</header>
       ${!R.me || R.status === 'needs_identity' ? idForm : ''}${status}
-      <div class="small faint">Ranked Solo/Duo, Flex, Draft and Quickplay games on Jax, from Riot's match history (the last ~80 games are checked). Games played with Jax Coach open also record what the dashboard said when you died.</div></div>`;
+      <div class="small faint">Ranked Solo/Duo, Flex, Draft and Quickplay games on ${esc(champName(S.champ))}, from Riot's match history (the last ~80 games are checked). Games played with Jax Coach open also record what the dashboard said when you died.</div></div>`;
   const games = R.games;
-  if (!games.length) { el.innerHTML = head + (R.status === 'done' ? '<div class="notice">No Jax games found in your recent match history.</div>' : ''); return; }
+  if (!games.length) { el.innerHTML = head + (R.status === 'done' ? `<div class="notice">No ${esc(champName(S.champ))} games found in your recent match history.</div>` : ''); return; }
 
   const T = Review.trends(games), ins = Review.insights(T, games);
   const tile = (label, value, sub) => `<div class="tile"><div class="l">${label}</div><div class="v">${value}</div>${sub ? `<div class="s">${sub}</div>` : ''}</div>`;
   const tiles = `<div class="tiles">
-    ${tile('Win rate', `${T.wr}%`, `${T.wins}W ${T.n - T.wins}L · last ${T.n} Jax games`)}
+    ${tile('Win rate', `${T.wr}%`, `${T.wins}W ${T.n - T.wins}L · last ${T.n} games`)}
     ${tile('CS at 10', T.cs10 != null ? Math.round(T.cs10) : '–', T.csDiff10 != null ? `${signed(T.csDiff10)} vs lane opponent` : '')}
     ${tile('Gold diff at 15', signed(T.gd15, 'g'), 'vs lane opponent')}
     ${tile('First item', fmtT(T.firstItem), 'average completion')}
@@ -1160,7 +1413,7 @@ function renderReview() {
     <table><tbody>${fr.map((h) => `<tr><td class="small muted">${new Date(h.endedAt).toLocaleDateString()}</td><td>${h.opp ? `<span class="row">${champImg(h.opp, 'sm')}</span>` : ''}</td><td>${esc(h.focus.title)}</td><td><span class="f-res ${h.focus.passed ? 'pass' : 'fail'}">${h.focus.passed ? 'passed' : 'missed'}</span></td><td class="small muted">${esc(h.focus.detail || '')}</td></tr>`).join('')}</tbody></table></div>` : '';
   const muRows = Object.entries(T.byOpp).sort((a, b) => (b[1].w + b[1].l) - (a[1].w + a[1].l));
   const muTable = `<div class="card"><header><h2>By opponent</h2></header><table><tbody>
-    ${muRows.map(([name, o]) => { const id = D.dd.champByName[name.toLowerCase()] || name; return `<tr><td><span class="row">${champImg(id, 'sm')}${esc(champName(id))}</span></td><td class="num">${o.w}W ${o.l}L</td><td class="num">${D.matchups[id] && D.matchups[id].jaxWinRate != null ? `<span class="${wrClass(D.matchups[id].jaxWinRate)}">avg ${(+D.matchups[id].jaxWinRate).toFixed(1)}%</span>` : ''}</td></tr>`; }).join('')}
+    ${muRows.map(([name, o]) => { const id = D.dd.champByName[name.toLowerCase()] || name; return `<tr><td><span class="row">${champImg(id, 'sm')}${esc(champName(id))}</span></td><td class="num">${o.w}W ${o.l}L</td><td class="num">${D.matchups[id] && D.matchups[id].winRate != null ? `<span class="${wrClass(D.matchups[id].winRate)}">avg ${(+D.matchups[id].winRate).toFixed(1)}%</span>` : ''}</td></tr>`; }).join('')}
     </tbody></table></div>`;
   const rows = games.map((g) => {
     const open = R.open === g.id;
@@ -1233,8 +1486,13 @@ function renderReport() {
       <span class="chip ${g.win ? 'good' : 'warn'}">${g.win ? 'W' : 'L'}</span><span class="row" style="gap:2px">${champImg(g.champ, 'sm')}${g.opp ? `<span class="faint small">vs</span>${champImg(g.opp, 'sm')}` : ''}</span><span class="small">${g.opp ? esc(champName(g.opp)) : esc(champName(g.champ))}</span>
       <span class="small faint">${new Date(g.end).toLocaleDateString(undefined, { weekday: 'short' })} ${new Date(g.end).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span></button>`).join('');
   const waiting = RS.waiting ? `<div class="notice">Waiting for Riot to publish your last game (usually 1–5 minutes)… this page opens it automatically.</div>` : '';
+  // the review agent's suggestions for the playbook (approve them on the Playbook tab)
+  const pend = Agent.state.proposals.filter((p) => arr(p.proposal.changes).some((c, i) => !p.done[i]));
+  const reviewing = Agent.state.jobs.find((j) => j.type === 'review' && j.status === 'running');
+  const agentNote = pend.length ? `<div class="notice"><b>${pend.reduce((n, p) => n + arr(p.proposal.changes).filter((c, i) => !p.done[i]).length, 0)} suggested playbook changes</b> from the post-game review${pend[0].proposal.summary ? `: ${esc(pend[0].proposal.summary)}` : ''} <button class="btn small ghost" data-action="goto-playbook" data-champ="${esc(pend[0].champ)}">Review changes</button></div>`
+    : reviewing ? `<div class="notice small">A review agent is comparing what the playbook said with how this game went (${ago(reviewing.created)}).</div>` : '';
   const head = `<div class="card"><header><h2>Game report</h2><span class="grow"></span><button class="btn small ghost" data-action="report-refresh">Refresh list</button></header>
-    <div class="rep-games">${games || (RS.listTried ? '<span class="small muted">Loading your recent games…</span>' : '')}</div>${waiting}</div>`;
+    <div class="rep-games">${games || (RS.listTried ? '<span class="small muted">Loading your recent games…</span>' : '')}</div>${waiting}${agentNote}</div>`;
   if (RS.status === 'loading' && !R) { el.innerHTML = head + '<div class="empty">Building the report…</div>'; return; }
   if (RS.status === 'error') { el.innerHTML = head + `<div class="notice warn">${esc(RS.error)}</div>`; return; }
   if (!R) { el.innerHTML = head; return; }
@@ -1318,7 +1576,7 @@ function renderReport() {
 }
 const ordinal = (n) => `${n}${['th', 'st', 'nd', 'rd'][n % 10 > 3 || Math.floor(n / 10) === 1 ? 0 : n % 10]}`;
 
-function renderStatic() { renderMatchups(); renderBuild(); renderPlan(); renderSources(); }
+function renderStatic() { renderMatchups(); renderBuild(); renderPlan(); renderSources(); renderPlaybook(); }
 
 // ---------- wiring ----------
 function setView(v) {
@@ -1327,6 +1585,7 @@ function setView(v) {
   document.querySelectorAll('.view').forEach((s) => s.classList.toggle('on', s.id === `view-${v}`));
   if (v === 'live') renderLive();
   if (v === 'build') renderBuild();
+  if (v === 'playbook') { renderPlaybook(); Agent.refreshJobs(); Playbooks.refreshList(); }
   if (v === 'report') {
     renderReport();
     fetch('/api/replay/config').then((r) => r.json()).then((c) => { Report.state.replayCfg = c; if (S.view === 'report') renderReport(); }).catch(() => {});
@@ -1349,8 +1608,22 @@ function stopDemo() {
 function wireUi() {
   $('#tabs').addEventListener('click', (e) => { const b = e.target.closest('button[data-view]'); if (b) setView(b.dataset.view); });
   document.body.addEventListener('click', (e) => {
-    const t = e.target.closest('[data-opp],[data-mu],[data-phase],[data-goto],[data-action],[data-csopp],[data-game],[data-mu-open],[data-focus],[data-report],[data-jump],[data-replay],[data-nextfocus]');
+    const t = e.target.closest('[data-opp],[data-mu],[data-phase],[data-goto],[data-action],[data-csopp],[data-game],[data-mu-open],[data-focus],[data-report],[data-jump],[data-replay],[data-nextfocus],[data-pbsel],[data-usechamp],[data-research],[data-activate],[data-cancel],[data-apply],[data-skip],[data-dismiss]');
     if (!t) return;
+    // playbooks + research agents
+    if (t.dataset.action === 'why') { S.showWhy = !S.showWhy; renderLive(); return; }
+    if (t.dataset.action === 'reassess') { Agent.reassessNow(S.A, D); renderLive(); return; }
+    if (t.dataset.action === 'goto-playbook') { S.pbSel = t.dataset.champ || S.champ; setView('playbook'); return; }
+    if (t.dataset.action === 'agent-login') { Agent.login(); return; }
+    if (t.dataset.action === 'agent-check') { Agent.refreshStatus(true).then(() => { renderPlaybook(); renderLive(); }); return; }
+    if (t.dataset.pbsel) { S.pbSel = t.dataset.pbsel; Playbooks.load(S.pbSel, true).then(renderPlaybook); renderPlaybook(); return; }
+    if (t.dataset.usechamp) { useChamp(t.dataset.usechamp).then(() => { renderPlaybook(); renderLive(); }); return; }
+    if (t.dataset.research) { Agent.research(D, t.dataset.research, Playbooks.has(t.dataset.research) ? 'refresh' : 'new').then(renderPlaybook); return; }
+    if (t.dataset.activate) { Playbooks.activate(t.dataset.activate, +t.dataset.v).then(() => (t.dataset.activate === S.champ ? useChamp(S.champ, { fresh: true }) : null)).then(renderPlaybook).catch((err) => alert(err.message)); return; }
+    if (t.dataset.cancel) { Agent.cancel(t.dataset.cancel); return; }
+    if (t.dataset.apply) { applyProposal(t.dataset.apply, +t.dataset.idx); return; }
+    if (t.dataset.skip) { Agent.markProposal(t.dataset.skip, +t.dataset.idx, 'skipped'); renderPlaybook(); return; }
+    if (t.dataset.dismiss) { Agent.dismissProposal(t.dataset.dismiss); renderPlaybook(); return; }
     if (t.dataset.focus) { Focus.setPick(t.dataset.focus); renderLive(); return; }
     if (t.dataset.report) { Report.open(D, t.dataset.report); return; }
     if (t.dataset.jump) { Report.jump(+t.dataset.jump); return; }
@@ -1373,6 +1646,13 @@ function wireUi() {
     else if (t.dataset.goto) { if (S.A && S.A.P.opp && D.matchups[S.A.P.opp.cid]) S.muSel = S.A.P.opp.cid; renderMatchups(); setView(t.dataset.goto); }
     else if (t.dataset.action === 'demo') startDemo();
   });
+  document.body.addEventListener('change', (e) => {
+    if (e.target.id !== 'pbAdd' || !e.target.value) return;
+    const cid = e.target.value;
+    S.pbSel = cid;
+    if (Agent.ready()) Agent.research(D, cid, 'new').then(renderPlaybook); else renderPlaybook();
+  });
+  $('#champChip').addEventListener('click', () => { S.pbSel = S.champ; setView('playbook'); });
   document.body.addEventListener('input', (e) => {
     if (e.target.id === 'muSearch') {
       S.muFilter = e.target.value; const pos = e.target.selectionStart; renderMatchups();
@@ -1476,6 +1756,15 @@ function wireUi() {
     $('#keyHint').textContent = D.config.hasKey ? `A key is set (${D.config.keyHint}${D.config.keySource ? ', from ' + D.config.keySource.replace(/^.*[\\/]/, '') : ''}). Leave the field empty to keep it.` : 'No key set.';
     fillVoice();
     dlg.showModal();
+    loadStorage();
+  });
+  $('#storage').addEventListener('click', async (e) => {
+    const b = e.target.closest('[data-clear]');
+    if (!b) return;
+    const row = b.closest('.st-row');
+    if (!confirm(`Clear "${row.dataset.label}" (${row.dataset.size})? ${row.dataset.note}`)) return;
+    b.disabled = true; b.textContent = 'Clearing…';
+    loadStorage(b.dataset.clear);
   });
   $('#settingsForm').addEventListener('submit', async (e) => {
     if (e.submitter && e.submitter.value !== 'save') return;

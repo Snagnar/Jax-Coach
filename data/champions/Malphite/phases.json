@@ -1,0 +1,473 @@
+{
+  "champion": "Malphite",
+  "role": "top",
+  "patch": "26.19",
+  "lastUpdated": "2026-09-30",
+  "sources": [
+    {
+      "name": "League of Legends Wiki - Malphite (ability numbers; latest Malphite change listed is V26.09, so nothing newer changed him through 26.19)",
+      "url": "https://wiki.leagueoflegends.com/en-us/Malphite"
+    },
+    {
+      "name": "League of Legends Wiki - Sunfire Aegis (2,800 gold since V26.16: Bami's Cinder 900 + Chain Vest 800 + Ruby Crystal 400 + 700)",
+      "url": "https://wiki.leagueoflegends.com/en-us/Sunfire_Aegis"
+    },
+    {
+      "name": "OP.GG Malphite top build (Emerald+, patch 16.19 = 26.19): Sunfire Aegis, Plated Steelcaps, Thornmail, Frozen Heart, Jak'Sho, The Protean, Randuin's Omen; Q > E > W",
+      "url": "https://op.gg/lol/champions/malphite/build"
+    },
+    {
+      "name": "Lolalytics Malphite top (Emerald+, 16.19): cross-check of win rate and build (older cached figures possible)",
+      "url": "https://lolalytics.com/lol/malphite/build/"
+    },
+    {
+      "name": "Skill Capped Malphite top guide (26.19 label; page not opened, listed in search only)",
+      "url": "https://www.skill-capped.com/lol/guides/builds/malphite/top"
+    },
+    {
+      "name": "Riot - Patch 26.19 Notes (no Malphite changes; top quest Teleport)",
+      "url": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-19-notes/"
+    },
+    {
+      "name": "Riot - Patch 26.1 Notes (2026 season: Atakhan removed, permanent plates, role quests)",
+      "url": "https://www.leagueoflegends.com/en-us/news/game-updates/patch-26-1-notes/"
+    },
+    {
+      "name": "Jax Coach reference shared.json (objective timers, season facts, patch 26.19)",
+      "url": "reference/shared.json"
+    },
+    {
+      "name": "Mobalytics and U.GG Malphite pages: blocked or shown for older patch (26.6), not used for facts",
+      "url": "https://mobalytics.gg/lol/champions/Malphite/build"
+    }
+  ],
+  "phases": [
+    {
+      "id": "lvl1_3",
+      "label": "Levels 1-3",
+      "timeHint": "0:00-~4:00",
+      "goals": [
+        "Farm safely and poke with Seismic Shard while Granite Shield is up; you are weak early.",
+        "Reach level 3 with Q, E and W for your first real trade.",
+        "Keep CS even and save your mana for Q."
+      ],
+      "do": [
+        "Take Q at level 1, E at 2, W at 3 (Q > E > W is the max order).",
+        "Poke with Q when the enemy steps up to last-hit, then step back so Granite Shield recharges.",
+        "Use Q's movement speed to walk away from melee champions or to stop them from closing.",
+        "At level 3 trade with W, Q, auto and E in one burst, then leave.",
+        "Ping your jungler when the enemy is out of position so the wave decides the trade."
+      ],
+      "dont": [
+        "Don't take long trades against sustained melee damage before level 3.",
+        "Don't waste Q on an empty wave; Doran's Ring mana is limited.",
+        "Don't push the wave into the enemy without knowing where their jungler is."
+      ],
+      "ifAhead": [
+        "Shove and Q-poke them off CS, then take plates; plates are permanent so no rush.",
+        "Ping your jungler for a dive with the wave pushed in."
+      ],
+      "ifEven": [
+        "Farm, poke with Q when your shield is up, and trade only with Q, W and E ready.",
+        "Keep the wave near the middle of the lane."
+      ],
+      "ifBehind": [
+        "Let the wave come to your tower, farm under it and only last-hit.",
+        "Play for level 6 and Sunfire Aegis; take Doran's Shield next game against melee bullies."
+      ]
+    },
+    {
+      "id": "lvl4_5",
+      "label": "Levels 4-5",
+      "timeHint": "~4:00-~7:00",
+      "goals": [
+        "Crash the wave, recall for Bami's Cinder at about 900 gold, and return to farm.",
+        "Max Q first and stay even in CS for level 6.",
+        "Watch the river; the 5:00 dragon pulls the jungler away from you."
+      ],
+      "do": [
+        "Crash the wave into the enemy turret before you recall so you lose no minions.",
+        "Poke with Q on caster and cannon minions you can hit, then walk out of range.",
+        "Use E to clear the wave and to cripple an auto-attacker in trades.",
+        "Trade when your shield is up and their key skill is used; then let the shield recharge.",
+        "Ward the tri-brush or river before you push past the middle."
+      ],
+      "dont": [
+        "Don't stay in lane at low HP after your shield is gone; recall instead.",
+        "Don't walk up for a trade with Q on cooldown; you cannot stop them from leaving.",
+        "Don't fight sustained auto-attackers at length without armor."
+      ],
+      "ifAhead": [
+        "Push and take plates; each one is permanent and counts for your top quest.",
+        "Look for a dive with your jungler and save the kill for level 6."
+      ],
+      "ifEven": [
+        "Slow push, then recall on a crash; farm safely and wait for level 6.",
+        "Take short trades with the shield and Q only."
+      ],
+      "ifBehind": [
+        "Hold the wave near your tower, last-hit and buy Bami's Cinder.",
+        "Buy Cloth Armor or Chain Vest if an AD champion is beating you."
+      ]
+    },
+    {
+      "id": "lvl6_first_item",
+      "label": "Level 6 to first item",
+      "timeHint": "~6:00-~13:00",
+      "goals": [
+        "Set up a kill with Unstoppable Force and your jungler; push the wave first.",
+        "Finish Sunfire Aegis and stay top for the role quest.",
+        "Push first, then join your jungler at the 8:00 Voidgrubs."
+      ],
+      "do": [
+        "At level 6 push the wave, then Q to slow, R onto your opponent when your jungler is close, and follow with E and W.",
+        "Ask your jungler for a gank when the wave is pushed into their turret.",
+        "Use R also to escape: you cannot be stopped while dashing.",
+        "Crash the wave before the 8:00 Voidgrubs; W and E clear waves quickly.",
+        "Finish the top quest by farming your lane; you then get a free Teleport (or a shield on Teleport)."
+      ],
+      "dont": [
+        "Don't use R alone on one target unless it gets you a kill or saves you.",
+        "Don't R in without checking where the enemy jungler is.",
+        "Don't leave a big wave pushing into you for the grubs."
+      ],
+      "ifAhead": [
+        "Use R for a kill with your jungler, then take plates and the turret.",
+        "Use Teleport to join Voidgrubs or dragon fights."
+      ],
+      "ifEven": [
+        "Farm to Sunfire Aegis, push waves and use R to pick a kill when your jungler is near.",
+        "Fight when their key skill is used and your Q, E and W are up."
+      ],
+      "ifBehind": [
+        "Farm under tower; R is your escape or punish if they overextend.",
+        "Skip the grubs unless your team has priority; buy armor if AD hits you."
+      ]
+    },
+    {
+      "id": "first_item_to_14",
+      "label": "First item to ~14 minutes",
+      "timeHint": "~12:00-~15:00",
+      "goals": [
+        "Use the Sunfire Aegis spike to push the wave and take the turret.",
+        "Buy Plated Steelcaps, then Thornmail (or Frozen Heart against strong auto-attackers).",
+        "Set up the 15:00 Rift Herald and your Teleport."
+      ],
+      "do": [
+        "Push with Sunfire Aegis and W autos to take turret plates; melee champions deal 20% more to turrets.",
+        "Push top wave before Herald so you can Teleport or walk to the pit in time.",
+        "Hold Teleport for dragon or Herald fights or to flank; walk back to lane if not needed.",
+        "Stack armor if their damage is AD; use Q to slow chasers."
+      ],
+      "dont": [
+        "Don't Teleport into a fight that will be over before you land.",
+        "Don't leave your wave pushing into you when you go to an objective.",
+        "Don't chase after Q with no vision; you can get caught."
+      ],
+      "ifAhead": [
+        "Take the turret and use Teleport to flank at dragon or Herald.",
+        "Force the enemy to send help so your team gets an objective."
+      ],
+      "ifEven": [
+        "Push, then help at Herald or dragon with Teleport.",
+        "Play the first fight of the map around your R."
+      ],
+      "ifBehind": [
+        "Farm safely, buy Plated Steelcaps and armor, and use Teleport to join team fights.",
+        "Stay near your team and R only when they can follow up."
+      ]
+    },
+    {
+      "id": "midgame",
+      "label": "Midgame",
+      "timeHint": "~15:00-~25:00",
+      "goals": [
+        "Group with your team and land R on two or more enemies around dragons and Baron.",
+        "Build Thornmail or Frozen Heart against auto-attackers, then Jak'Sho, The Protean.",
+        "Plan around Baron at 20:00."
+      ],
+      "do": [
+        "Push the side wave, then Teleport or walk to the objective before it spawns.",
+        "Aim R at two or more enemies or at a carry; use Q to slow stragglers.",
+        "Use W for armor and to cut through the front line, and E on auto-attackers.",
+        "Let your team see you before the fight: your R starts it.",
+        "Side lane only to push a wave that helps you Teleport or flank."
+      ],
+      "dont": [
+        "Don't side lane with no vision when three or more enemies are missing.",
+        "Don't R into their full team with no follow-up from your team.",
+        "Don't stand alone on the wrong side when Baron or dragon starts."
+      ],
+      "ifAhead": [
+        "Group and use R to take Baron or a fight, then push turrets together.",
+        "Take plates and turrets on the side where Teleport is available."
+      ],
+      "ifEven": [
+        "Group up, wait for a chance to R their carries and fight at objectives.",
+        "Push the wave first, then join your team."
+      ],
+      "ifBehind": [
+        "Be the frontline; your armor keeps you alive and one good R turns the fight.",
+        "Stay with your team and farm safe waves."
+      ]
+    },
+    {
+      "id": "lategame",
+      "label": "Lategame",
+      "timeHint": "25:00+",
+      "goals": [
+        "Be the frontline: land R on several enemies or their carry, then peel with E and Q.",
+        "Stay with your team for Baron, Elder Dragon and inhibitors.",
+        "Respect death timers; don't get caught alone."
+      ],
+      "do": [
+        "Wait until their key CC or engage is used before you R in.",
+        "R onto their carries and squishies rather than tanks if you can reach them.",
+        "Use E on auto-attackers and Q to slow whoever chases your team.",
+        "Buy Randuin's Omen against crit ADCs and items that match their damage type.",
+        "Peel for your carries when the enemy dives; you are the wall."
+      ],
+      "dont": [
+        "Don't split alone without Teleport or vision.",
+        "Don't R first into a full team if your team is not close enough to follow.",
+        "Don't face-check brush; a pick means a lost objective."
+      ],
+      "ifAhead": [
+        "Engage with R onto carries and end with Baron or inhibitors.",
+        "Take turrets with your team after every won fight."
+      ],
+      "ifEven": [
+        "Group for Baron or Elder Dragon; hold R until the enemy commits or is out of position.",
+        "Side lane only when your team is safe and Teleport is up."
+      ],
+      "ifBehind": [
+        "Group up and use R as your team's best chance to catch one carry.",
+        "Play near turrets and R in return after the enemy engages."
+      ]
+    }
+  ],
+  "trading": [
+    "Poke with Q when Granite Shield is up, then step back so the shield recharges before the next trade.",
+    "Q gives you movement speed equal to the slow: use it to walk away, to stop a melee champion from closing, or to catch one who runs.",
+    "Full trade at level 3+: W, Q, auto, E, then leave; E's attack speed cripple is strongest on auto-attackers.",
+    "Trade after the enemy used their key skill on a minion or missed it.",
+    "Against ranged champions take Doran's Shield, play for waves under tower and poke back with Q.",
+    "Against sustained melee champions, don't extend a long trade; Q, E and back off.",
+    "Don't trade when your shield is broken and Q is on cooldown."
+  ],
+  "waveManagement": [
+    "Farm with Q on cannon and caster minions only if mana allows; E and W clear waves faster later.",
+    "In a bad matchup freeze near your tower and last-hit; let the enemy come to you.",
+    "Slow push into level 6 so your jungler can gank; a big wave in front of their turret gives a safe R dive.",
+    "Crash the wave before every recall and before dragon (5:00), Voidgrubs (8:00), Herald (15:00) and Baron (20:00).",
+    "Sunfire Aegis clears waves quickly: push before you go to an objective, then Teleport or walk.",
+    "Farm top for the role quest: minions and plates count most in top lane."
+  ],
+  "splitPush": {
+    "when": [
+      "OK when the wave gives you a safe Teleport flank on the next objective and you can see the map.",
+      "OK when the enemy is missing players and your team can hold without you.",
+      "Rare: you are a tank engage champion, not a duelist, so grouping is your default."
+    ],
+    "rules": [
+      "Push the side wave only if you can see where the enemy jungler and most of their team are.",
+      "Never duel an enemy carry for the turret; if one or two enemies come, walk back to your team and ping an objective.",
+      "Don't side lane when Baron or dragon is about to spawn unless Teleport is up.",
+      "Hit turrets with Sunfire Aegis and W autos; plates are permanent, so take them when it is safe.",
+      "Leave the side lane once the wave crashes: the goal is the fight, not the lane."
+    ],
+    "tpUsage": [
+      "Save Teleport for a fight or objective: land on a ward, minion or ally on a flank, then R their carries.",
+      "Push the wave before you Teleport so you do not lose it.",
+      "After the top quest your Teleport is free (or has a shield if you took Teleport); plan objectives around it.",
+      "Don't Teleport into a fight that will be over before you land."
+    ]
+  },
+  "teamfight": {
+    "role": "Frontline engage: R onto several enemies or their carries, then stay on them with W armor, E attack speed cripple and Q slow. Peel for your carries when the enemy dives.",
+    "rules": [
+      "Set up R around a wall or from a bush; aim to hit two or more champions or a carry.",
+      "Wait for their key CC or engage to be used before you R if you can.",
+      "After R, use Q on whoever runs and E on auto-attackers.",
+      "Use W for armor while you hit the front line, and stay near your carries when the enemy dives.",
+      "R when your team is close enough to follow up; a lone R can lose the fight.",
+      "Buy armor against AD carries and magic resist against AP mages."
+    ],
+    "targetPriority": [
+      "Their carries (ADC or mid laner) in R range.",
+      "Otherwise the group of enemies standing together.",
+      "Assassins or divers who jump on your carries."
+    ]
+  },
+  "objectives": [
+    "Dragon spawns at 5:00 (5:00 respawn); Soul needs 4 drakes, Elder comes 6:00 after. Push top first, then Teleport or walk to the pit.",
+    "Voidgrubs: 8:00, one camp of 3, despawn 14:45. Crash your wave, then help your jungler; grubs add turret damage.",
+    "Rift Herald: 15:00, despawns 19:45. Push top first; the Herald can take a top turret if used there.",
+    "Baron: 20:00, then 6:00 after each kill. Be with your team at full HP with R ready; R knocks up whoever contests it.",
+    "Atakhan was removed in 2026; plan around dragon, Herald and Baron.",
+    "Turret plates are permanent and exist on inner and inhibitor turrets; Sunfire Aegis and W autos take them fast.",
+    "Set up fights at objectives: Teleport flank, then R on the carries as they try to take it."
+  ],
+  "mechanics": [
+    "Granite Shield: a shield of 10% max HP that returns after a few seconds without damage; poke and walk out to recharge.",
+    "Q Seismic Shard: slows the target and gives you the same movement speed; use it to chase or to run.",
+    "W Thunderclap: passive armor bonus is tripled while the shield is up; active makes your next attack hit harder and hit in a cone.",
+    "E Ground Slam: damage scales with armor and cripples attack speed; hit auto-attackers and clear waves with it.",
+    "R Unstoppable Force: dash to a point and knock up everything hit; you cannot be stopped by displacement while dashing, so it is also an escape.",
+    "Aim R at where enemies will stand, not where they are; Q slow first helps.",
+    "Armor items raise your E and W damage as well as your survivability.",
+    "Use Flash after R to catch a target outside its range, or line R up over a wall.",
+    "Combos: W > Q > AA > E for a trade; Q > R > E > W for a pick or an engage."
+  ],
+  "recallTimings": [
+    {
+      "gold": 900,
+      "buy": "Bami's Cinder",
+      "note": "First back toward Sunfire Aegis; crash the wave first, add a Control Ward with spare gold."
+    },
+    {
+      "gold": 1300,
+      "buy": "Bami's Cinder plus Cloth Armor or Chain Vest",
+      "note": "If AD champions are beating you and you need armor now."
+    },
+    {
+      "gold": 1700,
+      "buy": "Chain Vest and Ruby Crystal toward Sunfire Aegis",
+      "note": "Second back; Sunfire Aegis costs 2,800 total, so finish it on the back after."
+    },
+    {
+      "gold": 1100,
+      "buy": "Plated Steelcaps (vs AD/autos) or Mercury's Treads (vs AP/CC)",
+      "note": "Usually the recall right after Sunfire Aegis."
+    },
+    {
+      "gold": 2700,
+      "buy": "Thornmail (or Frozen Heart against strong auto-attackers)",
+      "note": "Third item; Thornmail earlier if they have healing."
+    },
+    {
+      "gold": 400,
+      "buy": "Control Ward",
+      "note": "If you must recall early, buy a ward and a Health Potion; a Control Ward near dragon or Baron helps your team."
+    }
+  ],
+  "commonMistakes": [
+    "Trading without your Granite Shield up or with Q on cooldown.",
+    "Fighting long trades against sustained melee champions in the early game.",
+    "Using R alone into their team instead of waiting for your team to follow.",
+    "Using R on one target without a follow-up or a kill.",
+    "Recalling without crashing the wave.",
+    "Side laning without vision when Baron or dragon is about to spawn.",
+    "Building damage items instead of armor against AD auto-attackers.",
+    "Not buying Thornmail against healing champions."
+  ],
+  "triggers": {
+    "enemy_laner_dead": [
+      "Push the wave into their turret and take plates.",
+      "Crash and recall to buy your next item, then Teleport back or walk."
+    ],
+    "you_died_to_gank": [
+      "Ward the river and keep the wave near your tower.",
+      "Keep Q ready for the jungler's approach; R can escape."
+    ],
+    "you_died_solo": [
+      "Wait for your shield and Q before you trade again.",
+      "Farm under tower; play for level 6 and Sunfire Aegis."
+    ],
+    "opp_level_lead": [
+      "They are a level up; don't trade until you catch up.",
+      "Farm under tower and poke with Q only if your shield is up."
+    ],
+    "you_level_lead": [
+      "You are a level up: W, Q, E trade now before they catch up.",
+      "Check where their jungler is first."
+    ],
+    "you_hit_level_2_first": [
+      "Level 2 first: Q and E burst, then walk out before they level."
+    ],
+    "you_hit_6": [
+      "R ready: push the wave, then ask your jungler for a kill with R.",
+      "Don't R alone; find your jungler first."
+    ],
+    "first_item_done": [
+      "Sunfire Aegis done: push the wave and take the turret plates.",
+      "Buy Plated Steelcaps next."
+    ],
+    "second_item_done": [
+      "Two items: you are very tanky, so lead fights with R around objectives."
+    ],
+    "three_items_done": [
+      "Three items: hard to kill; R onto their carries and be the frontline."
+    ],
+    "you_are_fed": [
+      "Stay with your team and R their carries; you are hard to kill.",
+      "Take turrets after every won fight."
+    ],
+    "you_are_behind": [
+      "Farm safely, buy armor and group; one good R still wins fights.",
+      "Stay near your team as the frontline."
+    ],
+    "enemy_laner_fed": [
+      "Don't 1v1 them; buy armor early and ask your jungler for help.",
+      "Use R and E in team fights, when your team can follow up."
+    ],
+    "enemy_team_numbers_down": [
+      "You have more players: R onto whoever is left or take the next objective.",
+      "Crash your wave on the way."
+    ],
+    "your_team_numbers_down": [
+      "Your team is down players; don't fight. Clear the wave under your turret and wait."
+    ],
+    "baron_up_soon": [
+      "Baron soon: push your wave, then group with your team and keep Teleport ready.",
+      "Be at full HP with R ready before it spawns."
+    ],
+    "dragon_up_soon": [
+      "Dragon soon: crash top and Teleport or walk to the pit with your team.",
+      "Set up R on whoever contests it."
+    ],
+    "grubs_soon": [
+      "Grubs at 8:00: crash your wave and go with your jungler.",
+      "Don't go if the enemy gets there first."
+    ],
+    "herald_soon": [
+      "Herald at 15:00: push top first, then help take it."
+    ],
+    "enemy_jungler_ganked_top_repeatedly": [
+      "Keep the wave near your tower and ward the river.",
+      "Poke with Q only when the jungler is not showing."
+    ],
+    "long_death_timers": [
+      "Death timers are long: don't side lane without vision.",
+      "Stay with your team and wait for their engage before you R."
+    ],
+    "enemy_has_heavy_healing": [
+      "Heavy healing: buy Thornmail earlier.",
+      "Burst the healer with R, Q and E so they can't heal."
+    ],
+    "enemy_heavy_ap": [
+      "Heavy AP: buy Mercury's Treads, then Force of Nature or Kaenic Rookern.",
+      "Your Granite Shield helps against burst; keep it up."
+    ],
+    "enemy_heavy_ad": [
+      "Heavy AD: Plated Steelcaps, Thornmail and Frozen Heart.",
+      "Use E on their auto-attackers to cut their damage."
+    ],
+    "enemy_many_tanks": [
+      "Many tanks: R still helps your team, but pick the carry behind them.",
+      "Consider Liandry's Torment after your defensive items."
+    ],
+    "enemy_heavy_cc": [
+      "Heavy CC: buy Mercury's Treads and wait for their CC to be used before you R.",
+      "Use Flash after R to catch a target if needed."
+    ],
+    "turret_lost": [
+      "Your turret is down: stay with your team and clear waves near the next turret.",
+      "Don't push without vision."
+    ],
+    "enemy_turret_taken": [
+      "Turret taken: move to the next objective or lane with your team.",
+      "Hit inner turret plates; they are permanent."
+    ]
+  }
+}

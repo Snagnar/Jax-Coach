@@ -1,7 +1,8 @@
 # Jax Coach
 
-A local coaching app for playing **Jax top** in League of Legends. It runs on your own Windows PC and shows its advice
-in your browser (a second monitor works best):
+A local coaching app for **top lane** in League of Legends. It started as a Jax coach, and now covers any champion
+through **playbooks** that research agents build and adapt. It runs on your own Windows PC and shows its advice in your
+browser (a second monitor works best):
 
 - **Live dashboard** during the game. One color says what to do right now: All-in, Push, Trade & farm, Play safe,
   Back off or Objective. It also tracks the enemy jungler, objective timers, lane states and when to go back.
@@ -9,7 +10,19 @@ in your browser (a second monitor works best):
 - **Champ select prep**: the matchup, build and runes against the enemy laner, and the enemy players' rank and mastery.
 - **Game report** after each game: a rating for all ten players, how much of the win/loss was yours, the gold story of
   the game, the three things to fix next time, and "Watch" buttons that jump the League replay to each of your deaths.
-- **Review**: patterns over your recent Jax games (CS at 10, gold at 15, how and where you die) and one focus per game.
+- **Review**: patterns over your recent games on a champion (CS at 10, gold at 15, how and where you die) and one focus
+  per game.
+- **Research agents** (through [Claude Code](https://claude.com/claude-code)):
+  - **A playbook for any champion.** Lock in a champion without one and a quick run delivers build and runes within
+    about a minute. A full research run (Opus, with Sonnet sub-agents) then writes the whole playbook: matchups,
+    game plan and decision rules.
+  - **A game plan for every game.** It's made when picks lock (or at game start), and a card shows how this lineup
+    is won, the build for it and any extra decision rules.
+  - **Plan updates during the game.** At moments that change things (your death, an item spike, big gold swings,
+    fed enemies, new threats, Baron or Soul, 14:00/20:00/28:00, or the Reassess button), an agent looks at the game
+    again. It updates the build and the plan, including how the game can still be won.
+  - **Suggested playbook changes after the game.** A review agent compares what the playbook said with what
+    happened. You approve each change; every change is a new playbook version you can roll back.
 
 It only uses Riot's official, read-only interfaces. It never presses keys or clicks for you, and it has no enemy
 cooldown or Flash timers.
@@ -23,14 +36,15 @@ cooldown or Flash timers.
 2. Run it. Windows may show "Windows protected your PC", because the exe isn't code-signed. Click
    **More info → Run anyway**.
 3. Choose a folder. The default is `%LOCALAPPDATA%\Programs\Jax Coach`, which needs no admin rights. Leave
-   **Local voice** ticked for the natural voice (downloads about 420 MB), then click **Install**.
+   **Local voice** ticked for the natural voice (downloads about 420 MB) and **Claude Code** for the research agents,
+   then click **Install**.
 
 Setup adds a **Jax Coach** shortcut (desktop and Start menu) and an entry under *Windows Settings → Apps*, where you
 can uninstall it. The uninstaller asks whether to keep your game history. Running a newer installer on the same folder
 updates the app and keeps your settings and history.
 
 Installer options for unattended installs:
-`JaxCoachSetup.exe /dir="D:\Jax Coach" /novoice /nodesktop /nolaunch /auto`
+`JaxCoachSetup.exe /dir="D:\Jax Coach" /novoice /noclaude /nodesktop /nolaunch /auto`
 
 ### Option B: from source
 ```bat
@@ -42,6 +56,15 @@ Then, in that folder:
 3. Double-click the new **Jax Coach** shortcut.
 
 Everything else is built into Windows 10 and 11: PowerShell 5.1, .NET Framework and a browser.
+
+### Research agents (optional, recommended)
+The agents run through **Claude Code**, Anthropic's command-line agent, using your own Claude account.
+1. Install it: the installer offers it (checkbox), or run this in PowerShell:
+   `irm https://claude.ai/install.ps1 | iex`
+2. Sign in once: open the **Playbook** tab, click **Sign in**, follow the link and paste the code back into the window
+   that opens.
+
+Without Claude Code everything else works as before, and champions without a playbook get general top-lane advice.
 
 ### One-time setup inside the app
 - **Riot API key** (needed for enemy rank, mastery and your match history):
@@ -74,8 +97,13 @@ Browsers only allow sound after one click on the page, so click the page once be
   side, an objective spawns in one minute, you can finish an item). The quiet time between lines grows from 8 s in lane
   to 40 s after 25:00. Objective calls use the real names and times: dragons, Dragon Soul, then Elder, grubs, Herald
   and Baron.
+- **Dragon Soul point and Elder**: when a team is on 3 drakes (or Elder is next), a striped banner shows who gets Soul
+  and the voice plays an alert tone plus one line 90 s before the spawn and again when it's up, even while you're dead.
 - **Enemy jungler**: last seen only from the kill feed and objective kills. Nothing is predicted.
-- **Lanes**: who is winning each role, plus team item gold, kills, towers and objectives.
+- **Lanes**: who is winning each role, plus team item gold, kills, towers and objectives (drakes show soul point).
+- **Enemy damage split**: each champion's usual magic/physical share (`damageProfiles` in `data/shared.json`), moved
+  by the items they actually buy and weighted by their gold, so it shifts as someone gets fed or builds differently.
+  Boots and counter items follow it.
 - **One focus per game**: picked from your Review data (the habit that costs you the most). It's shown in champ
   select, tracked live and graded after the game.
 
@@ -91,9 +119,19 @@ Opens by itself a few minutes after each game, as soon as Riot publishes the mat
 - **Replay**: download or open the replay, and jump to 15 seconds before each of your deaths.
 
 ### Review
-Imports your recent Jax games (Solo/Duo, Flex, Draft, Quickplay) with their timelines: CS at 10, gold diff at 15, item
+Imports your recent games on the champion you have selected (Solo/Duo, Flex, Draft, Quickplay) with their timelines: CS at 10, gold diff at 15, item
 timings, and every death classified as gank, solo or fight, with where on the map it happened. "What to work on" ranks
 the patterns behind the most deaths.
+
+### Playbook tab
+- **Champions**: every champion with a playbook (built-in, researched on this PC, or a draft still being researched).
+  Pick one to see it, show it on the dashboard, refresh its research, or switch between its versions. "Add a
+  champion" starts research for a new one.
+- **Research agents**: whether Claude Code is ready, and what every run is doing right now (searching, reading a
+  page, writing a file).
+- **Suggested changes**: the post-game review's proposals, each with Apply / Skip.
+- **Decision rules**: the fight score terms and the ordered rules the dashboard runs, readable one by one. On the
+  Live view, **Why?** under the play mode shows which rule decided and how the fight score was built.
 
 ### Voice settings
 In Settings you can choose:
@@ -119,6 +157,9 @@ flowchart LR
   Server -->|rank, mastery, matches| Riot["Riot Web API"]
   Server -->|names, icons| DD["Data Dragon"]
   Server -.->|optional| Groq["Groq TTS"]
+  Server -->|"starts, watches jobs/"| CC["Claude Code (claude -p)<br/>research agents"]
+  CC -->|web search| Web["Stats sites, wiki,<br/>patch notes, Reddit"]
+  CC -->|"writes out/"| Disk
 ```
 
 - **`server.ps1`**: a small web server built on .NET's `HttpListener`, with no dependencies. It serves the page and:
@@ -136,10 +177,24 @@ flowchart LR
   - `review.js` and `focus.js`: match-history patterns and the focus of the game.
   - `scout.js`: enemy rank and mastery.
   - `demo.js`: a demo game for trying the dashboard without playing.
-- **`data/`**: the coaching knowledge.
-  - `meta.json`: build, runes, items and skill order.
+- **Playbooks**: the coaching knowledge per champion, four JSON files (format: [agents/playbook-format.md](agents/playbook-format.md)).
+  - `meta.json`: build, runes, items (with "build when" tags) and skill order.
   - `phases.json`: the plan for each phase and advice per trigger.
-  - `matchups_*.json`: notes and win rates per champion.
+  - `matchups.json`: notes, difficulty and win rates per lane opponent.
+  - `rules.json`: the in-game decisions. There is a *fight score* (terms like "you have your ultimate, they don't:
+    +2") and an ordered list of rules ("when `min < 14 && e >= 2` → All-in on {oppName}"). They're written in a
+    small, safe expression language (`public/rules.js`, no `eval`), so agents can rewrite them without touching code.
+    The Jax rules reproduce the original hand-written logic exactly; this was checked on about 12,000 simulated
+    game states.
+  - Built-in playbooks live in `data/champions/<Champion>/` (Jax, plus the generic fallback in `_generic/`). Versions
+    made on your PC live in `playbooks/<Champion>/v<N>/`, and the active one wins file by file.
+- **Research agents** (`agents/`): `runner.ps1` starts each job as `claude -p` in its own folder under `jobs/`.
+  - Restricted mode: no shell commands, file access only inside that folder, web search and reading allowed.
+  - New champions use Opus; everything else, and all sub-agents, use Sonnet (`agentModelDeep`, `agentModel` and
+    `agentSubagentModel` in `config.json` change that).
+  - The prompts are in `agents/prompts/`. The server installs finished playbooks; the page applies plans and shows
+    proposals.
+  - Agents only see champions, never player names, and never give advice based on timing enemy cooldowns.
 - **The local voice** (`voice/`): [Kokoro-82M](https://huggingface.co/hexgrad/Kokoro-82M) via
   [kokoro-onnx](https://github.com/thewh1teagle/kokoro-onnx), set up by `voice/setup-voice.ps1`.
   - It uses its own private Python (made by [uv](https://github.com/astral-sh/uv)), so nothing is installed
@@ -157,7 +212,10 @@ flowchart LR
 These are git-ignored and never in the installer:
 - `config.json`: your settings, including a Riot key if you pasted one in Settings.
 - `history/`: your own games.
-- `cache/`: Riot answers and voice lines.
+- `playbooks/`: playbook versions made on your PC.
+- `jobs/`: research agent runs (prompt, input, what the agent did, its output).
+- `cache/`: Riot answers, game data and voice lines. Settings → Storage shows the size of each part and can clear the
+  caches (playbooks and game records are never cleared there).
 - `logs/`
 - the downloaded voice in `voice/`.
 
@@ -173,8 +231,9 @@ API keys from `.env` files are never copied into `config.json`.
   It writes `dist\JaxCoachSetup.exe`, using the C# compiler that ships with Windows (no SDK needed). The version comes
   from `installer\version.txt`. The installer contains the app files only (`installer/build.ps1` lists them). The voice
   is downloaded during setup.
-- **New patch**: update the JSON files in `data/` (same shape). Item names that no longer exist in Data Dragon get a
-  dashed border in the app.
+- **New patch**: click **Refresh research** on the Playbook tab (per champion). Item names that no longer exist in
+  Data Dragon get a dashed border in the app.
+- **Ship a researched playbook**: copy `playbooks/<Champion>/v<N>/*.json` to `data/champions/<Champion>/` and commit.
 
 ## Troubleshooting
 - **Nothing happens when I start it**: right-click the tray icon → *Show log*, or run `Start Jax Coach.bat` to see
@@ -184,6 +243,8 @@ API keys from `.env` files are never copied into `config.json`.
   2. Check the voice button in the Live banner.
   3. If the local voice is missing, run `Install local voice.bat`.
 - **No rank or mastery**: the Riot key is missing or expired. The gear icon shows its status.
+- **"AI: sign in" / no research**: sign in on the Playbook tab. A failed run shows its error there; the full log of
+  each run is in `jobs/<run>/events.jsonl` and `stderr.txt`.
 - **Port 8787 is taken**: set `"port": 8790` in `config.json`.
 
 ---

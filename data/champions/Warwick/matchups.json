@@ -1,0 +1,2065 @@
+{
+  "champion": "Warwick",
+  "role": "top",
+  "_notes": {
+    "note": "Win rates are Warwick's win rate vs the opponent in top lane, Emerald+, patch 26.19 (the sites label it 16.19), re-checked 2026-09-30 on the lolalytics Warwick top counters page (baseline 51.69%). op.gg Emerald+ figures are given as a cross-check where available. Per-matchup samples are small (280-680 games), so treat them as hints. Difficulty is from Warwick's view and mixes the win rate with kit knowledge.",
+    "sources": [
+      "https://lolalytics.com/lol/warwick/counters/?lane=top",
+      "https://op.gg/lol/champions/warwick/counters/top"
+    ]
+  },
+  "matchups": {
+    "Aatrox": {
+      "name": "Aatrox",
+      "difficulty": 3,
+      "winRate": 53.44,
+      "winRateSource": "lolalytics Warwick top counters, Emerald+, patch 26.19 (client 16.19), 655 games; op.gg Emerald+ 51.77% (479 games)",
+      "summary": "Aatrox wins early trades if his Q sweet spots land, but his healing and Q cooldown are punishable. Dodge Q3, trade when his Q is down, and use your sustain and Infinite Duress to win extended fights.",
+      "runes": "Lethal Tempo (Presence of Mind, Legend: Alacrity, Last Stand) + Resolve (Second Wind, Revitalize)",
+      "summoners": "Flash + Barrier",
+      "start": "Doran's Blade + Health Potion",
+      "buildNotes": "Blade of The Ruined King > Plated Steelcaps > Stridebreaker > Death's Dance / Sterak's Gage. Buy Chempunk Chainsword early if he heals a lot, or Thornmail if he is AD-fed.",
+      "skillNotes": "Take Q at 1, then W, then E. Max Q, then W, then E. Use Q to bite him right after he wastes a Q.",
+      "phases": {
+        "lvl1_3": [
+          "Stay near your minions and stand close to him, not at the edge of his The Darkin Blade (Q) line.",
+          "Trade with Q > autos right after he uses a Q.",
+          "Use Primal Howl (E) to cut the damage once he commits, then let it end to fear him."
+        ],
+        "lvl4_5": [
+          "Watch for Infernal Chains (W). Step out of the chain area early or the pull plus Q wins him the trade.",
+          "Fight when he is below half HP: Blood Hunt speeds up your attacks and Q heals you."
+        ],
+        "post6": [
+          "Threaten Infinite Duress when he is at half HP or after he wastes his W and Umbral Dash.",
+          "Don't fight into World Ender (R) after he activates it. Back off and wait out the duration."
+        ],
+        "midgame": [
+          "Look for the side of the map with a low-HP target and use Blood Hunt to chase.",
+          "Fight around your jungler or teammates. He is strong in a lone 1v1 with a lead."
+        ],
+        "lategame": [
+          "Flank the backline with Infinite Duress and let your team handle his dive.",
+          "Use Primal Howl to survive his combo and keep the fear for when he commits."
+        ]
+      },
+      "threats": [
+        "The Darkin Blade (Q3) sweet-spot knockup: be at the center, not the edge.",
+        "Infernal Chains (W): leave the area and don't stand on top of allies.",
+        "World Ender (R) fear, healing and speed: don't chase into it.",
+        "Umbral Dash (E) lets him reposition out of your reach."
+      ],
+      "killWindows": [
+        "After he misses Q3 or uses Umbral Dash.",
+        "When he is low and his Q is on cooldown, use Blood Hunt to run him down.",
+        "When your jungler arrives and you use Infinite Duress."
+      ],
+      "avoid": [
+        "Trading into a ready Q with no minions near you.",
+        "Chasing him after World Ender is active.",
+        "Standing in the Infernal Chains."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/warwick/counters/?lane=top",
+        "https://op.gg/lol/champions/warwick/counters/top"
+      ]
+    },
+    "Ambessa": {
+      "name": "Ambessa",
+      "difficulty": 3,
+      "winRate": 55.91,
+      "winRateSource": "lolalytics Warwick top counters, Emerald+, patch 26.19 (client 16.19), 499 games; op.gg Emerald+ 55.35% (374 games)",
+      "summary": "Ambessa wins short dash-heavy trades and is hard to catch, but you beat her in longer fights with sustain and your suppress. Play for level 3, make her waste Lunge and Cunning Sweep, and don't chase her.",
+      "runes": "Lethal Tempo (Presence of Mind, Legend: Alacrity, Last Stand) + Resolve (Second Wind, Revitalize)",
+      "summoners": "Flash + Barrier",
+      "start": "Doran's Blade + Health Potion",
+      "buildNotes": "Blade of The Ruined King > Plated Steelcaps > Stridebreaker > Death's Dance / Sterak's Gage. Add Chempunk Chainsword or Thornmail if she gets fed. Maw of Malmortius is an option if she goes for burst.",
+      "skillNotes": "Take Q at 1, then W, then E. Save Primal Howl (E) for when she commits her Lunge combo.",
+      "phases": {
+        "lvl1_3": [
+          "Trade only after she has used Cunning Sweep (Q) or her energy is low. Her early damage is high but short.",
+          "Use Primal Howl (E) when she Lunges (E) onto you, then Q and auto her.",
+          "Keep the wave near your tower if she pushes; she will roam or dive with her jungler."
+        ],
+        "lvl4_5": [
+          "Repudiation (W) shield and her dashes make her sticky. Fight next to your minions and make her spend her energy first.",
+          "Blood Hunt on a low-HP Ambessa lets you catch her; otherwise let her go."
+        ],
+        "post6": [
+          "Infinite Duress is your best answer: use it when she is committed to a target or after she Lunges in.",
+          "Don't chase her through her dashes. Let her come back to you, and stay out of Public Execution (R) lines."
+        ],
+        "midgame": [
+          "Split with Blood Hunt to find isolated targets. She can duel you, so stay near your team.",
+          "Group with teammates for fights; she dives well but dies to focus."
+        ],
+        "lategame": [
+          "Use Infinite Duress on her when she dives, or on the carry she is trying to reach.",
+          "Use Primal Howl to survive if she jumps on your backline."
+        ]
+      },
+      "threats": [
+        "Her Lunge (E) and Cunning Sweep (Q) combo deals big burst.",
+        "Repudiation (W) shield and sustain in short trades.",
+        "Roams and jungler dives with Public Execution (R)."
+      ],
+      "killWindows": [
+        "After she uses Lunge and her energy is low.",
+        "Level 6 with Infinite Duress when she is committed.",
+        "When your jungler is near and she stands still."
+      ],
+      "avoid": [
+        "Chasing her through her dashes.",
+        "Trading when she has full energy.",
+        "Fighting without Primal Howl ready."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/warwick/counters/?lane=top",
+        "https://op.gg/lol/champions/warwick/counters/top"
+      ]
+    },
+    "Camille": {
+      "name": "Camille",
+      "difficulty": 3,
+      "winRate": 55.43,
+      "winRateSource": "lolalytics Warwick top counters, Emerald+, patch 26.19 (client 16.19), 516 games; op.gg Emerald+ 54.55% (374 games)",
+      "summary": "Camille is a strong early duelist but you win with sustain, fear, and suppress. Fight in the middle of the lane, use Primal Howl to cut her Precision Protocol (Q2) damage, and don't let her Hextech Ultimatum isolate you.",
+      "runes": "Lethal Tempo (Presence of Mind, Legend: Alacrity, Last Stand) + Resolve (Second Wind, Revitalize)",
+      "summoners": "Flash + Barrier",
+      "start": "Doran's Blade + Health Potion",
+      "buildNotes": "Blade of The Ruined King > Plated Steelcaps > Stridebreaker > Death's Dance / Sterak's Gage. Buy Chempunk Chainsword or Thornmail if she stacks healing. Mercury's Treads are fine if her team has heavy CC.",
+      "skillNotes": "Take Q at 1, then W, then E. Q her after she uses Hookshot to engage or escape.",
+      "phases": {
+        "lvl1_3": [
+          "Trade when her Q is down. Use Primal Howl (E) when she starts her Q2 combo to reduce the damage, then fear her.",
+          "Don't stand next to walls; her Hookshot (E) gives her a free stun combo.",
+          "Level 3 with all three abilities is your best power spike here."
+        ],
+        "lvl4_5": [
+          "Fight in the center of the lane with your minions. Her E needs a wall to work well.",
+          "After she uses Hookshot to dive, Q her and stay on her."
+        ],
+        "post6": [
+          "Use Infinite Duress after she has used her E and is exposed.",
+          "If she ults you (Hextech Ultimatum), fight inside the zone: you can't leave it. Use Primal Howl to survive."
+        ],
+        "midgame": [
+          "She splits well. Don't chase alone; use Blood Hunt to find low-HP targets on other lanes.",
+          "Ward before you push so she can't catch you alone."
+        ],
+        "lategame": [
+          "Look for a flank with Infinite Duress on the enemy carry; she will try to isolate your carry.",
+          "If she ults you, stay and fight. Use Primal Howl to survive the burst."
+        ]
+      },
+      "threats": [
+        "Precision Protocol (Q2) true damage in short trades.",
+        "Hookshot (E) into Wall Dive stun near a wall.",
+        "Hextech Ultimatum (R) locks you in a zone and cuts your escape."
+      ],
+      "killWindows": [
+        "After she uses her E and is exposed.",
+        "When you hit level 3 and she has wasted her Q2.",
+        "When she is low and cannot escape; Blood Hunt speeds you to her."
+      ],
+      "avoid": [
+        "Fighting near walls with her E ready.",
+        "Taking a trade when her Q is up and you have no Primal Howl.",
+        "Chasing her into her teammates."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/warwick/counters/?lane=top",
+        "https://op.gg/lol/champions/warwick/counters/top"
+      ]
+    },
+    "Chogath": {
+      "name": "Cho'Gath",
+      "difficulty": 4,
+      "winRate": 48.56,
+      "winRateSource": "lolalytics Warwick top counters, Emerald+, patch 26.19 (client 16.19), 278 games; op.gg Emerald+ 45.64% (195 games)",
+      "summary": "Cho'Gath is one of your worst top-lane matchups in the data. He outscales you in HP and true-damage Feast, and his Rupture and Feral Scream punish you when you stand still. Stay healthy, avoid his Q, and win early or leave him to farm while you take objectives.",
+      "runes": "Lethal Tempo (Presence of Mind, Legend: Alacrity, Last Stand) + Resolve (Second Wind, Revitalize). Press the Attack if you keep getting poked by his Q.",
+      "summoners": "Flash + Barrier",
+      "start": "Doran's Shield + Health Potion (his Q pokes you; his damage is mostly magic)",
+      "buildNotes": "Blade of The Ruined King > Mercury's Treads > Stridebreaker > Spirit Visage / Death's Dance / Sterak's Gage. Mercury's Treads and Spirit Visage fit his magic damage; Force of Nature or Maw of Malmortius if he stacks AP.",
+      "skillNotes": "Take Q at 1, then W, then E. Only bite him when his Rupture (Q) has been used.",
+      "phases": {
+        "lvl1_3": [
+          "Stay out of Rupture (Q) range and trade with Q and autos after he uses it.",
+          "Push the wave to build a lead before he gets Feral Scream (W).",
+          "Don't fight in melee range when his Vorpal Spikes (E) are up."
+        ],
+        "lvl4_5": [
+          "Fight when his Q and W are down; otherwise back off. Use Primal Howl to cut his damage.",
+          "Blood Hunt on a low-HP Cho'Gath gives you a speed advantage."
+        ],
+        "post6": [
+          "Feast (R) is a true damage execute. Keep your HP high before he reaches level 6.",
+          "Infinite Duress on Cho'Gath is fine when he is out of position; he has no way to break it."
+        ],
+        "midgame": [
+          "He scales harder than you. Don't take long 1v1s once he has Feast stacks and items.",
+          "Roam with Blood Hunt to find easier targets and force him to follow."
+        ],
+        "lategame": [
+          "Flank the backline with Infinite Duress. Ignore Cho'Gath unless he is out of position.",
+          "Don't take a 1v1 into a stacked Cho'Gath."
+        ]
+      },
+      "threats": [
+        "Rupture (Q) knock-up and slow in lane.",
+        "Feral Scream (W) silence stops your Q and Howl.",
+        "Feast (R) true damage execute, more so late.",
+        "Vorpal Spikes (E) autos deal extra magic damage."
+      ],
+      "killWindows": [
+        "Right after he misses Rupture, use Q and Primal Howl.",
+        "When he is below half HP and his W is down.",
+        "When a jungler joins and you use Infinite Duress."
+      ],
+      "avoid": [
+        "Trading into Rupture and Feral Scream.",
+        "Long 1v1s late when he has stacks and armor.",
+        "Staying at low HP near him after level 6."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/warwick/counters/?lane=top",
+        "https://op.gg/lol/champions/warwick/counters/top"
+      ]
+    },
+    "Darius": {
+      "name": "Darius",
+      "difficulty": 3,
+      "winRate": 54.28,
+      "winRateSource": "lolalytics Warwick top counters, Emerald+, patch 26.19 (client 16.19), 654 games; op.gg Emerald+ 51.25% (441 games)",
+      "summary": "Darius wins short melee trades with Hemorrhage stacks and Apprehend pulls, but you out-sustain him and Primal Howl blunts his engage. Stay out of his outer Decimate ring and don't let him get Noxian Guillotine resets.",
+      "runes": "Lethal Tempo (Presence of Mind, Legend: Alacrity, Last Stand) + Resolve (Second Wind, Revitalize)",
+      "summoners": "Flash + Barrier",
+      "start": "Doran's Blade + Health Potion",
+      "buildNotes": "Blade of The Ruined King > Plated Steelcaps > Stridebreaker > Death's Dance / Sterak's Gage. Buy Thornmail early if he is healing off you.",
+      "skillNotes": "Take Q at 1, then W, then E. Keep Primal Howl ready for his Apprehend pull.",
+      "phases": {
+        "lvl1_3": [
+          "Don't stand in the outer Decimate (Q) ring; stay close to him or far away.",
+          "Trade at the start of his cooldown, not while his Q or W are ready. Fight with Q and autos at level 3.",
+          "Use Primal Howl (E) when he pulls you with Apprehend to cut the damage, then fear him."
+        ],
+        "lvl4_5": [
+          "Don't let him stack Hemorrhage to five. Break off before he gets five stacks.",
+          "Push the wave and reset if he is hitting you with W and Q."
+        ],
+        "post6": [
+          "Noxian Guillotine (R) deals more true damage the more Hemorrhage stacks he has. Fight at low stacks.",
+          "Use Infinite Duress after he wastes his Q and E, or when he is at low HP."
+        ],
+        "midgame": [
+          "Split with Blood Hunt and stay away from him. He dives you if you overextend.",
+          "Fight when your team is around; he is strong in 1v1 but weak against CC."
+        ],
+        "lategame": [
+          "Flank his backline with Infinite Duress. Ignore Darius unless he is alone.",
+          "Use Primal Howl at the start of his engage to save yourself."
+        ]
+      },
+      "threats": [
+        "Decimate (Q) heals him when the outer edge hits you.",
+        "Apprehend (E) pulls you in and stops your escape.",
+        "Hemorrhage stacks and Noxian Guillotine true damage.",
+        "Crippling Strike (W) slow ends your chase."
+      ],
+      "killWindows": [
+        "After he wastes Q and E.",
+        "When his stacks are low and you have Primal Howl ready.",
+        "When Infinite Duress hits and your jungler joins."
+      ],
+      "avoid": [
+        "Standing in the outer Decimate ring.",
+        "Trading into five Hemorrhage stacks.",
+        "Chasing him when you are low and his R is up."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/warwick/counters/?lane=top",
+        "https://op.gg/lol/champions/warwick/counters/top"
+      ]
+    },
+    "DrMundo": {
+      "name": "Dr. Mundo",
+      "difficulty": 1,
+      "winRate": 59.77,
+      "winRateSource": "lolalytics Warwick top counters, Emerald+, patch 26.19 (client 16.19), 353 games; op.gg Emerald+ 60.54% (223 games)",
+      "summary": "Dr. Mundo is one of your best matchups. Your suppress and sustain beat his tank build, and he has trouble catching you. Push him around and get the lead early.",
+      "runes": "Lethal Tempo (Presence of Mind, Legend: Alacrity, Last Stand) + Resolve (Second Wind, Revitalize)",
+      "summoners": "Flash + Ignite",
+      "start": "Doran's Blade + Health Potion",
+      "buildNotes": "Blade of The Ruined King > Plated Steelcaps > Stridebreaker > Death's Dance / Sterak's Gage. Buy Chempunk Chainsword if he heals a lot, or Thornmail if he gets close to you.",
+      "skillNotes": "Take Q at 1, then W, then E. Sidestep his cleavers so you never take the slow.",
+      "phases": {
+        "lvl1_3": [
+          "Trade with Q and autos and sidestep his Infected Bonesaw (Q) cleaver. He has a hard time hitting you.",
+          "Use Primal Howl (E) if he gets close, then fight him."
+        ],
+        "lvl4_5": [
+          "Keep pushing and use Blood Hunt to find kill chances. His sustain is weak until he has items.",
+          "Fight after he has used his Q and stay out of his Heart Zapper (W) range."
+        ],
+        "post6": [
+          "Infinite Duress kills him if you have the lead and his Q is used.",
+          "Don't fight into Maximum Dosage (R) after it is active. Back off and wait out the healing."
+        ],
+        "midgame": [
+          "Split and use Blood Hunt to catch other targets while he tries to farm.",
+          "He is hard to kill in fights; go for his teammates instead."
+        ],
+        "lategame": [
+          "Flank the backline with Infinite Duress and let Mundo tank his own team.",
+          "Avoid fighting a fed Mundo alone; he will out-heal you."
+        ]
+      },
+      "threats": [
+        "Infected Bonesaw (Q) slow and percent HP damage.",
+        "Maximum Dosage (R) heals and buffs him.",
+        "Heart Zapper (W) damage in long fights."
+      ],
+      "killWindows": [
+        "After he misses his Q and is out of position.",
+        "When he is below half HP and Blood Hunt is active.",
+        "Level 6 with Infinite Duress and his R is not active."
+      ],
+      "avoid": [
+        "Fighting into Maximum Dosage without anti-heal.",
+        "Standing in a line with his cleaver.",
+        "Long fights in the late game with no plan."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/warwick/counters/?lane=top",
+        "https://op.gg/lol/champions/warwick/counters/top"
+      ]
+    },
+    "Fiora": {
+      "name": "Fiora",
+      "difficulty": 3,
+      "winRate": 54.83,
+      "winRateSource": "lolalytics Warwick top counters, Emerald+, patch 26.19 (client 16.19), 580 games; op.gg Emerald+ 52.85% (403 games)",
+      "summary": "Fiora is a strong duelist whose Riposte (W) parries your CC, including Infinite Duress. Make her spend Riposte before you commit and use your sustain to win the trade.",
+      "runes": "Lethal Tempo (Presence of Mind, Legend: Alacrity, Last Stand) + Resolve (Second Wind, Revitalize)",
+      "summoners": "Flash + Barrier",
+      "start": "Doran's Blade + Health Potion",
+      "buildNotes": "Blade of The Ruined King > Plated Steelcaps > Stridebreaker > Death's Dance / Sterak's Gage. Buy Thornmail early: her vitals heal her and she builds AD.",
+      "skillNotes": "Take Q at 1, then W, then E. Keep your fear and suppress until Riposte has been used.",
+      "phases": {
+        "lvl1_3": [
+          "Make her spend Riposte before you use E or R.",
+          "Trade with autos when her Lunge (Q) is down and don't give her free vital hits.",
+          "Use Primal Howl (E) to cut damage in a trade, and let the fear go off after she has used Riposte."
+        ],
+        "lvl4_5": [
+          "Keep the wave near you. Move around to deny her vital hits.",
+          "Fight right after she has used Riposte."
+        ],
+        "post6": [
+          "Riposte parries Infinite Duress. Wait until she has used it or you can hit her from behind.",
+          "Don't chase her after her Q resets."
+        ],
+        "midgame": [
+          "She splits harder than you. Don't try to duel her; use Blood Hunt to find someone else.",
+          "Stay near your team and force her to come to you."
+        ],
+        "lategame": [
+          "Use Infinite Duress on her teammates and keep Primal Howl for her Grand Challenge.",
+          "Her ultimate zone can beat your team if you 1v1 her; make her spend Riposte first."
+        ]
+      },
+      "threats": [
+        "Riposte (W) parries your CC, including Infinite Duress, and stuns you back.",
+        "Vitals deal true damage and heal her.",
+        "Grand Challenge (R) vitals heal her and nearby allies.",
+        "Lunge (Q) closes the gap and slows."
+      ],
+      "killWindows": [
+        "Right after she uses Riposte and her Q is down.",
+        "When she is low and cannot escape; Blood Hunt speeds you.",
+        "When your jungler helps and she has no W."
+      ],
+      "avoid": [
+        "Using Infinite Duress before she uses Riposte.",
+        "Standing still so she can hit vitals.",
+        "Long duels late with her R."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/warwick/counters/?lane=top",
+        "https://op.gg/lol/champions/warwick/counters/top"
+      ]
+    },
+    "Gangplank": {
+      "name": "Gangplank",
+      "difficulty": 3,
+      "winRate": 50.57,
+      "winRateSource": "lolalytics Warwick top counters, Emerald+, patch 26.19 (client 16.19), 619 games; op.gg Emerald+ 51.33% (450 games)",
+      "summary": "An even matchup. Gangplank pokes with Q and barrels, and his Remove Scurvy (W) cleanses your fear. You win by closing the gap with Q and fighting before he has barrels and level 6.",
+      "runes": "Press the Attack (Presence of Mind, Legend: Alacrity, Last Stand) + Resolve (Second Wind, Revitalize)",
+      "summoners": "Flash + Teleport",
+      "start": "Doran's Shield + Health Potion",
+      "buildNotes": "Blade of The Ruined King > Plated Steelcaps > Stridebreaker > Death's Dance / Sterak's Gage. Buy Chempunk Chainsword early if he heals with Remove Scurvy. Maw of Malmortius or Spirit Visage if his poke hurts.",
+      "skillNotes": "Take Q at 1, then W, then E. Bite him with Q when he steps up to farm.",
+      "phases": {
+        "lvl1_3": [
+          "Q onto him when he steps up to last hit, then trade. He is weak in melee range.",
+          "Don't stand next to his Powder Kegs (E). Break them with autos or stay away.",
+          "Use Primal Howl (E) to reduce the poke and force him back."
+        ],
+        "lvl4_5": [
+          "Until he has several barrels, hit him whenever he steps forward to farm.",
+          "Fight when his Q is down. His W cleanses fear, so don't rely on Primal Howl's fear while it is ready."
+        ],
+        "post6": [
+          "Infinite Duress can't be cleansed once it lands; use it when he is out of position.",
+          "Break the barrels with autos before they combine."
+        ],
+        "midgame": [
+          "Look for Blood Hunt kills on low-HP targets.",
+          "Don't group into his Cannon Barrage (R) on the whole team."
+        ],
+        "lategame": [
+          "Flank him with Infinite Duress when he is out of position.",
+          "Keep Primal Howl for when he tries to fight you."
+        ]
+      },
+      "threats": [
+        "Powder Keg (E) combos deal heavy burst and slow.",
+        "Remove Scurvy (W) cleanses your fear and heals him.",
+        "Cannon Barrage (R) slows and damages the whole team.",
+        "Parrrley (Q) crits give him free gold."
+      ],
+      "killWindows": [
+        "After he uses Remove Scurvy and his barrels are gone.",
+        "When you hit him with Q at level 3 and he has no barrels.",
+        "When he is low and Blood Hunt is active."
+      ],
+      "avoid": [
+        "Fighting inside a group of barrels.",
+        "Relying on the fear while Remove Scurvy is ready.",
+        "Standing in Cannon Barrage."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/warwick/counters/?lane=top",
+        "https://op.gg/lol/champions/warwick/counters/top"
+      ]
+    },
+    "Garen": {
+      "name": "Garen",
+      "difficulty": 2,
+      "winRate": 53.63,
+      "winRateSource": "lolalytics Warwick top counters, Emerald+, patch 26.19 (client 16.19), 675 games; op.gg Emerald+ 53.93% (445 games)",
+      "summary": "Garen is a favorable matchup. You out-sustain him and Primal Howl stops his Judgment (E) spin. Don't let him get a lead, and beware his Demacian Justice (R) execute.",
+      "runes": "Lethal Tempo (Presence of Mind, Legend: Alacrity, Last Stand) + Resolve (Second Wind, Revitalize)",
+      "summoners": "Flash + Ignite",
+      "start": "Doran's Blade + Health Potion",
+      "buildNotes": "Blade of The Ruined King > Plated Steelcaps > Stridebreaker > Death's Dance / Sterak's Gage. Add Thornmail or Chempunk Chainsword if he stacks healing and armor.",
+      "skillNotes": "Take Q at 1, then W, then E. Save Primal Howl for when he starts his Judgment spin.",
+      "phases": {
+        "lvl1_3": [
+          "Trade after his Decisive Strike (Q) is used. Hit him with autos and Q, then use Primal Howl to end the trade.",
+          "Don't stand in his Judgment (E) spin. Fear him with Primal Howl to stop it.",
+          "Push the wave to force him to lose CS."
+        ],
+        "lvl4_5": [
+          "Fight after his Courage (W) is used. Use Blood Hunt to catch him if he is below half HP.",
+          "Keep your HP high before level 6 so his R can't finish you."
+        ],
+        "post6": [
+          "Demacian Justice deals true damage based on your missing HP. Stay above half HP in a fight with him.",
+          "Use Infinite Duress when he wastes his Q and E."
+        ],
+        "midgame": [
+          "Split and use Blood Hunt to find targets. He is slow to reach you.",
+          "Don't take long duels once he has armor and health items; go for his teammates instead."
+        ],
+        "lategame": [
+          "Flank the backline with Infinite Duress. Garen has trouble reaching you.",
+          "Use Primal Howl if he dives your carry."
+        ]
+      },
+      "threats": [
+        "Decisive Strike (Q) silence and speed close the gap.",
+        "Judgment (E) spin damage and armor shred.",
+        "Demacian Justice (R) true damage execute on missing HP.",
+        "Perseverance (passive) regenerates his HP when out of combat."
+      ],
+      "killWindows": [
+        "After he wastes Q and W.",
+        "When he is low and Blood Hunt is active.",
+        "When Infinite Duress hits and he has no way to escape."
+      ],
+      "avoid": [
+        "Fighting at low HP after level 6.",
+        "Standing in his E spin.",
+        "Chasing him when his Q speed boost is up."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/warwick/counters/?lane=top",
+        "https://op.gg/lol/champions/warwick/counters/top"
+      ]
+    },
+    "Gnar": {
+      "name": "Gnar",
+      "difficulty": 3,
+      "winRate": 51.05,
+      "winRateSource": "lolalytics Warwick top counters, Emerald+, patch 26.19 (client 16.19), 286 games",
+      "summary": "Mini Gnar pokes you with Boomerang Throw (Q) but has little burst up close. You win when you lunge onto him with Jaws of the Beast (Q) and fight before his Rage fills. Mega Gnar is the danger: his Wallop (W) stun and GNAR! (R) knockback into a wall.",
+      "runes": "Press the Attack (Presence of Mind, Legend: Alacrity, Last Stand) + Resolve (Second Wind, Revitalize)",
+      "summoners": "Flash + Teleport",
+      "start": "Doran's Shield + Health Potion",
+      "buildNotes": "Blade of The Ruined King > Plated Steelcaps > Stridebreaker > Death's Dance. Swap to Mercury's Treads and Spirit Visage if his magic damage is high.",
+      "skillNotes": "Start Q. W at 2, E at 3. Max Q, then W, then E.",
+      "phases": {
+        "lvl1_3": [
+          "Stay near minions so his Boomerang Throw (Q) hits a unit first. Don't stand in free poke.",
+          "Q onto him when his Q is on cooldown, auto him twice, then E to reduce his return damage and leave."
+        ],
+        "lvl4_5": [
+          "Watch his Rage. When it is nearly full he becomes Mega Gnar. Back off or pop E before he stuns with Wallop (W).",
+          "Punish his Hop (E) landing: Q onto him while he is mini."
+        ],
+        "post6": [
+          "Stay away from walls when he has Rage. GNAR! (R) stuns you if it knocks you into terrain.",
+          "Use Infinite Duress (R) on him when he is close and his Rage is low. It is a leap, so it can miss."
+        ],
+        "midgame": [
+          "Hunt him when he is mini and alone. Use Blood Hunt (W) to follow him once he is below 50% HP.",
+          "In fights, Q onto his backline and leave his frontline to your team."
+        ],
+        "lategame": [
+          "Fight in open ground away from walls. Pick him off with Q and R before he transforms."
+        ]
+      },
+      "threats": [
+        "Boomerang Throw (Q) slow and poke at range.",
+        "Hyper (W passive) third auto: bonus percent-health damage.",
+        "Wallop (W) stun and GNAR! (R) wall stun as Mega Gnar."
+      ],
+      "killWindows": [
+        "When he is mini with Q on cooldown and you have Q up.",
+        "Right after Mega Gnar reverts, when he has no Rage."
+      ],
+      "avoid": [
+        "Taking poke without minions in front of you.",
+        "Fighting next to walls when his Rage is near full.",
+        "Chasing him into his jungler's side."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/warwick/counters/?lane=top",
+        "https://lolalytics.com/lol/warwick/vs/gnar/build/?lane=top"
+      ]
+    },
+    "Gwen": {
+      "name": "Gwen",
+      "difficulty": 2,
+      "winRate": 57.68,
+      "winRateSource": "lolalytics Warwick top counters, Emerald+, patch 26.19 (client 16.19), 345 games",
+      "summary": "You are favored. Gwen wants long fights where A Thousand Cuts percent-health damage builds up, but Primal Howl (E) and your suppression punish her all-ins. Fight her inside Hallowed Mist (W) and fear her when she dives.",
+      "runes": "Lethal Tempo (Presence of Mind, Legend: Alacrity, Last Stand) + Resolve (Second Wind, Revitalize)",
+      "summoners": "Flash + Ignite",
+      "start": "Doran's Blade + Health Potion",
+      "buildNotes": "Blade of The Ruined King > Mercury's Treads > Stridebreaker > Spirit Visage. Her damage is mostly magic, so Force of Nature is a good later buy. Buy Chempunk Chainsword if she heals through your damage.",
+      "skillNotes": "Start Q. W at 2, E at 3. Max Q, then W, then E.",
+      "phases": {
+        "lvl1_3": [
+          "Step out of the center of Snip Snip! (Q). The center deals true damage. Don't stand still.",
+          "Trade when her Q is on cooldown: Jaws of the Beast (Q) onto her, auto, auto, then leave."
+        ],
+        "lvl4_5": [
+          "Walk into Hallowed Mist (W) instead of trying to Q into it from outside.",
+          "Fear her with Primal Howl (E) when she uses Skip 'n Slash (E) to dive."
+        ],
+        "post6": [
+          "Needlework (R) slows you with each cast. Close the gap with Q and use Infinite Duress when she stops to cast.",
+          "All-in when her W and E are used."
+        ],
+        "midgame": [
+          "Look for picks on her with Blood Hunt (W) once she is below 50% HP.",
+          "In teamfights, dive her backline. She has few ways out of your suppression."
+        ],
+        "lategame": [
+          "Kill her fast with Q and Infinite Duress. Long fights favor her percent-health damage."
+        ]
+      },
+      "threats": [
+        "Snip Snip! (Q) true damage at the center of the cast.",
+        "Hallowed Mist (W) makes her untargetable from outside the mist.",
+        "A Thousand Cuts (passive) percent-health magic damage and healing."
+      ],
+      "killWindows": [
+        "After she has used Skip 'n Slash (E) and Hallowed Mist (W).",
+        "When she is below 50% HP and you have Q and Infinite Duress up."
+      ],
+      "avoid": [
+        "Trying to target her from outside the mist.",
+        "Standing still in the middle of her Q.",
+        "Long fights at low HP with no Primal Howl."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/warwick/counters/?lane=top",
+        "https://lolalytics.com/lol/warwick/vs/gwen/build/?lane=top"
+      ]
+    },
+    "Illaoi": {
+      "name": "Illaoi",
+      "difficulty": 3,
+      "winRate": 53.45,
+      "winRateSource": "lolalytics Warwick top counters, Emerald+, patch 26.19 (client 16.19), 232 games",
+      "summary": "A small edge for you as long as you fight away from her tentacles. You can lunge onto her with Q and fear her with E, but Harsh Lesson (W) and her tentacles make long fights bad. Dodge Test of Spirit (E) and take short trades.",
+      "runes": "Lethal Tempo (Presence of Mind, Legend: Alacrity, Last Stand) + Resolve (Second Wind, Revitalize)",
+      "summoners": "Flash + Ignite",
+      "start": "Doran's Blade + Health Potion",
+      "buildNotes": "Blade of The Ruined King > Plated Steelcaps > Stridebreaker > Death's Dance. Buy Chempunk Chainsword early if her healing wins trades. Sterak's Gage later.",
+      "skillNotes": "Start Q. W at 2, E at 3. Max Q, then W, then E.",
+      "phases": {
+        "lvl1_3": [
+          "Stand behind minions so Test of Spirit (E) is blocked. If it hits, fight her away from the vessel.",
+          "Trade with Jaws of the Beast (Q) onto her when her Q is on cooldown, then walk out of the tentacle area."
+        ],
+        "lvl4_5": [
+          "Fight away from tentacles. Walk out of them and let her come to you.",
+          "Fear her with Primal Howl (E) when she commits Tentacle Smash (Q) to take less damage."
+        ],
+        "post6": [
+          "Leap of Faith (R) spawns tentacles around her. Fight outside them or wait them out.",
+          "Use Infinite Duress on her when she has no tentacles near you. Tentacles already out still hit you."
+        ],
+        "midgame": [
+          "Don't push a wave near her tentacles. Take side-lane fights on your terms.",
+          "Use Blood Hunt (W) to follow her once she is below 50% HP."
+        ],
+        "lategame": [
+          "Her R wins teamfights when your team is packed together. Dive her early with Q and Infinite Duress before she casts it."
+        ]
+      },
+      "threats": [
+        "Test of Spirit (E) pulls out your spirit and makes her tentacles hit harder.",
+        "Leap of Faith (R) tentacle burst.",
+        "Harsh Lesson (W) healing and range."
+      ],
+      "killWindows": [
+        "After her E misses and she has no tentacles near you.",
+        "When she is low and her R is used."
+      ],
+      "avoid": [
+        "Standing in line for Test of Spirit.",
+        "Fighting on top of her tentacles.",
+        "Long fights inside her R."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/warwick/counters/?lane=top"
+      ]
+    },
+    "Irelia": {
+      "name": "Irelia",
+      "difficulty": 2,
+      "winRate": 58.54,
+      "winRateSource": "lolalytics Warwick top counters, Emerald+, patch 26.19 (client 16.19), 632 games",
+      "summary": "One of your best matchups. Primal Howl (E) fear stops her dashes and autos, and Infinite Duress catches her. Fight when she has no minions to Bladesurge (Q) onto and don't let her stack Ionian Fervor freely.",
+      "runes": "Lethal Tempo (Presence of Mind, Legend: Alacrity, Last Stand) + Resolve (Second Wind, Revitalize)",
+      "summoners": "Flash + Ignite",
+      "start": "Doran's Blade + Health Potion",
+      "buildNotes": "Blade of The Ruined King > Plated Steelcaps > Stridebreaker > Death's Dance. Add Sterak's Gage for her burst.",
+      "skillNotes": "Start Q. W at 2, E at 3. Max Q, then W, then E.",
+      "phases": {
+        "lvl1_3": [
+          "Clear the wave so she has fewer minions to Bladesurge (Q) onto. Make her come to you.",
+          "Pop Primal Howl (E) as she dashes in to cut her damage, then fear her and trade back."
+        ],
+        "lvl4_5": [
+          "Sidestep Flawless Duet (E). It stuns after both blades meet.",
+          "Wait out Defiant Dance (W) damage reduction before you commit."
+        ],
+        "post6": [
+          "Vanguard's Edge (R) slows you and makes a wall. Use Infinite Duress once she has used her dashes.",
+          "All-in when she has no minions to reset Q on."
+        ],
+        "midgame": [
+          "Win 1v1s. Use Blood Hunt (W) to find her when she is below 50% HP.",
+          "In teamfights, wait for her to dive, then Jaws of the Beast (Q) onto her."
+        ],
+        "lategame": [
+          "Keep Primal Howl up for her dive and use Infinite Duress when she engages."
+        ]
+      },
+      "threats": [
+        "Flawless Duet (E) stun.",
+        "Bladesurge (Q) resets on minions and low-health enemies.",
+        "Ionian Fervor (passive) stacked attack speed.",
+        "Vanguard's Edge (R) slow."
+      ],
+      "killWindows": [
+        "After her E misses or she used her dashes.",
+        "When she is below 50% HP and has no minions nearby."
+      ],
+      "avoid": [
+        "Getting stunned by Flawless Duet.",
+        "Using Primal Howl too early so she waits it out.",
+        "Fighting her when she has stacks and a full minion wave."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/warwick/counters/?lane=top",
+        "https://lolalytics.com/lol/warwick/vs/irelia/build/?lane=top"
+      ]
+    },
+    "Jax": {
+      "name": "Jax",
+      "difficulty": 4,
+      "winRate": 45.69,
+      "winRateSource": "lolalytics Warwick top counters, Emerald+, patch 26.19 (client 16.19), 650 games",
+      "summary": "A losing lane. Counter Strike (E) dodges your basic attacks and then stuns, and Jax out-scales you in long duels. Use Jaws of the Beast (Q) and Infinite Duress (R), which his E doesn't dodge, and don't auto him while his E is up.",
+      "runes": "Lethal Tempo (Presence of Mind, Legend: Alacrity, Last Stand) + Resolve (Second Wind, Revitalize)",
+      "summoners": "Flash + Barrier (or Flash + Teleport to play safe)",
+      "start": "Doran's Blade + Health Potion",
+      "buildNotes": "Blade of The Ruined King > Plated Steelcaps > Randuin's Omen or Death's Dance > Stridebreaker. Buy Thornmail if he heals with Relentless Assault. Sterak's Gage later.",
+      "skillNotes": "Start Q. W at 2, E at 3. Max Q, then W, then E.",
+      "phases": {
+        "lvl1_3": [
+          "Stop auto attacking when he pops Counter Strike (E). Step out of the stun radius before it ends.",
+          "Use Primal Howl (E) after he commits his E. The damage reduction covers his follow-up and the fear cancels his autos."
+        ],
+        "lvl4_5": [
+          "Trade only when his E is on cooldown. Jaws of the Beast (Q) onto him, auto twice, then leave.",
+          "If he Leap Strikes (Q) onto you while his E is up, fear him with Primal Howl and walk away."
+        ],
+        "post6": [
+          "Infinite Duress (R) is not a basic attack, so Counter Strike can't dodge it. Use it when his E is down.",
+          "Don't fight into Grandmaster's Might (R). Wait until it ends."
+        ],
+        "midgame": [
+          "Avoid side-lane 1v1s at equal items. Play near your team and let your jungler help.",
+          "In teamfights, dive his carries and leave him in the frontline."
+        ],
+        "lategame": [
+          "He out-scales you in side lane. Group with your team and look for picks with Blood Hunt (W)."
+        ]
+      },
+      "threats": [
+        "Counter Strike (E) dodges your basic attacks and stuns you.",
+        "Relentless Assault (passive) stacking attack speed.",
+        "Grandmaster's Might (R) resists in all-ins.",
+        "Leap Strike (Q) engage."
+      ],
+      "killWindows": [
+        "Right after he spent Counter Strike.",
+        "When he is below 50% HP and you have Infinite Duress up."
+      ],
+      "avoid": [
+        "Auto attacking into his active Counter Strike.",
+        "Long fights while his passive is stacked.",
+        "1v1s in side lane at equal items."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/warwick/counters/?lane=top",
+        "https://lolalytics.com/lol/warwick/vs/jax/build/?lane=top"
+      ]
+    },
+    "Jayce": {
+      "name": "Jayce",
+      "difficulty": 3,
+      "winRate": 54.02,
+      "winRateSource": "lolalytics Warwick top counters, Emerald+, patch 26.19 (client 16.19), 398 games",
+      "summary": "You have a small edge, but early Jayce pokes you with Shock Blast (Q) and gets free damage if you walk up. Lunge onto him with Jaws of the Beast (Q) when his spells are down. You win once you are on him.",
+      "runes": "Press the Attack (Presence of Mind, Legend: Alacrity, Last Stand) + Resolve (Second Wind, Revitalize)",
+      "summoners": "Flash + Teleport",
+      "start": "Doran's Shield + Health Potion",
+      "buildNotes": "Blade of The Ruined King > Plated Steelcaps > Stridebreaker > Death's Dance. Take Mercury's Treads and Spirit Visage if his damage is mostly magic.",
+      "skillNotes": "Start Q. W at 2, E at 3. Max Q, then W, then E.",
+      "phases": {
+        "lvl1_3": [
+          "Keep minions between you and Shock Blast (Q). Don't walk up in a straight line.",
+          "Jaws of the Beast (Q) onto him after he uses his Q, then trade."
+        ],
+        "lvl4_5": [
+          "Expect To The Skies! (Q) and Thundering Blow (E) knockback in hammer form. Pop Primal Howl (E) before he reaches you.",
+          "Trade when his Shock Blast and Acceleration Gate (E) are down."
+        ],
+        "post6": [
+          "Use Infinite Duress (R) when he has committed in melee. It is a leap, so aim it at where he will be.",
+          "Stay near your jungler. He is easy to catch when he overextends."
+        ],
+        "midgame": [
+          "Use Blood Hunt (W) to follow him when he is below 50% HP.",
+          "In teamfights, Jaws of the Beast (Q) onto him. He is squishy."
+        ],
+        "lategame": [
+          "Don't walk into his poke before a fight. Flank and Q onto him after he uses his spells."
+        ]
+      },
+      "threats": [
+        "Shock Blast (Q) with Acceleration Gate (E) long-range burst.",
+        "Thundering Blow (E) hammer knockback.",
+        "Poke that stops you from farming."
+      ],
+      "killWindows": [
+        "After he uses Shock Blast and Acceleration Gate.",
+        "When he is in hammer form and you have Q available."
+      ],
+      "avoid": [
+        "Walking up to him in a straight line.",
+        "Fighting when his Q and E are both ready.",
+        "Chasing him past his own minions and jungler."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/warwick/counters/?lane=top"
+      ]
+    },
+    "Kled": {
+      "name": "Kled",
+      "difficulty": 3,
+      "winRate": 50.0,
+      "winRateSource": "lolalytics Warwick top counters, Emerald+, patch 26.19 (client 16.19), 196 games (small sample)",
+      "summary": "An even lane. Kled wins short all-ins early with Violent Tendencies (W) and Bear Trap on a Rope (Q), but you win when he fights without Skaarl. Use Primal Howl (E) and suppression to stay in control.",
+      "runes": "Lethal Tempo (Presence of Mind, Legend: Alacrity, Last Stand) + Resolve (Second Wind, Revitalize)",
+      "summoners": "Flash + Barrier",
+      "start": "Doran's Blade + Health Potion",
+      "buildNotes": "Blade of The Ruined King > Plated Steelcaps > Stridebreaker > Sterak's Gage. Add Death's Dance against his burst.",
+      "skillNotes": "Start Q. W at 2, E at 3. Max Q, then W, then E.",
+      "phases": {
+        "lvl1_3": [
+          "Walk away from him to break the Bear Trap tether. Don't let him land Q and W in one trade.",
+          "Pop Primal Howl (E) when he starts Violent Tendencies (W) autos to cut the damage, then fear him."
+        ],
+        "lvl4_5": [
+          "When Skaarl is gone, Kled has low health and weak damage against champions. Jaws of the Beast (Q) onto him and all-in.",
+          "Sidestep Jousting (E) and punish him after the dash."
+        ],
+        "post6": [
+          "Chaaaaaaaarge!!! (R) makes him hard to stop while he charges. Ward the side lane and keep Primal Howl ready.",
+          "Use Infinite Duress when he is dismounted."
+        ],
+        "midgame": [
+          "Look for him when he is dismounted. Use Blood Hunt (W) to follow him below 50% HP.",
+          "In fights, dive the backline and leave him to your frontline."
+        ],
+        "lategame": [
+          "Force his Skaarl to break, then finish Kled. Don't stand in line for his charge."
+        ]
+      },
+      "threats": [
+        "Bear Trap on a Rope (Q) tether and pull.",
+        "Violent Tendencies (W) burst autos.",
+        "Chaaaaaaaarge!!! (R) long-range engage.",
+        "Level 1-3 all-ins."
+      ],
+      "killWindows": [
+        "When he is dismounted.",
+        "After his W is used and you have Primal Howl up."
+      ],
+      "avoid": [
+        "Staying tethered to his Q.",
+        "Taking an all-in when Primal Howl is on cooldown.",
+        "Fighting at low HP near his R flank."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/warwick/counters/?lane=top"
+      ]
+    },
+    "KSante": {
+      "name": "K'Sante",
+      "difficulty": 3,
+      "winRate": 53.98,
+      "winRateSource": "lolalytics Warwick top counters, Emerald+, patch 26.19 (client 16.19), 402 games",
+      "summary": "A small edge for you on paper, but K'Sante is a tank you can't kill quickly early. Play the lane for sustain, avoid Path Maker (W) and Ntofo Strikes (Q), and save Infinite Duress for when he goes All Out (R), when his max health is lower.",
+      "runes": "Lethal Tempo (Presence of Mind, Legend: Alacrity, Last Stand) + Resolve (Second Wind, Revitalize)",
+      "summoners": "Flash + Barrier",
+      "start": "Doran's Blade + Health Potion",
+      "buildNotes": "Blade of The Ruined King > Plated Steelcaps > Stridebreaker > Death's Dance. Take Black Cleaver if he stacks armor.",
+      "skillNotes": "Start Q. W at 2, E at 3. Max Q, then W, then E.",
+      "phases": {
+        "lvl1_3": [
+          "Sidestep Ntofo Strikes (Q). After two hits land, his next Q pulls and stuns you.",
+          "Jaws of the Beast (Q) onto him when his Q is down, then pop Primal Howl (E) to reduce his return damage."
+        ],
+        "lvl4_5": [
+          "Step out of the line when he channels Path Maker (W). It knocks back and stuns.",
+          "Don't chase him into his tower. Let him come to you."
+        ],
+        "post6": [
+          "His All Out (R) roots and pulls you, then boosts his damage. Pop Primal Howl when he casts it.",
+          "All-in when his Footwork (E) shield is down."
+        ],
+        "midgame": [
+          "Avoid even 1v1s at equal items. Group with your team and use Blood Hunt (W) to follow low-HP targets.",
+          "In teamfights, go for his carries and leave K'Sante to your frontline."
+        ],
+        "lategame": [
+          "Don't waste Q on him. Dive the backline and use Infinite Duress on his carry."
+        ]
+      },
+      "threats": [
+        "Ntofo Strikes (Q) pull and stun on the empowered cast.",
+        "Path Maker (W) charge, knockback and stun.",
+        "All Out (R) root, pull and empowerment.",
+        "Tank scaling with armor and magic resistance."
+      ],
+      "killWindows": [
+        "After he uses Path Maker and Ntofo Strikes and his Footwork shield is gone.",
+        "During All Out, when his max health is reduced."
+      ],
+      "avoid": [
+        "Standing in line for Path Maker.",
+        "Chasing him with no Q or Primal Howl.",
+        "Long duels at equal items."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/warwick/counters/?lane=top"
+      ]
+    },
+    "Malphite": {
+      "name": "Malphite",
+      "difficulty": 3,
+      "winRate": 51.07,
+      "winRateSource": "lolalytics Warwick top counters, Emerald+, patch 26.19 (client 16.19), 515 games",
+      "summary": "An even lane. Malphite wins early poke with Seismic Shard (Q) and his Granite Shield (passive), while you win chases and extended fights. Use your sustain to get through the poke and threaten him before Unstoppable Force (R) matters.",
+      "runes": "Lethal Tempo (Presence of Mind, Legend: Alacrity, Last Stand) + Resolve (Second Wind, Revitalize)",
+      "summoners": "Flash + Barrier",
+      "start": "Doran's Blade + Health Potion",
+      "buildNotes": "Blade of The Ruined King > Plated Steelcaps > Black Cleaver > Stridebreaker if he builds armor. Otherwise Stridebreaker > Death's Dance. Swap to Mercury's Treads and Spirit Visage if he goes AP.",
+      "skillNotes": "Start Q. W at 2, E at 3. Max Q, then W, then E.",
+      "phases": {
+        "lvl1_3": [
+          "Keep minions between you and Seismic Shard (Q) so it hits the wave. Don't take free slows.",
+          "Jaws of the Beast (Q) onto him when his Q is down. Auto him to break Granite Shield (passive) first."
+        ],
+        "lvl4_5": [
+          "Trade when Ground Slam (E) is down and stay out of tower range.",
+          "Pop Primal Howl (E) when he commits with Thunderclap (W)."
+        ],
+        "post6": [
+          "Use Infinite Duress on him before he casts Unstoppable Force (R). It can't stop him once he is dashing.",
+          "Stay spread from your team when he has R."
+        ],
+        "midgame": [
+          "Play for side-lane fights where he can't ult you. Use Blood Hunt (W) to follow him below 50% HP.",
+          "In teamfights, avoid his R and dive his backline."
+        ],
+        "lategame": [
+          "He has strong engage but little damage. Fight on his flank and use Infinite Duress on the carry he wants to dive."
+        ]
+      },
+      "threats": [
+        "Seismic Shard (Q) slow and move speed steal.",
+        "Unstoppable Force (R) engage knockup.",
+        "Granite Shield (passive) blocks your poke.",
+        "Ground Slam (E) attack speed slow."
+      ],
+      "killWindows": [
+        "After his Q and E are used and his shield is gone.",
+        "When he is low and his R is used."
+      ],
+      "avoid": [
+        "Standing in a line for his ult.",
+        "Fighting with his shield up and no Q.",
+        "Chasing him in a straight line when you have no Q."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/warwick/counters/?lane=top"
+      ]
+    },
+    "Mordekaiser": {
+      "name": "Mordekaiser",
+      "difficulty": 2,
+      "winRate": 54.3,
+      "winRateSource": "lolalytics Warwick top counters, Emerald+, patch 26.19 (client 16.19), 604 games",
+      "summary": "You are favored. Mordekaiser is slow and his Realm of Death (R) is his only real answer to you. Jump him when Obliterate (Q) is down, use Primal Howl (E) to shrug off his trades, and don't get isolated.",
+      "runes": "Lethal Tempo (Presence of Mind, Legend: Alacrity, Last Stand) + Resolve (Second Wind, Revitalize)",
+      "summoners": "Flash + Barrier; Flash + Ignite to kill him early",
+      "start": "Doran's Blade + Health Potion",
+      "buildNotes": "Blade of The Ruined King > Mercury's Treads (his damage is magic) > Stridebreaker > Spirit Visage. Add Chempunk Chainsword if his Indestructible (W) heal drags fights.",
+      "skillNotes": "Start Q. W at 2, E at 3. Max Q, then W, then E.",
+      "phases": {
+        "lvl1_3": [
+          "Trade right after he uses Obliterate (Q). Jaws of the Beast (Q) in, two autos, back out.",
+          "Stay near minions. His Q hits harder when he is alone with you, and Eternal Hunger heals more on a crowded wave."
+        ],
+        "lvl4_5": [
+          "When he pops Indestructible (W), step back until the shield fades, then re-engage.",
+          "Sidestep Death's Grasp (E). If it pulls you, use Primal Howl (E) to cut the follow-up damage."
+        ],
+        "post6": [
+          "Realm of Death (R) traps you in a 1v1. Fight inside it only when you are above 60% HP, and use Primal Howl to reduce his burst.",
+          "Infinite Duress (R) him before he can use his R on you or a teammate."
+        ],
+        "midgame": [
+          "Look for the flank. He is slow and can't catch you, so take side waves and ambush him with your jungler.",
+          "Hunt him when he is below 50% HP. Blood Hunt (W) tracks wounded enemies."
+        ],
+        "lategame": [
+          "Don't get caught alone with him after he uses his ultimate on your carry. Jump his squishies instead."
+        ]
+      },
+      "threats": [
+        "Obliterate (Q) does extra damage when you are isolated.",
+        "Realm of Death (R) removes your team from the fight and steals stats.",
+        "Death's Grasp (E) pull.",
+        "Indestructible (W) shield and heal."
+      ],
+      "killWindows": [
+        "Right after his Q and E are used.",
+        "When he is below 50% HP and his W is down."
+      ],
+      "avoid": [
+        "Fighting alone with him at low HP after he has R.",
+        "Standing in a line for his E.",
+        "Trading into his W shield."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/warwick/counters/?lane=top"
+      ]
+    },
+    "Nasus": {
+      "name": "Nasus",
+      "difficulty": 2,
+      "winRate": 51.17,
+      "winRateSource": "lolalytics Warwick top counters, Emerald+, patch 26.19 (client 16.19), 471 games",
+      "summary": "You win the early game and he wins if he scales. Bully him while his Siphoning Strike (Q) is down, deny stacks, and end the lane with a lead. His Wither (W) is the big threat because it slows your attack speed and movement.",
+      "runes": "Lethal Tempo (Presence of Mind, Legend: Alacrity, Last Stand) + Resolve (Second Wind, Revitalize)",
+      "summoners": "Flash + Ignite",
+      "start": "Doran's Blade + Health Potion",
+      "buildNotes": "Blade of The Ruined King > Plated Steelcaps > Stridebreaker > Death's Dance. Chempunk Chainsword cuts his lifesteal and Fury of the Sands healing. Stridebreaker is the pick when you need to catch him.",
+      "skillNotes": "Start Q. W at 2, E at 3. Max Q, then W, then E.",
+      "phases": {
+        "lvl1_3": [
+          "Jump him with Jaws of the Beast (Q) whenever he goes for a Siphoning Strike last hit. Fight while his Q is on cooldown.",
+          "Take level 2 first if you can. You out-trade him at levels 1-3 by a wide margin."
+        ],
+        "lvl4_5": [
+          "Kill or crash the wave so he can't stack Q. An all-in with Ignite can kill him around level 3-5.",
+          "Spirit Fire (E) shreds your armor. Don't stay inside it. Trade in short bursts."
+        ],
+        "post6": [
+          "Infinite Duress (R) on him when Wither (W) is on cooldown. With Ignite it kills most Nasus below 60% HP.",
+          "Don't fight into Fury of the Sands (R) when he has stacks. Leave and hit him after it ends."
+        ],
+        "midgame": [
+          "Look for ganks and split. He wants to farm 1v1, so force him to move with your jungler.",
+          "Hunt him with Blood Hunt (W) when he is low on HP."
+        ],
+        "lategame": [
+          "He is far stronger late. Take the lead into objectives and avoid a long 1v1."
+        ]
+      },
+      "threats": [
+        "Wither (W) slow and attack speed cut.",
+        "Siphoning Strike (Q) scaling.",
+        "Fury of the Sands (R) tanky and heals."
+      ],
+      "killWindows": [
+        "Levels 1-5 while his Q is on cooldown.",
+        "Right after his Wither is used, with Ignite ready."
+      ],
+      "avoid": [
+        "Trading into his Q with stacks.",
+        "Chasing him inside Fury of the Sands.",
+        "Letting him farm freely under tower."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/warwick/counters/?lane=top"
+      ]
+    },
+    "Olaf": {
+      "name": "Olaf",
+      "difficulty": 3,
+      "winRate": 51.99,
+      "winRateSource": "lolalytics Warwick top counters, Emerald+, patch 26.19 (client 16.19), 302 games",
+      "summary": "A close fight. Olaf's Ragnarok (R) makes him immune to crowd control, so your Primal Howl fear and Infinite Duress can't be relied on while it is active. Fight when his R is not active and let his own Reckless Swing (E) health cost work for you.",
+      "runes": "Lethal Tempo (Presence of Mind, Legend: Alacrity, Last Stand) + Resolve (Second Wind, Revitalize)",
+      "summoners": "Flash + Barrier",
+      "start": "Doran's Blade + Health Potion",
+      "buildNotes": "Blade of The Ruined King > Plated Steelcaps > Stridebreaker > Death's Dance > Sterak's Gage. Buy Chempunk Chainsword if his Tough It Out (W) healing makes fights close.",
+      "skillNotes": "Q at 1, W at 2, E at 3. Max Q, then W, then E.",
+      "phases": {
+        "lvl1_3": [
+          "Sidestep Undertow (Q), then Jaws of the Beast (Q) onto him while his axe lies far from him.",
+          "Trade in short bursts. Reckless Swing (E) costs him health, so don't stand in melee range for long."
+        ],
+        "lvl4_5": [
+          "Trade right after Undertow (Q) is thrown: he has to walk to the axe and can't stick to you.",
+          "Don't chase him at 20% HP into Tough It Out (W). Commit fully or let him go."
+        ],
+        "post6": [
+          "Don't use Primal Howl (E) or Infinite Duress (R) on him during Ragnarok. Walk away or use Howl only to cut damage.",
+          "Use Infinite Duress when Ragnarok is not active and his W and E are spent."
+        ],
+        "midgame": [
+          "Match his split push but keep your jungler close. Use Blood Hunt (W) to find him below 50% HP.",
+          "In fights, go for his backline while he is busy with your frontline."
+        ],
+        "lategame": [
+          "Fight him only after Ragnarok has run out. Otherwise flank and pick off squishies."
+        ]
+      },
+      "threats": [
+        "Ragnarok (R) crowd control immunity.",
+        "Reckless Swing (E) true damage.",
+        "Undertow (Q) slow and damage.",
+        "Tough It Out (W) healing."
+      ],
+      "killWindows": [
+        "After Ragnarok has ended.",
+        "When his axe is far from him and his E is down."
+      ],
+      "avoid": [
+        "Using Primal Howl or Infinite Duress into an active Ragnarok.",
+        "Chasing him at low HP while Tough It Out is up."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/warwick/counters/?lane=top"
+      ]
+    },
+    "Ornn": {
+      "name": "Ornn",
+      "difficulty": 2,
+      "winRate": 55.07,
+      "winRateSource": "lolalytics Warwick top counters, Emerald+, patch 26.19 (client 16.19), 345 games",
+      "summary": "You are favored in lane. Ornn is a tank who wants to scale and engage for his team. Jump him after Bellows Breath (W) and Volcanic Rupture (Q) are used, and keep Infinite Duress for the one who charges you.",
+      "runes": "Lethal Tempo (Presence of Mind, Legend: Alacrity, Last Stand) + Resolve (Second Wind, Revitalize)",
+      "summoners": "Flash + Ignite",
+      "start": "Doran's Blade + Health Potion",
+      "buildNotes": "Blade of The Ruined King > Plated Steelcaps > Kraken Slayer > Death's Dance. Blade of The Ruined King is great against his health. Swap to Mercury's Treads and Spirit Visage if his team is mostly magic damage.",
+      "skillNotes": "Q at 1, W at 2, E at 3. Max Q, then W, then E.",
+      "phases": {
+        "lvl1_3": [
+          "Trade with Jaws of the Beast (Q) while Volcanic Rupture (Q) is down. Don't stand with a wall behind you.",
+          "Bellows Breath (W) hurts if you stay close. Hit him and step out."
+        ],
+        "lvl4_5": [
+          "Keep the wave near your side. Volcanic Rupture pillars can trap you against terrain for Searing Charge (E).",
+          "Pop Primal Howl (E) when Searing Charge comes: it cuts the combo damage and fears him."
+        ],
+        "post6": [
+          "Call of the Forge God (R) is a slow engage. Move away from the first wave and use Infinite Duress on the one who charges you.",
+          "Don't fight him while his R is coming with his team. Stay behind your minions."
+        ],
+        "midgame": [
+          "Look for kills on his teammates. He won't catch you while you flank.",
+          "Punish him before his later levels: that is when he upgrades his team's items to Masterwork."
+        ],
+        "lategame": [
+          "Don't dive into his knock-up. Kill his carries after Call of the Forge God is used."
+        ]
+      },
+      "threats": [
+        "Searing Charge (E) knock-up into terrain.",
+        "Bellows Breath (W) damage.",
+        "Call of the Forge God (R) team engage."
+      ],
+      "killWindows": [
+        "After his Searing Charge (E) and Bellows Breath (W) are used.",
+        "When he is away from walls with Volcanic Rupture (Q) down."
+      ],
+      "avoid": [
+        "Standing near a wall with his E up.",
+        "Fighting into his R engage."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/warwick/counters/?lane=top"
+      ]
+    },
+    "Pantheon": {
+      "name": "Pantheon",
+      "difficulty": 4,
+      "winRate": 47.69,
+      "winRateSource": "lolalytics Warwick top counters, Emerald+, patch 26.19 (client 16.19), 281 games",
+      "summary": "You are slightly behind. Pantheon wins early with Comet Spear (Q) pokes and Aegis Assault (E), which blocks damage from the front. Play safe until level 6, then win with sustain and Infinite Duress.",
+      "runes": "Press the Attack (Presence of Mind, Legend: Alacrity, Last Stand) + Resolve (Second Wind, Revitalize)",
+      "summoners": "Flash + Barrier",
+      "start": "Doran's Shield + Health Potion",
+      "buildNotes": "Blade of The Ruined King > Plated Steelcaps > Death's Dance > Sterak's Gage > Stridebreaker. Death's Dance and Sterak's Gage help against his burst. Chempunk Chainsword if his healing matters.",
+      "skillNotes": "Q at 1, W at 2, E at 3. Max Q, then W, then E.",
+      "phases": {
+        "lvl1_3": [
+          "Don't stand still in range of Comet Spear (Q). Step out of the line and trade only after it is down.",
+          "Wait for Aegis Assault (E) to end before you Q onto him. It blocks damage from the front."
+        ],
+        "lvl4_5": [
+          "Fight at the side of the wave. Shield Vault (W) stuns you, so use Primal Howl (E) to cut the damage.",
+          "Use Jaws of the Beast (Q) only after he has used Shield Vault."
+        ],
+        "post6": [
+          "Infinite Duress (R) is your comeback. Use it after Shield Vault so he can't dodge with E.",
+          "Stay with your team: Grand Starfall (R) on a teammate starts his all-in."
+        ],
+        "midgame": [
+          "He falls off if you survive early. Split and play with your jungler.",
+          "Use Blood Hunt (W) to find him when he is low."
+        ],
+        "lategame": [
+          "Beware his Grand Starfall picks. Keep Primal Howl for his all-in."
+        ]
+      },
+      "threats": [
+        "Comet Spear (Q) poke and empowered damage.",
+        "Shield Vault (W) stun.",
+        "Aegis Assault (E) blocks your damage from the front.",
+        "Grand Starfall (R) roams and picks."
+      ],
+      "killWindows": [
+        "After Shield Vault and Aegis Assault are used.",
+        "When his Q is on cooldown and he is below 50% HP."
+      ],
+      "avoid": [
+        "Taking early poke for free.",
+        "Fighting into his active Aegis Assault.",
+        "Chasing him while Grand Starfall could land."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/warwick/counters/?lane=top"
+      ]
+    },
+    "Poppy": {
+      "name": "Poppy",
+      "difficulty": 2,
+      "winRate": 57.52,
+      "winRateSource": "lolalytics Warwick vs Poppy page (top), Emerald+, patch 26.19 (client 16.19), 153 games; not listed on the counters page, small sample",
+      "summary": "You are favored, but respect her Steadfast Presence (W) and Heroic Charge (E). She can stop your Jaws of the Beast (Q) leap and pin you against terrain. Stay off walls and punish her when W and E are down.",
+      "runes": "Lethal Tempo (Presence of Mind, Legend: Alacrity, Last Stand) + Resolve (Second Wind, Revitalize)",
+      "summoners": "Flash + Barrier",
+      "start": "Doran's Blade + Health Potion",
+      "buildNotes": "Blade of The Ruined King > Plated Steelcaps > Stridebreaker > Death's Dance > Sterak's Gage. Stridebreaker helps you stay on her. Kraken Slayer is an alternate first item.",
+      "skillNotes": "Q at 1, W at 2, E at 3. Max Q, then W, then E.",
+      "phases": {
+        "lvl1_3": [
+          "Stay away from walls: Heroic Charge (E) stuns only when it pins you against terrain.",
+          "Trade when Hammer Shock (Q) is on cooldown. Use Primal Howl (E) if she commits."
+        ],
+        "lvl4_5": [
+          "Steadfast Presence (W) blocks dashes. Don't use Jaws of the Beast (Q) while she stands in it.",
+          "Bait Heroic Charge (E) in open ground, then Jaws of the Beast (Q) onto her while it is down."
+        ],
+        "post6": [
+          "Keeper's Verdict (R) knocks you back. Use Infinite Duress when she is committed to another target.",
+          "Kill her before she can pin you and shield up."
+        ],
+        "midgame": [
+          "Flank away from walls and turrets so you can't be pinned.",
+          "Kill her carries when she uses her R on someone else."
+        ],
+        "lategame": [
+          "Keeper's Verdict can knock you out of a teamfight. Keep Primal Howl for it."
+        ]
+      },
+      "threats": [
+        "Heroic Charge (E) wall stun.",
+        "Steadfast Presence (W) blocks your leap.",
+        "Keeper's Verdict (R) knockback."
+      ],
+      "killWindows": [
+        "After her Heroic Charge (E) and Steadfast Presence (W) are used.",
+        "When she is not near a wall and her Q is on cooldown."
+      ],
+      "avoid": [
+        "Standing near walls or turrets with her E up.",
+        "Using Jaws of the Beast (Q) into her W."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/warwick/vs/poppy/build/?lane=top"
+      ]
+    },
+    "Renekton": {
+      "name": "Renekton",
+      "difficulty": 3,
+      "winRate": 54.73,
+      "winRateSource": "lolalytics Warwick top counters, Emerald+, patch 26.19 (client 16.19), 486 games",
+      "summary": "Renekton wins the early levels with Slice and Dice (E) and the Ruthless Predator (W) stun, but you take over once you have sustain and Primal Howl. Survive levels 1-5, then trade right after his E.",
+      "runes": "Lethal Tempo (Presence of Mind, Legend: Alacrity, Last Stand) + Resolve (Second Wind, Revitalize)",
+      "summoners": "Flash + Barrier",
+      "start": "Doran's Shield + Health Potion",
+      "buildNotes": "Blade of The Ruined King > Plated Steelcaps > Death's Dance > Sterak's Gage > Stridebreaker. Chempunk Chainsword if his Cull the Meek (Q) healing wins fights.",
+      "skillNotes": "Q at 1, W at 2, E at 3. Max Q, then W, then E.",
+      "phases": {
+        "lvl1_3": [
+          "Don't fight when he has full Fury: the empowered Ruthless Predator (W) stun is long. Back off and let him waste it.",
+          "Trade after he uses Slice and Dice (E) to reach you: Jaws of the Beast (Q) and autos."
+        ],
+        "lvl4_5": [
+          "Pop Primal Howl (E) when he stuns you: it cuts the damage and fears him.",
+          "He dashes in and out with Slice and Dice. Wait until both dashes are used."
+        ],
+        "post6": [
+          "Dominus (R) gives him health and damage. Back off until it ends.",
+          "All-in with Infinite Duress when his Fury is low and Slice and Dice is on cooldown."
+        ],
+        "midgame": [
+          "He falls off. Fight with your jungler and split when he has no wave.",
+          "Use Blood Hunt (W) to chase him when he is low."
+        ],
+        "lategame": [
+          "Fight after he uses Slice and Dice to engage. You win 1v1 fights from here."
+        ]
+      },
+      "threats": [
+        "Ruthless Predator (W) stun, longer when empowered.",
+        "Slice and Dice (E) gap closer.",
+        "Dominus (R) health and damage.",
+        "Level 2-3 all-ins."
+      ],
+      "killWindows": [
+        "When his Fury is low.",
+        "After he uses both Slice and Dice dashes."
+      ],
+      "avoid": [
+        "Fighting when he has full Fury.",
+        "Trading when his E and W are both up."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/warwick/counters/?lane=top"
+      ]
+    },
+    "Riven": {
+      "name": "Riven",
+      "difficulty": 3,
+      "winRate": 50.89,
+      "winRateSource": "lolalytics Warwick top counters, Emerald+, patch 26.19 (client 16.19), 224 games",
+      "summary": "An even matchup. Riven has strong burst with Broken Wings (Q) and the Ki Burst (W) stun. Your Primal Howl (E) fear and Infinite Duress (R) beat her once she has used her dashes.",
+      "runes": "Lethal Tempo (Presence of Mind, Legend: Alacrity, Last Stand) + Resolve (Second Wind, Revitalize)",
+      "summoners": "Flash + Barrier",
+      "start": "Doran's Shield + Health Potion",
+      "buildNotes": "Blade of The Ruined King > Plated Steelcaps > Death's Dance > Sterak's Gage > Stridebreaker. Death's Dance helps against her burst. Chempunk Chainsword if she stacks healing.",
+      "skillNotes": "Q at 1, W at 2, E at 3. Max Q, then W, then E.",
+      "phases": {
+        "lvl1_3": [
+          "Don't trade when she has three Broken Wings (Q) charges and Valor (E). Wait until she spends them on the wave.",
+          "Pop Primal Howl (E) to cut the damage of her Ki Burst (W) combo."
+        ],
+        "lvl4_5": [
+          "Fight after her third Q and Ki Burst are used: she has no gap closer left.",
+          "Use Jaws of the Beast (Q) after Valor (E) is used so its shield doesn't soak your damage."
+        ],
+        "post6": [
+          "Blade of the Exile (R) boosts her damage and Wind Slash executes low HP. Don't fight at low HP while it is on.",
+          "Use Infinite Duress after her Valor and Ki Burst are used, so she can't dash away."
+        ],
+        "midgame": [
+          "Split and play safe near your jungler.",
+          "Use Blood Hunt (W) to hunt her below 50% HP."
+        ],
+        "lategame": [
+          "Stay with your team. Kill her when she engages, using Primal Howl and Infinite Duress."
+        ]
+      },
+      "threats": [
+        "Ki Burst (W) stun.",
+        "Broken Wings (Q3) knock-up.",
+        "Wind Slash (R) execute.",
+        "Valor (E) shield and dash."
+      ],
+      "killWindows": [
+        "After her Valor (E) and Ki Burst (W) are used.",
+        "When her third Q is used and she is below 50% HP."
+      ],
+      "avoid": [
+        "Fighting into her full combo.",
+        "Staying at low HP near her R."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/warwick/counters/?lane=top"
+      ]
+    },
+    "Rumble": {
+      "name": "Rumble",
+      "difficulty": 3,
+      "winRate": 58.21,
+      "winRateSource": "lolalytics Warwick top counters, Emerald+, patch 26.19 (client 16.19), 134 games (op.gg Emerald+ 58.59% over 99 games; both samples are small)",
+      "summary": "Favored on the data, but the sample is small, so play carefully. Flamespitter (Q) and Electro Harpoon (E) slow and burn you, and Scrap Shield (W) protects him. Get Jaws of the Beast (Q) onto him when his E is down and stay on him.",
+      "runes": "Press the Attack (Presence of Mind, Legend: Alacrity, Last Stand) + Resolve (Second Wind, Revitalize)",
+      "summoners": "Flash + Barrier",
+      "start": "Doran's Shield + Health Potion",
+      "buildNotes": "Blade of The Ruined King > Mercury's Treads > Spirit Visage > Stridebreaker > Death's Dance. Spirit Visage and Mercury's Treads answer his magic damage.",
+      "skillNotes": "Q at 1, W at 2, E at 3. Max Q, then W, then E.",
+      "phases": {
+        "lvl1_3": [
+          "Don't stand in his Flamespitter (Q) cone. Step out of it, then Jaws of the Beast (Q) onto him.",
+          "Trade when he is overheated: his abilities are locked while overheated."
+        ],
+        "lvl4_5": [
+          "Electro Harpoon (E) slows and hits harder on the second cast. Pop Primal Howl (E) to cut the damage.",
+          "Stay on him. His damage is weaker at melee range."
+        ],
+        "post6": [
+          "The Equalizer (R) covers an area. Fight outside it or use Infinite Duress before he casts.",
+          "Don't chase him through the zone. Wait it out."
+        ],
+        "midgame": [
+          "Flank him in teamfights and kill him when he is away from his team.",
+          "Use Blood Hunt (W) to find him when he is low."
+        ],
+        "lategame": [
+          "The Equalizer decides fights. Dive him before he uses it or stay out of its zone."
+        ]
+      },
+      "threats": [
+        "Flamespitter (Q) burn and heat.",
+        "Electro Harpoon (E) slow.",
+        "The Equalizer (R) area damage and slow.",
+        "Scrap Shield (W) shield and speed."
+      ],
+      "killWindows": [
+        "When he is overheated.",
+        "After his Electro Harpoon (E) and Scrap Shield (W) are used."
+      ],
+      "avoid": [
+        "Standing in his Q cone.",
+        "Chasing into The Equalizer."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/warwick/counters/?lane=top",
+        "https://op.gg/lol/champions/warwick/counters/top"
+      ]
+    },
+    "Sett": {
+      "name": "Sett",
+      "difficulty": 2,
+      "winRate": 56.52,
+      "winRateSource": "lolalytics Warwick top counters, Emerald+, patch 26.19 (client 16.19), 782 games",
+      "summary": "You are favored. Your Jaws of the Beast (Q) heal and Eternal Hunger win long trades. Stay out of the center of Haymaker (W), avoid being pulled against walls by Facebreaker (E), and fear him with Primal Howl once he commits.",
+      "runes": "Lethal Tempo (Presence of Mind, Legend: Alacrity, Last Stand) + Resolve (Second Wind, Revitalize)",
+      "summoners": "Flash + Ignite",
+      "start": "Doran's Blade + Health Potion",
+      "buildNotes": "Blade of The Ruined King > Plated Steelcaps > Stridebreaker > Death's Dance > Sterak's Gage. Buy Chempunk Chainsword or Thornmail if he stacks healing.",
+      "skillNotes": "Q at 1, W at 2, E at 3. Max Q, then W, then E.",
+      "phases": {
+        "lvl1_3": [
+          "Trade with Q and autos when his Pit Grit (passive) bar is low. Your Q heal wins the trade.",
+          "Don't stand between him and a wall or minion: Facebreaker (E) stuns if it pulls from both sides."
+        ],
+        "lvl4_5": [
+          "Step out of the center when he winds up Haymaker (W). The center hits hardest.",
+          "Trade right after his Haymaker. His damage drops without it."
+        ],
+        "post6": [
+          "Keep your HP high near him. The Show Stopper (R) grabs you and slams you down.",
+          "Use Infinite Duress (R) when his Haymaker and Facebreaker are spent."
+        ],
+        "midgame": [
+          "Duel him in side lanes with Blood Hunt (W) speed.",
+          "In fights, hunt low-HP targets and dodge his engage."
+        ],
+        "lategame": [
+          "Flank his backline with Infinite Duress. Don't stand in front of his team's engage."
+        ]
+      },
+      "threats": [
+        "Haymaker (W) burst in the center.",
+        "Facebreaker (E) stun against a wall.",
+        "The Show Stopper (R) grab and slam."
+      ],
+      "killWindows": [
+        "Right after Haymaker (W) is used.",
+        "When Facebreaker (E) is spent and he is below 50% HP."
+      ],
+      "avoid": [
+        "Standing in the center of Haymaker.",
+        "Being pulled against a wall.",
+        "Fighting at low HP within range of The Show Stopper."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/warwick/counters/?lane=top"
+      ]
+    },
+    "Shen": {
+      "name": "Shen",
+      "difficulty": 3,
+      "winRate": 54.23,
+      "winRateSource": "lolalytics Warwick top counters, Emerald+, patch 26.19 (client 16.19), 402 games",
+      "summary": "Favorable but annoying. Shen's Ki Barrier shield and Spirit's Refuge (W) blunt your autos, and his Shadow Dash (E) taunt can ruin a chase. You win short, focused trades and get stronger after level 6.",
+      "runes": "Lethal Tempo (Presence of Mind, Legend: Alacrity, Last Stand) + Resolve (Second Wind, Revitalize)",
+      "summoners": "Flash + Barrier",
+      "start": "Doran's Blade + Health Potion",
+      "buildNotes": "Blade of The Ruined King > Plated Steelcaps > Stridebreaker > Death's Dance > Sterak's Gage. Black Cleaver if he builds tank items.",
+      "skillNotes": "Q at 1, W at 2, E at 3. Max Q, then W, then E.",
+      "phases": {
+        "lvl1_3": [
+          "Trade with Q while his Spirit's Refuge (W) is down. Your autos inside it are blocked.",
+          "Back off when Twilight Assault (Q) empowers his autos. Trade after they are spent."
+        ],
+        "lvl4_5": [
+          "Don't chase after his Shadow Dash (E) taunt. Fight away from his sword.",
+          "Hit him when his Ki Barrier shield has broken."
+        ],
+        "post6": [
+          "Use Infinite Duress (R) when his Shadow Dash is down.",
+          "Stand United (R) brings him to fights. Check the map before you push."
+        ],
+        "midgame": [
+          "Split away from his ult targets.",
+          "In fights, hit low-HP targets and don't walk into his taunt near his team."
+        ],
+        "lategame": [
+          "Don't fight his taunt next to his team. Use Infinite Duress on his carries."
+        ]
+      },
+      "threats": [
+        "Shadow Dash (E) taunt.",
+        "Ki Barrier (passive) shield.",
+        "Global Stand United (R) rotations."
+      ],
+      "killWindows": [
+        "After Shadow Dash (E) misses or is used on a minion.",
+        "When Spirit's Refuge (W) is down and his Ki Barrier is not ready."
+      ],
+      "avoid": [
+        "Walking into his taunt near his team.",
+        "Trading autos inside Spirit's Refuge."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/warwick/counters/?lane=top"
+      ]
+    },
+    "Sion": {
+      "name": "Sion",
+      "difficulty": 3,
+      "winRate": 51.56,
+      "winRateSource": "lolalytics Warwick top counters, Emerald+, patch 26.19 (client 16.19), 225 games",
+      "summary": "Even. Sion is slow early so you can bully him, but he out-tanks you later and Decimating Smash (Q) knocks you up if you stand in the line. Take early trades, don't let him farm free stacks, and avoid his full Q.",
+      "runes": "Lethal Tempo (Presence of Mind, Legend: Alacrity, Last Stand) + Resolve (Second Wind, Revitalize)",
+      "summoners": "Flash + Ignite",
+      "start": "Doran's Blade + Health Potion",
+      "buildNotes": "Blade of The Ruined King > Plated Steelcaps > Stridebreaker > Black Cleaver once he stacks health > Sterak's Gage or Death's Dance.",
+      "skillNotes": "Q at 1, W at 2, E at 3. Max Q, then W, then E.",
+      "phases": {
+        "lvl1_3": [
+          "Trade hard before level 3. His Q is slow and his Soul Furnace (W) shield is small.",
+          "Step out of the line of Decimating Smash (Q). A full charge knocks you up."
+        ],
+        "lvl4_5": [
+          "Hit him after his Soul Furnace (W) shield has popped or faded.",
+          "If he stacks a big shield, back off and let the wave push."
+        ],
+        "post6": [
+          "Use Infinite Duress (R) when his Q is spent and Unstoppable Onslaught (R) is not active.",
+          "Don't fight him at full HP with all abilities up."
+        ],
+        "midgame": [
+          "Split push and turn on him with Blood Hunt (W) speed.",
+          "Step aside when Unstoppable Onslaught starts."
+        ],
+        "lategame": [
+          "He out-tanks you. Focus his carries and use Infinite Duress on squishies."
+        ]
+      },
+      "threats": [
+        "Decimating Smash (Q) knock-up and stun.",
+        "Soul Furnace (W) shield.",
+        "Unstoppable Onslaught (R) charge.",
+        "Glory in Death (passive) revive."
+      ],
+      "killWindows": [
+        "Levels 1-3, while his Q is slow and his Soul Furnace (W) shield is small.",
+        "After his Q is spent and Soul Furnace (W) is on cooldown."
+      ],
+      "avoid": [
+        "Standing in a straight line from his Q.",
+        "Fighting his passive zombie at low HP."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/warwick/counters/?lane=top"
+      ]
+    },
+    "Trundle": {
+      "name": "Trundle",
+      "difficulty": 4,
+      "winRate": 49.43,
+      "winRateSource": "lolalytics Warwick top counters, Emerald+, patch 26.19 (client 16.19), 176 games",
+      "summary": "A hard matchup. Trundle wins melee duels by stealing your AD with Chomp (Q) and boxing you in with Pillar of Ice (E). Trade short and don't fight in Frozen Domain (W). Your Infinite Duress (R) suppression is your best answer.",
+      "runes": "Lethal Tempo (Presence of Mind, Legend: Alacrity, Last Stand) + Resolve (Second Wind, Revitalize)",
+      "summoners": "Flash + Barrier",
+      "start": "Doran's Blade + Health Potion",
+      "buildNotes": "Blade of The Ruined King > Plated Steelcaps > Stridebreaker > Death's Dance > Sterak's Gage. Chempunk Chainsword or Thornmail vs his healing and AD.",
+      "skillNotes": "Q first, W at 2, E at 3. Max Q, then W, then E.",
+      "phases": {
+        "lvl1_3": [
+          "Trade right after he uses Chomp (Q). The AD steal is short, so back out and re-engage.",
+          "Don't chase into his Pillar of Ice (E). Walk around it."
+        ],
+        "lvl4_5": [
+          "Fight outside Frozen Domain (W). It gives him speed and healing.",
+          "Pop Primal Howl (E) when he all-ins. Fight after the fear."
+        ],
+        "post6": [
+          "Subjugate (R) steals your armor and MR. Suppress him with Infinite Duress first, or leave after he casts it.",
+          "All-in when his Subjugate is spent."
+        ],
+        "midgame": [
+          "Split push and avoid 1v1s near his Frozen Domain. Match him after items, not before.",
+          "In fights, look for his backline instead of him."
+        ],
+        "lategame": [
+          "Avoid fighting him alone. Pick off his carries with Infinite Duress."
+        ]
+      },
+      "threats": [
+        "Chomp (Q) AD steal.",
+        "Pillar of Ice (E) slow and block.",
+        "Subjugate (R) resist steal.",
+        "Frozen Domain (W) speed and healing."
+      ],
+      "killWindows": [
+        "After his Chomp is used and he is outside Frozen Domain.",
+        "When his Pillar of Ice is used and Subjugate is spent."
+      ],
+      "avoid": [
+        "Fighting inside Frozen Domain.",
+        "Chasing him through a pillar.",
+        "Long trades into his Chomp."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/warwick/counters/?lane=top"
+      ]
+    },
+    "Tryndamere": {
+      "name": "Tryndamere",
+      "difficulty": 2,
+      "winRate": 56.09,
+      "winRateSource": "lolalytics Warwick top counters, Emerald+, patch 26.19 (client 16.19), 353 games",
+      "summary": "You are favored. Jaws of the Beast (Q), fear and suppression lock down a melee auto-attacker, and Blood Hunt catches him after Spinning Slash. Kill him early before he gets crit items. Undying Rage keeps him alive, so hold him with Infinite Duress until it ends.",
+      "runes": "Lethal Tempo (Presence of Mind, Legend: Alacrity, Last Stand) + Resolve (Second Wind, Revitalize)",
+      "summoners": "Flash + Ignite",
+      "start": "Doran's Blade + Health Potion",
+      "buildNotes": "Blade of The Ruined King > Plated Steelcaps > Randuin's Omen vs his crits > Stridebreaker > Death's Dance. Chempunk Chainsword or Thornmail if he stalls with Bloodlust healing.",
+      "skillNotes": "Q first, W at 2, E at 3. Max Q, then W, then E.",
+      "phases": {
+        "lvl1_3": [
+          "Trade when his Fury is low. Your Q heal wins the exchange.",
+          "Don't let him stack Fury on the wave for free."
+        ],
+        "lvl4_5": [
+          "Pop Primal Howl (E) before he commits with Spinning Slash (E). Damage is reduced, then he is feared.",
+          "Blood Hunt attack speed and movement speed let you finish him below 50% HP."
+        ],
+        "post6": [
+          "Save Infinite Duress for a kill. If he uses Undying Rage (R), hold him and finish him as it ends, or walk away.",
+          "Ignite and Chempunk Chainsword cut his Bloodlust (Q) heal."
+        ],
+        "midgame": [
+          "Match his split with your own and keep vision. Hold Q to latch on when he dashes.",
+          "Group up and use Infinite Duress on him if he engages your carry."
+        ],
+        "lategame": [
+          "Don't let him split freely. Use Q and Blood Hunt to catch him, and Infinite Duress to hold him."
+        ]
+      },
+      "threats": [
+        "Undying Rage (R): 5 seconds without dying.",
+        "Spinning Slash (E) reset on crits.",
+        "Bloodlust (Q) heal at high Fury.",
+        "Mocking Shout (W) slow and AD cut."
+      ],
+      "killWindows": [
+        "Right after Undying Rage ends with no Spinning Slash up.",
+        "When his Fury is low and Mocking Shout is spent."
+      ],
+      "avoid": [
+        "Using Infinite Duress while Undying Rage is up unless you can hold him for the full duration.",
+        "Trading when his Fury is full."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/warwick/counters/?lane=top"
+      ]
+    },
+    "Urgot": {
+      "name": "Urgot",
+      "difficulty": 4,
+      "winRate": 45.87,
+      "winRateSource": "lolalytics Warwick top counters, Emerald+, patch 26.19 (client 16.19), 242 games",
+      "summary": "One of your worst matchups. Urgot's Purge (W), slows, and Disdain (E) flip beat you in melee, and Fear Beyond Death (R) executes you at low HP, which is exactly when Warwick's healing turns on. Play safe early and fight only with a lead.",
+      "runes": "Lethal Tempo (Presence of Mind, Legend: Alacrity, Last Stand) + Resolve (Second Wind, Revitalize)",
+      "summoners": "Flash + Teleport",
+      "start": "Doran's Shield + Health Potion",
+      "buildNotes": "Blade of The Ruined King > Plated Steelcaps > Stridebreaker > Death's Dance > Sterak's Gage. Thornmail if he builds AD and heals.",
+      "skillNotes": "Q first, W at 2, E at 3. Max Q, then W, then E.",
+      "phases": {
+        "lvl1_3": [
+          "Stay out of Purge (W) range and don't stand in his Corrosive Charge (Q) area.",
+          "Lunge in with Jaws of the Beast (Q) only when Purge is on cooldown, and leave before it returns."
+        ],
+        "lvl4_5": [
+          "Pop Primal Howl (E) before he dashes in with Disdain (E). Damage is cut, then he is feared.",
+          "Don't let him kite you for free. Hold a wave you can trade near."
+        ],
+        "post6": [
+          "Leave at about 35% HP. Fear Beyond Death executes below 25%.",
+          "Use Infinite Duress only when his Disdain is spent so he can't reverse the fight."
+        ],
+        "midgame": [
+          "He is slow. Flank with Blood Hunt and hold Q to latch on away from his team.",
+          "Look for teamfight picks instead of duels."
+        ],
+        "lategame": [
+          "Dive him only after his Fear Beyond Death is used on someone else. Aim for his backline."
+        ]
+      },
+      "threats": [
+        "Fear Beyond Death (R) execute.",
+        "Disdain (E) flip.",
+        "Purge (W) shredding in melee range.",
+        "Corrosive Charge (Q) slow."
+      ],
+      "killWindows": [
+        "After Disdain is used or missed.",
+        "When Purge is on cooldown and he is below 60% HP."
+      ],
+      "avoid": [
+        "Long trades near his Purge range.",
+        "Fighting at around 30% HP.",
+        "Standing still in his Corrosive Charge area."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/warwick/counters/?lane=top"
+      ]
+    },
+    "Volibear": {
+      "name": "Volibear",
+      "difficulty": 3,
+      "winRate": 54.98,
+      "winRateSource": "lolalytics Warwick top counters, Emerald+, patch 26.19 (client 16.19), 442 games",
+      "summary": "Favorable overall, but Volibear is strong at levels 2-4. His Thundering Smash (Q) stun and Frenzied Maul (W) bite trade well, so play the first few levels safe. Out-heal him from level 6.",
+      "runes": "Lethal Tempo (Presence of Mind, Legend: Alacrity, Last Stand) + Resolve (Second Wind, Revitalize)",
+      "summoners": "Flash + Barrier",
+      "start": "Doran's Blade + Health Potion",
+      "buildNotes": "Blade of The Ruined King > Plated Steelcaps > Stridebreaker > Death's Dance > Sterak's Gage. Chempunk Chainsword or Thornmail vs his Frenzied Maul healing.",
+      "skillNotes": "Q first, W at 2, E at 3. Max Q, then W, then E.",
+      "phases": {
+        "lvl1_3": [
+          "Don't trade while his Thundering Smash (Q) is up. Wait for him to use it.",
+          "Frenzied Maul (W) marks then heals. Step away after the first bite."
+        ],
+        "lvl4_5": [
+          "Stay out of Sky Splitter's (E) circle when it lands.",
+          "Trade when his Thundering Smash is on cooldown."
+        ],
+        "post6": [
+          "Don't chase him under his tower after Stormbringer (R) lands.",
+          "Use Infinite Duress on him when his Thundering Smash and Sky Splitter are spent."
+        ],
+        "midgame": [
+          "Split push and rotate with Blood Hunt speed.",
+          "Punish him after he uses Stormbringer on someone else."
+        ],
+        "lategame": [
+          "Flank his backline with Infinite Duress. Peel for your carries if he dives."
+        ]
+      },
+      "threats": [
+        "Thundering Smash (Q) stun.",
+        "Frenzied Maul (W) heal.",
+        "Stormbringer (R) dive and tower disable."
+      ],
+      "killWindows": [
+        "After his Thundering Smash is used.",
+        "Level 6 with Infinite Duress when Sky Splitter is spent."
+      ],
+      "avoid": [
+        "Trading into Thundering Smash.",
+        "Standing inside Sky Splitter's circle.",
+        "Chasing under his Stormbringer."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/warwick/counters/?lane=top"
+      ]
+    },
+    "Yone": {
+      "name": "Yone",
+      "difficulty": 2,
+      "winRate": 54.48,
+      "winRateSource": "lolalytics Warwick top counters, Emerald+, patch 26.19 (client 16.19), 837 games",
+      "summary": "Favorable and very common. Yone's crit autos and Mortal Steel (Q3) dash are strong, but he is squishy and can't escape Blood Hunt speed or Infinite Duress. Fear him with Primal Howl when he dashes in, and suppress him for the kill.",
+      "runes": "Lethal Tempo (Presence of Mind, Legend: Alacrity, Last Stand) + Resolve (Second Wind, Revitalize)",
+      "summoners": "Flash + Ignite",
+      "start": "Doran's Blade + Health Potion",
+      "buildNotes": "Blade of The Ruined King > Plated Steelcaps > Randuin's Omen vs his crits > Stridebreaker > Death's Dance. Chempunk Chainsword or Thornmail if he heals.",
+      "skillNotes": "Q first, W at 2, E at 3. Max Q, then W, then E.",
+      "phases": {
+        "lvl1_3": [
+          "Trade when his Mortal Steel (Q) is down. Your Q heal wins the extended exchange.",
+          "Stay out of his Q range if he wants to poke."
+        ],
+        "lvl4_5": [
+          "After Soul Unbound (E) he snaps back to his start spot. Hit him while he is out of position.",
+          "Pop Primal Howl (E) before he dashes in with Q3 to cut the damage."
+        ],
+        "post6": [
+          "Fate Sealed (R) knocks you up. Keep Infinite Duress for after his engage, or suppress him first.",
+          "Chase him with Blood Hunt after he uses Soul Unbound and Fate Sealed."
+        ],
+        "midgame": [
+          "Split push and hold Q to latch on when he dashes away.",
+          "In fights, target him if he dives, because he is squishy."
+        ],
+        "lategame": [
+          "Wait for his Fate Sealed. Then jump his backline and suppress him."
+        ]
+      },
+      "threats": [
+        "Mortal Steel (Q3) dash and knockup.",
+        "Fate Sealed (R) knockup.",
+        "Spirit Cleave (W) shield.",
+        "Crit autos."
+      ],
+      "killWindows": [
+        "After Soul Unbound is used and he is out of position.",
+        "After Fate Sealed is used and his Spirit Cleave shield is gone."
+      ],
+      "avoid": [
+        "Fighting with his shield and Q3 ready.",
+        "Chasing him into his team."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/warwick/counters/?lane=top"
+      ]
+    },
+    "Yorick": {
+      "name": "Yorick",
+      "difficulty": 2,
+      "winRate": 57.96,
+      "winRateSource": "lolalytics Warwick top counters, Emerald+, patch 26.19 (client 16.19), 314 games",
+      "summary": "You are favored. Yorick is slow and his ghouls die to your autos. Hit him when his Dark Procession (W) is down, and use Blood Hunt to catch him. Don't fight around his Maiden (Eulogy of the Isles).",
+      "runes": "Lethal Tempo (Presence of Mind, Legend: Alacrity, Last Stand) + Resolve (Second Wind, Revitalize)",
+      "summoners": "Flash + Ignite",
+      "start": "Doran's Blade + Health Potion",
+      "buildNotes": "Blade of The Ruined King > Plated Steelcaps > Stridebreaker > Death's Dance > Sterak's Gage. Chempunk Chainsword if he heals with Last Rites (Q).",
+      "skillNotes": "Q first, W at 2, E at 3. Max Q, then W, then E.",
+      "phases": {
+        "lvl1_3": [
+          "Trade when his Last Rites (Q) is down. He is slow and can't answer your Jaws of the Beast (Q).",
+          "Don't get stuck inside his Dark Procession (W) walls."
+        ],
+        "lvl4_5": [
+          "Break his ghouls quickly, or walk away from them.",
+          "Dodge Mourning Mist (E) and hit him after."
+        ],
+        "post6": [
+          "Suppress him with Infinite Duress and kill him before his Maiden helps.",
+          "If he uses Eulogy of the Isles (R) on you, kill the Maiden or leave."
+        ],
+        "midgame": [
+          "Split push and catch him with Blood Hunt speed.",
+          "Avoid long fights near his Maiden."
+        ],
+        "lategame": [
+          "Flank his carries. Clear his ghouls before they reach your tower."
+        ]
+      },
+      "threats": [
+        "Last Rites (Q) heal and empowered hit.",
+        "Dark Procession (W) trap.",
+        "Eulogy of the Isles (R) Maiden."
+      ],
+      "killWindows": [
+        "After his Dark Procession is spent.",
+        "When he is below 50% and his Last Rites is on cooldown."
+      ],
+      "avoid": [
+        "Fighting inside his Dark Procession walls.",
+        "Ignoring his Maiden in fights."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/warwick/counters/?lane=top"
+      ]
+    },
+    "Zaahen": {
+      "name": "Zaahen",
+      "difficulty": 3,
+      "winRate": 50.35,
+      "winRateSource": "lolalytics Warwick top counters, Emerald+, patch 26.19 (client 16.19), 284 games",
+      "summary": "Even. Zaahen is a strong duelist: he stacks Determination (Cultivation of War) for bonus AD, heals with The Darkin Glaive (Q), and at max stacks he can revive for 4 seconds. Fight him early before he stacks, and don't give him free hits. While he is airborne with Grim Deliverance (R) he is CC immune, so your suppression will not work then.",
+      "runes": "Lethal Tempo (Presence of Mind, Legend: Alacrity, Last Stand) + Resolve (Second Wind, Revitalize)",
+      "summoners": "Flash + Barrier",
+      "start": "Doran's Blade + Health Potion",
+      "buildNotes": "Blade of The Ruined King > Plated Steelcaps > Stridebreaker > Death's Dance > Sterak's Gage. Chempunk Chainsword or Thornmail against his Q healing. Randuin's Omen is an option if he stacks AD and crits.",
+      "skillNotes": "Q first, W at 2, E at 3. Max Q, then W, then E.",
+      "phases": {
+        "lvl1_3": [
+          "Trade when his The Darkin Glaive (Q) is on cooldown. The empowered double hit heals him, so make him waste it.",
+          "Stay out of max range of Dreaded Return (W). It stuns and pulls you in."
+        ],
+        "lvl4_5": [
+          "Sidestep Aureate Rush (E). The outer edge hits harder and deals bonus max-HP magic damage.",
+          "Deny him Determination stacks by avoiding free trades."
+        ],
+        "post6": [
+          "Don't use Infinite Duress while he is airborne with Grim Deliverance. Wait until he lands.",
+          "Suppress him with Infinite Duress after Grim Deliverance is spent."
+        ],
+        "midgame": [
+          "Play for pick-offs on other targets. He gets stronger the more Determination stacks he holds.",
+          "Don't take extended 1v1s once he has full stacks."
+        ],
+        "lategame": [
+          "At max stacks he revives and can't be hurt for 4 seconds. Don't burn Infinite Duress on him then; kill him after the revive ends, or go for his carries."
+        ]
+      },
+      "threats": [
+        "Cultivation of War (passive) stacks and revive.",
+        "The Darkin Glaive (Q) double hit, heal and knockup on recast.",
+        "Dreaded Return (W) pull and short stun.",
+        "Grim Deliverance (R) CC immunity while airborne."
+      ],
+      "killWindows": [
+        "After his Q and Aureate Rush are used.",
+        "Before he has many Determination stacks.",
+        "After his revive has been used."
+      ],
+      "avoid": [
+        "Using Infinite Duress while he is airborne or reviving.",
+        "Giving him free Determination stacks.",
+        "Standing at the outer edge of Aureate Rush."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/warwick/counters/?lane=top",
+        "https://wiki.leagueoflegends.com/en-us/Zaahen"
+      ]
+    },
+    "Teemo": {
+      "name": "Teemo",
+      "difficulty": 3,
+      "winRate": 53.18,
+      "winRateSource": "lolalytics Warwick top counters, Emerald+, patch 26.19 (client 16.19), 346 games",
+      "summary": "Slightly favored, but Teemo's Blinding Dart (Q) makes your autos miss and Toxic Shot (E) poisons you. Jaws of the Beast is an ability and ignores blind. Close the gap with Q and Blood Hunt speed, and don't walk through Noxious Traps.",
+      "runes": "Press the Attack (Presence of Mind, Legend: Alacrity, Last Stand) + Resolve (Second Wind, Revitalize), for short trade windows",
+      "summoners": "Flash + Teleport",
+      "start": "Doran's Shield + Health Potion",
+      "buildNotes": "Blade of The Ruined King > Mercury's Treads (his blind and poison are magic) > Stridebreaker > Spirit Visage or Force of Nature > Sterak's Gage. Buy Plated Steelcaps only if his team is AD-heavy.",
+      "skillNotes": "Q first, W at 2, E at 3. Max Q, then W, then E.",
+      "phases": {
+        "lvl1_3": [
+          "Lunge onto him with Jaws of the Beast (Q) when his Blinding Dart (Q) is down. Blind stops autos, not your Q.",
+          "Don't walk into a bush without checking for Noxious Traps."
+        ],
+        "lvl4_5": [
+          "Use Primal Howl's fear to make him run and stop him from kiting.",
+          "Push in and trade when his Blinding Dart is down."
+        ],
+        "post6": [
+          "Use Infinite Duress to suppress him and kill him. He has no way to stop it.",
+          "Don't chase into a field of Noxious Traps."
+        ],
+        "midgame": [
+          "Split push and rotate with Blood Hunt speed. Look for kills on his low-HP teammates.",
+          "Avoid dives when Noxious Traps are around."
+        ],
+        "lategame": [
+          "Buy Control Wards to keep vision on his traps and jump his carry with Infinite Duress."
+        ]
+      },
+      "threats": [
+        "Blinding Dart (Q) blind on your autos.",
+        "Toxic Shot (E) poison.",
+        "Noxious Trap (R) slow and area damage."
+      ],
+      "killWindows": [
+        "After his Blinding Dart is used.",
+        "When he has few Noxious Traps nearby."
+      ],
+      "avoid": [
+        "Trading autos while blinded.",
+        "Walking into bushes without vision."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/warwick/counters/?lane=top"
+      ]
+    },
+    "Yasuo": {
+      "name": "Yasuo",
+      "difficulty": 3,
+      "winRate": 48.87,
+      "winRateSource": "lolalytics Warwick top counters, Emerald+, patch 26.19 (client 16.19), 266 games",
+      "summary": "Slightly unfavorable. Yasuo's shield, Wind Wall (W), and Sweeping Blade (E) dashes make him slippery, but he is squishy and Infinite Duress locks him down once his dashes are spent. Play safe early, trade when his shield is popped, and outscale his damage.",
+      "runes": "Lethal Tempo (Presence of Mind, Legend: Alacrity, Last Stand) + Resolve (Second Wind, Revitalize)",
+      "summoners": "Flash + Barrier",
+      "start": "Doran's Blade + Health Potion",
+      "buildNotes": "Blade of The Ruined King > Plated Steelcaps > Randuin's Omen vs his crits > Stridebreaker > Death's Dance. Chempunk Chainsword or Thornmail if he heals.",
+      "skillNotes": "Q first, W at 2, E at 3. Max Q, then W, then E.",
+      "phases": {
+        "lvl1_3": [
+          "Pop his Way of the Wanderer shield with an auto first. Then commit Jaws of the Beast (Q) and trade.",
+          "He wants to Sweeping Blade (E) through minions to you. Don't stand where he can dash for free."
+        ],
+        "lvl4_5": [
+          "Count his Steel Tempest (Q) stacks. When Q3 is ready, stay out of the line.",
+          "Pop Primal Howl (E) before he dives you for damage reduction and the fear."
+        ],
+        "post6": [
+          "Use Infinite Duress when he has no minions to dash on. Wind Wall blocks projectiles, not your leap.",
+          "Last Breath (R) needs a knocked-up target. Fear him with Primal Howl before he lands Q3."
+        ],
+        "midgame": [
+          "Split push and hold Q to latch on when he dashes away.",
+          "In fights, target him when he dives."
+        ],
+        "lategame": [
+          "Keep Infinite Duress for him or his carry. Avoid his knockup combos."
+        ]
+      },
+      "threats": [
+        "Way of the Wanderer shield.",
+        "Steel Tempest (Q3) tornado knockup.",
+        "Wind Wall (W) blocks projectiles.",
+        "Last Breath (R) burst."
+      ],
+      "killWindows": [
+        "After his shield is popped and Sweeping Blade is used.",
+        "When he has no minions to dash on."
+      ],
+      "avoid": [
+        "Chasing him into his team.",
+        "Standing in the Q3 tornado line."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/warwick/counters/?lane=top"
+      ]
+    },
+    "Akali": {
+      "name": "Akali",
+      "difficulty": 3,
+      "winRate": 54.17,
+      "winRateSource": "lolalytics Warwick top counters, Emerald+, patch 26.19 (client 16.19), 240 games",
+      "summary": "Favorable. Akali is squishy and loses to your sustain in long fights. Twilight Shroud (W) hides her and Five Point Strike (Q) and Perfect Execution (R) are her burst. Don't fight in her shroud, and use Primal Howl when she commits.",
+      "runes": "Lethal Tempo (Presence of Mind, Legend: Alacrity, Last Stand) + Resolve (Second Wind, Revitalize)",
+      "summoners": "Flash + Barrier",
+      "start": "Doran's Blade + Health Potion",
+      "buildNotes": "Blade of The Ruined King > Mercury's Treads (her damage is magic) > Stridebreaker > Spirit Visage > Death's Dance > Sterak's Gage. Chempunk Chainsword if she heals.",
+      "skillNotes": "Q first, W at 2, E at 3. Max Q, then W, then E.",
+      "phases": {
+        "lvl1_3": [
+          "Trade when her Five Point Strike (Q) is down. Your Q heal wins the extended fight.",
+          "Don't stand in her Assassin's Mark ring for free."
+        ],
+        "lvl4_5": [
+          "Hold Q to latch on when she uses Shuriken Flip (E) and follow her.",
+          "Stay out of her Twilight Shroud. Walk out of it or wait."
+        ],
+        "post6": [
+          "Perfect Execution (R) dashes twice. Pop Primal Howl before she commits, then suppress her.",
+          "Don't fight in her shroud with her Perfect Execution up."
+        ],
+        "midgame": [
+          "Split push and watch for her roams. Blood Hunt speed follows her.",
+          "In fights, guard your carries and use Infinite Duress on her."
+        ],
+        "lategame": [
+          "Kill her after she uses Perfect Execution. Buy Control Wards to reveal shroud plays."
+        ]
+      },
+      "threats": [
+        "Perfect Execution (R) burst.",
+        "Twilight Shroud (W) invisibility.",
+        "Five Point Strike (Q) poke."
+      ],
+      "killWindows": [
+        "After her Shuriken Flip and Perfect Execution are used.",
+        "When she is out of shroud and below 50% HP."
+      ],
+      "avoid": [
+        "Fighting inside her Twilight Shroud.",
+        "Staying low near her Perfect Execution."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/warwick/counters/?lane=top"
+      ]
+    }
+  }
+}

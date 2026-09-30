@@ -1,0 +1,63 @@
+{
+  "champion": "_generic",
+  "role": "top",
+  "patch": "26.19",
+  "lastUpdated": "2026-09-30",
+  "sources": [],
+  "overview": { "playstyle": "No playbook for this champion yet. These are general top-lane tips and class-based item suggestions; a research run fills in the real build, runes and matchups." },
+  "note": "byClass: the app uses the list for your champion's class (Data Dragon tags) until a real playbook exists.",
+  "byClass": {
+    "Fighter": {
+      "items": [
+        { "name": "Black Cleaver", "role": "damage", "buildWhen": ["vs_tanks", "vs_armor_stacking", "teamfight"], "why": "Armor shred and HP for long fights." },
+        { "name": "Sterak's Gage", "role": "defensive", "buildWhen": ["teamfight", "vs_burst", "vs_cc_heavy"], "why": "Shield and tenacity to survive the burst." },
+        { "name": "Death's Dance", "role": "defensive", "buildWhen": ["vs_heavy_ad", "vs_burst"], "why": "Armor and delays burst damage." },
+        { "name": "Maw of Malmortius", "role": "defensive", "buildWhen": ["vs_heavy_ap", "vs_burst"], "why": "AD, MR and a magic shield." },
+        { "name": "Chempunk Chainsword", "role": "antiheal", "buildWhen": ["vs_healing"], "why": "Grievous Wounds on your attacks." },
+        { "name": "Randuin's Omen", "role": "defensive", "buildWhen": ["vs_crit_ad"], "why": "Less crit damage taken." }
+      ],
+      "boots": [{ "item": "Plated Steelcaps", "when": "Vs physical damage and auto attackers." }, { "item": "Mercury's Treads", "when": "Vs magic damage and crowd control." }]
+    },
+    "Tank": {
+      "items": [
+        { "name": "Sunfire Aegis", "role": "core", "buildWhen": ["early_game", "teamfight"], "why": "HP, armor and area damage for waves and fights." },
+        { "name": "Thornmail", "role": "antiheal", "buildWhen": ["vs_healing", "vs_heavy_ad", "vs_crit_ad"], "why": "Armor and Grievous Wounds on attackers." },
+        { "name": "Randuin's Omen", "role": "defensive", "buildWhen": ["vs_crit_ad", "vs_heavy_ad"], "why": "Less crit damage taken." },
+        { "name": "Force of Nature", "role": "defensive", "buildWhen": ["vs_heavy_ap", "vs_poke"], "why": "Magic resist that grows in long fights." },
+        { "name": "Kaenic Rookern", "role": "defensive", "buildWhen": ["vs_heavy_ap", "vs_burst"], "why": "Big magic shield." },
+        { "name": "Jak'Sho, The Protean", "role": "defensive", "buildWhen": ["teamfight", "late_game"], "why": "Resists that grow during a fight." }
+      ],
+      "boots": [{ "item": "Plated Steelcaps", "when": "Vs physical damage and auto attackers." }, { "item": "Mercury's Treads", "when": "Vs magic damage and crowd control." }]
+    },
+    "Mage": {
+      "items": [
+        { "name": "Zhonya's Hourglass", "role": "defensive", "buildWhen": ["vs_heavy_ad", "vs_burst"], "why": "Armor and Stasis to dodge burst." },
+        { "name": "Banshee's Veil", "role": "defensive", "buildWhen": ["vs_heavy_ap", "vs_burst"], "why": "Spell shield and MR." },
+        { "name": "Void Staff", "role": "damage", "buildWhen": ["vs_tanks"], "why": "Magic penetration against MR." },
+        { "name": "Morellonomicon", "role": "antiheal", "buildWhen": ["vs_healing"], "why": "Grievous Wounds on your spells." }
+      ],
+      "boots": [{ "item": "Sorcerer's Shoes", "when": "Default for damage." }, { "item": "Mercury's Treads", "when": "Vs crowd control." }]
+    },
+    "Marksman": {
+      "items": [
+        { "name": "Lord Dominik's Regards", "role": "damage", "buildWhen": ["vs_tanks", "vs_armor_stacking"], "why": "Armor penetration." },
+        { "name": "Mortal Reminder", "role": "antiheal", "buildWhen": ["vs_healing"], "why": "Grievous Wounds." },
+        { "name": "Guardian Angel", "role": "defensive", "buildWhen": ["late_game", "vs_burst"], "why": "Revive." }
+      ],
+      "boots": [{ "item": "Berserker's Greaves", "when": "Default." }]
+    },
+    "Assassin": {
+      "items": [
+        { "name": "Serylda's Grudge", "role": "damage", "buildWhen": ["vs_armor_stacking", "vs_tanks"], "why": "Armor penetration and slow." },
+        { "name": "Edge of Night", "role": "defensive", "buildWhen": ["vs_cc_heavy", "vs_burst"], "why": "Spell shield." },
+        { "name": "Chempunk Chainsword", "role": "antiheal", "buildWhen": ["vs_healing"], "why": "Grievous Wounds." }
+      ],
+      "boots": [{ "item": "Ionian Boots of Lucidity", "when": "Default." }]
+    }
+  },
+  "runes": [],
+  "summoners": [{ "spells": ["Flash", "Teleport"], "when": "Standard for top lane." }],
+  "startingItems": [{ "items": ["Doran's Blade", "Health Potion"], "when": "Most melee top laners." }, { "items": ["Doran's Shield", "Health Potion"], "when": "Vs ranged or poke." }],
+  "coreBuild": { "firstItemOptions": [], "typicalOrder": [], "boots": [], "firstBackBuys": [] },
+  "items": []
+}

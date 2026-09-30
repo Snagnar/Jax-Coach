@@ -5,8 +5,6 @@
 
 const Engine = (() => {
   // ---------- static champion traits (design facts, not patch-dependent) ----------
-  const AP_OVERRIDE = new Set(['Gwen', 'Kayle', 'Aurora', 'Mel', 'Hwei', 'Lillia', 'Nunu', 'Sejuani', 'Amumu', 'Zac', 'Chogath', 'Maokai', 'Malphite', 'Galio', 'Diana', 'Ekko', 'Elise', 'Evelynn', 'Fiddlesticks', 'Gragas', 'Mordekaiser', 'Rumble', 'Singed', 'Sylas', 'Teemo', 'Vladimir', 'Kennen', 'Akali', 'Katarina', 'Nidalee', 'Shyvana', 'Taliyah', 'Brand', 'Zyra', 'Heimerdinger', 'Cassiopeia', 'Ryze', 'Swain', 'Karthus', 'Lissandra']);
-  const AD_OVERRIDE = new Set(['Volibear', 'Warwick', 'Shaco', 'Varus', 'Kaisa', 'Corki', 'Ezreal', 'Jax', 'Tryndamere', 'Yasuo', 'Yone', 'Ambessa', 'Briar', 'Naafiri', 'KSante', 'Sion', 'Poppy', 'Ornn', 'Shen', 'DrMundo', 'TahmKench']);
   const HEALERS = new Set(['Aatrox', 'Soraka', 'Yuumi', 'Sona', 'Nami', 'Seraphine', 'Milio', 'Vladimir', 'Sylas', 'Swain', 'Warwick', 'DrMundo', 'Fiddlesticks', 'Illaoi', 'Olaf', 'Briar', 'Gwen', 'Trundle', 'Volibear', 'Udyr', 'Nasus', 'Renekton', 'Kayn', 'Ambessa', 'Maokai', 'Zac', 'Taric', 'Alistar', 'Bard', 'Nidalee', 'Samira', 'Viego', 'Irelia', 'Yorick', 'Sett', 'Darius', 'Aurora']);
   const STRONG_HEALERS = new Set(['Aatrox', 'Soraka', 'Yuumi', 'Vladimir', 'Sylas', 'Swain', 'Warwick', 'DrMundo', 'Illaoi', 'Briar', 'Gwen', 'Trundle', 'Volibear', 'Nasus', 'Olaf', 'Sona', 'Nami', 'Milio', 'Seraphine', 'Maokai', 'Zac', 'Ambessa']);
   const HARD_CC = new Set(['Leona', 'Nautilus', 'Thresh', 'Alistar', 'Rell', 'Amumu', 'Malphite', 'Sejuani', 'Lissandra', 'Ashe', 'Morgana', 'Lux', 'Vi', 'Warwick', 'Rammus', 'Maokai', 'Ornn', 'Sion', 'Zac', 'Nunu', 'Poppy', 'Blitzcrank', 'Pyke', 'Braum', 'Taric', 'Galio', 'Annie', 'Veigar', 'Neeko', 'Seraphine', 'Zyra', 'Skarner', 'JarvanIV', 'Kennen', 'MonkeyKing', 'Diana', 'Cassiopeia', 'Syndra', 'Chogath', 'Fiddlesticks', 'Hecarim', 'Rakan', 'Nami', 'Janna', 'Swain', 'TwistedFate', 'LeeSin', 'XinZhao', 'Pantheon', 'Camille', 'KSante', 'Shen', 'TahmKench', 'Gragas', 'Vex', 'Renekton', 'Rengar', 'Mordekaiser', 'Urgot', 'Aatrox', 'Volibear', 'Jhin', 'Lillia', 'Bard', 'Elise', 'Leblanc', 'Riven', 'Sett', 'Gnar', 'Jayce', 'Aurora', 'Mel', 'Nilah', 'Ambessa', 'Briar', 'Galio', 'Zilean', 'Ivern', 'Karma', 'Lulu', 'Milio']);
@@ -57,12 +55,44 @@ const Engine = (() => {
   const legendaryCount = (D, p) => (p.items || []).filter((i) => isLegendary(D, i.itemID)).length;
   const hasSpell = (p, re) => ['summonerSpellOne', 'summonerSpellTwo'].some((k) => re.test(((p.summonerSpells || {})[k] || {}).displayName || ''));
 
-  function dmgType(D, id) {
-    if (AP_OVERRIDE.has(id)) return 'AP';
-    if (AD_OVERRIDE.has(id)) return 'AD';
-    const info = champ(D, id).info || {};
-    return (info.magic || 0) > (info.attack || 0) ? 'AP' : 'AD';
+  // ---------- damage profile: how much of a champion's damage is magic ----------
+  // data/shared.json "damageProfiles": a number (magic share with the usual build) or [full AD build, full AP build,
+  // usual build] for champions that go either way. What they actually buy moves them inside that range.
+  function profile(D, id) {
+    const p = ((D.shared || {}).damageProfiles || {})[id];
+    if (typeof p === 'number') return { lo: p, hi: p, def: p };
+    if (Array.isArray(p) && p.length >= 2) return { lo: p[0], hi: p[1], def: p[2] != null ? p[2] : p[0] };
+    const c = champ(D, id), tag = (c.tags || [])[0], info = c.info || {};
+    const m = tag === 'Mage' ? 0.95 : tag === 'Marksman' ? 0.1 : (info.magic || 0) > (info.attack || 0) ? 0.85 : 0.15;
+    return { lo: m, hi: m, def: m };
   }
+  // what an inventory's offensive stats are worth in gold: magic (AP) vs physical (AD, attack speed, crit)
+  function offense(D, p) {
+    let ap = 0, ad = 0, gold = 0;
+    for (const i of p.items || []) {
+      const it = itemData(D, i.itemID), s = (it && it.stats) || {};
+      const a = (s.FlatMagicDamageMod || 0) * 20;
+      const d = (s.FlatPhysicalDamageMod || 0) * 35 + (s.PercentAttackSpeedMod || 0) * 2500 + (s.FlatCritChanceMod || 0) * 4000;
+      ap += a; ad += d;
+      if (a + d > 0 && it.gold) gold += it.gold.total * (i.count || 1);
+    }
+    return { ap, ad, gold };
+  }
+  // one enemy's damage: the magic share (champion profile, moved by their items once they have ~2500g of damage
+  // items) and a weight for how much of their team's damage they deal (gold and levels; tanks and enchanters less
+  // unless they build damage)
+  function damageOf(D, p, support) {
+    const pr = profile(D, p.cid), o = offense(D, p);
+    const built = o.ap + o.ad > 0 ? pr.lo + (pr.hi - pr.lo) * (o.ap / (o.ap + o.ad)) : pr.def;
+    const magic = pr.def + (built - pr.def) * clamp(o.gold / 2500, 0, 1);
+    const tag = (champ(D, p.cid).tags || [])[0];
+    const items = itemValue(D, p);
+    let role = 1;
+    if (tag === 'Support') role = 0.35;
+    else if (tag === 'Tank' || support) { const base = 0.6; role = base + (1 - base) * (items > 0 ? clamp(o.gold / items, 0, 1) : 0); }
+    return { magic, role, gold: items + (p.level || 1) * 200, damageItemGold: o.gold, flexible: pr.hi - pr.lo >= 0.2 };
+  }
+  const dmgType = (D, id) => (profile(D, id).def >= 0.5 ? 'AP' : 'AD');
   const isSupportChamp = (D, p, id) => p.position === 'UTILITY' || (!p.position && (champ(D, id).tags || [])[0] === 'Support');
 
   // ---------- players ----------
@@ -142,12 +172,21 @@ const Engine = (() => {
   // ---------- enemy composition ----------
   function composition(D, enemies, t) {
     let ap = 0, ad = 0;
-    const heal = [], strongHeal = [], tanks = [], cc = [], burst = [], poke = [], crit = [], squishy = [];
+    const heal = [], strongHeal = [], tanks = [], cc = [], burst = [], poke = [], crit = [], squishy = [], dmg = [];
     let armorTeam = 0, maxArmor = 0, mrTeam = 0;
+    const dd = enemies.map((p) => damageOf(D, p, isSupportChamp(D, p, p.cid)));
+    const avgGold = dd.reduce((s, x) => s + x.gold, 0) / Math.max(1, dd.length);
+    enemies.forEach((p, i) => {
+      const x = dd[i];
+      // a fed champion deals more of the damage: weight by gold (items + levels) relative to their team
+      const w = x.role * (0.5 + 0.5 * clamp(x.gold / Math.max(1, avgGold), 0.3, 2.5));
+      ap += w * x.magic; ad += w * (1 - x.magic);
+      dmg.push({ cid: p.cid, name: champ(D, p.cid).name, magic: x.magic, w, byItems: x.damageItemGold >= 1000 && x.flexible });
+    });
+    const wSum = dmg.reduce((s, x) => s + x.w, 0) || 1;
+    for (const x of dmg) x.share = x.w / wSum;
     for (const p of enemies) {
       const c = champ(D, p.cid), tags = c.tags || [];
-      const w = isSupportChamp(D, p, p.cid) ? 0.5 : (tags[0] === 'Tank' ? 0.6 : 1);
-      if (dmgType(D, p.cid) === 'AP') ap += w; else ad += w;
       if (HEALERS.has(p.cid)) heal.push(c.name);
       if (STRONG_HEALERS.has(p.cid)) strongHeal.push(c.name);
       if (tags[0] === 'Tank' && !isSupportChamp(D, p, p.cid)) tanks.push(c.name);
@@ -167,13 +206,15 @@ const Engine = (() => {
       armorTeam += armor; maxArmor = Math.max(maxArmor, armor);
     }
     const apShare = ap + ad ? ap / (ap + ad) : 0.5;
-    return { ap, ad, apShare, heal, strongHeal, tanks, cc, burst, poke, crit, squishy, armorTeam, maxArmor, mrTeam };
+    return { ap, ad, apShare, dmg, heal, strongHeal, tanks, cc, burst, poke, crit, squishy, armorTeam, maxArmor, mrTeam };
   }
-  function activeTags(comp, state, t, opp) {
+  // prev: last tick's tags, so a damage split hovering at a threshold doesn't flip the build back and forth
+  function activeTags(comp, state, t, opp, prev) {
     const tags = new Set();
     const min = t / 60;
-    if (comp.apShare >= 0.6) tags.add('vs_heavy_ap');
-    if (comp.apShare <= 0.3) tags.add('vs_heavy_ad');
+    const had = (x) => !!(prev && prev.has(x));
+    if (comp.apShare >= (had('vs_heavy_ap') ? 0.56 : 0.6)) tags.add('vs_heavy_ap');
+    if (comp.apShare <= (had('vs_heavy_ad') ? 0.34 : 0.3)) tags.add('vs_heavy_ad');
     if (comp.strongHeal.length >= 2 || comp.heal.length >= 3 || (opp && STRONG_HEALERS.has(opp.cid))) tags.add('vs_healing');
     if (comp.tanks.length >= 2) tags.add('vs_tanks');
     if (comp.maxArmor >= 100 || comp.armorTeam >= 250) tags.add('vs_armor_stacking');
@@ -203,7 +244,7 @@ const Engine = (() => {
   // one-time camps leave the map if nobody takes them
   const DESPAWN = { voidgrubs: 14 * 60 + 45, riftHerald: 19 * 60 + 45 };
   function objectives(D, events, t, teamOf) {
-    const timers = (D.meta && D.meta.objectiveTimers) || DEFAULT_TIMERS;
+    const timers = (D.shared && D.shared.objectiveTimers) || (D.meta && D.meta.objectiveTimers) || DEFAULT_TIMERS;
     const out = [];
     for (const o of OBJECTIVES) {
       const cfg = timers[o.key];
@@ -226,7 +267,12 @@ const Engine = (() => {
           label = 'Elder Dragon';
           next = Math.max(soulAt + 360, lastElder ? lastElder.EventTime + 360 : 0);
         } else if (last) next = Math.max(spawn, last.EventTime + respawn);
-        out.push({ ...o, label, next, status: t >= next ? 'up' : 'upcoming', in: next - t, killed: kills.length, lastKiller: last ? last.KillerName : null, soulTeam, notes: cfg.notes || '' });
+        // soul point: a team with 3 drakes gets Dragon Soul from the next one
+        const ours = count.mine || 0, theirs = count.theirs || 0;
+        const soulPoint = soulAt != null ? null : ours >= 3 && theirs >= 3 ? 'both' : ours >= 3 ? 'ours' : theirs >= 3 ? 'theirs' : null;
+        const soul = soulTeam === 'mine' ? 'ours' : soulTeam === 'theirs' ? 'theirs' : null;
+        out.push({ ...o, label, next, status: t >= next ? 'up' : 'upcoming', in: next - t, killed: kills.length, lastKiller: last ? last.KillerName : null,
+          soulTeam, soul, soulPoint, drakes: { ours, theirs }, stakes: soulAt != null ? 'elder' : soulPoint ? 'soul' : null, notes: cfg.notes || '' });
         continue;
       }
       if (last) {
@@ -271,7 +317,9 @@ const Engine = (() => {
     if (!hasBoots && bootOpts.length) {
       const find = (re) => bootOpts.find((b) => re.test(b.item));
       let pick = null, why = '';
-      if (tags.has('vs_heavy_ap') || (tags.has('vs_cc_heavy') && comp.apShare >= 0.45)) { pick = find(/mercury/i); why = `${Math.round(comp.apShare * 100)}% of enemy damage is magic` + (comp.cc.length >= 3 ? `, ${comp.cc.length} hard-CC champs` : ''); }
+      const planBoots = meta.coreBuild.source === 'plan' ? core.find(isBootsName) : null;
+      if (planBoots) { pick = bootOpts.find((b) => b.item === planBoots) || { item: planBoots }; why = (meta.coreBuild.why || {})[planBoots] || 'game plan'; }
+      else if (tags.has('vs_heavy_ap') || (tags.has('vs_cc_heavy') && comp.apShare >= 0.45)) { pick = find(/mercury/i); why = `${Math.round(comp.apShare * 100)}% of enemy damage is magic` + (comp.cc.length >= 3 ? `, ${comp.cc.length} hard-CC champs` : ''); }
       else if (tags.has('vs_heavy_ad') || comp.crit.length >= 2) { pick = find(/steelcaps/i); why = `${Math.round((1 - comp.apShare) * 100)}% of enemy damage is physical`; }
       if (!pick) { pick = bootOpts[0]; why = pick.when || 'default'; }
       boots = { name: pick.item, id: idOf(pick.item), why };
@@ -286,18 +334,21 @@ const Engine = (() => {
       vs_healing: `heavy healing (${(comp.strongHeal.length ? comp.strongHeal : comp.heal).join(', ')})`, vs_cc_heavy: `${comp.cc.length} champions with hard CC`,
       vs_squishies: 'their carries are squishy', vs_burst: `burst threats (${comp.burst.join(', ')})`, vs_poke: 'a poke-heavy team', vs_crit_ad: `crit damage (${comp.crit.join(', ')})`,
     };
-    const metaWhy = (name) => ((meta.items || []).find((i) => i.name.toLowerCase() === String(name).toLowerCase()) || {}).why || '';
+    // a game plan (research agent) can reorder the build and say why per item: meta.coreBuild.source = 'plan', .why = { item: reason }
+    const planWhy = (meta.coreBuild && meta.coreBuild.why) || {};
+    const fromPlan = !!(meta.coreBuild && meta.coreBuild.source === 'plan');
+    const metaWhy = (name) => planWhy[name] || ((meta.items || []).find((i) => i.name.toLowerCase() === String(name).toLowerCase()) || {}).why || '';
     const urgent = situational.find((s) => s.score >= 4
       || (s.matched.includes('vs_healing') && comp.strongHeal.length >= 2)
       || (s.matched.includes('vs_heavy_ap') && comp.apShare >= 0.7)
       || (s.matched.includes('vs_heavy_ad') && comp.apShare <= 0.2));
     let priority = null;
-    if (legs === 0 && nextCore[0]) priority = { ...nextCore[0], kind: 'core', reason: metaWhy(nextCore[0].name) || 'Your first big power spike' };
+    if (legs === 0 && nextCore[0]) priority = { ...nextCore[0], kind: fromPlan ? 'plan' : 'core', reason: metaWhy(nextCore[0].name) || 'Your first big power spike' };
     else if (boots && legs >= 1) priority = { name: boots.name, id: boots.id, kind: 'boots', reason: `Boots before your next item: ${boots.why}` };
-    else if (urgent) {
+    else if (urgent && !fromPlan) {   // a game plan already weighed the enemy comp
       const because = urgent.matched.filter((t) => t.startsWith('vs_')).map((t) => TAGTXT[t]).filter(Boolean).join(' and ');
       priority = { name: urgent.name, id: urgent.id, kind: 'adapted', because, reason: because ? `${because[0].toUpperCase()}${because.slice(1)}: ${urgent.why}` : urgent.why };
-    } else if (nextCore[0]) priority = { ...nextCore[0], kind: 'core', reason: metaWhy(nextCore[0].name) || 'Next core item' };
+    } else if (nextCore[0]) priority = { ...nextCore[0], kind: fromPlan ? 'plan' : 'core', reason: metaWhy(nextCore[0].name) || 'Next core item' };
     else if (situational[0]) priority = { name: situational[0].name, id: situational[0].id, kind: 'adapted', reason: situational[0].why };
     if (priority) {
       const after = [...nextCore, ...situational].find((x) => x.name !== priority.name);
@@ -338,7 +389,8 @@ const Engine = (() => {
   function triggers(D, ctx, mem, P, t, events, state, objs) {
     const out = [];
     const T = (D.phases && D.phases.triggers) || {};
-    const add = (id, level, title, detail) => out.push({ id, level, title, detail, advice: T[id] || [] });
+    const ST = (D.shared && D.shared.triggers) || {};       // defaults when the playbook has no tip for a trigger
+    const add = (id, level, title, detail) => out.push({ id, level, title, detail, advice: T[id] || ST[id] || [] });
     const { me, opp, enemies, allies, enemyJungler } = P;
     const min = t / 60;
 
@@ -362,7 +414,8 @@ const Engine = (() => {
       if (opp.level > me.level) add('opp_level_lead', 'warn', `${champ(D, opp.cid).name} is a level ahead`, `You ${me.level} vs ${opp.level}`);
       else if (me.level > opp.level) add('you_level_lead', 'good', 'You are a level ahead', `You ${me.level} vs ${opp.level}`);
     }
-    if (me.level >= 6 && mem.level6At != null && t - mem.level6At < 75) add('you_hit_6', 'good', 'Level 6: Grandmaster\'s Might online', opp && opp.level < 6 ? `${champ(D, opp.cid).name} is still level ${opp.level}` : '');
+    const TXT = (D.rules && D.rules.text) || {};
+    if (me.level >= 6 && mem.level6At != null && t - mem.level6At < 75) add('you_hit_6', 'good', TXT.level6 || 'Level 6: your ultimate is online', opp && opp.level < 6 ? `${champ(D, opp.cid).name} is still level ${opp.level}` : '');
 
     const lg = legendaryCount(D, me);
     const lastLeg = mem.legendaryAt[mem.legendaryAt.length - 1];
@@ -379,7 +432,14 @@ const Engine = (() => {
     if (eDead - aDead >= 2) add('enemy_team_numbers_down', 'good', `${eDead} enemies dead`, enemies.filter((p) => p.isDead).map((p) => `${champ(D, p.cid).name} ${Math.ceil(p.respawnTimer)}s`).join(', '));
     if (aDead - eDead >= 2) add('your_team_numbers_down', 'warn', `${aDead} allies dead`, 'Your team is down numbers');
 
-    for (const o of objs) if (o.status === 'upcoming' && o.in > 0 && o.in <= 60) add(o.trigger, 'info', `${o.label} in ${fmtClock(o.in)}`, o.notes || '');
+    for (const o of objs) if (o.status === 'upcoming' && o.in > 0 && o.in <= 60 && !o.stakes) add(o.trigger, 'info', `${o.label} in ${fmtClock(o.in)}`, o.notes || '');
+    // the soul-point dragon and the Elder: their own triggers, so a playbook can say what this champion does there
+    const dr = objs.find((o) => o.key === 'dragon');
+    if (dr && dr.stakes && (dr.status === 'up' || dr.in <= 90)) {
+      const when = dr.status === 'up' ? 'up now' : `in ${fmtClock(dr.in)}`;
+      if (dr.stakes === 'soul') add('dragon_soul_point', dr.soulPoint === 'ours' ? 'good' : 'warn', `Soul point dragon ${when}`, `Drakes ${dr.drakes.ours}–${dr.drakes.theirs}`);
+      else add('elder_dragon', 'warn', `Elder Dragon ${when}`, dr.soul ? `${dr.soul === 'ours' ? 'You have' : 'They have'} Dragon Soul` : '');
+    }
     if (min >= 30) add('long_death_timers', 'info', 'Death timers are long', 'A death now can lose the game');
 
     for (const e of events) {
@@ -522,26 +582,30 @@ const Engine = (() => {
   // From the player's own history: almost every 1v1 death came while a level down, behind in gold or down
   // in farm. The guard turns those situations into an explicit "don't fight", and after two solo deaths
   // locks the lane to farm-only until the next item is finished.
+  // thresholds come from the playbook (rules.params.guard); these defaults are the tested Jax values
+  const GUARD_DEFAULTS = { enabled: true, until: 14, levelDownAfter: 90, goldDown: 500, goldAfter: 150, csDown: 15, csAfter: 300, lockDeaths: 2, lockUntil: 20, quietSec: 15 };
   function fightGuard(D, a, mem) {
     const { P, t, events, state, items } = a;
     const { me, opp } = P;
+    const G = { ...GUARD_DEFAULTS, ...(((D.rules || {}).params || {}).guard || {}) };
+    if (!G.enabled) return null;
     const min = t / 60;
     const lg = legendaryCount(D, me);
     // release the lock when the next item is done (or at 20:00 at the latest)
-    if (mem.lock && (lg > mem.lock.leg || min >= 20)) { mem.lockBase = mem.soloDeaths || 0; mem.lock = null; }
+    if (mem.lock && (lg > mem.lock.leg || min >= G.lockUntil)) { mem.lockBase = mem.soloDeaths || 0; mem.lock = null; }
     if (!opp) return null;
     const oppName = champ(D, opp.cid).name;
     const solo = events.filter((e) => e.EventName === 'ChampionKill' && nameIs(me, e.VictimName) && nameIs(opp, e.KillerName)
       && !(e.Assisters || []).some((n) => P.enemies.some((p) => nameIs(p, n))));
     mem.soloDeaths = solo.length;
-    if (!mem.lock && min < 14 && solo.length - (mem.lockBase || 0) >= 2) mem.lock = { at: t, leg: lg };
+    if (!mem.lock && min < G.until && G.lockDeaths > 0 && solo.length - (mem.lockBase || 0) >= G.lockDeaths) mem.lock = { at: t, leg: lg };
     // how long each deficit has lasted, so a level-2 race doesn't make the voice talk
     const since = (k, on) => { if (!on) { mem[k] = null; return null; } if (mem[k] == null) mem[k] = t; return mem[k]; };
     const lvlD = me.level - opp.level;
-    const lvlSince = since('lvlDownSince', lvlD < 0 && t >= 90 && min < 14);
-    const goldSince = since('goldDownSince', state.est < -500 && t >= 150 && min < 14);
-    const csSince = since('csDownSince', state.csD <= -15 && t >= 300 && min < 14);
-    const quiet = (s, key) => (t - s < 15 ? `${key}-q-${Math.round(s)}` : `${key}-${Math.round(s)}`);   // spoken after 15s
+    const lvlSince = since('lvlDownSince', G.levelDownAfter != null && lvlD < 0 && t >= G.levelDownAfter && min < G.until);
+    const goldSince = since('goldDownSince', G.goldDown != null && state.est < -G.goldDown && t >= G.goldAfter && min < G.until);
+    const csSince = since('csDownSince', G.csDown != null && state.csD <= -G.csDown && t >= G.csAfter && min < G.until);
+    const quiet = (s, key) => (t - s < G.quietSec ? `${key}-q-${Math.round(s)}` : `${key}-${Math.round(s)}`);   // spoken after a few seconds
     const next = items.priority ? items.priority.name : (items.nextCore[0] || {}).name || 'next item';
     if (me.isDead) return null;
     if (mem.lock) {
@@ -637,103 +701,83 @@ const Engine = (() => {
   }
 
   // ---------- play mode: one recommendation that colors the dashboard ----------
-  // Enemy HP and cooldowns are not in the live data, so this weighs levels, items, the matchup,
-  // your HP, the enemy jungler's last sighting, dead players and objectives.
-  function playMode(D, a) {
-    const { P, t, objs, items, jungler: jt } = a;
+  // Enemy HP and cooldowns are not in the live data, so this weighs levels, items, the matchup, your HP, the
+  // enemy jungler's last sighting, dead players and objectives. The weighing ("fightScore") and the decision
+  // order ("modes") come from the champion's playbook (rules.json); this code only computes the facts they read.
+  const MODES = new Set(['allin', 'push', 'trade', 'safe', 'retreat', 'group', 'dead']);
+  const capSentences = (s) => (s ? String(s).replace(/(^|[.!?]\s+)([a-z])/g, (m, p, c) => p + c.toUpperCase()) : s);
+  const orList = (names) => (names.length <= 1 ? names.join('') : `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}`);
+
+  // the facts a rule can read (documented in agents/playbook-format.md)
+  function ruleContext(D, a) {
+    const { P, t, objs, items, jungler: jt, state, team, comp, tags } = a;
     const { me, opp, enemies, allies } = P;
     const min = t / 60;
     const st = a.activeStats || {};
     const hp = st.maxHealth ? st.currentHealth / st.maxHealth : 1;
-    const oppName = opp ? champ(D, opp.cid).name : 'your opponent';
+    const mana = st.resourceMax && /mana/i.test(st.resourceType || 'MANA') ? st.resourceValue / st.resourceMax : 1;
+    const person = (p) => (p ? {
+      champ: p.cid, name: champ(D, p.cid).name, level: p.level, dead: !!p.isDead, respawn: p.respawnTimer || 0,
+      kills: p.scores.kills || 0, deaths: p.scores.deaths || 0, assists: p.scores.assists || 0, cs: p.scores.creepScore || 0,
+      legendaries: legendaryCount(D, p), itemGold: itemValue(D, p), fed: isFed(p), class: (champ(D, p.cid).tags || [])[0] || '',
+      ranged: (champ(D, p.cid).range || 0) > 300, damage: dmgType(D, p.cid),
+      magic: Math.round((((comp.dmg || []).find((x) => x.cid === p.cid) || {}).magic ?? profile(D, p.cid).def) * 100) / 100,
+    } : null);
     const mu = opp ? D.matchups[opp.cid] : null;
     const eDead = enemies.filter((p) => p.isDead).length, aDead = [me, ...allies].filter((p) => p.isDead).length;
-    const cap = (s) => (s ? s.replace(/(^|[.!?]\s+)([a-z])/g, (m, p, c) => p + c.toUpperCase()) : s);
-    const R = (mode, headline, reason, voice = null, voiceKey = null) => ({ mode, headline, reason, voice: cap(voice), voiceKey: voiceKey || mode });
-
-    if (me.isDead) return R('dead', 'Dead: plan your next move', items.buyNow ? items.buyNow.text : '');
-
-    const recall = () => {
-      const b = items.buyNow;
-      if (b && b.cost >= 850) return { stay: false, text: `Crash the wave, then recall: ${b.text.replace(/^Components for [^:]+: /, 'buy ')}` };
-      if (hp < 0.45) return { stay: false, text: 'Crash the wave, then recall to heal up' };
-      return { stay: true, text: `Stay: shove the wave and hit the turret (only ${items.gold}g, not worth a back yet)` };
-    };
-
-    if (min >= 8) { const w = numbersCall(D, a); if (w) return w; }
-    if (opp && opp.isDead) {
-      const r = recall();
-      // shown on the dashboard only: you see your opponent die yourself
-      return R('push', `${oppName} dead · ${Math.ceil(opp.respawnTimer || 0)}s`, r.text, null, `oppdead-${Math.round((t + (opp.respawnTimer || 0)) / 10)}`);
-    }
-    if (hp < 0.25) return R('retreat', 'Low HP: back off', 'Step out of range or recall');   // you can see this yourself: no voice
-
-    // how favourable is a fight with your lane opponent right now?
-    let e = 0; const why = [];
-    if (opp) {
-      const lvlD = me.level - opp.level;
-      if (me.level >= 6 && opp.level < 6) { e += 2; why.push(`you have R, ${oppName} doesn't`); }
-      else if (opp.level >= 6 && me.level < 6) { e -= 2; why.push(`${oppName} has R, you don't`); }
-      else if (lvlD && min < 4) { e += lvlD * 1.5; why.push(lvlD > 0 ? 'you are a level up' : `${oppName} is a level up`); }
-      else if (lvlD) { e += lvlD; why.push(lvlD > 0 ? `+${lvlD} level` : `${-lvlD} level down`); }
-      const myLeg = legendaryCount(D, me), opLeg = legendaryCount(D, opp);
-      if (myLeg !== opLeg) { e += 1.2 * (myLeg - opLeg); why.push(myLeg > opLeg ? 'you have more items' : `${oppName} has more items`); }
-      const idiff = itemValue(D, me) - itemValue(D, opp);
-      e += clamp(idiff / 900, -2, 2);
-      if (Math.abs(idiff) >= 700 && myLeg === opLeg) why.push(`${idiff > 0 ? '+' : '−'}${Math.abs(Math.round(idiff))}g in items`);
-      e += (3 - ((mu && mu.difficulty) || 3)) * 0.5;
-      if ((opp.scores.kills || 0) - (opp.scores.deaths || 0) >= 3) { e -= 1; why.push(`${oppName} is fed`); }
-    }
-    e += (hp - 0.7) * 2.5;
-    const hpReason = hp < 0.5;
-    if (hpReason) why.push(`you're at ${Math.round(hp * 100)}% HP`);
-
-    let jNote = '';
-    if (jt) {
-      if (jt.status === 'near') { e -= 2; why.unshift(`${jt.name} showed top side`); }
-      else if (jt.status === 'dead' || jt.status === 'far') e += 0.5;
-      else if (jt.status === 'unknown' && min >= 3 && min < 20) jNote = `${jt.name}'s position unknown: check the map`;
-    }
-    const reason = [why.slice(0, 3).join(', '), jNote].filter(Boolean).join(' · ');
-    const first = why[0] || '';
+    const fedP = enemies.filter((p) => p !== opp && !p.isDead && isFed(p));
+    const fedNames = fedP.slice(0, 2).map((p) => champ(D, p.cid).name);
+    const b = items.buyNow;
+    const recall = b && b.cost >= 850 ? { stay: false, text: `Crash the wave, then recall: ${b.text.replace(/^Components for [^:]+: /, 'buy ')}` }
+      : hp < 0.45 ? { stay: false, text: 'Crash the wave, then recall to heal up' }
+        : { stay: true, text: `Stay: shove the wave and hit the turret (only ${items.gold}g, not worth a back yet)` };
     const soon = objs.find((o) => o.status !== 'taken' && ((o.in > 0 && o.in <= 60) || (o.status === 'up' && min >= 14 && o.key !== 'riftHerald' && t - o.next < 90)));
-
-    if (min < 14) {
-      if (jt && jt.status === 'near') {
-        const m = e >= 2.5 ? 'trade' : e >= 0 ? 'safe' : 'retreat';
-        // the kill feed shows the jungler only after a fight: if you were in it, you already know
-        return R(m, m === 'retreat' ? 'Back off: jungler nearby' : 'Careful: jungler nearby', reason, jt.last.withMe ? null : `Careful. ${jt.name} showed top side.`, jt.nearKey);
-      }
-      if (soon && soon.in > 0) return R('group', `${soon.label} in ${fmtClock(soon.in)}`, soon.key === 'dragon' ? 'Shove your wave first; keep Teleport for the fight if your team contests' : 'Get priority: push your wave so you can move first', `${soon.label} in one minute.`, `obj-${soon.key}-${Math.round(soon.next)}`);
-      const g = a.guard;
-      if (g && (g.strict || e < 1.5)) return R(e < -2 ? 'retreat' : 'safe', g.headline, g.reason, g.voice, g.voiceKey);
-      if (e >= 2 && !(jNote && e < 2.5)) return R('allin', `All-in on ${oppName}`, reason, `All in window. ${first}.`);
-      if (e >= -0.5) return R('trade', 'Trade & farm', reason || `Even lane: short trades when ${oppName} uses a key spell`);
-      if (e >= -2) return R('safe', 'Play safe', reason, hpReason && why.length === 1 ? null : `Play safe. ${first}.`);
-      return R('retreat', 'Stay under tower', reason, hpReason && why.length === 1 ? null : `Stay under tower. ${first}.`);
-    }
-    if (soon) {
-      const up = soon.status === 'up';
-      return R('group', up ? `${soon.label} is up` : `${soon.label} in ${fmtClock(soon.in)}`, up ? 'Group with your team, or pressure the opposite side lane if you have Teleport' : 'Push your side wave now so you can join (or Teleport) in time',
-        up ? `${soon.label} is up.` : `${soon.label} in one minute.`, `obj-${soon.key}-${Math.round(soon.next)}${up ? '-up' : ''}`);
-    }
-    if (a.guard && a.guard.kind === 'lock') return R('safe', a.guard.headline, a.guard.reason, a.guard.voice, a.guard.voiceKey);
-    // Winning the 1v1 means nothing if a fed carry can collapse on you: after laning, fights in a side lane are
-    // rarely 1v1. Fed enemies who are alive, or a team far behind, turn "all-in" into "split carefully".
-    const fed = enemies.filter((p) => p !== opp && !p.isDead && isFed(p));
-    const fedNames = fed.slice(0, 2).map((p) => champ(D, p.cid).name);
-    const fedTxt = fedNames.join(' and ');
-    const teamBehind = a.team.goldDiff < -2500;
-    if (e >= 1.5 && (fed.length || teamBehind)) {
-      const who = fed.length ? `${fedTxt} ${fed.length > 1 ? 'are' : 'is'} fed` : 'your team is behind';
-      return R('trade', `You beat ${oppName} 1v1, but ${who}`, `Split only on your half of the map or with a ward ahead. Back off as soon as ${fed.length ? fedTxt : 'two of them'} ${fed.length > 1 ? 'are' : 'is'} missing. Dying now loses the game`,
-        `You win the one versus one, but ${who}. Don't split past the river.`, `duel-careful-${fedNames.join('-') || 'team'}`);
-    }
-    if (e >= 1.5) return R('allin', `Split: you win the 1v1 vs ${oppName}`, reason, `You win the one versus one against ${oppName}. Split push.`, 'duel-win');
-    if (fed.length && e >= -1) return R('safe', `${fedTxt} ${fed.length > 1 ? 'are' : 'is'} fed: don't get caught`, `Farm the side lane only up to the river, or stay with your team. Leave as soon as ${fedTxt} ${fed.length > 1 ? 'are' : 'is'} missing`,
-      `${fedTxt} ${fed.length > 1 ? 'are' : 'is'} fed. Don't get caught alone.`, `fed-${fedNames.join('-')}`);
-    if (e >= -1) return R('trade', 'Split with vision', `Push a side lane opposite the next objective; leave if two come${jNote ? ' · ' + jNote : ''}`);
-    return R('safe', `Don't 1v1 ${oppName}`, reason || 'Stay near your team; split only where he isn\'t', `Don't duel ${oppName}. ${first}.`, 'duel-lose');
+    const dragon = objs.find((o) => o.key === 'dragon');
+    const big = dragon && dragon.stakes && (dragon.status === 'up' || dragon.in <= 90) ? dragon : null;
+    const meF = { ...person(me), hp, mana, gold: items.gold };
+    const oppF = person(opp);
+    const tagObj = {}; for (const x of tags) tagObj[x] = true;
+    return {
+      t, min, clock: fmtClock(t), phase: a.phase,
+      me: meF, opp: oppF, oppName: oppF ? oppF.name : 'your opponent',
+      lvlD: oppF ? me.level - opp.level : 0, legD: oppF ? meF.legendaries - oppF.legendaries : 0,
+      itemD: oppF ? meF.itemGold - oppF.itemGold : 0, csD: state.csD || 0,
+      matchup: mu ? { difficulty: mu.difficulty, winRate: mu.winRate != null ? mu.winRate : mu.jaxWinRate } : { difficulty: null, winRate: null },
+      lane: { label: state.label, very: state.very, est: state.est, reasons: state.reasons },
+      team: { goldDiff: team.goldDiff, kills: team.kills, ekills: team.ekills, towers: team.towers, etowers: team.etowers },
+      eDead, aDead, adv: eDead - aDead,
+      jg: jt ? { status: jt.status, name: jt.name, ago: jt.ago, side: jt.last ? jt.last.side : null, withMe: !!(jt.last && jt.last.withMe), safeFor: jt.safeFor, key: jt.nearKey } : null,
+      jgNote: jt && jt.status === 'unknown' && min >= 3 && min < 20 ? `${jt.name}'s position unknown: check the map` : '',
+      soon: soon ? { key: soon.key, label: soon.label, in: soon.in, status: soon.status, next: soon.next, stakes: soon.stakes || null } : null,
+      drakes: dragon ? { ours: dragon.drakes.ours, theirs: dragon.drakes.theirs, point: dragon.soulPoint, soul: dragon.soul } : { ours: 0, theirs: 0, point: null, soul: null },
+      bigDragon: big ? { label: big.label, stakes: big.stakes, point: big.soulPoint, status: big.status, in: big.in, next: big.next } : null,
+      guard: a.guard || null, recall, buyNow: b ? b.text : '', hpReason: hp < 0.5,
+      fed: { count: fedP.length, names: orList(fedNames), verb: fedP.length > 1 ? 'are' : 'is', key: fedNames.join('-') },
+      tags: tagObj, comp: { apShare: comp.apShare, tanks: comp.tanks.length, healers: comp.strongHeal.length, cc: comp.cc.length, burst: comp.burst.length, poke: comp.poke.length },
+      plan: D.plan || null,
+    };
+  }
+  // the decision order: the playbook's rules, plus the shared rules every champion gets (data/shared.json "rules",
+  // skipped when the playbook has a rule with the same id), plus the game plan's rules
+  function modesFor(D, R = D.rules || {}, overlay = D.overlayRules) {
+    const own = new Set((R.modes || []).map((r) => r.id));
+    const shared = ((D.shared || {}).rules || []).filter((r) => r && r.id && !own.has(r.id)).map((r) => ({ ...r, source: 'shared' }));
+    return Rules.withOverlay(Rules.withOverlay(R.modes, shared), overlay);
+  }
+  function playMode(D, a) {
+    const R = D.rules || {};
+    const ctx = ruleContext(D, a);
+    const sc = Rules.score(R.fightScore, ctx);
+    ctx.e = sc.total; ctx.why = sc.why; ctx.first = sc.why[0] || '';
+    ctx.reason = [sc.why.slice(0, 3).join(', '), ctx.jgNote].filter(Boolean).join(' · ');
+    const modes = modesFor(D, R);
+    const { decision, trace } = Rules.decide(modes, ctx, { numbers: () => numbersCall(D, a) });
+    a.trace = { score: Math.round(sc.total * 100) / 100, terms: sc.trace, rules: trace, ctx };
+    const d = decision || { mode: 'trade', headline: 'Trade & farm', reason: ctx.reason, voice: null, voiceKey: 'trade', rule: null };
+    if (!MODES.has(d.mode)) d.mode = 'trade';
+    d.voice = capSentences(d.voice) || null;
+    if (!d.voiceKey) d.voiceKey = d.mode;
+    return d;
   }
 
   // ---------- main ----------
@@ -763,7 +807,8 @@ const Engine = (() => {
     const state = laneState(D, me, opp, t, team);
     const phase = phaseOf(t, me.level, lg);
     const comp = composition(D, P.enemies, t);
-    const tags = activeTags(comp, state, t, opp);
+    const tags = activeTags(comp, state, t, opp, mem.tags);
+    mem.tags = tags;
     const myTeam = [me, ...P.allies];
     const teamOf = (name) => (myTeam.some((p) => nameIs(p, name)) ? 'mine' : P.enemies.some((p) => nameIs(p, name)) ? 'theirs' : null);
     const objs = objectives(D, events, t, teamOf);
@@ -772,7 +817,7 @@ const Engine = (() => {
     const a = {
       t, clock: fmtClock(t), P, phase, phaseLabel: PHASE_LABEL[phase], matchupPhase: MATCHUP_PHASE[phase],
       state, team, comp, tags, objs, triggers: trig, items, legendaries: lg, events,
-      isJax: me.cid === 'Jax', gameMode: (game.gameData || {}).gameMode,
+      champ: me.cid, hasPlaybook: !!(D.playbook && D.playbook.champion === me.cid), gameMode: (game.gameData || {}).gameMode,
       activeStats: (game.activePlayer || {}).championStats || {},
       jungler: junglerTrack(D, P, events, t),
       lanes: lanes(D, P, t, events),
@@ -790,7 +835,35 @@ const Engine = (() => {
     if (mem.prevItemValue != null && iv - mem.prevItemValue >= 250) mem.shopWindow = (mem.shopWindow || 0) + 1;
     mem.prevItemValue = iv;
     a.recall = recallAdvice(D, a, mem);
+    a.alerts = alerts(a);
     return a;
+  }
+
+  // ---------- alerts: the few moments that decide games, announced distinctly (not a play mode) ----------
+  // Dragon Soul point and the Elder Dragon: 90 s before the spawn and when it's up
+  function alerts(a) {
+    const out = [];
+    const dr = a.objs.find((o) => o.key === 'dragon');
+    if (!dr || !dr.stakes || !(dr.status === 'up' || dr.in <= 90)) return out;
+    const up = dr.status === 'up';
+    const spokenIn = (sec) => (sec > 65 ? 'a minute and a half' : sec > 40 ? 'one minute' : `${Math.max(10, Math.round(sec / 10) * 10)} seconds`);
+    const when = up ? 'is up' : `in ${fmtClock(dr.in)}`;
+    if (dr.stakes === 'soul') {
+      const p = dr.soulPoint;
+      const who = p === 'theirs' ? 'Their soul point' : p === 'ours' ? 'Our soul point' : 'Soul point for both teams';
+      const stake = p === 'theirs' ? 'If they take this dragon they get Dragon Soul.' : p === 'ours' ? 'This dragon gives your team Dragon Soul.' : 'Whoever takes this dragon gets Dragon Soul.';
+      const act = up ? (p === 'theirs' ? 'Be at the pit with your team or trade something big across the map. Never let them take it for free.' : 'Be at the pit with your team. Do not get picked on the way.')
+        : 'Push your wave, reset if you need to, and move down with your team before it spawns.';
+      out.push({ id: 'soul', level: p === 'ours' ? 'good' : 'warn', title: `${who}: Dragon ${when}`, detail: `${stake} ${act}`, drakes: dr.drakes,
+        voice: up ? `Soul dragon is up. ${p === 'theirs' ? 'Contest it.' : 'Group for it.'}` : `${p === 'theirs' ? 'Their soul point.' : p === 'ours' ? 'Our soul point.' : 'Soul point for both teams.'} Dragon in ${spokenIn(dr.in)}${p === 'theirs' ? ': they get Dragon Soul if they take it' : ''}. Push and group.`,
+        key: `soul-${Math.round(dr.next)}${up ? '-up' : ''}` });
+    } else {
+      const mine = dr.soul === 'ours';
+      out.push({ id: 'elder', level: 'warn', title: `Elder Dragon ${when}`, detail: `The team with Elder executes low-health enemies. ${up ? 'Fight for it together, or make them pay across the map.' : 'Push your wave and group before it spawns.'}${mine ? ' You have Dragon Soul.' : dr.soul ? ' They have Dragon Soul.' : ''}`,
+        voice: up ? 'Elder Dragon is up. Group.' : `Elder Dragon in ${spokenIn(dr.in)}. Push and group.`,
+        key: `elder-${Math.round(dr.next)}${up ? '-up' : ''}` });
+    }
+    return out;
   }
 
   // champ select: plan items from the enemy picks alone (no items or scores yet)
@@ -802,5 +875,5 @@ const Engine = (() => {
     return { comp, tags, items };
   }
 
-  return { analyze, newMemory, planForComp, fmtClock, parseClock, champ, champIdOf, itemData, isLegendary, legendaryCount, dmgType, nameIs, PHASE_LABEL, MATCHUP_PHASE, STRONG_HEALERS };
+  return { analyze, newMemory, planForComp, modesFor, profile, fmtClock, parseClock, champ, champIdOf, itemData, isLegendary, legendaryCount, dmgType, nameIs, PHASE_LABEL, MATCHUP_PHASE, STRONG_HEALERS };
 })();

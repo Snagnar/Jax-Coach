@@ -1,0 +1,553 @@
+{
+  "champion": "Malphite",
+  "role": "top",
+  "patch": "26.19",
+  "lastUpdated": "2026-09-30",
+  "sources": [
+    {
+      "name": "OP.GG Malphite top build (Emerald+, patch 16.19 = 26.19)",
+      "url": "https://www.op.gg/lol/champions/malphite/build/top",
+      "usedFor": "Win/pick/ban rate, summoners, skill order, starters, boots, core build combos"
+    },
+    {
+      "name": "OP.GG Malphite top runes (Emerald+, patch 16.19 = 26.19)",
+      "url": "https://www.op.gg/lol/champions/malphite/runes/top",
+      "usedFor": "Full rune pages with minor runes, secondary trees, shards, pick and win rates"
+    },
+    {
+      "name": "OP.GG Malphite top items (Emerald+, patch 16.19 = 26.19)",
+      "url": "https://www.op.gg/lol/champions/malphite/items/top",
+      "usedFor": "Starter items, boots, 3-item combos, hybrid AP build"
+    },
+    {
+      "name": "Lolalytics Malphite top (Emerald+, patch 16.19 = 26.19)",
+      "url": "https://lolalytics.com/lol/malphite/build/",
+      "usedFor": "Cross-check: 53.13% WR / 7.07% PR / 16.22% BR, Grasp page (Demolish, Conditioning, Overgrowth), Flash + Ignite, Doran's Helm start, item order"
+    },
+    {
+      "name": "U.GG and Mobalytics Malphite (blocked, HTTP 403)",
+      "url": "https://u.gg/lol/champions/malphite/build/top",
+      "usedFor": "Could not be read; not used"
+    },
+    {
+      "name": "League of Legends Wiki - Malphite",
+      "url": "https://wiki.leagueoflegends.com/en-us/Malphite",
+      "usedFor": "Current ability names, numbers and patch history up to 26.09"
+    },
+    {
+      "name": "Official Patch 26.19 notes",
+      "url": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-19-notes/",
+      "usedFor": "No Summoner's Rift changes to Malphite (Classic mode fixes only); Teleport cooldown changes for the top role quest; only World Atlas/Runic Compass changed among tank items"
+    }
+  ],
+  "overview": {
+    "tier": "A / B+ (Lolalytics B+, rank 41/112; high ban rate)",
+    "winRate": 51.42,
+    "pickRate": 7.06,
+    "banRate": 16.13,
+    "rankFilter": "Emerald+ (OP.GG, patch 26.19). Lolalytics Emerald+ shows 53.13% WR / 7.07% PR / 16.22% BR.",
+    "playstyle": "You are a tank engage champion who wins with resistances and Unstoppable Force. Farm safely with Seismic Shard poke and Granite Shield, build Sunfire Aegis, Thornmail and Frozen Heart, and hit multi-target ultimates in teamfights. Against auto-attackers your armor scaling and Ground Slam attack speed cripple make you very hard to kill. You are weak against ranged poke and kiting champions in the first levels, and against champions who ignore armor with true or percent damage."
+  },
+  "seasonNotes": [
+    "26.02: Ground Slam base damage cut to 60/95/130/165/200 (mana costs raised) and Unstoppable Force cooldown raised to 130/115/100 s. Thunderclap monster damage 180%.",
+    "26.09: Thunderclap on-hit bugs fixed.",
+    "25.20 to 25.23: base armor raised to 40; Ground Slam had been buffed to 80/120/160/200/240 (since reduced in 26.02).",
+    "26.19 (current): no Malphite changes on Summoner's Rift; his notes are League Classic mode fixes only. Tank item change: World Atlas and Runic Compass (support items) only.",
+    "26.19: Role quest Teleport cooldown 420 s -> 390 s; Unleashed Teleport 330-240 s -> 300-210 s. Your top quest Teleport is more available for side-lane and fight plays.",
+    "Thunderclap bonus damage is 30-70 +20% AP +15% armor with a 6 s window (wiki, 26.09).",
+    "Malphite is a top pick and ban right now: about 7% pick and 16% ban in Emerald+ with a 51-53% win rate.",
+    "Role quest: your top quest gives a free Unleashed Teleport. With Teleport equipped it gives a shield and a lower cooldown instead, so Flash + Teleport stays the default."
+  ],
+  "abilities": [
+    {
+      "key": "P",
+      "name": "Granite Shield",
+      "summary": "Shield worth 10% of max health that comes back after 8/7/6 s (by level) without taking damage. You also grow in size with armor.",
+      "tips": [
+        "Poke with Q, then step out of range so the shield recharges before the next trade.",
+        "Keep the shield up when you fight: Thunderclap triples its armor bonus while the shield is active.",
+        "Do not trade into minions and turret for free damage; you lose the shield and the W armor bonus."
+      ]
+    },
+    {
+      "key": "Q",
+      "name": "Seismic Shard",
+      "summary": "Range 625 magic damage (70-270 +60% AP) that slows the target 20-40% for 3 s. You gain movement speed equal to the slow.",
+      "tips": [
+        "Poke on the wave whenever it is up; the movement speed lets you walk away after.",
+        "Use it on a melee champion who tries to run you down or on anyone who runs from you.",
+        "Save it to slow a target before Unstoppable Force so you land the R."
+      ]
+    },
+    {
+      "key": "W",
+      "name": "Thunderclap",
+      "summary": "Passive armor bonus (10-30%, tripled while Granite Shield is up). Active: within 6 s your next attack has +50 range and deals bonus damage (30-70 +20% AP +15% armor) in a small area.",
+      "tips": [
+        "Use W in the middle of a wave to clear it fast and shove.",
+        "Trade with W > AA > Q > E while your shield is up, so the armor bonus is tripled.",
+        "Take W second or third; the armor passive matters more than the damage in lane."
+      ]
+    },
+    {
+      "key": "E",
+      "name": "Ground Slam",
+      "summary": "Area magic damage (60-200 +60% AP +40% armor) around you that cripples attack speed 30-50% for 3 s.",
+      "tips": [
+        "Use it on an auto-attacker before they hit you in a fight; it works best against marksmen and duelists.",
+        "Damage scales with armor: it gets stronger with each armor item.",
+        "Costs 50-70 mana; do not spam it on an empty wave with Doran's Ring."
+      ]
+    },
+    {
+      "key": "R",
+      "name": "Unstoppable Force",
+      "summary": "Range 1000 dash that cannot be interrupted by displacement, dealing 200/300/400 (+90% AP) magic damage and knocking up all enemies hit for 1.5 s. Cooldown 130/115/100 s.",
+      "tips": [
+        "Aim for 3 or more enemies in a fight, or lock down the carry the team wants dead.",
+        "Slow with Q first, then R, so a moving target cannot walk out of it.",
+        "In lane, use it with your jungler for a kill at level 6, not as a solo engage."
+      ]
+    }
+  ],
+  "combos": [
+    {
+      "name": "Poke trade",
+      "input": "Q > AA > walk back",
+      "when": "The enemy steps up to last hit; your shield is up and you can leave before they answer."
+    },
+    {
+      "name": "Standard trade",
+      "input": "W > Q > AA > E > AA",
+      "when": "Level 3 and up, shield up, enemy is melee or an auto-attacker."
+    },
+    {
+      "name": "Engage with R",
+      "input": "Q > R > E > W > AA",
+      "when": "Level 6 with your jungler close, or in a teamfight to knock up several enemies and cripple them."
+    },
+    {
+      "name": "Flash R",
+      "input": "Flash > R (aim ahead) > E",
+      "when": "Catching a fleeing carry or hitting a backline that stands out of range."
+    }
+  ],
+  "runes": [
+    {
+      "id": "standard",
+      "name": "Arcane Comet (most played)",
+      "when": "Default (54.35% pick, 51.51% WR on OP.GG). Comet pokes with Q and lets you farm and trade safely.",
+      "primary": {
+        "tree": "Sorcery",
+        "keystone": "Arcane Comet",
+        "runes": [
+          "Axiom Arcanist",
+          "Manaflow Band",
+          "Gathering Storm"
+        ]
+      },
+      "secondary": {
+        "tree": "Resolve",
+        "runes": [
+          "Conditioning",
+          "Overgrowth"
+        ]
+      },
+      "shards": [
+        "Adaptive Force",
+        "Move Speed",
+        "Health Scaling"
+      ],
+      "winRate": 51.51,
+      "pickRate": 54.35
+    },
+    {
+      "id": "grasp",
+      "name": "Grasp of the Undying (melee lanes)",
+      "when": "Against melee champions that fight you constantly, or if you want lane sustain (22.96% pick, 51.81% WR on OP.GG). OP.GG page: Demolish, Second Wind, Overgrowth + Transcendence, Gathering Storm. Lolalytics prefers Conditioning over Second Wind (53.52% WR).",
+      "primary": {
+        "tree": "Resolve",
+        "keystone": "Grasp of the Undying",
+        "runes": [
+          "Demolish",
+          "Second Wind",
+          "Overgrowth"
+        ]
+      },
+      "secondary": {
+        "tree": "Sorcery",
+        "runes": [
+          "Transcendence",
+          "Gathering Storm"
+        ]
+      },
+      "shards": [
+        "Adaptive Force",
+        "Move Speed",
+        "Health Scaling"
+      ],
+      "winRate": 51.81,
+      "pickRate": 22.96
+    },
+    {
+      "id": "comet-inspiration",
+      "name": "Arcane Comet + Inspiration",
+      "when": "Comet poke with boots speed (14.74% pick, 50.51% WR on OP.GG). Slightly weaker than the standard page.",
+      "primary": {
+        "tree": "Sorcery",
+        "keystone": "Arcane Comet",
+        "runes": [
+          "Axiom Arcanist",
+          "Nimbus Cloak",
+          "Scorch"
+        ]
+      },
+      "secondary": {
+        "tree": "Inspiration",
+        "runes": [
+          "Biscuit Delivery",
+          "Cosmic Insight"
+        ]
+      },
+      "shards": [
+        "Adaptive Force",
+        "Move Speed",
+        "Health Scaling"
+      ],
+      "winRate": 50.51,
+      "pickRate": 14.74
+    }
+  ],
+  "summoners": [
+    {
+      "spells": [
+        "Flash",
+        "Teleport"
+      ],
+      "when": "Default (74.08% pick, 50.89% WR on OP.GG). Lets you return to lane after a recall and join fights."
+    },
+    {
+      "spells": [
+        "Flash",
+        "Ignite"
+      ],
+      "when": "Highest win rate (23.79% pick, 52.90% WR on OP.GG; 54.66% on Lolalytics). Take it in lanes where you can kill with your jungler or you win trades."
+    },
+    {
+      "spells": [
+        "Flash",
+        "Ghost"
+      ],
+      "when": "Against melee champions you cannot escape from otherwise, like Darius. Rare; no verified win rate."
+    }
+  ],
+  "skillOrder": {
+    "first3": [
+      "Q",
+      "E",
+      "W"
+    ],
+    "max": [
+      "Q",
+      "E",
+      "W"
+    ],
+    "notes": "OP.GG: Q > E > W max order, R at 6/11/16 (48.55% pick, 55.12% WR). Lolalytics: Q at 1, E at 2, W at 4, max Q > E > W (same max order). Take W earlier if you need faster wave clear and armor."
+  },
+  "startingItems": [
+    {
+      "items": [
+        "Doran's Ring",
+        "Health Potion",
+        "Health Potion"
+      ],
+      "when": "Default (72.06% pick, 51.40% WR on OP.GG). Mana for Q and E and safe farming."
+    },
+    {
+      "items": [
+        "Doran's Shield",
+        "Health Potion"
+      ],
+      "when": "Against ranged poke or melee bullies like Darius (14.69% pick, 51.40% WR on OP.GG)."
+    },
+    {
+      "items": [
+        "Doran's Helm",
+        "Health Potion"
+      ],
+      "when": "Lolalytics top starter (53.43% WR); tankier start when you expect long trades."
+    }
+  ],
+  "coreBuild": {
+    "firstItemOptions": [
+      {
+        "item": "Sunfire Aegis",
+        "when": "Default first item (48.22% of builds on OP.GG, 53.18% WR). Wave clear and constant damage in fights.",
+        "winRate": 53.18
+      },
+      {
+        "item": "Frozen Heart",
+        "when": "Against strong auto-attackers and marksmen when you need to slow their attack speed (36.08% of builds, 55.71% WR as an item).",
+        "winRate": 55.71
+      },
+      {
+        "item": "Malignance",
+        "when": "AP hybrid path (30.95% of builds, 51.37% WR): Malignance, Stormsurge, Shadowflame. Play it only when your team needs damage and you are ahead.",
+        "winRate": 51.37
+      }
+    ],
+    "typicalOrder": [
+      "Sunfire Aegis",
+      "Plated Steelcaps",
+      "Thornmail",
+      "Frozen Heart",
+      "Jak'Sho, The Protean",
+      "Randuin's Omen"
+    ],
+    "boots": [
+      {
+        "item": "Plated Steelcaps",
+        "when": "Default (64.19% pick, 52.93% WR on OP.GG). Against AD-heavy teams and auto-attackers."
+      },
+      {
+        "item": "Mercury's Treads",
+        "when": "Against heavy AP damage or lots of crowd control (23.54% pick on OP.GG)."
+      }
+    ],
+    "firstBackBuys": [
+      {
+        "gold": 900,
+        "buy": "Bami's Cinder - first step to Sunfire Aegis; buy Boots instead if you are being hit hard by AD."
+      },
+      {
+        "gold": 1300,
+        "buy": "Bami's Cinder plus Cloth Armor or Chain Vest - if you are being hit by AD and need armor now."
+      },
+      {
+        "gold": 1600,
+        "buy": "Sunfire Aegis components: Bami's Cinder, Chain Vest, Cloth Armor - finish Sunfire Aegis on your second back."
+      }
+    ]
+  },
+  "items": [
+    {
+      "name": "Sunfire Aegis",
+      "role": "core",
+      "buildWhen": [
+        "early_game",
+        "vs_heavy_ad",
+        "teamfight",
+        "vs_squishies"
+      ],
+      "why": "Standard first item: health, resistances and constant area damage."
+    },
+    {
+      "name": "Thornmail",
+      "role": "antiheal",
+      "buildWhen": [
+        "vs_healing",
+        "vs_heavy_ad",
+        "vs_crit_ad"
+      ],
+      "why": "Armor and Grievous Wounds against auto-attackers who hit you (44.04% of builds, 53.79% WR)."
+    },
+    {
+      "name": "Frozen Heart",
+      "role": "defensive",
+      "buildWhen": [
+        "vs_heavy_ad",
+        "vs_crit_ad",
+        "teamfight",
+        "behind"
+      ],
+      "why": "Armor and a big attack speed slow around you; also increases Ground Slam damage."
+    },
+    {
+      "name": "Jak'Sho, The Protean",
+      "role": "defensive",
+      "buildWhen": [
+        "teamfight",
+        "late_game",
+        "vs_burst"
+      ],
+      "why": "Resistances that grow in long fights; standard fourth item (58.56% WR as 4th item)."
+    },
+    {
+      "name": "Randuin's Omen",
+      "role": "defensive",
+      "buildWhen": [
+        "vs_crit_ad",
+        "vs_heavy_ad",
+        "teamfight"
+      ],
+      "why": "Reduces crit damage and slows attackers (58.72% WR as 4th item)."
+    },
+    {
+      "name": "Kaenic Rookern",
+      "role": "defensive",
+      "buildWhen": [
+        "vs_heavy_ap",
+        "vs_burst",
+        "vs_poke"
+      ],
+      "why": "Health, magic resist and a magic damage shield (Sunfire + Thornmail + Kaenic: 53.80% WR)."
+    },
+    {
+      "name": "Force of Nature",
+      "role": "defensive",
+      "buildWhen": [
+        "vs_heavy_ap",
+        "vs_poke"
+      ],
+      "why": "Magic resist for sustained magic damage."
+    },
+    {
+      "name": "Abyssal Mask",
+      "role": "situational",
+      "buildWhen": [
+        "vs_heavy_ap",
+        "teamfight"
+      ],
+      "why": "Magic resist that makes nearby enemies take more magic damage."
+    },
+    {
+      "name": "Spirit Visage",
+      "role": "defensive",
+      "buildWhen": [
+        "vs_heavy_ap",
+        "vs_poke"
+      ],
+      "why": "Magic resist and health with better healing and shielding; helps against magic poke."
+    },
+    {
+      "name": "Dead Man's Plate",
+      "role": "defensive",
+      "buildWhen": [
+        "vs_heavy_ad",
+        "splitpush",
+        "ahead"
+      ],
+      "why": "Armor, health and speed to reach the fight and to run down squishies."
+    },
+    {
+      "name": "Warmog's Armor",
+      "role": "defensive",
+      "buildWhen": [
+        "vs_poke",
+        "late_game",
+        "vs_heavy_ap"
+      ],
+      "why": "Huge health and regeneration when you are the main tank."
+    },
+    {
+      "name": "Gargoyle Stoneplate",
+      "role": "defensive",
+      "buildWhen": [
+        "teamfight",
+        "vs_cc_heavy",
+        "vs_burst"
+      ],
+      "why": "Resistances and a big shield in a fight when you are focused."
+    },
+    {
+      "name": "Unending Despair",
+      "role": "defensive",
+      "buildWhen": [
+        "vs_squishies",
+        "vs_burst",
+        "teamfight"
+      ],
+      "why": "Armor and health with damage around you in fights; strong late slot on Lolalytics."
+    },
+    {
+      "name": "Liandry's Torment",
+      "role": "damage",
+      "buildWhen": [
+        "vs_tanks",
+        "ahead"
+      ],
+      "why": "Burn damage on high-health targets; use when you want to deal damage as well."
+    },
+    {
+      "name": "Zhonya's Hourglass",
+      "role": "situational",
+      "buildWhen": [
+        "vs_burst",
+        "vs_heavy_ad",
+        "ahead"
+      ],
+      "why": "Armor, AP and Stasis after you land your R."
+    },
+    {
+      "name": "Malignance",
+      "role": "damage",
+      "buildWhen": [
+        "ahead",
+        "vs_squishies"
+      ],
+      "why": "AP hybrid first item: ability haste makes Unstoppable Force come back faster."
+    },
+    {
+      "name": "Stormsurge",
+      "role": "damage",
+      "buildWhen": [
+        "ahead",
+        "vs_squishies"
+      ],
+      "why": "AP hybrid burst item; second item of the one-shot build."
+    },
+    {
+      "name": "Shadowflame",
+      "role": "damage",
+      "buildWhen": [
+        "ahead",
+        "vs_squishies"
+      ],
+      "why": "Magic penetration for the AP hybrid build; finishes low-health squishies after your R."
+    },
+    {
+      "name": "Plated Steelcaps",
+      "role": "core",
+      "buildWhen": [
+        "vs_heavy_ad",
+        "vs_crit_ad"
+      ],
+      "why": "Default boots against auto-attackers (52.93% WR)."
+    },
+    {
+      "name": "Mercury's Treads",
+      "role": "situational",
+      "buildWhen": [
+        "vs_cc_heavy",
+        "vs_heavy_ap"
+      ],
+      "why": "Magic resist and tenacity against crowd control."
+    }
+  ],
+  "powerSpikes": [
+    {
+      "when": "Level 1",
+      "what": "Weak. Farm safely and use Q to poke only when it is safe."
+    },
+    {
+      "when": "Level 3",
+      "what": "Q, E and W together give you your first strong trade while your shield is up."
+    },
+    {
+      "when": "Level 6",
+      "what": "Unstoppable Force gives you kill pressure with your jungler and safe wave pushes."
+    },
+    {
+      "when": "Sunfire Aegis",
+      "what": "First big spike: you clear waves quickly and do constant damage in fights."
+    },
+    {
+      "when": "Two or three tank items",
+      "what": "Very hard to kill; Ground Slam scales with your armor and your R is your main threat in teamfights."
+    },
+    {
+      "when": "Level 11 and 16",
+      "what": "Rank 2 and 3 of Unstoppable Force: more damage and a shorter cooldown for each teamfight."
+    }
+  ]
+}

@@ -14,7 +14,11 @@ $ConfigPath = Join-Path $Root 'config.json'
 $RiotDiskCache = Join-Path $CacheDir 'matches'
 $HistoryDir = Join-Path $Root 'history'
 $TtsCache = Join-Path $CacheDir 'tts'
-New-Item -ItemType Directory -Force $CacheDir, $RiotDiskCache, $HistoryDir, $TtsCache | Out-Null
+$ShippedPb = Join-Path $DataDir 'champions'          # playbooks that ship with the app (in git)
+$LocalPb   = Join-Path $Root 'playbooks'             # playbooks made or changed on this PC (research agents, your approvals)
+$JobsDir   = Join-Path $Root 'jobs'                  # research agent runs
+$AgentsDir = Join-Path $Root 'agents'                # agent prompts and the playbook format
+New-Item -ItemType Directory -Force $CacheDir, $RiotDiskCache, $HistoryDir, $TtsCache, $LocalPb, $JobsDir | Out-Null
 
 Add-Type -TypeDefinition @"
 using System;
@@ -147,7 +151,7 @@ function Send($ctx, [int]$status, [string]$body, [string]$type = 'application/js
   $res.ContentType = "$type; charset=utf-8"
   $res.Headers['Cache-Control'] = 'no-store'
   $res.ContentLength64 = $bytes.Length
-  $res.OutputStream.Write($bytes, 0, $bytes.Length)
+  if ($ctx.Request.HttpMethod -ne 'HEAD') { $res.OutputStream.Write($bytes, 0, $bytes.Length) }
   $res.OutputStream.Close()
 }
 function Send-File($ctx, [string]$baseDir, [string]$relPath) {
@@ -163,7 +167,7 @@ function Send-File($ctx, [string]$baseDir, [string]$relPath) {
   $res.ContentType = if ($type -like 'image/*') { $type } else { "$type; charset=utf-8" }
   $res.Headers['Cache-Control'] = 'no-store'
   $res.ContentLength64 = $bytes.Length
-  $res.OutputStream.Write($bytes, 0, $bytes.Length)
+  if ($ctx.Request.HttpMethod -ne 'HEAD') { $res.OutputStream.Write($bytes, 0, $bytes.Length) }
   $res.OutputStream.Close()
 }
 function Json-Escape([string]$s) { return ($s | ConvertTo-Json) }
@@ -359,6 +363,48 @@ function Handle-Replay($ctx) {
   Send $ctx $r.Status $(if ($r.Body) { $r.Body } else { '{}' })
 }
 
+# ---------------- champion playbooks + research agents ----------------
+. (Join-Path $AgentsDir 'runner.ps1')
+
+# ---------------- storage: what Jax Coach keeps on disk (Settings shows it; caches can be cleared) ----------------
+$script:VoiceEngineSize = $null
+function Get-FilesSize($files) { $m = @($files) | Measure-Object Length -Sum; return @{ bytes = [int64]$m.Sum; files = [int]$m.Count } }
+function Get-TreeFiles([string]$dir) { if (Test-Path $dir) { Get-ChildItem $dir -Recurse -File -Force -ErrorAction SilentlyContinue } }
+function Get-FinishedJobDirs {
+  Get-ChildItem $JobsDir -Directory -ErrorAction SilentlyContinue | Where-Object { $j = Read-JobJson $_.FullName; -not ($j -and $j.status -eq 'running') }
+}
+function Get-StorageAreas {
+  $jobFiles = foreach ($d in (Get-FinishedJobDirs)) { Get-TreeFiles $d.FullName }
+  # the local voice engine never changes while the app runs: measure it once
+  if ($null -eq $script:VoiceEngineSize) { $script:VoiceEngineSize = Get-FilesSize (Get-TreeFiles (Join-Path $Root 'voice')) }
+  $areas = @(
+    [ordered]@{ id = 'tts'; label = 'Spoken lines'; clear = $true; note = 'Voice lines made so far. They are made again when needed (a second or two each).'; size = (Get-FilesSize (Get-TreeFiles (Join-Path $CacheDir 'tts'))) }
+    [ordered]@{ id = 'matches'; label = 'Downloaded matches'; clear = $true; note = 'Your past games and timelines from Riot. Reports and Review download them again (a minute or two, needs the API key).'; size = (Get-FilesSize (Get-TreeFiles (Join-Path $CacheDir 'matches'))) }
+    [ordered]@{ id = 'gamedata'; label = 'Game data'; clear = $true; note = 'Champion and item data per patch (Data Dragon). Downloaded again on the next start.'; size = (Get-FilesSize (Get-ChildItem $CacheDir -File -ErrorAction SilentlyContinue)) }
+    [ordered]@{ id = 'jobs'; label = 'Research run logs'; clear = $true; note = 'Logs of finished agent runs. Their results are already in your playbooks. Running jobs are kept.'; size = (Get-FilesSize $jobFiles) }
+    [ordered]@{ id = 'playbooks'; label = 'Your playbooks'; clear = $false; note = 'Researched and updated champion playbooks with all versions. Manage them in the Playbook tab.'; size = (Get-FilesSize (Get-TreeFiles $LocalPb)) }
+    [ordered]@{ id = 'history'; label = 'Game records'; clear = $false; note = 'What the dashboard said in your games (Review, reports). Not a cache.'; size = (Get-FilesSize (Get-TreeFiles $HistoryDir)) }
+    [ordered]@{ id = 'voice'; label = 'Local voice engine'; clear = $false; note = 'The installed Kokoro voice. Uninstalling Jax Coach removes it.'; size = $script:VoiceEngineSize }
+  )
+  return $areas
+}
+function Clear-StorageArea([string]$id) {
+  switch ($id) {
+    'tts' { Get-TreeFiles (Join-Path $CacheDir 'tts') | Remove-Item -Force -ErrorAction SilentlyContinue }
+    'matches' { Get-TreeFiles (Join-Path $CacheDir 'matches') | Remove-Item -Force -ErrorAction SilentlyContinue; $RiotCache.Clear() }
+    'gamedata' { Get-ChildItem $CacheDir -File -ErrorAction SilentlyContinue | Remove-Item -Force -ErrorAction SilentlyContinue }
+    'jobs' { Get-FinishedJobDirs | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue }
+    default { return $false }
+  }
+  return $true
+}
+function Handle-Storage($ctx, [string]$sub) {
+  if ($ctx.Request.HttpMethod -eq 'POST' -and $sub -match '^/clear/(\w+)$') {
+    if (-not (Clear-StorageArea $Matches[1])) { Send $ctx 400 '{"error":"not_clearable"}'; return }
+  }
+  Send $ctx 200 (ConvertTo-Json @(Get-StorageAreas) -Depth 4 -Compress)
+}
+
 # ---------------- router ----------------
 function Handle-Request($ctx) {
   $req = $ctx.Request
@@ -408,6 +454,9 @@ function Handle-Request($ctx) {
     return
   }
   if ($path -eq '/api/history') { Handle-History $ctx; return }
+  if ($path -match '^/api/storage(/.*)?$') { Handle-Storage $ctx "$($Matches[1])"; return }
+  if ($path -match '^/api/playbooks?(/.*)?$') { Handle-Playbook $ctx "$($Matches[1])"; return }
+  if ($path -match '^/api/agent(/.*)$') { Handle-Agent $ctx $Matches[1]; return }
   if ($path -eq '/api/tts') { Handle-Tts $ctx; return }
   if ($path -like '/data/*') { Send-File $ctx $DataDir ([Uri]::UnescapeDataString($path.Substring(6))); return }
   if ($path -eq '/') { $path = '/index.html' }
@@ -452,6 +501,7 @@ if (-not $env:JAXCOACH_NO_BROWSER) { Start-Process "http://localhost:$Port/" }
 try {
   $pending = $listener.GetContextAsync()
   while ($listener.IsListening) {
+    try { Update-AgentJobs } catch { Write-Host "Agent jobs: $_" -ForegroundColor Yellow }
     if (-not $pending.Wait(500)) { continue }
     $ctx = $pending.Result
     $pending = $listener.GetContextAsync()

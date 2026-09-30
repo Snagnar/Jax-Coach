@@ -1,31 +1,105 @@
 {
+  "champion": "Jax",
+  "role": "top",
   "lastUpdated": "2026-09-28",
   "patch": "26.19",
   "sources": [
-    {"name": "Riot - Patch 26.1 Notes (2026 season start: role quests, objectives, turrets)", "url": "https://www.leagueoflegends.com/en-us/news/game-updates/patch-26-1-notes/"},
-    {"name": "Riot - /dev: 2026 Season One Gameplay Preview", "url": "https://www.leagueoflegends.com/en-us/news/dev/dev-2026-season-one-gameplay-preview/"},
-    {"name": "LoL Wiki - V26.09 (Season 2: role quest tuning, Doran's Bow/Helm)", "url": "https://wiki.leagueoflegends.com/en-us/V26.09"},
-    {"name": "Riot - Patch 26.19 Notes (top quest Teleport cooldowns)", "url": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-19-notes/"},
-    {"name": "LoL Wiki - Jax (abilities, V26.12 changes)", "url": "https://wiki.leagueoflegends.com/en-us/Jax"},
-    {"name": "LoL Wiki - Jax/Strategy", "url": "https://wiki.leagueoflegends.com/en-us/Jax/Strategy"},
-    {"name": "LoL Wiki - Voidgrub", "url": "https://wiki.leagueoflegends.com/en-us/Voidgrub"},
-    {"name": "LoL Wiki - Rift Herald", "url": "https://wiki.leagueoflegends.com/en-us/Rift_Herald"},
-    {"name": "LoL Wiki - Baron Nashor", "url": "https://wiki.leagueoflegends.com/en-us/Baron_Nashor"},
-    {"name": "LoL Wiki - Elemental drake", "url": "https://wiki.leagueoflegends.com/en-us/Elemental_drake"},
-    {"name": "LoL Wiki - Teleport", "url": "https://wiki.leagueoflegends.com/en-us/Teleport"},
-    {"name": "LoL Wiki - Trinity Force", "url": "https://wiki.leagueoflegends.com/en-us/Trinity_Force"},
-    {"name": "LoL Wiki - Sundered Sky", "url": "https://wiki.leagueoflegends.com/en-us/Sundered_Sky"},
-    {"name": "Mobalytics - Jax Top Build (26.19)", "url": "https://mobalytics.gg/lol/champions/jax/build"},
-    {"name": "Mobalytics - Jax Guide (S26)", "url": "https://mobalytics.gg/lol/champions/jax/guide"},
-    {"name": "Mobalytics - Jax Combos", "url": "https://mobalytics.gg/lol/champions/jax/combos"},
-    {"name": "U.GG - Jax Top Build (26.19, role quest ETA)", "url": "https://u.gg/lol/champions/jax/build"},
-    {"name": "OP.GG - Jax Top Build", "url": "https://www.op.gg/lol/champions/jax/build/top"},
-    {"name": "LoLalytics - Jax Top", "url": "https://lolalytics.com/lol/jax/build/"},
-    {"name": "Skill Capped - Jax Top Guide (26.19)", "url": "https://www.skill-capped.com/lol/guides/builds/jax/top"},
-    {"name": "lolmatchups.gg - Jax Guide", "url": "https://lolmatchups.gg/champion-guides/Jax"},
-    {"name": "MOBAFire - ThisIsPatrik's In-depth Jax Guide (26.19)", "url": "https://www.mobafire.com/league-of-legends/build/26-19-thisispatriks-in-depth-jax-guide-503356"},
-    {"name": "MOBAFire - Best Jax World Challenger Guide by RAIDER", "url": "https://www.mobafire.com/league-of-legends/build/best-jax-world-challenger-guide-by-raider-matchups-588428"},
-    {"name": "MOBAFire - Stefanko's Challenger In Depth Jax Guide (26.08)", "url": "https://www.mobafire.com/league-of-legends/build/26-08-stefankos-challenger-in-depth-jax-guide-621520"}
+    {
+      "name": "Riot - Patch 26.1 Notes (2026 season start: role quests, objectives, turrets)",
+      "url": "https://www.leagueoflegends.com/en-us/news/game-updates/patch-26-1-notes/"
+    },
+    {
+      "name": "Riot - /dev: 2026 Season One Gameplay Preview",
+      "url": "https://www.leagueoflegends.com/en-us/news/dev/dev-2026-season-one-gameplay-preview/"
+    },
+    {
+      "name": "LoL Wiki - V26.09 (Season 2: role quest tuning, Doran's Bow/Helm)",
+      "url": "https://wiki.leagueoflegends.com/en-us/V26.09"
+    },
+    {
+      "name": "Riot - Patch 26.19 Notes (top quest Teleport cooldowns)",
+      "url": "https://www.leagueoflegends.com/en-us/news/game-updates/league-of-legends-patch-26-19-notes/"
+    },
+    {
+      "name": "LoL Wiki - Jax (abilities, V26.12 changes)",
+      "url": "https://wiki.leagueoflegends.com/en-us/Jax"
+    },
+    {
+      "name": "LoL Wiki - Jax/Strategy",
+      "url": "https://wiki.leagueoflegends.com/en-us/Jax/Strategy"
+    },
+    {
+      "name": "LoL Wiki - Voidgrub",
+      "url": "https://wiki.leagueoflegends.com/en-us/Voidgrub"
+    },
+    {
+      "name": "LoL Wiki - Rift Herald",
+      "url": "https://wiki.leagueoflegends.com/en-us/Rift_Herald"
+    },
+    {
+      "name": "LoL Wiki - Baron Nashor",
+      "url": "https://wiki.leagueoflegends.com/en-us/Baron_Nashor"
+    },
+    {
+      "name": "LoL Wiki - Elemental drake",
+      "url": "https://wiki.leagueoflegends.com/en-us/Elemental_drake"
+    },
+    {
+      "name": "LoL Wiki - Teleport",
+      "url": "https://wiki.leagueoflegends.com/en-us/Teleport"
+    },
+    {
+      "name": "LoL Wiki - Trinity Force",
+      "url": "https://wiki.leagueoflegends.com/en-us/Trinity_Force"
+    },
+    {
+      "name": "LoL Wiki - Sundered Sky",
+      "url": "https://wiki.leagueoflegends.com/en-us/Sundered_Sky"
+    },
+    {
+      "name": "Mobalytics - Jax Top Build (26.19)",
+      "url": "https://mobalytics.gg/lol/champions/jax/build"
+    },
+    {
+      "name": "Mobalytics - Jax Guide (S26)",
+      "url": "https://mobalytics.gg/lol/champions/jax/guide"
+    },
+    {
+      "name": "Mobalytics - Jax Combos",
+      "url": "https://mobalytics.gg/lol/champions/jax/combos"
+    },
+    {
+      "name": "U.GG - Jax Top Build (26.19, role quest ETA)",
+      "url": "https://u.gg/lol/champions/jax/build"
+    },
+    {
+      "name": "OP.GG - Jax Top Build",
+      "url": "https://www.op.gg/lol/champions/jax/build/top"
+    },
+    {
+      "name": "LoLalytics - Jax Top",
+      "url": "https://lolalytics.com/lol/jax/build/"
+    },
+    {
+      "name": "Skill Capped - Jax Top Guide (26.19)",
+      "url": "https://www.skill-capped.com/lol/guides/builds/jax/top"
+    },
+    {
+      "name": "lolmatchups.gg - Jax Guide",
+      "url": "https://lolmatchups.gg/champion-guides/Jax"
+    },
+    {
+      "name": "MOBAFire - ThisIsPatrik's In-depth Jax Guide (26.19)",
+      "url": "https://www.mobafire.com/league-of-legends/build/26-19-thisispatriks-in-depth-jax-guide-503356"
+    },
+    {
+      "name": "MOBAFire - Best Jax World Challenger Guide by RAIDER",
+      "url": "https://www.mobafire.com/league-of-legends/build/best-jax-world-challenger-guide-by-raider-matchups-588428"
+    },
+    {
+      "name": "MOBAFire - Stefanko's Challenger In Depth Jax Guide (26.08)",
+      "url": "https://www.mobafire.com/league-of-legends/build/26-08-stefankos-challenger-in-depth-jax-guide-621520"
+    }
   ],
   "seasonFacts": [
     "Atakhan was removed in 26.1; Baron spawns at 20:00 again (6:00 respawn).",
@@ -310,13 +384,41 @@
     "Stack your passive on minions or wards before fights; attack speed per stack grows with level and gets a boost at level 19."
   ],
   "recallTimings": [
-    {"gold": 900, "buy": "Sheen", "note": "Your biggest early spike. Crash the wave first."},
-    {"gold": 1100, "buy": "Phage (if you have Sheen) or Sheen + Health Potion/Control Ward", "note": "Phage adds HP and ms for Trinity Force."},
-    {"gold": 1200, "buy": "Hearthbound Axe (if you have Sheen and Phage)", "note": "Last Trinity Force part; 133g combine."},
-    {"gold": 2000, "buy": "Sheen + Phage", "note": "Good after a kill or a long lane stay."},
-    {"gold": 1200, "buy": "Plated Steelcaps (vs AD/autos) or Mercury's Treads (vs AP/CC)", "note": "Usually right after Trinity Force."},
-    {"gold": 1150, "buy": "Tunneler or Caulfield's Warhammer toward Sundered Sky", "note": "Second item after boots."},
-    {"gold": 400, "buy": "Long Sword or Boots + Control Ward", "note": "Only if you have to recall early."}
+    {
+      "gold": 900,
+      "buy": "Sheen",
+      "note": "Your biggest early spike. Crash the wave first."
+    },
+    {
+      "gold": 1100,
+      "buy": "Phage (if you have Sheen) or Sheen + Health Potion/Control Ward",
+      "note": "Phage adds HP and ms for Trinity Force."
+    },
+    {
+      "gold": 1200,
+      "buy": "Hearthbound Axe (if you have Sheen and Phage)",
+      "note": "Last Trinity Force part; 133g combine."
+    },
+    {
+      "gold": 2000,
+      "buy": "Sheen + Phage",
+      "note": "Good after a kill or a long lane stay."
+    },
+    {
+      "gold": 1200,
+      "buy": "Plated Steelcaps (vs AD/autos) or Mercury's Treads (vs AP/CC)",
+      "note": "Usually right after Trinity Force."
+    },
+    {
+      "gold": 1150,
+      "buy": "Tunneler or Caulfield's Warhammer toward Sundered Sky",
+      "note": "Second item after boots."
+    },
+    {
+      "gold": 400,
+      "buy": "Long Sword or Boots + Control Ward",
+      "note": "Only if you have to recall early."
+    }
   ],
   "commonMistakes": [
     "Using E on poke or minion damage instead of saving it for committed trades.",
@@ -437,6 +539,14 @@
     "enemy_turret_taken": [
       "Turret taken: the map is open, so move to the next side lane or objective.",
       "Keep hitting their inner turrets; plates stay up and pay out."
+    ],
+    "dragon_soul_point": [
+      "Shove top, then walk or Teleport bot: Jax is at his best flanking a soul fight from the side.",
+      "If your team can't hold it, split top hard and take the turret they give up."
+    ],
+    "elder_dragon": [
+      "Group for Elder: wait for their CC, then jump in with Leap Strike and Counter Strike.",
+      "With Elder you execute low targets: dive the backline right after the buff."
     ]
   }
 }

@@ -77,6 +77,24 @@ const Voice = (() => {
     } catch {}
     return new Promise((r) => setTimeout(r, 300));
   }
+  // the alert tone: three rising notes, always played (even with the chime off), for the few game-deciding calls
+  function alertTone(c) {
+    try {
+      actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+      if (actx.state === 'suspended') actx.resume();
+      const t0 = actx.currentTime + 0.02;
+      [[523.25, 0], [659.25, 0.14], [987.77, 0.28]].forEach(([f, d]) => {
+        const o = actx.createOscillator(), g = actx.createGain();
+        o.type = 'triangle'; o.frequency.value = f;
+        g.gain.setValueAtTime(0, t0 + d);
+        g.gain.linearRampToValueAtTime(0.16 * c.volume, t0 + d + 0.02);
+        g.gain.exponentialRampToValueAtTime(0.0001, t0 + d + 0.45);
+        o.connect(g).connect(actx.destination);
+        o.start(t0 + d); o.stop(t0 + d + 0.5);
+      });
+    } catch {}
+    return new Promise((r) => setTimeout(r, 650));
+  }
   document.addEventListener('pointerdown', () => { unlocked = true; if (actx && actx.state === 'suspended') actx.resume(); }, { capture: true });
 
   // ---------- audio generation (in-memory promise cache on top of the disk caches) ----------
@@ -160,13 +178,13 @@ const Voice = (() => {
     }
     await browserSpeak(text, c);
   }
-  async function speakLines(lines, c = { ...cfg }) {
+  async function speakLines(lines, c = { ...cfg }, { alert = false } = {}) {
     const my = ++seq;
     sequencing = true;
     const eng = engineFor(c);
     if (eng === 'kokoro') queueKokoro(lines.flatMap(sentences), c, false);   // generate while the chime plays
     else if (eng === 'groq') lines.forEach((l) => audio('groq', l, c).catch(() => {}));
-    await chime(c);
+    await (alert ? alertTone(c) : chime(c));
     for (let i = 0; i < lines.length && my === seq; i++) {
       await speakLine(lines[i], c, my);
       if (i < lines.length - 1) await new Promise((r) => setTimeout(r, 300));
@@ -189,12 +207,14 @@ const Voice = (() => {
 
   // several lines in a row (briefings). Not spoken while something else plays; the caller simply retries on
   // its next tick until it goes through (it's keyed, so it plays exactly once).
-  function announce(lines, { key, repeatAfter = 3600 } = {}) {
+  // alert: true plays the alert tone first and interrupts whatever is playing
+  function announce(lines, { key, repeatAfter = 3600, alert = false } = {}) {
     lines = lines.filter(Boolean);
-    if (!enabled || !unlocked || !lines.length || busy()) return false;
+    if (!enabled || !unlocked || !lines.length || (!alert && busy())) return false;
     const now = Date.now();
     if (key && spoken.has(key) && now - spoken.get(key) < repeatAfter * 1000) return false;
-    speakLines(lines);
+    if (alert) stop();
+    speakLines(lines, { ...cfg }, { alert });
     lastAt = now; if (key) spoken.set(key, now);
     return true;
   }

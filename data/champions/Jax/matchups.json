@@ -1,0 +1,3242 @@
+{
+  "champion": "Jax",
+  "role": "top",
+  "_notes": {
+    "note": "Win rates come from the lolalytics Jax counters page (Emerald+, patch 26.19; the site labels it 16.19), pulled 2026-09-28. The op.gg Emerald+ 26.19 figure is given in winRateSource as a cross-check. The current meta has two builds. AD: Plated Steelcaps/Ionian Boots of Lucidity -> Trinity Force -> Sundered Sky -> Sterak's Gage/Death's Dance. Hybrid: Dusk and Dawn -> Riftmaker/Zhonya's Hourglass. Standard runes are Grasp of the Undying (Demolish, Conditioning, Overgrowth) + Inspiration (Magical Footwear, Cosmic Insight). The most popular alternative on op.gg is Lethal Tempo (Triumph, Legend: Alacrity, Last Stand + Bone Plating, Unflinching). Starters that exist in 26.19: Doran's Blade, Doran's Shield, Doran's Helm, and Doran's Bow (added 26.09). Per-matchup rune and item stats on lolalytics come from small samples, so read them as hints only.",
+    "sources": [
+      "https://lolalytics.com/lol/jax/counters/",
+      "https://lolalytics.com/lol/jax/build/",
+      "https://op.gg/lol/champions/jax/counters/top",
+      "https://op.gg/lol/champions/jax/build/top"
+    ]
+  },
+  "matchups": {
+    "Aatrox": {
+      "name": "Aatrox",
+      "difficulty": 3,
+      "winRate": 52.33,
+      "winRateSource": "lolalytics Jax top counters, Emerald+, patch 26.19 (client 16.19), 1,821 games",
+      "summary": "Aatrox bullies you early with Q sweet spots, but once he misses Qs or you hit Trinity Force you win extended fights. Dodge the Q edges, trade on his Q cooldown, and win later.",
+      "runes": "Grasp of the Undying (Demolish, Second Wind/Conditioning, Overgrowth) for a safe lane; Lethal Tempo if you are confident in your trades",
+      "summoners": "Flash + Teleport",
+      "start": "Doran's Shield + Health Potion (Doran's Helm is also an option)",
+      "buildNotes": "Trinity Force > Plated Steelcaps > Sundered Sky. Buy Executioner's Calling early if he is snowballing on healing, and turn it into Chempunk Chainsword. Sterak's Gage and Death's Dance are good follow-ups.",
+      "skillNotes": "Start E. Take Q at 2 so you can jump into or out of his Q sweet spots. Max W, then E.",
+      "phases": {
+        "lvl1_3": [
+          "Don't stand at the edge of his Q. Walk into him or Q onto him (or Q away to a minion) so the Q hits you on the weak inner part.",
+          "Trade right after he uses Q3. His Q is his whole lane, so you are free for several seconds.",
+          "Counter Strike takes 25% less damage from his AoE Q hits. Pop it as you commit, not before."
+        ],
+        "lvl4_5": [
+          "When Infernal Chains (W) lands, walk toward the center or Q a minion inside the chain so you don't get pulled.",
+          "Play for short Q > auto > W > E trades while his Q is down, then back off before he gets it again."
+        ],
+        "post6": [
+          "World Ender gives him big healing and move speed. Don't take extended fights into his R without anti-heal. Back off and fight again when it ends.",
+          "Once you have Trinity Force, you can take long fights when his Q is down and he has no R."
+        ],
+        "midgame": [
+          "Split push. He has trouble catching you once your Grandmaster's Might is up and you have Sundered Sky.",
+          "In teamfights, keep Counter Strike for when he dives your backline with R."
+        ],
+        "lategame": [
+          "You outduel him late when anti-heal is up. Take side-lane 1v1s after his R is used."
+        ]
+      },
+      "threats": [
+        "Q3 sweet spot knockup: walk in or Q out of the edge.",
+        "Infernal Chains (W): leave the chain area early or Q to a unit in the middle.",
+        "World Ender (R) healing: buy anti-heal and wait out the duration.",
+        "Umbral Dash lets him reposition his Q, so don't assume a Q will miss."
+      ],
+      "killWindows": [
+        "Right after a missed Q3, when he has no Q for several seconds.",
+        "When his R is down and you have R active plus a stacked passive."
+      ],
+      "avoid": [
+        "Standing at max Q range, where the sweet spots land.",
+        "Fighting inside his R with no anti-heal.",
+        "Using Counter Strike before he commits Q."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/jax/counters/",
+        "https://lolalytics.com/lol/jax/vs/aatrox/build/",
+        "https://www.skill-capped.com/lol/guides/builds/jax/top"
+      ]
+    },
+    "Ambessa": {
+      "name": "Ambessa",
+      "difficulty": 4,
+      "winRate": 48.62,
+      "winRateSource": "lolalytics Jax top counters, Emerald+, patch 26.19 (client 16.19), 1,051 games",
+      "summary": "Ambessa is slightly favored. Her dashes let her dodge your Counter Strike stun, and her Repudiation (W) punishes you for dumping damage into it. Wait for her to use her dashes and W, then all-in.",
+      "runes": "Grasp of the Undying for a safer lane, or Press the Attack (most played in this matchup on lolalytics)",
+      "summoners": "Flash + Ignite (most played); Flash + Teleport if you want to play safe",
+      "start": "Doran's Blade or Doran's Bow + Health Potion",
+      "buildNotes": "Trinity Force > Plated Steelcaps > Sundered Sky. Death's Dance and Sterak's Gage are strong against her burst trades.",
+      "skillNotes": "Start E. Standard order: Q at 2, W at 3, then max W.",
+      "phases": {
+        "lvl1_3": [
+          "Counter Strike blocks her Drakehound's Step empowered autos. Start E when she dashes in.",
+          "Don't auto into Repudiation (W) while she is braced. Blocked damage makes the slam hit harder. Step back and re-engage after it ends."
+        ],
+        "lvl4_5": [
+          "Count her dashes. After Cunning Sweep/Sundering Slam and Lacerate are down she has no way to leave your Counter Strike stun, so Q in then.",
+          "Keep trades short while she has energy and all her abilities up."
+        ],
+        "post6": [
+          "Public Execution (R) blinks to you and suppresses. Save Flash or Q for after it, and turn on Grandmaster's Might to survive the combo.",
+          "All-in once she has used R. Your sustained damage beats her after her burst is spent."
+        ],
+        "midgame": [
+          "Split push, but respect her R pick potential when you are overextended.",
+          "In teamfights, go in after she commits R onto someone."
+        ],
+        "lategame": [
+          "You scale well. Duel her once her dashes are gone and don't chase her through walls."
+        ]
+      },
+      "threats": [
+        "Repudiation (W) shield and slam: stop hitting her while she is braced.",
+        "Lots of dashes that dodge your Counter Strike stun: pop E after she has used them.",
+        "Public Execution (R) suppression: hold defensive tools for it."
+      ],
+      "killWindows": [
+        "After she has used her dashes and W in a trade.",
+        "Post-6, right after her R is used."
+      ],
+      "avoid": [
+        "Auto attacking into her braced W.",
+        "Recasting Counter Strike early while she still has dashes."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/jax/counters/",
+        "https://lolalytics.com/lol/jax/vs/ambessa/build/"
+      ]
+    },
+    "Camille": {
+      "name": "Camille",
+      "difficulty": 2,
+      "winRate": 52.98,
+      "winRateSource": "lolalytics Jax top counters, Emerald+, patch 26.19 (client 16.19), 1,625 games",
+      "summary": "You are favored. Her Precision Protocol (Q) damage comes from basic attacks, which Counter Strike blocks. Block the true-damage Q2, stun her as she lands Hookshot, and win trades.",
+      "runes": "Press the Attack (strong in this matchup on lolalytics) or Lethal Tempo",
+      "summoners": "Flash + Teleport",
+      "start": "Doran's Shield + Health Potion or Doran's Blade + Health Potion",
+      "buildNotes": "Trinity Force > Plated Steelcaps > Sundered Sky. Add Death's Dance if she builds lethality or burst.",
+      "skillNotes": "Start E. Q at 2, W at 3, max W.",
+      "phases": {
+        "lvl1_3": [
+          "When her Q is charged for the true-damage second hit, use Counter Strike so she wastes it.",
+          "Hookshot (E): recast Counter Strike to stun her as she dashes or lands on you. Stunning her mid-pull cancels the dash."
+        ],
+        "lvl4_5": [
+          "Dodge the outer edge of Tactical Sweep (W) so she doesn't get the slow and heal.",
+          "Once she has used E, she can't escape. Q onto her and finish the trade."
+        ],
+        "post6": [
+          "You can't dash out of The Hextech Ultimatum (R). When she ults, turn on Counter Strike and Grandmaster's Might and fight her inside it.",
+          "You win the all-in when your Counter Strike lines up with her Q2."
+        ],
+        "midgame": [
+          "Split push. You beat her 1v1 with even items.",
+          "Watch out for her flanks in teamfights and keep Counter Strike ready for her Hookshot engage."
+        ],
+        "lategame": [
+          "You still win side-lane duels. Keep your stun for her E engage."
+        ]
+      },
+      "threats": [
+        "Precision Protocol second hit (true damage): block it with Counter Strike.",
+        "Hookshot stun: time your E recast to cancel or answer it.",
+        "Hextech Ultimatum (R) traps you, so you can't Q away."
+      ],
+      "killWindows": [
+        "After she used E to engage and you blocked her Q2.",
+        "Any time her E is on cooldown."
+      ],
+      "avoid": [
+        "Using Counter Strike before her Q is charged.",
+        "Standing on the outer edge of her W."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/jax/counters/",
+        "https://lolalytics.com/lol/jax/vs/camille/build/",
+        "https://www.skill-capped.com/lol/guides/builds/jax/top"
+      ]
+    },
+    "Darius": {
+      "name": "Darius",
+      "difficulty": 3,
+      "winRate": 52.53,
+      "winRateSource": "lolalytics Jax top counters, Emerald+, patch 26.19 (client 16.19), 2,079 games",
+      "summary": "Darius wins long early fights once he has bleed stacks, but you win later with Trinity Force and a good split push. Dodge the Decimate (Q) blade, trade when Q is down, and never fight into 5 stacks.",
+      "runes": "Grasp of the Undying (most played and best-performing keystone here on lolalytics)",
+      "summoners": "Flash + Teleport, or Flash + Exhaust for his all-ins",
+      "start": "Doran's Shield + Health Potion (safe) or Doran's Bow + 2 Health Potion (most played on lolalytics)",
+      "buildNotes": "Trinity Force > Plated Steelcaps > Sterak's Gage or Sundered Sky. Death's Dance helps against the bleed. Buy Executioner's Calling if his Q healing wins trades.",
+      "skillNotes": "Start E. Q at 2 so you can dodge Decimate by jumping in or away. Max W.",
+      "phases": {
+        "lvl1_3": [
+          "Walk into him, or Q onto him, when he winds up Decimate (Q) so the heal-applying blade misses you.",
+          "Use Counter Strike to block Crippling Strike (W) and his bleed autos. His Q is an ability and E doesn't block it, so keep moving.",
+          "Last hit with Q from range if he is zoning you. Don't let him auto you up to bleed stacks for free."
+        ],
+        "lvl4_5": [
+          "Trade only while his Q is on cooldown: Q > auto > W > E, then leave.",
+          "Apprehend (E) can pull you back as you Q away. Use Q to escape after his E, not before."
+        ],
+        "post6": [
+          "Don't fight at 3 or more bleed stacks. Noxian Guillotine (R) does true damage and resets when he gets a kill.",
+          "Once his Q is down, all-in with R active and hold Counter Strike for his autos."
+        ],
+        "midgame": [
+          "Split push. Trinity Force + Plated Steelcaps is when you start beating him in side lane.",
+          "Don't group for fights where he can get 5 stacks on you."
+        ],
+        "lategame": [
+          "You outscale him. Kite his Q with Leap Strike and fight in bursts."
+        ]
+      },
+      "threats": [
+        "Decimate (Q) blade: heals him and stacks bleed. Dodge by moving into the handle area.",
+        "Crippling Strike (W) slow makes Q easy to land. Block it with Counter Strike.",
+        "Apprehend (E) pulls you back when you try to escape.",
+        "Noxian Guillotine (R) true damage execute, which resets."
+      ],
+      "killWindows": [
+        "Right after he misses Decimate.",
+        "After his E is used and you have Counter Strike ready."
+      ],
+      "avoid": [
+        "Extended trades with his bleed stacked.",
+        "Using Counter Strike too early so he waits it out.",
+        "Standing at blade range when his Q is up."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/jax/counters/",
+        "https://lolalytics.com/lol/jax/vs/darius/build/",
+        "https://www.leaguecoachmerch.com/darius-vs-jax/"
+      ]
+    },
+    "Fiora": {
+      "name": "Fiora",
+      "difficulty": 4,
+      "winRate": 49.48,
+      "winRateSource": "lolalytics Jax top counters, Emerald+, patch 26.19 (client 16.19), 1,437 games",
+      "summary": "An even skill matchup that Fiora wins if she Ripostes your stun. If she parries Counter Strike, you get stunned and usually die. Bait out or wait out her Riposte (W) before your stun lands.",
+      "runes": "Grasp of the Undying (highest win rate keystone here on lolalytics)",
+      "summoners": "Flash + Teleport",
+      "start": "Doran's Bow + 2 Health Potion or Doran's Shield + Health Potion",
+      "buildNotes": "Trinity Force > Plated Steelcaps > Sundered Sky. Death's Dance and Sterak's Gage help you survive her vital procs.",
+      "skillNotes": "Start E. Max W, then Q.",
+      "phases": {
+        "lvl1_3": [
+          "Keep Counter Strike up for the full duration instead of recasting early. Most Fioras try to Riposte the stun early.",
+          "Counter Strike blocks her autos and Bladework (E) attacks. Lunge (Q) is an ability and still hits you."
+        ],
+        "lvl4_5": [
+          "Use Riposte's cooldown: once she wastes W on a minion wave or your autos, recast E right away and all-in.",
+          "Don't let her proc vitals for free. Step back when a vital faces you."
+        ],
+        "post6": [
+          "Grand Challenge (R) heals her a lot if she procs all four vitals. Kill her quickly or leave.",
+          "Your E stun is only safe when her W is on cooldown."
+        ],
+        "midgame": [
+          "Avoid long even 1v1s. She outscales many bruisers in side lane.",
+          "In teamfights, go in after she commits R."
+        ],
+        "lategame": [
+          "Respect her 1v1. Fight with vision and your team nearby."
+        ]
+      },
+      "threats": [
+        "Riposte (W): parries your Counter Strike stun and stuns you back.",
+        "Vitals + Grand Challenge (R) sustain.",
+        "Lunge (Q) mobility dodges your stun."
+      ],
+      "killWindows": [
+        "After she wasted Riposte on something else.",
+        "When her Q is on cooldown and she can't reposition."
+      ],
+      "avoid": [
+        "Recasting Counter Strike early.",
+        "Standing still next to her vitals.",
+        "Extended fights when she has R and W up."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/jax/counters/",
+        "https://lolalytics.com/lol/jax/vs/fiora/build/",
+        "https://www.skill-capped.com/lol/guides/builds/jax/top"
+      ]
+    },
+    "Garen": {
+      "name": "Garen",
+      "difficulty": 4,
+      "winRate": 48.58,
+      "winRateSource": "lolalytics Jax top counters, Emerald+, patch 26.19 (client 16.19), 2,814 games",
+      "summary": "A slightly losing lane. Garen's Decisive Strike (Q) silence and his passive sustain are annoying. Block his Q with Counter Strike, respect Judgment (E), and play for scaling.",
+      "runes": "Press the Attack (most played) or Grasp of the Undying",
+      "summoners": "Flash + Exhaust or Flash + Ignite",
+      "start": "Doran's Bow + 2 Health Potion or Doran's Shield + Health Potion",
+      "buildNotes": "Trinity Force > Plated Steelcaps > Sundered Sky. Blade of the Ruined King is solid against his health stacking. Death's Dance and Sterak's Gage help late.",
+      "skillNotes": "Start E. Max W.",
+      "phases": {
+        "lvl1_3": [
+          "Decisive Strike (Q) empowers his next basic attack, so Counter Strike dodges it and the silence.",
+          "Judgment (E) spin is AoE ability damage. Counter Strike only cuts it by 25%, so leave the spin instead of face-tanking it."
+        ],
+        "lvl4_5": [
+          "Short trades don't work well because his passive heals him back. Look for all-ins with Ignite or Exhaust.",
+          "Courage (W) reduces damage. Wait it out before your big trade."
+        ],
+        "post6": [
+          "Demacian Justice (R) executes based on your missing health. Don't stay at low HP in his range.",
+          "Your all-in with R active beats him if you blocked his Q."
+        ],
+        "midgame": [
+          "Split push. He can hold side lane, so push with TP or your jungler's help.",
+          "In teamfights, keep Counter Strike for his Q engage."
+        ],
+        "lategame": [
+          "You outscale him in DPS. Fight with Counter Strike ready."
+        ]
+      },
+      "threats": [
+        "Decisive Strike (Q) silence: dodge with Counter Strike.",
+        "Judgment (E) spin damage.",
+        "Demacian Justice (R) execute.",
+        "Perseverance (passive) regen resets poke."
+      ],
+      "killWindows": [
+        "After he used Q into your Counter Strike.",
+        "When his W is on cooldown."
+      ],
+      "avoid": [
+        "Getting silenced without E up.",
+        "Fighting in his spin.",
+        "Staying low near his R range."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/jax/counters/",
+        "https://lolalytics.com/lol/jax/vs/garen/build/",
+        "https://www.skill-capped.com/lol/guides/builds/jax/top"
+      ]
+    },
+    "Gwen": {
+      "name": "Gwen",
+      "difficulty": 2,
+      "winRate": 54.71,
+      "winRateSource": "lolalytics Jax top counters, Emerald+, patch 26.19 (client 16.19), 764 games",
+      "summary": "You are favored. Gwen's autos and Skip 'n Slash (E) attacks are blocked by Counter Strike. Walk into her Hallowed Mist (W) instead of trying to target her from outside it.",
+      "runes": "Grasp of the Undying (most played) or Press the Attack",
+      "summoners": "Flash + Exhaust",
+      "start": "Doran's Bow + 2 Health Potion, or Doran's Helm into magic damage",
+      "buildNotes": "Trinity Force > Mercury's Treads > Wit's End. Hybrid Dusk and Dawn builds are also common against her. Kaenic Rookern is an option later.",
+      "skillNotes": "Start E. Max W.",
+      "phases": {
+        "lvl1_3": [
+          "When she dashes with E for attack speed, use Counter Strike to block her autos.",
+          "Stay out of the center of Snip Snip! (Q). That's where the true damage hits."
+        ],
+        "lvl4_5": [
+          "Hallowed Mist (W) makes her untargetable from outside. Walk into the mist to hit her.",
+          "Once she uses E, all-in with Q > W > Counter Strike."
+        ],
+        "post6": [
+          "Needlework (R) slows you. Use Grandmaster's Might for MR and stick to her.",
+          "Her kit loses a lot when Counter Strike blocks her autos."
+        ],
+        "midgame": [
+          "Split push. Wit's End makes you win side-lane duels.",
+          "In teamfights, walk into her mist or pick other targets."
+        ],
+        "lategame": [
+          "Respect her true damage late. Keep Counter Strike ready for her engage."
+        ]
+      },
+      "threats": [
+        "Snip Snip! (Q) center true damage.",
+        "Hallowed Mist (W) untargetability.",
+        "Needlework (R) slow and poke."
+      ],
+      "killWindows": [
+        "After she uses Skip 'n Slash (E).",
+        "When her Hallowed Mist is on cooldown."
+      ],
+      "avoid": [
+        "Trying to target her from outside the mist.",
+        "Standing in the center of her Q."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/jax/counters/",
+        "https://lolalytics.com/lol/jax/vs/gwen/build/"
+      ]
+    },
+    "Illaoi": {
+      "name": "Illaoi",
+      "difficulty": 4,
+      "winRate": 47.36,
+      "winRateSource": "lolalytics Jax top counters, Emerald+, patch 26.19 (client 16.19), 739 games",
+      "summary": "Illaoi is favored when you fight near her tentacles. Dodge Test of Spirit (E) with minion cover, fight away from tentacles, and never all-in during Leap of Faith (R).",
+      "runes": "Press the Attack (most played) or Grasp of the Undying",
+      "summoners": "Flash + Ignite (most played)",
+      "start": "Doran's Blade + Health Potion",
+      "buildNotes": "Trinity Force > Plated Steelcaps > Sundered Sky. Buy Executioner's Calling (into Chempunk Chainsword) against her heals. Blade of the Ruined King is also an option.",
+      "skillNotes": "Start E. Max W.",
+      "phases": {
+        "lvl1_3": [
+          "Stand behind minions so Test of Spirit (E) is blocked.",
+          "Counter Strike cuts tentacle slam damage by 25%, but move away from tentacles anyway."
+        ],
+        "lvl4_5": [
+          "If she pulls your spirit, Q to a minion or ward outside the tether range or stay behind the vessel.",
+          "Trade when her E is on cooldown and no tentacles are near."
+        ],
+        "post6": [
+          "Leap of Faith (R) spawns tentacles and heals her a lot. Q out or wait until it ends.",
+          "All-in after her R is used and her E has missed."
+        ],
+        "midgame": [
+          "Split push away from her. She holds side lanes well.",
+          "In teamfights, go in after she commits R."
+        ],
+        "lategame": [
+          "You outscale in DPS, but don't fight on her tentacles."
+        ]
+      },
+      "threats": [
+        "Test of Spirit (E): pulls your spirit and makes you vulnerable.",
+        "Leap of Faith (R) tentacle burst and heal.",
+        "Tentacle Smash (Q) and passive tentacles."
+      ],
+      "killWindows": [
+        "After her E misses.",
+        "Once her R is on cooldown and no tentacles are up."
+      ],
+      "avoid": [
+        "Fighting on her tentacles.",
+        "Standing in line for Test of Spirit.",
+        "All-ins during her R."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/jax/counters/",
+        "https://lolalytics.com/lol/jax/vs/illaoi/build/"
+      ]
+    },
+    "Irelia": {
+      "name": "Irelia",
+      "difficulty": 2,
+      "winRate": 53.82,
+      "winRateSource": "lolalytics Jax top counters, Emerald+, patch 26.19 (client 16.19), 1,546 games",
+      "summary": "You are favored. Irelia's damage comes from stacked autos, and Counter Strike blocks them. Dodge Flawless Duet (E) and stun her after she dashes in.",
+      "runes": "Press the Attack (most played and best-performing here on lolalytics)",
+      "summoners": "Flash + Exhaust",
+      "start": "Doran's Bow + 2 Health Potion",
+      "buildNotes": "Trinity Force or Blade of the Ruined King > Plated Steelcaps > Death's Dance. Sundered Sky is also good.",
+      "skillNotes": "Start E. Max W, then E.",
+      "phases": {
+        "lvl1_3": [
+          "When she dashes in with stacks, pop Counter Strike and recast to stun her.",
+          "She stacks Ionian Fervor on minions. Punish her when she stacks up on the wave."
+        ],
+        "lvl4_5": [
+          "Dodge Flawless Duet (E) by moving sideways or Q to a minion.",
+          "Defiant Dance (W) reduces damage. Wait it out before you all-in."
+        ],
+        "post6": [
+          "Vanguard's Edge (R) makes a wall of blades that slows you. Use Grandmaster's Might for resists and fight her inside it.",
+          "Your E stun lands if she can't dash out."
+        ],
+        "midgame": [
+          "Split push. You outduel her with even items.",
+          "In teamfights, save Counter Strike for her Q-resets."
+        ],
+        "lategame": [
+          "You outscale her. Block her autos and win."
+        ]
+      },
+      "threats": [
+        "Flawless Duet (E) stun.",
+        "Bladesurge (Q) resets.",
+        "Vanguard's Edge (R) slow."
+      ],
+      "killWindows": [
+        "After her E misses.",
+        "When her stacks are low."
+      ],
+      "avoid": [
+        "Getting hit by E stun.",
+        "Using Counter Strike before she commits."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/jax/counters/",
+        "https://lolalytics.com/lol/jax/vs/irelia/build/"
+      ]
+    },
+    "Jax": {
+      "name": "Jax",
+      "difficulty": 3,
+      "winRate": null,
+      "winRateSource": "Mirror matchup (always 50% by definition)",
+      "summary": "A pure Counter Strike (E) timing mirror. Whoever wastes E first loses the trade. Never auto into their active E, and press yours after theirs so you can walk out of their stun and land yours.",
+      "runes": "Standard (Grasp of the Undying or Lethal Tempo). Mirror whatever keeps you even and play for the item spike.",
+      "summoners": "Flash + Ignite for a kill-lane mirror; Flash + Teleport to play safe",
+      "start": "Doran's Blade + Health Potion (Doran's Bow + 2 Health Potion is also common)",
+      "buildNotes": "Standard: Trinity Force > Plated Steelcaps > Sundered Sky. Plated Steelcaps are strong because most of his damage comes from autos. Death's Dance is good third or fourth.",
+      "skillNotes": "Start E. Q at 2 so you can reposition around his E. Max W.",
+      "phases": {
+        "lvl1_3": [
+          "When he pops Counter Strike, stop auto attacking and walk out of the stun radius. Don't feed damage into his E.",
+          "Pop your own E only after he has committed his. You block his autos while his stun whiffs, and your stun lands when he walks back in."
+        ],
+        "lvl4_5": [
+          "Trade on his Counter Strike cooldown: Q > auto > W > auto, then leave.",
+          "If he Leap Strikes onto you with E up, Q away to a minion or ward. Don't stand inside his stun."
+        ],
+        "post6": [
+          "Grandmaster's Might (R) active gives both of you resists. Fight when his R is on cooldown and yours is up.",
+          "Relentless Assault stacks decide long fights. Don't take an all-in when he already has passive stacks from farming."
+        ],
+        "midgame": [
+          "Split push hard. The first Jax to finish Trinity Force + Sundered Sky wins the side lane.",
+          "In teamfights, bait his E onto someone else before you engage."
+        ],
+        "lategame": [
+          "Same as midgame. The item and level lead decides it. Hold Counter Strike until he commits his."
+        ]
+      },
+      "threats": [
+        "His Counter Strike stun and the damage it stores.",
+        "Grandmaster's Might active resists in all-ins.",
+        "His Leap Strike engage when your E is on cooldown."
+      ],
+      "killWindows": [
+        "When his E is on cooldown and yours is up.",
+        "After his R active has ended."
+      ],
+      "avoid": [
+        "Auto attacking into his active E.",
+        "Using your E first in an even trade."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/jax/counters/"
+      ]
+    },
+    "Kled": {
+      "name": "Kled",
+      "difficulty": 3,
+      "winRate": 49.69,
+      "winRateSource": "lolalytics Jax top counters, Emerald+, patch 26.19 (client 16.19), 642 games",
+      "summary": "An even lane where Kled wins levels 1-3 all-ins. Counter Strike blocks his Violent Tendencies (W) autos. Break the Beartrap on a Rope tether, survive early, and punish him hard when Skaarl dismounts.",
+      "runes": "Press the Attack (most played) or Grasp of the Undying for a safer lane",
+      "summoners": "Flash + Teleport",
+      "start": "Doran's Shield + Health Potion",
+      "buildNotes": "Trinity Force > Plated Steelcaps > Sundered Sky. Death's Dance and Sterak's Gage help against his burst all-ins.",
+      "skillNotes": "Start E. Max W.",
+      "phases": {
+        "lvl1_3": [
+          "Violent Tendencies (W) gives him 4 fast autos. Pop Counter Strike as soon as the attack speed starts and stun him at the end.",
+          "If Beartrap on a Rope (Q) hits you, walk away from him to break the tether before it yanks. Don't walk toward him."
+        ],
+        "lvl4_5": [
+          "When Skaarl dismounts, dismounted Kled is weak and slow. Q in and all-in before he remounts.",
+          "Jousting (E) second cast follows the target. Dodge the first dash sideways and punish him after."
+        ],
+        "post6": [
+          "Chaaaaaaaarge!!! (R) engages from far away and brings his team. Ward the side lanes and keep Counter Strike for when he arrives.",
+          "All-in with R active whenever he is dismounted."
+        ],
+        "midgame": [
+          "Split push, but respect his R flank angles.",
+          "In teamfights, go in after he commits R. He has little left once he's dismounted."
+        ],
+        "lategame": [
+          "You outscale him in dueling. Kill Skaarl, then kill Kled."
+        ]
+      },
+      "threats": [
+        "Beartrap on a Rope (Q) pull.",
+        "Violent Tendencies (W) burst autos.",
+        "Chaaaaaaaarge!!! (R) long-range engage.",
+        "Levels 1-3 all-ins."
+      ],
+      "killWindows": [
+        "When he is dismounted.",
+        "After his W has been blocked by your Counter Strike."
+      ],
+      "avoid": [
+        "Staying tethered to his Q.",
+        "Taking an early all-in with your E on cooldown."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/jax/counters/",
+        "https://lolalytics.com/lol/jax/vs/kled/build/"
+      ]
+    },
+    "Mordekaiser": {
+      "name": "Mordekaiser",
+      "difficulty": 2,
+      "winRate": 54.26,
+      "winRateSource": "lolalytics Jax top counters, Emerald+, patch 26.19 (client 16.19), 1,410 games",
+      "summary": "You are favored. Mordekaiser has no dashes, so you can Leap Strike out of Obliterate (Q), stun him easily, and outduel him in Realm of Death (R) once you have magic resist.",
+      "runes": "Press the Attack (most played here on lolalytics) or Grasp of the Undying",
+      "summoners": "Flash + Exhaust (Exhaust is very strong inside his R)",
+      "start": "Doran's Bow + 2 Health Potion, or Doran's Helm to play safe",
+      "buildNotes": "Trinity Force or the hybrid Dusk and Dawn > Mercury's Treads > Wit's End. Death's Dance is a good follow-up. Blade of the Ruined King is fine against his health.",
+      "skillNotes": "Start E. Max W.",
+      "phases": {
+        "lvl1_3": [
+          "Obliterate (Q) does bonus damage when you are isolated. Stand near minions, and Q out to a minion or ward when he winds up.",
+          "Counter Strike cuts his AoE ability damage by 25% and stuns him. He has no dash to escape it."
+        ],
+        "lvl4_5": [
+          "Death's Grasp (E) pull is slow. Sidestep it or Q away as it lands.",
+          "Trade when his Q is on cooldown. Hit his W shield last so he can't heal from it."
+        ],
+        "post6": [
+          "Realm of Death (R) traps you in a 1v1 and steals your stats. Pop Grandmaster's Might for MR and time Counter Strike to stun him while he is inside.",
+          "Exhaust inside his realm usually wins you the duel."
+        ],
+        "midgame": [
+          "Split push. Wit's End + Mercury's Treads make you win side-lane duels.",
+          "Watch out for his R on your carries. Your team can't help them inside it."
+        ],
+        "lategame": [
+          "You outscale him. Hold Exhaust and Counter Strike for his R."
+        ]
+      },
+      "threats": [
+        "Obliterate (Q) isolation damage.",
+        "Death's Grasp (E) pull.",
+        "Realm of Death (R) stat steal.",
+        "Indestructible (W) shield and heal."
+      ],
+      "killWindows": [
+        "After his Q misses.",
+        "When his W is on cooldown.",
+        "Inside his R once you have Exhaust and MR."
+      ],
+      "avoid": [
+        "Getting pulled into his Q with E.",
+        "Fighting him while isolated at low HP."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/jax/counters/",
+        "https://lolalytics.com/lol/jax/vs/mordekaiser/build/"
+      ]
+    },
+    "Nasus": {
+      "name": "Nasus",
+      "difficulty": 2,
+      "winRate": 51.35,
+      "winRateSource": "lolalytics Jax top counters, Emerald+, patch 26.19 (client 16.19), 1,293 games",
+      "summary": "You win lane. Bully him at levels 1-5, deny Siphoning Strike stacks, and snowball before he scales. Counter Strike blocks his Q.",
+      "runes": "Press the Attack or Lethal Tempo (aggressive), with Ignite",
+      "summoners": "Flash + Ignite",
+      "start": "Doran's Blade + Health Potion",
+      "buildNotes": "Trinity Force > Plated Steelcaps > Blade of the Ruined King (good against his health stacking). Sundered Sky or Sterak's Gage after.",
+      "skillNotes": "Start E. Q at 2 for early trades. Max W.",
+      "phases": {
+        "lvl1_3": [
+          "Trade aggressively. He has little damage early. Hit him whenever he walks up to last hit with Siphoning Strike (Q).",
+          "Siphoning Strike empowers his next basic attack, so Counter Strike dodges it."
+        ],
+        "lvl4_5": [
+          "Look for a level 3-5 all-in with Ignite. His Spirit Fire (E) armor shred is his only real trade tool.",
+          "Freeze near your tower or crash waves so he loses stacks."
+        ],
+        "post6": [
+          "Wither (W) slows you a lot and cuts your attack speed. Q to a minion or ward to get out, or fight when W is down.",
+          "Fury of the Sands (R) makes him tanky. Back off for its duration unless you already have the kill."
+        ],
+        "midgame": [
+          "Split push and keep denying stacks. Force him to answer side lanes.",
+          "Roam or invade if he farms passively under tower."
+        ],
+        "lategame": [
+          "He scales hard if the game drags. Use your lead to end, or buy Blade of the Ruined King and fight when his W is down."
+        ]
+      },
+      "threats": [
+        "Wither (W) slow.",
+        "Siphoning Strike (Q) stack scaling.",
+        "Fury of the Sands (R) late-game tankiness."
+      ],
+      "killWindows": [
+        "Levels 2-5 with Ignite.",
+        "When his W is on cooldown."
+      ],
+      "avoid": [
+        "Letting him farm stacks freely.",
+        "Fighting inside his R with no lead."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/jax/counters/",
+        "https://lolalytics.com/lol/jax/vs/nasus/build/"
+      ]
+    },
+    "Olaf": {
+      "name": "Olaf",
+      "difficulty": 3,
+      "winRate": 50.69,
+      "winRateSource": "lolalytics Jax top counters, Emerald+, patch 26.19 (client 16.19), 1,162 games",
+      "summary": "Even. Olaf wins levels 1-3 with Undertow (Q) and Reckless Swing (E) true damage, and Ragnarok (R) makes him immune to your stun. Dodge his axes, trade when he can't pick them up, and avoid fighting during his R.",
+      "runes": "Grasp of the Undying (safe lane)",
+      "summoners": "Flash + Teleport",
+      "start": "Doran's Shield + Health Potion",
+      "buildNotes": "Trinity Force > Plated Steelcaps > Sundered Sky. Buy Executioner's Calling (into Chempunk Chainsword) if his Tough It Out (W) healing wins fights.",
+      "skillNotes": "Start E. Max W.",
+      "phases": {
+        "lvl1_3": [
+          "Dodge Undertow (Q) axes. When he misses one, he has to walk to it, so step between him and the axe.",
+          "Counter Strike blocks his autos. Reckless Swing (E) is true damage from an ability, so it still hits you."
+        ],
+        "lvl4_5": [
+          "Trade when his axe is on cooldown or on the ground far from him.",
+          "His W heals more at low HP. Don't give him a long fight where he heals up."
+        ],
+        "post6": [
+          "During Ragnarok (R) he is immune to your stun. Walk away or Q to a minion and fight after it ends.",
+          "All-in when his R is on cooldown so your Counter Strike stun lands."
+        ],
+        "midgame": [
+          "Split push. He falls off, but respect his R dives.",
+          "In teamfights, don't try to stun him during R. Peel or fight elsewhere."
+        ],
+        "lategame": [
+          "You outscale him. Save Counter Strike until his R has ended."
+        ]
+      },
+      "threats": [
+        "Undertow (Q) slow and damage.",
+        "Reckless Swing (E) true damage.",
+        "Ragnarok (R) CC immunity.",
+        "Tough It Out (W) healing."
+      ],
+      "killWindows": [
+        "After his R ends.",
+        "When his axe is on the ground far from him."
+      ],
+      "avoid": [
+        "Fighting during his R.",
+        "Long early trades where his W heals him."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/jax/counters/",
+        "https://lolalytics.com/lol/jax/vs/olaf/build/"
+      ]
+    },
+    "Renekton": {
+      "name": "Renekton",
+      "difficulty": 3,
+      "winRate": 52.31,
+      "winRateSource": "lolalytics Jax top counters, Emerald+, patch 26.19 (client 16.19), 1,558 games",
+      "summary": "Renekton wins early and falls off. Ruthless Predator (W) empowers his next basic attack, so Counter Strike dodges it. Respect his level 3 all-in, then scale.",
+      "runes": "Grasp of the Undying (safe lane)",
+      "summoners": "Flash + Teleport",
+      "start": "Doran's Shield + Health Potion",
+      "buildNotes": "Trinity Force > Plated Steelcaps > Sundered Sky. Death's Dance is good against his burst.",
+      "skillNotes": "Start E. Max W.",
+      "phases": {
+        "lvl1_3": [
+          "Pop Counter Strike when he dashes in with Slice and Dice (E) to dodge his W stun.",
+          "Respect his level 3 all-in (E > W > Q). Keep your E ready for it."
+        ],
+        "lvl4_5": [
+          "Watch his fury. At 50+ fury his W stuns longer and his Q heals more. Back off when he is full.",
+          "Trade after he uses E. Without it he can't reach you."
+        ],
+        "post6": [
+          "Dominus (R) gives him health and fury. Kite it out or hold Counter Strike for his W.",
+          "All-in when his fury is low and his E is on cooldown."
+        ],
+        "midgame": [
+          "Split push. He falls off hard, so force side-lane duels.",
+          "In teamfights, keep Counter Strike for his E > W engage."
+        ],
+        "lategame": [
+          "You outscale him. Fight on his cooldowns."
+        ]
+      },
+      "threats": [
+        "Ruthless Predator (W) stun, especially empowered.",
+        "Slice and Dice (E) double dash.",
+        "Dominus (R) health and fury.",
+        "Level 3 all-in."
+      ],
+      "killWindows": [
+        "When his fury is low.",
+        "After he uses E and your Counter Strike is ready."
+      ],
+      "avoid": [
+        "Fighting when he has 50+ fury.",
+        "Using Counter Strike before he commits his E."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/jax/counters/",
+        "https://lolalytics.com/lol/jax/vs/renekton/build/"
+      ]
+    },
+    "Riven": {
+      "name": "Riven",
+      "difficulty": 3,
+      "winRate": 52.6,
+      "winRateSource": "lolalytics Jax top counters, Emerald+, patch 26.19 (client 16.19), 635 games",
+      "summary": "A skill matchup where you are slightly favored. Counter Strike blocks her Runic Blade autos and cuts her AoE Q/W damage by 25%. Wait for her to use her dashes, then stun and outtrade.",
+      "runes": "Grasp of the Undying for a safe lane, or Lethal Tempo",
+      "summoners": "Flash + Teleport",
+      "start": "Doran's Shield + Health Potion",
+      "buildNotes": "Trinity Force > Plated Steelcaps > Death's Dance (good against her burst). Sterak's Gage is also good.",
+      "skillNotes": "Start E. Max W.",
+      "phases": {
+        "lvl1_3": [
+          "Counter Strike blocks her Runic Blade autos, which are most of her damage.",
+          "Don't recast E while her Valor (E) shield is up. Wait until her dashes are used."
+        ],
+        "lvl4_5": [
+          "Dodge Ki Burst (W) stun by staying out of her short range or Q-ing away.",
+          "Trade after she uses Q3. She has no gap-closer left."
+        ],
+        "post6": [
+          "Blade of the Exile (R) gives her AD and Wind Slash, an execute. Don't fight at low HP.",
+          "All-in when her E and Q3 are on cooldown."
+        ],
+        "midgame": [
+          "Split push. You win side-lane duels with even items.",
+          "In teamfights, keep Counter Strike for her engage combo."
+        ],
+        "lategame": [
+          "You outscale her. Fight on her cooldowns."
+        ]
+      },
+      "threats": [
+        "Ki Burst (W) stun.",
+        "Broken Wings (Q) knockup.",
+        "Wind Slash (R) execute.",
+        "Valor (E) shield."
+      ],
+      "killWindows": [
+        "After her E is used.",
+        "When her Q3 and W are on cooldown."
+      ],
+      "avoid": [
+        "Fighting into her full combo.",
+        "Staying low near her R."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/jax/counters/",
+        "https://lolalytics.com/lol/jax/vs/riven/build/"
+      ]
+    },
+    "Sett": {
+      "name": "Sett",
+      "difficulty": 3,
+      "winRate": 51.36,
+      "winRateSource": "lolalytics Jax top counters, Emerald+, patch 26.19 (client 16.19), 1,585 games",
+      "summary": "Even to slightly favored. Counter Strike blocks his Pit Grit and Knuckle Down (Q) punches. The real threat is the Haymaker (W) center true damage, so Leap Strike out of it and punish after.",
+      "runes": "Grasp of the Undying (safe lane)",
+      "summoners": "Flash + Teleport",
+      "start": "Doran's Shield + Health Potion",
+      "buildNotes": "Trinity Force > Plated Steelcaps > Sundered Sky. Death's Dance is good against his burst.",
+      "skillNotes": "Start E. Max W.",
+      "phases": {
+        "lvl1_3": [
+          "Counter Strike blocks his Knuckle Down (Q) empowered punches.",
+          "Don't stand between him and a wall or minion. Facebreaker (E) stuns when it pulls from both sides."
+        ],
+        "lvl4_5": [
+          "When he winds up Haymaker (W), Q to a minion or ward to leave the center. The edge does less damage and no true damage.",
+          "Trade after he uses W. His damage drops a lot without it."
+        ],
+        "post6": [
+          "The Show Stopper (R) grabs you and deals damage based on his bonus health. Hold Counter Strike for his autos after.",
+          "All-in when his W is on cooldown."
+        ],
+        "midgame": [
+          "Split push. You outduel him with even items.",
+          "In teamfights, keep Counter Strike for his engage."
+        ],
+        "lategame": [
+          "You outscale him. Dodge his W and fight."
+        ]
+      },
+      "threats": [
+        "Haymaker (W) true damage center.",
+        "Facebreaker (E) stun.",
+        "The Show Stopper (R)."
+      ],
+      "killWindows": [
+        "After he uses W.",
+        "When his E is on cooldown."
+      ],
+      "avoid": [
+        "Standing in the center of W.",
+        "Standing between him and a wall."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/jax/counters/",
+        "https://lolalytics.com/lol/jax/vs/sett/build/"
+      ]
+    },
+    "Trundle": {
+      "name": "Trundle",
+      "difficulty": 1,
+      "winRate": 59.35,
+      "winRateSource": "lolalytics Jax top counters, Emerald+, patch 26.19 (client 16.19), 588 games",
+      "summary": "Your best matchup on this list. Chomp (Q) empowers his next basic attack, so Counter Strike dodges it. Trade aggressively early and snowball.",
+      "runes": "Press the Attack or Lethal Tempo (aggressive)",
+      "summoners": "Flash + Ignite",
+      "start": "Doran's Blade + Health Potion",
+      "buildNotes": "Trinity Force > Plated Steelcaps > Sundered Sky. Blade of the Ruined King is good if he builds health.",
+      "skillNotes": "Start E. Q at 2. Max W.",
+      "phases": {
+        "lvl1_3": [
+          "Counter Strike dodges Chomp (Q), so he can't steal your AD.",
+          "Trade aggressively. He has few ways to answer your early all-in."
+        ],
+        "lvl4_5": [
+          "Pillar of Ice (E) can block your path. Q over it to a ward or minion.",
+          "Don't fight inside Frozen Domain (W). It gives him attack speed and move speed."
+        ],
+        "post6": [
+          "Subjugate (R) steals your armor and MR. Fight before he casts it, or back off after.",
+          "All-in with Ignite when his R is on cooldown."
+        ],
+        "midgame": [
+          "Split push. Your lead lets you take towers fast.",
+          "In teamfights, stay out of his W zone."
+        ],
+        "lategame": [
+          "You outscale him. Fight after his R is used."
+        ]
+      },
+      "threats": [
+        "Chomp (Q) AD steal.",
+        "Pillar of Ice (E).",
+        "Subjugate (R) resist steal.",
+        "Frozen Domain (W) buffs."
+      ],
+      "killWindows": [
+        "Any time his Q is on cooldown.",
+        "After his R is used."
+      ],
+      "avoid": [
+        "Fighting in Frozen Domain (W).",
+        "Fighting right after he casts R."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/jax/counters/",
+        "https://lolalytics.com/lol/jax/vs/trundle/build/"
+      ]
+    },
+    "Tryndamere": {
+      "name": "Tryndamere",
+      "difficulty": 3,
+      "winRate": 50.62,
+      "winRateSource": "lolalytics Emerald+ 26.19 (op.gg Emerald+ 26.19: 47.14)",
+      "summary": "This is an even skill matchup. Tryndamere's damage is almost all basic attacks, so a well-timed Counter Strike wins most trades. You lose if you waste E or fight into Undying Rage without an answer.",
+      "runes": "Grasp of the Undying (standard). Lethal Tempo is fine if you want to win extended duels.",
+      "summoners": "Flash + Exhaust. Exhaust is the most-picked option on lolalytics and cuts his crit damage during Undying Rage.",
+      "start": "Doran's Blade + Health Potion (Doran's Bow is a common aggressive alternative)",
+      "buildNotes": "Rush Plated Steelcaps. Standard Trinity Force -> Sundered Sky. Death's Dance is strong into his burst. If he gets fed on crit, Randuin's Omen is a valid defensive slot.",
+      "skillNotes": "Start E. Take W at 2 for fast trades. Max Q, then W.",
+      "phases": {
+        "lvl1_3": [
+          "Keep E for when he commits with Spinning Slash or starts auto-attacking. Stun him, then trade autos with W.",
+          "Don't let him stack Fury for free on the wave. Trade when his Fury bar is low, because his crits need Fury."
+        ],
+        "lvl4_5": [
+          "When he uses Mocking Shout, back off or E. His armor is shredded for that window, but so is your damage output. Punish him after it ends.",
+          "Short trades are Leap Strike -> Counter Strike -> W auto -> walk out. Don't stay in long extended fights before level 6."
+        ],
+        "post6": [
+          "Undying Rage lasts about 5s. Save Counter Strike and Exhaust for after he casts it, or just walk away/Leap Strike to a ward and wait it out.",
+          "Your Grandmaster's Might resists and his inability to die make the first 5s pointless. Kite with Q to a minion, then re-engage once R ends."
+        ],
+        "midgame": [
+          "Both of you want to split push. Once you have Trinity Force + Sundered Sky, you win the side lane if you keep E for his Undying Rage.",
+          "He has no CC except Mocking Shout's slow, so you can hold him in side lane and let your team take objectives."
+        ],
+        "lategame": [
+          "Match his split. In a teamfight, E + R-stun him when he dives your carry and keep him occupied until Undying Rage expires."
+        ]
+      },
+      "threats": [
+        "Undying Rage (R): 5s of not dying. Don't burn E or Exhaust before he casts it.",
+        "Spinning Slash (E) resets on crits, so a high-crit Tryndamere can chain it to escape or chase.",
+        "Bloodlust (Q) heal at full Fury. Ignite or Executioner's Calling reduces it if he stalls."
+      ],
+      "killWindows": [
+        "Right after his Undying Rage ends with no Spinning Slash up.",
+        "When he has used Bloodlust to heal and is at low Fury, because his crits and damage drop."
+      ],
+      "avoid": [
+        "Casting Counter Strike before he starts attacking. He simply waits it out.",
+        "All-ins at level 6+ when you have no E or Exhaust for his R."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/jax/counters/",
+        "https://lolalytics.com/lol/jax/vs/tryndamere/build/",
+        "https://op.gg/lol/champions/jax/counters/top"
+      ]
+    },
+    "Urgot": {
+      "name": "Urgot",
+      "difficulty": 3,
+      "winRate": 49.37,
+      "winRateSource": "lolalytics Emerald+ 26.19 (op.gg Emerald+ 26.19: 48.45)",
+      "summary": "This is roughly even. Urgot wins extended fights where he stays at range and gets leg procs. You win short trades, especially when you jump him after Disdain is on cooldown.",
+      "runes": "Grasp of the Undying, or Press the Attack (the highest-WR keystone on lolalytics, small sample)",
+      "summoners": "Flash + Teleport (most-picked on lolalytics), or Flash + Ignite to play aggressive",
+      "start": "Doran's Helm + Health Potion (best-WR start on lolalytics), or Doran's Shield",
+      "buildNotes": "Plated Steelcaps are the most-picked boots. Blade of The Ruined King and Zhonya's Hourglass both show high win rates here. Zhonya's also counters Fear Beyond Death.",
+      "skillNotes": "Start E. Take W at 2. Max Q, then W.",
+      "phases": {
+        "lvl1_3": [
+          "Don't stand in Purge's cone. Stay out of range until he commits, then Leap Strike into him when he uses Corrosive Charge or Disdain on the wave.",
+          "Low-rank Purge has a real cooldown before he maxes it. Trade when it's down."
+        ],
+        "lvl4_5": [
+          "His legs (Echoing Flames) each have a cooldown. Short trades with Q-E-W and backing out keep him from cycling all six legs.",
+          "If he flips you with Disdain, E immediately. You take the stun and return trade instead of eating free damage."
+        ],
+        "post6": [
+          "Fear Beyond Death executes you below 25% HP and pulls you in. Leave the fight early. Don't trade near 25-35% HP.",
+          "Your R resists plus an E-stun let you win all-ins when you start above 50% HP and his E is down."
+        ],
+        "midgame": [
+          "He is slow and immobile. Flank or split and pull him into you away from his team.",
+          "Once you have 2 items, you out-duel him in side lane. Keep your HP high when you engage so his R can't execute."
+        ],
+        "lategame": [
+          "In teamfights, dive him only after his R has been used on someone else. Otherwise play for backline access."
+        ]
+      },
+      "threats": [
+        "Fear Beyond Death (R): execute threshold at 25% HP. Respect it from level 6.",
+        "Disdain (E): shield plus flip/stun onto his legs. Dodge it or answer with E.",
+        "Purge (W) at rank 5 becomes a permanent toggle and shreds you in melee range."
+      ],
+      "killWindows": [
+        "After he uses Disdain (E) on a minion or misses it: no escape, jump with Leap Strike.",
+        "Pre-6 when Purge is on cooldown and he's below 60%."
+      ],
+      "avoid": [
+        "Long fights in his leg range while Purge is up.",
+        "Fighting at around 30% HP from level 6."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/jax/counters/",
+        "https://lolalytics.com/lol/jax/vs/urgot/build/",
+        "https://op.gg/lol/champions/jax/counters/top"
+      ]
+    },
+    "Volibear": {
+      "name": "Volibear",
+      "difficulty": 2,
+      "winRate": 57.61,
+      "winRateSource": "lolalytics Emerald+ 26.19 (op.gg Emerald+ 26.19: 55.87)",
+      "summary": "Favorable for you. Most of Volibear's damage comes from autos and his Thundering Smash attack, so Counter Strike blanks him. You outscale him from 2 items onward.",
+      "runes": "Press the Attack (most-picked and best-WR on lolalytics) or Grasp of the Undying",
+      "summoners": "Flash + Ignite",
+      "start": "Doran's Bow + 2 Health Potion (best-WR on lolalytics) or Doran's Blade",
+      "buildNotes": "Blade of The Ruined King performs very well against his HP stacking. Riftmaker also works. Gluttonous Greaves or Plated Steelcaps.",
+      "skillNotes": "Start E. Take W at 2. Max Q, then W.",
+      "phases": {
+        "lvl1_3": [
+          "When he runs at you with Thundering Smash (Q), activate Counter Strike. It dodges the empowered attack and his autos, then stun him back.",
+          "Frenzied Maul (W) can't be dodged. Walk away when he has one W mark on you, because the second bite heals him a lot."
+        ],
+        "lvl4_5": [
+          "Stand outside Sky Splitter's (E) circle when the lightning lands, or you take damage and he gets a shield.",
+          "Trade into him when Q is on cooldown. He has little else to catch you with."
+        ],
+        "post6": [
+          "Stormbringer (R) disables towers. Don't let him dive you under tower at low HP. Instead fight back with E + R.",
+          "Your ultimate's resists plus E blanking his autos win fair all-ins."
+        ],
+        "midgame": [
+          "With Blade of The Ruined King + Trinity Force you out-duel him easily. Split push and force him to answer."
+        ],
+        "lategame": [
+          "Stay away from his R tower-disable dives in teamfights. Peel your carries with E stun, or dive his backline."
+        ]
+      },
+      "threats": [
+        "Thundering Smash (Q) stun plus W double bite heals him and gives him a big burst early.",
+        "Stormbringer (R) tower disable enables dives and ganks."
+      ],
+      "killWindows": [
+        "After he uses Q (it has a long cooldown early). Jump in with Leap Strike + E.",
+        "Level 6 all-in when he doesn't have Q up."
+      ],
+      "avoid": [
+        "Casting E before he actually commits Q, because he walks away and waits.",
+        "Standing inside the E circle."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/jax/counters/",
+        "https://lolalytics.com/lol/jax/vs/volibear/build/",
+        "https://op.gg/lol/champions/jax/counters/top"
+      ]
+    },
+    "Warwick": {
+      "name": "Warwick",
+      "difficulty": 2,
+      "winRate": 58.13,
+      "winRateSource": "lolalytics Emerald+ 26.19 (op.gg Emerald+ 26.19: 55.21)",
+      "summary": "Favorable for you. Warwick relies on autos and sustain. Counter Strike blanks his autos, and Ignite cuts his low-HP healing. You win both lane and side lane.",
+      "runes": "Grasp of the Undying or Press the Attack",
+      "summoners": "Flash + Ignite (Ignite cuts Eternal Hunger and Jaws of the Beast healing)",
+      "start": "Doran's Blade + Health Potion",
+      "buildNotes": "Standard Trinity Force -> Sundered Sky. Get Executioner's Calling early if his healing keeps him alive.",
+      "skillNotes": "Start E. Take W at 2. Max Q, then W.",
+      "phases": {
+        "lvl1_3": [
+          "Trade short when he tries to Jaws of the Beast (Q). E + stun, then W-auto out.",
+          "Don't chase him at low HP. Eternal Hunger heals him more when he's low. Finish him with Ignite instead."
+        ],
+        "lvl4_5": [
+          "Primal Howl (E) gives him damage reduction and then fears. Don't jump in the moment he casts it. Wait it out or walk back.",
+          "When his Blood Hunt (W) is active on you at low HP, respect his chase speed."
+        ],
+        "post6": [
+          "Infinite Duress (R) suppresses you. Stay out of max range when possible. Your E can still stun him right after his R ends.",
+          "You win all-ins from even HP with R resists plus E."
+        ],
+        "midgame": [
+          "Split and duel him. With 2 items you win clearly. Watch for his R flank in skirmishes."
+        ],
+        "lategame": [
+          "Keep him off your carry with E stun after his R. Otherwise split push."
+        ]
+      },
+      "threats": [
+        "Infinite Duress (R) suppression, especially with jungle follow-up.",
+        "Low-HP healing from Eternal Hunger and Q.",
+        "Primal Howl (E) fear."
+      ],
+      "killWindows": [
+        "After Primal Howl ends and it's on cooldown.",
+        "When he's below 40%: Ignite + Leap Strike + E to shut off his healing."
+      ],
+      "avoid": [
+        "Extended fights without Ignite when he's low and healing.",
+        "Leap Striking into an active Primal Howl."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/jax/counters/",
+        "https://op.gg/lol/champions/jax/counters/top"
+      ]
+    },
+    "MonkeyKing": {
+      "name": "Wukong",
+      "difficulty": 2,
+      "winRate": 55.87,
+      "winRateSource": "lolalytics Emerald+ 26.19, low sample 247 games (op.gg Emerald+ 26.19: 50.99)",
+      "summary": "Slightly favorable. Wukong's short trades use Crushing Blow and autos, which Counter Strike dodges. The main danger is getting baited onto his clone.",
+      "runes": "Standard (Grasp of the Undying)",
+      "summoners": "Flash + Ignite",
+      "start": "Doran's Blade + Health Potion",
+      "buildNotes": "Plated Steelcaps into his physical damage. Standard Trinity Force -> Sundered Sky, with Death's Dance later.",
+      "skillNotes": "Start E. Take W at 2. Max Q, then W.",
+      "phases": {
+        "lvl1_3": [
+          "He trades with Nimbus Strike (E) -> auto -> Crushing Blow (Q). Cast Counter Strike when he dashes in to dodge the Q attack and stun him."
+        ],
+        "lvl4_5": [
+          "When he casts Warrior Trickster (W), he goes invisible and leaves a clone. Don't Leap Strike or E on the clone. Wait for his real position.",
+          "Stone Skin gives him extra armor in extended fights, so keep trades short."
+        ],
+        "post6": [
+          "Cyclone (R) can be recast for two knockups. Keep E for after the knockups or walk out of the spin.",
+          "When he uses R to engage, stun him with E and turn with your R."
+        ],
+        "midgame": [
+          "You outscale him in 1v1s. Split push and hold him in side lane."
+        ],
+        "lategame": [
+          "His R engage is his value. Peel or dive his backline after it's used."
+        ]
+      },
+      "threats": [
+        "Cyclone (R) double knockup.",
+        "Warrior Trickster (W) clone baiting your Q/E."
+      ],
+      "killWindows": [
+        "After he uses W and E (both on cooldown), he has no escape.",
+        "Level 6 all-in once R has been used."
+      ],
+      "avoid": [
+        "Leap Striking the clone.",
+        "Casting E before he commits with E/Q."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/jax/counters/",
+        "https://op.gg/lol/champions/jax/counters/top"
+      ]
+    },
+    "Yasuo": {
+      "name": "Yasuo",
+      "difficulty": 2,
+      "winRate": 56.45,
+      "winRateSource": "lolalytics Emerald+ 26.19 (op.gg Emerald+ 26.19: 54.99)",
+      "summary": "Favorable for you. Most of Yasuo's damage is crit autos, which Counter Strike dodges. Wind Wall doesn't stop Leap Strike. Pop his passive shield before you commit.",
+      "runes": "Grasp of the Undying (most-picked on lolalytics)",
+      "summoners": "Flash + Ignite",
+      "start": "Doran's Bow + 2 Health Potion or Doran's Blade",
+      "buildNotes": "Plated Steelcaps. Standard AD or hybrid (Dusk and Dawn -> Zhonya's Hourglass) both do well. Death's Dance helps later.",
+      "skillNotes": "Start E. Take W at 2. Max Q, then W.",
+      "phases": {
+        "lvl1_3": [
+          "Poke his Way of the Wanderer shield with an auto or W first. Then commit Leap Strike + Counter Strike.",
+          "He wants to Sweeping Blade (E) through the wave to you. Stand so he has to dash toward you, then E to stun."
+        ],
+        "lvl4_5": [
+          "Watch his Steel Tempest stacks. When Q3 (tornado) is ready, stay out of line or keep E for after the knockup.",
+          "Leap Strike can follow his E dashes to minions. Use it to finish trades."
+        ],
+        "post6": [
+          "Last Breath needs a knockup. Deny his tornado and your all-in wins.",
+          "Your R resists plus E dodging his crits make him lose fair all-ins."
+        ],
+        "midgame": [
+          "Once you have 2 items you out-duel him. Punish his split with side-lane pressure."
+        ],
+        "lategame": [
+          "In teamfights, E + stun him the moment he dashes in for R."
+        ]
+      },
+      "threats": [
+        "Q3 tornado knockup into Last Breath (R).",
+        "Way of the Wanderer passive shield absorbs your first trade."
+      ],
+      "killWindows": [
+        "After his shield is popped and Q3 is used.",
+        "When he's out of E dash stacks near the wave."
+      ],
+      "avoid": [
+        "Starting a trade into a full shield.",
+        "Walking into the tornado line when your E is down."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/jax/counters/",
+        "https://lolalytics.com/lol/jax/vs/yasuo/build/",
+        "https://op.gg/lol/champions/jax/counters/top"
+      ]
+    },
+    "Yone": {
+      "name": "Yone",
+      "difficulty": 2,
+      "winRate": 53.08,
+      "winRateSource": "lolalytics Emerald+ 26.19 (op.gg Emerald+ 26.19: 51.28)",
+      "summary": "Slightly favorable. Counter Strike blanks his crit autos. Spirit Unbound snaps him back to his body, so stand near where he'll return and punish.",
+      "runes": "Grasp of the Undying (most-picked on lolalytics)",
+      "summoners": "Flash + Ignite",
+      "start": "Doran's Bow + 2 Health Potion or Doran's Blade",
+      "buildNotes": "Standard Trinity Force -> Sundered Sky. Plated Steelcaps into his AD autos. His E and W deal mixed damage, so Steelcaps aren't mandatory.",
+      "skillNotes": "Start E. Take W at 2. Max Q, then W.",
+      "phases": {
+        "lvl1_3": [
+          "He trades with Mortal Steel (Q) + autos. Cast E when he walks in to auto.",
+          "Spirit Cleave (W) gives him a shield. Trade after it's used."
+        ],
+        "lvl4_5": [
+          "When he uses Spirit Unbound (E), don't chase his spirit. Walk to his body and hit him with Leap Strike + E when he snaps back.",
+          "Watch for Q3 (dash + knockup). Keep E for after the knockup or sidestep it."
+        ],
+        "post6": [
+          "Fate Sealed (R) pulls and knocks up. Don't stand in a line with teammates.",
+          "You win all-ins when his E and Q3 are used."
+        ],
+        "midgame": [
+          "Split push. You beat him in 1v1s at equal items. Keep E for his all-in."
+        ],
+        "lategame": [
+          "Stun him with E the moment he dives your backline."
+        ]
+      },
+      "threats": [
+        "Q3 knockup into Fate Sealed (R).",
+        "Spirit Unbound (E) mark bursting you when he snaps back."
+      ],
+      "killWindows": [
+        "When he snaps back from E. Hit him with Leap Strike + E stun at his body.",
+        "After Q3 and W are used."
+      ],
+      "avoid": [
+        "Chasing his spirit.",
+        "Burning E before he commits Q3."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/jax/counters/",
+        "https://lolalytics.com/lol/jax/vs/yone/build/",
+        "https://op.gg/lol/champions/jax/counters/top"
+      ]
+    },
+    "Yorick": {
+      "name": "Yorick",
+      "difficulty": 3,
+      "winRate": 53.91,
+      "winRateSource": "lolalytics Emerald+ 26.19 (op.gg Emerald+ 26.19: 51.70)",
+      "summary": "Slightly favorable for you, but the lane can be annoying. Clear his ghouls fast and keep Leap Strike to escape his Dark Procession cage. You out-split him mid to late.",
+      "runes": "Grasp of the Undying",
+      "summoners": "Flash + Teleport (most-picked on lolalytics)",
+      "start": "Doran's Shield + Health Potion (most-picked on lolalytics)",
+      "buildNotes": "Ravenous Hydra is popular here because it clears ghouls and Maiden quickly. Standard Trinity Force works too.",
+      "skillNotes": "Start E. Take W at 2. Max Q, then W.",
+      "phases": {
+        "lvl1_3": [
+          "Kill his Mist Walkers first. Their damage adds up. E dodges their autos."
+        ],
+        "lvl4_5": [
+          "When he casts Dark Procession (W), Leap Strike to a minion or ward outside the cage.",
+          "Mourning Mist (E) marks you and speeds his ghouls toward you. Leave the area or kill the ghouls."
+        ],
+        "post6": [
+          "Kill Maiden (from Eulogy of the Isles) first, or fight away from her. Your R active hits her and the ghouls.",
+          "You win all-ins when his W is used."
+        ],
+        "midgame": [
+          "He wants to split. Match him and take trades when ghouls are down."
+        ],
+        "lategame": [
+          "You out-duel him in side lane. Punish when Maiden is dead."
+        ]
+      },
+      "threats": [
+        "Dark Procession (W) cage plus ghouls.",
+        "Eulogy of the Isles (R) Maiden pushing towers."
+      ],
+      "killWindows": [
+        "When W is on cooldown and ghouls are dead."
+      ],
+      "avoid": [
+        "Fighting in the cage without Leap Strike.",
+        "Ignoring ghouls."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/jax/counters/",
+        "https://lolalytics.com/lol/jax/vs/yorick/build/",
+        "https://op.gg/lol/champions/jax/counters/top"
+      ]
+    },
+    "Pantheon": {
+      "name": "Pantheon",
+      "difficulty": 4,
+      "winRate": 47.47,
+      "winRateSource": "lolalytics Emerald+ 26.19 (op.gg Emerald+ 26.19: 44.83)",
+      "summary": "Hard lane. Pantheon bullies you at levels 1-5 with Shield Vault stun and empowered Comet Spear. Survive to level 6 and 2 items, then you outscale him.",
+      "runes": "Conqueror (most-picked on lolalytics) or Grasp of the Undying with Second Wind/Bone Plating instead of Conditioning",
+      "summoners": "Flash + Ignite",
+      "start": "Doran's Shield + Health Potion (most-picked on lolalytics)",
+      "buildNotes": "Plated Steelcaps into his physical damage. Blade of The Ruined King performs well. Death's Dance can come earlier.",
+      "skillNotes": "Start E. Take W at 2. Max Q, then W.",
+      "phases": {
+        "lvl1_3": [
+          "Don't trade into his passive-empowered W. Farm safely.",
+          "Cast E when he Shield Vaults (W) to dodge his follow-up autos."
+        ],
+        "lvl4_5": [
+          "Aegis Assault (E) blocks damage from the front. Don't jump in while it's up. Leap Strike behind him to a minion or ward.",
+          "Stay out of his Comet Spear poke range."
+        ],
+        "post6": [
+          "Grand Starfall (R) roams. Ping and push. When he's in lane, you win all-ins after his W is used."
+        ],
+        "midgame": [
+          "You outscale him. Split push and hold him."
+        ],
+        "lategame": [
+          "Dive him when his E is down."
+        ]
+      },
+      "threats": [
+        "Shield Vault (W) stun into empowered Q/E.",
+        "Grand Starfall (R) roams.",
+        "Comet Spear (Q) poke."
+      ],
+      "killWindows": [
+        "After his W is used.",
+        "After level 6 when his E is on cooldown."
+      ],
+      "avoid": [
+        "Trading pre-6 into his passive.",
+        "Jumping into his E."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/jax/counters/",
+        "https://lolalytics.com/lol/jax/vs/pantheon/build/",
+        "https://op.gg/lol/champions/jax/counters/top"
+      ]
+    },
+    "Udyr": {
+      "name": "Udyr",
+      "difficulty": 3,
+      "winRate": 51.7,
+      "winRateSource": "lolalytics Emerald+ 26.19, low sample 176 games (op.gg Emerald+ 26.19: 50.79)",
+      "summary": "Even. Udyr is strong early with Blazing Stampede stun and Wilding Claw. Counter Strike blanks his autos.",
+      "runes": "Standard (Grasp of the Undying)",
+      "summoners": "Flash + Ignite",
+      "start": "Doran's Blade + Health Potion",
+      "buildNotes": "Pick boots for the Udyr build you face: Plated Steelcaps into AD Udyr, Mercury's Treads into AP (Wingborne Storm-focused) Udyr.",
+      "skillNotes": "Start E. Take W at 2. Max Q, then W.",
+      "phases": {
+        "lvl1_3": [
+          "When he runs at you with Blazing Stampede (E), cast Counter Strike to dodge his autos."
+        ],
+        "lvl4_5": [
+          "Iron Mantle (W) gives him a shield. Trade when it's down."
+        ],
+        "post6": [
+          "You win all-ins when his E is on cooldown."
+        ],
+        "midgame": [
+          "Split push. You out-duel him with 2 items."
+        ],
+        "lategame": [
+          "Keep him off your carries with E."
+        ]
+      },
+      "threats": [
+        "Blazing Stampede (E) stun.",
+        "Wingborne Storm (R) AoE damage."
+      ],
+      "killWindows": [
+        "After his E is used."
+      ],
+      "avoid": [
+        "Trading into his W shield."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/jax/counters/",
+        "https://op.gg/lol/champions/jax/counters/top"
+      ]
+    },
+    "Sion": {
+      "name": "Sion",
+      "difficulty": 3,
+      "winRate": 50.41,
+      "winRateSource": "lolalytics Emerald+ 26.19 (op.gg Emerald+ 26.19: 46.17)",
+      "summary": "Even. Sion scales tanky, so you need Blade of The Ruined King or Sundered Sky to kill him. Dodge Decimating Smash, and cast E when he revives because Glory in Death's attacks are autos.",
+      "runes": "Grasp of the Undying (most-picked on lolalytics)",
+      "summoners": "Flash + Ignite",
+      "start": "Doran's Helm + Health Potion (most-picked on lolalytics)",
+      "buildNotes": "Sundered Sky and Blade of The Ruined King perform well against his HP stacking.",
+      "skillNotes": "Start E. Take W at 2. Max Q, then W.",
+      "phases": {
+        "lvl1_3": [
+          "Walk out of Decimating Smash (Q) or Leap Strike to a minion away. A fully charged Q knocks you up."
+        ],
+        "lvl4_5": [
+          "When Soul Furnace (W) shield pops, it deals damage. Don't stand next to him when it explodes.",
+          "Roar of the Slayer (E) slows and shreds your armor."
+        ],
+        "post6": [
+          "Unstoppable Onslaught (R) knocks you up. Stay out of its path.",
+          "When he dies, cast E during Glory in Death to dodge his autos, or walk away."
+        ],
+        "midgame": [
+          "Split push. He can't kill you. Take towers."
+        ],
+        "lategame": [
+          "Beat him in side lane. Don't let him engage onto your team."
+        ]
+      },
+      "threats": [
+        "Decimating Smash (Q) knockup.",
+        "Unstoppable Onslaught (R) engage."
+      ],
+      "killWindows": [
+        "After his Q is used and the W shield is down."
+      ],
+      "avoid": [
+        "Standing in his Q charge."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/jax/counters/",
+        "https://lolalytics.com/lol/jax/vs/sion/build/",
+        "https://op.gg/lol/champions/jax/counters/top"
+      ]
+    },
+    "Malphite": {
+      "name": "Malphite",
+      "difficulty": 4,
+      "winRate": 48.46,
+      "winRateSource": "lolalytics Emerald+ 26.19 (op.gg Emerald+ 26.19: 47.95)",
+      "summary": "Hard matchup. Ground Slam's attack speed reduction counters your autos, and Malphite stacks armor. Build hybrid AP (Dusk and Dawn -> Riftmaker) to bypass his armor.",
+      "runes": "Grasp of the Undying (most-picked on lolalytics)",
+      "summoners": "Flash + Teleport (most-picked on lolalytics)",
+      "start": "Doran's Helm + Health Potion (most-picked on lolalytics)",
+      "buildNotes": "Dusk and Dawn -> Riftmaker -> Zhonya's Hourglass performs well against his armor.",
+      "skillNotes": "Take W at 1 (most-picked order on lolalytics), then E. Max Q, then W.",
+      "phases": {
+        "lvl1_3": [
+          "Farm. He pokes you with Seismic Shard (Q)."
+        ],
+        "lvl4_5": [
+          "Ground Slam (E) reduces your attack speed. Trade when it's down."
+        ],
+        "post6": [
+          "Unstoppable Force (R) engages. Stay out of range."
+        ],
+        "midgame": [
+          "Split push. Hybrid AP does well."
+        ],
+        "lategame": [
+          "Don't group in his R range."
+        ]
+      },
+      "threats": [
+        "Ground Slam (E) attack speed reduction.",
+        "Unstoppable Force (R) engage."
+      ],
+      "killWindows": [
+        "When his E is on cooldown."
+      ],
+      "avoid": [
+        "Building full AD into his armor."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/jax/counters/",
+        "https://lolalytics.com/lol/jax/vs/malphite/build/",
+        "https://op.gg/lol/champions/jax/counters/top",
+        "https://www.dodge.gg/en-US/lol/news/jax-build-2026"
+      ]
+    },
+    "Ornn": {
+      "name": "Ornn",
+      "difficulty": 3,
+      "winRate": 50.32,
+      "winRateSource": "lolalytics Emerald+ 26.19 (op.gg Emerald+ 26.19: 48.35)",
+      "summary": "Even. Ornn's Searing Charge knocks you up near walls or pillars. You outscale him in side lane.",
+      "runes": "Grasp of the Undying (most-picked on lolalytics)",
+      "summoners": "Flash + Teleport (most-picked on lolalytics)",
+      "start": "Doran's Helm + Health Potion (most-picked on lolalytics)",
+      "buildNotes": "Dusk and Dawn -> Riftmaker (lolalytics). Hybrid AP does well against his armor.",
+      "skillNotes": "Start E. Take W at 2. Max Q, then W.",
+      "phases": {
+        "lvl1_3": [
+          "Farm. Don't fight near walls or his Volcanic Rupture (Q) pillar."
+        ],
+        "lvl4_5": [
+          "Bellows Breath (W) makes you brittle, so his next hit knocks you up. Walk away."
+        ],
+        "post6": [
+          "Call of the Forge God (R) engages. Stay out of range."
+        ],
+        "midgame": [
+          "Split push. You beat him 1v1."
+        ],
+        "lategame": [
+          "Don't group in his R range."
+        ]
+      },
+      "threats": [
+        "Searing Charge (E) near walls/pillars.",
+        "Call of the Forge God (R) engage."
+      ],
+      "killWindows": [
+        "When his E is on cooldown."
+      ],
+      "avoid": [
+        "Fighting near walls."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/jax/counters/",
+        "https://lolalytics.com/lol/jax/vs/ornn/build/",
+        "https://op.gg/lol/champions/jax/counters/top"
+      ]
+    },
+    "Shen": {
+      "name": "Shen",
+      "difficulty": 4,
+      "winRate": 47.42,
+      "winRateSource": "lolalytics Emerald+ 26.19 (op.gg Emerald+ 26.19: 45.96)",
+      "summary": "Hard matchup. Spirit's Refuge blocks your autos, and Shadow Dash taunts you. Punish his R roams.",
+      "runes": "Grasp of the Undying (most-picked on lolalytics)",
+      "summoners": "Flash + Ignite",
+      "start": "Doran's Shield + Health Potion (most-picked on lolalytics)",
+      "buildNotes": "Mercury's Treads (most-picked on lolalytics) -> Sundered Sky.",
+      "skillNotes": "Start E. Take W at 2. Max Q, then W.",
+      "phases": {
+        "lvl1_3": [
+          "Cast E when he uses Twilight Assault (Q) to dodge his empowered autos."
+        ],
+        "lvl4_5": [
+          "Don't auto inside Spirit's Refuge (W). Wait for it to end."
+        ],
+        "post6": [
+          "Stand United (R) leaves lane. Push and take plates."
+        ],
+        "midgame": [
+          "Split push. Punish his R."
+        ],
+        "lategame": [
+          "Beat him in side lane."
+        ]
+      },
+      "threats": [
+        "Spirit's Refuge (W) blocks autos.",
+        "Shadow Dash (E) taunt.",
+        "Stand United (R) global."
+      ],
+      "killWindows": [
+        "After his W is used."
+      ],
+      "avoid": [
+        "Autoing into his W."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/jax/counters/",
+        "https://lolalytics.com/lol/jax/vs/shen/build/",
+        "https://op.gg/lol/champions/jax/counters/top"
+      ]
+    },
+    "KSante": {
+      "name": "K'Sante",
+      "difficulty": 3,
+      "winRate": 50.94,
+      "winRateSource": "lolalytics Emerald+ 26.19 (op.gg Emerald+ 26.19: 51.48)",
+      "summary": "Even. K'Sante's Path Maker charge and All Out ultimate are his big moments. Counter Strike blanks his autos.",
+      "runes": "Grasp of the Undying (most-picked on lolalytics)",
+      "summoners": "Flash + Exhaust (most-picked on lolalytics)",
+      "start": "Doran's Blade + Health Potion (most-picked on lolalytics)",
+      "buildNotes": "Blade of The Ruined King performs well against his HP stacking. Iceborn Gauntlet also shows up on lolalytics.",
+      "skillNotes": "Start E. Take W at 2. Max Q, then W.",
+      "phases": {
+        "lvl1_3": [
+          "Farm. Cast E when he trades with autos."
+        ],
+        "lvl4_5": [
+          "Path Maker (W) charges you. Walk out of its path."
+        ],
+        "post6": [
+          "All Out (R) makes him squishy but deadly. Cast E and fight him when he's committed."
+        ],
+        "midgame": [
+          "Split push. You beat him 1v1."
+        ],
+        "lategame": [
+          "Keep E for his All Out."
+        ]
+      },
+      "threats": [
+        "Path Maker (W) charge.",
+        "All Out (R) burst."
+      ],
+      "killWindows": [
+        "After his W is used."
+      ],
+      "avoid": [
+        "Standing in his W path."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/jax/counters/",
+        "https://lolalytics.com/lol/jax/vs/ksante/build/",
+        "https://op.gg/lol/champions/jax/counters/top"
+      ]
+    },
+    "Chogath": {
+      "name": "Cho'Gath",
+      "difficulty": 3,
+      "winRate": 49.79,
+      "winRateSource": "lolalytics Emerald+ 26.19 (op.gg Emerald+ 26.19: 47.06)",
+      "summary": "Even. Dodge Rupture, respect Feast's execute, and you outscale him in side lane.",
+      "runes": "Press the Attack (most-picked on lolalytics) or Grasp of the Undying",
+      "summoners": "Flash + Teleport (most-picked on lolalytics)",
+      "start": "Doran's Helm + Health Potion (most-picked on lolalytics)",
+      "buildNotes": "Blade of The Ruined King performs well against his HP stacking.",
+      "skillNotes": "Start E. Take W at 2. Max Q, then W.",
+      "phases": {
+        "lvl1_3": [
+          "Dodge Rupture (Q). If he misses it, Leap Strike in."
+        ],
+        "lvl4_5": [
+          "Feral Scream (W) silences you. Trade when it's down."
+        ],
+        "post6": [
+          "Feast (R) deals true damage. Leave the fight when you're low."
+        ],
+        "midgame": [
+          "Split push. You beat him 1v1."
+        ],
+        "lategame": [
+          "Stay out of Feast range when low."
+        ]
+      },
+      "threats": [
+        "Rupture (Q) knockup.",
+        "Feast (R) execute."
+      ],
+      "killWindows": [
+        "When his Q is on cooldown."
+      ],
+      "avoid": [
+        "Fighting at low HP."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/jax/counters/",
+        "https://lolalytics.com/lol/jax/vs/chogath/build/",
+        "https://op.gg/lol/champions/jax/counters/top"
+      ]
+    },
+    "DrMundo": {
+      "name": "Dr. Mundo",
+      "difficulty": 3,
+      "winRate": 49.83,
+      "winRateSource": "lolalytics Emerald+ 26.19 (op.gg Emerald+ 26.19: 51.06)",
+      "summary": "Even. Dodge his cleavers, deny his passive canister, and use Ignite against Maximum Dosage.",
+      "runes": "Grasp of the Undying (most-picked on lolalytics)",
+      "summoners": "Flash + Ignite (most-picked on lolalytics)",
+      "start": "Doran's Shield + Health Potion (most-picked on lolalytics)",
+      "buildNotes": "Blade of The Ruined King performs well against his HP. Executioner's Calling cuts his healing.",
+      "skillNotes": "Take W at 1 (most-picked on lolalytics), then Q. Max Q, then W.",
+      "phases": {
+        "lvl1_3": [
+          "Stand behind minions to block Infected Bonesaw (Q)."
+        ],
+        "lvl4_5": [
+          "Walk over his passive canister to deny it."
+        ],
+        "post6": [
+          "Maximum Dosage (R) heals him. Use Ignite."
+        ],
+        "midgame": [
+          "Split push. You beat him 1v1."
+        ],
+        "lategame": [
+          "Buy Executioner's Calling."
+        ]
+      },
+      "threats": [
+        "Infected Bonesaw (Q) poke.",
+        "Maximum Dosage (R) regen."
+      ],
+      "killWindows": [
+        "When his R is on cooldown."
+      ],
+      "avoid": [
+        "Standing in cleaver range."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/jax/counters/",
+        "https://lolalytics.com/lol/jax/vs/drmundo/build/",
+        "https://op.gg/lol/champions/jax/counters/top"
+      ]
+    },
+    "Poppy": {
+      "name": "Poppy",
+      "difficulty": 4,
+      "winRate": 46.8,
+      "winRateSource": "lolalytics Emerald+ 26.19 (op.gg Emerald+ 26.19: 44.87)",
+      "summary": "Hard matchup. Steadfast Presence stops your Leap Strike, and Heroic Charge pins you against walls. Bait her W before you commit.",
+      "runes": "Press the Attack (most-picked on lolalytics)",
+      "summoners": "Flash + Exhaust",
+      "start": "Doran's Bow + 2 Health Potion",
+      "buildNotes": "Blade of The Ruined King and Trinity Force perform well here.",
+      "skillNotes": "Start E. Take W at 2. Max Q, then W.",
+      "phases": {
+        "lvl1_3": [
+          "Cast E when she autos to dodge her passive buckler."
+        ],
+        "lvl4_5": [
+          "Don't Leap Strike while Steadfast Presence (W) is up. Bait it first."
+        ],
+        "post6": [
+          "Keeper's Verdict (R) knocks you away. Stay out of range."
+        ],
+        "midgame": [
+          "Split push. Bait her W."
+        ],
+        "lategame": [
+          "Don't fight near walls."
+        ]
+      },
+      "threats": [
+        "Steadfast Presence (W) stops your Q.",
+        "Heroic Charge (E) wall stun."
+      ],
+      "killWindows": [
+        "After her W is used."
+      ],
+      "avoid": [
+        "Leap Striking into her W."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/jax/counters/",
+        "https://lolalytics.com/lol/jax/vs/poppy/build/",
+        "https://op.gg/lol/champions/jax/counters/top"
+      ]
+    },
+    "Gragas": {
+      "name": "Gragas",
+      "difficulty": 4,
+      "winRate": 47.67,
+      "winRateSource": "lolalytics Emerald+ 26.19 (op.gg Emerald+ 26.19: 46.21)",
+      "summary": "Hard matchup. Gragas pokes you with Barrel Roll and disengages your Leap Strike with Explosive Cask. Punish him when Body Slam is on cooldown.",
+      "runes": "Press the Attack (most-picked on lolalytics) or Conqueror",
+      "summoners": "Flash + Ignite",
+      "start": "Doran's Bow + 2 Health Potion",
+      "buildNotes": "Mercury's Treads (most-picked on lolalytics). Hextech Gunblade shows a strong win rate on lolalytics (small sample).",
+      "skillNotes": "Start E. Take Q at 2. Max Q, then W.",
+      "phases": {
+        "lvl1_3": [
+          "Cast E when he uses Drunken Rage (W) to dodge the empowered auto."
+        ],
+        "lvl4_5": [
+          "Stand behind minions to block Body Slam (E)."
+        ],
+        "post6": [
+          "Explosive Cask (R) knocks you away. Wait for it before you commit."
+        ],
+        "midgame": [
+          "Split push. Punish him when his E is down."
+        ],
+        "lategame": [
+          "Don't commit into his R."
+        ]
+      },
+      "threats": [
+        "Body Slam (E) stun.",
+        "Explosive Cask (R) disengage."
+      ],
+      "killWindows": [
+        "After his E is used."
+      ],
+      "avoid": [
+        "Leap Striking into his R."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/jax/counters/",
+        "https://lolalytics.com/lol/jax/vs/gragas/build/",
+        "https://op.gg/lol/champions/jax/counters/top"
+      ]
+    },
+    "Maokai": {
+      "name": "Maokai",
+      "difficulty": 2,
+      "winRate": 55.74,
+      "winRateSource": "lolalytics Emerald+ 26.19, low sample 122 games (not in op.gg list)",
+      "summary": "Favorable for you. Maokai can't kill you, and you outscale him in side lane. Watch for his Twisted Advance root.",
+      "runes": "Standard (Grasp of the Undying)",
+      "summoners": "Flash + Ignite",
+      "start": "Doran's Blade + Health Potion",
+      "buildNotes": "Standard Trinity Force -> Sundered Sky. Blade of The Ruined King against his HP.",
+      "skillNotes": "Start E. Take W at 2. Max Q, then W.",
+      "phases": {
+        "lvl1_3": [
+          "Cast E when he autos to dodge his Sap Magic heal."
+        ],
+        "lvl4_5": [
+          "Twisted Advance (W) roots you. Trade when it's down."
+        ],
+        "post6": [
+          "Nature's Grasp (R) roots. Stay out of range."
+        ],
+        "midgame": [
+          "Split push. You beat him 1v1."
+        ],
+        "lategame": [
+          "Don't group in his R range."
+        ]
+      },
+      "threats": [
+        "Twisted Advance (W) root.",
+        "Nature's Grasp (R) engage."
+      ],
+      "killWindows": [
+        "After his W is used."
+      ],
+      "avoid": [
+        "Fighting into his W."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/jax/counters/"
+      ]
+    },
+    "Zaahen": {
+      "name": "Zaahen",
+      "difficulty": 2,
+      "winRate": 55.47,
+      "winRateSource": "lolalytics Emerald+ 26.19 (op.gg Emerald+ 26.19: 54.43)",
+      "summary": "Favorable for you. Zaahen (released late 2025) builds stacks of Cultivation of War. Fight him when his stacks are low, and bait his revive.",
+      "runes": "Grasp of the Undying (best-WR keystone on lolalytics)",
+      "summoners": "Flash + Exhaust (best-WR on lolalytics)",
+      "start": "Doran's Helm + Health Potion (best-WR on lolalytics)",
+      "buildNotes": "Plated Steelcaps -> Dusk and Dawn -> Zhonya's Hourglass (lolalytics). Executioner's Calling cuts his healing.",
+      "skillNotes": "Start E. Take Q at 2. Max Q, then W.",
+      "phases": {
+        "lvl1_3": [
+          "Cast E when he uses The Darkin Glaive (Q) to dodge the empowered attack."
+        ],
+        "lvl4_5": [
+          "Dreaded Return (W) stuns at max range. Stay close or out of range."
+        ],
+        "post6": [
+          "Grim Deliverance (R) gives him CC immunity. Wait it out."
+        ],
+        "midgame": [
+          "Split push. You beat him 1v1."
+        ],
+        "lategame": [
+          "Bait his revive before you commit."
+        ]
+      },
+      "threats": [
+        "Cultivation of War (passive) revive at max stacks.",
+        "Dreaded Return (W) stun."
+      ],
+      "killWindows": [
+        "When his stacks are low."
+      ],
+      "avoid": [
+        "Fighting into max stacks."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/jax/counters/",
+        "https://lolalytics.com/lol/jax/vs/zaahen/build/",
+        "https://op.gg/lol/champions/jax/counters/top",
+        "https://wiki.leagueoflegends.com/en-us/Zaahen"
+      ]
+    },
+    "Teemo": {
+      "name": "Teemo",
+      "difficulty": 4,
+      "winRate": 49.22,
+      "winRateSource": "lolalytics Emerald+ 26.19 (site label 16.19), Jax top vs Teemo top, 829 games; counterstats all ranks ~47%",
+      "summary": "Teemo wins the early lane with Blinding Dart poke and kiting. You win once you have Trinity Force, magic resist and Oracle Lens. Survive, farm, and all-in only while Blinding Dart is on cooldown.",
+      "runes": "Grasp of the Undying with Second Wind in Resolve. Secondary Inspiration (Magical Footwear, Cosmic Insight).",
+      "summoners": "Flash + Ignite (kill pressure through Move Quick), or Flash + Exhaust",
+      "start": "Doran's Shield + Health Potion (Doran's Helm also works)",
+      "buildNotes": "Mercury's Treads over Plated Steelcaps. Wit's End is a strong 2nd item. Swap to Oracle Lens on your first back after he hits 6. Keep a Control Ward in the lane bush.",
+      "skillNotes": "Take E (Counter Strike) at level 1. It dodges his autos, which carry Toxic Shot. Level 2 Q, level 3 W, then max W.",
+      "phases": {
+        "lvl1_3": [
+          "Don't walk into the bush he's camouflaged in. Last hit with W (Empower) so you don't get poked while autoing.",
+          "Trade only when Blinding Dart is on cooldown. A blinded Jax loses every trade."
+        ],
+        "lvl4_5": [
+          "Leap Strike onto a minion or ward next to him, then activate Counter Strike before you land so the stun goes off on arrival.",
+          "Ignite as soon as you land. Move Quick lets him outrun you, so commit only if the stun lands."
+        ],
+        "post6": [
+          "Buy Oracle Lens and sweep shrooms on your path back to lane and in the river.",
+          "Grandmaster-at-Arms plus Leap Strike lets you burst him even after a Blinding Dart."
+        ],
+        "midgame": [
+          "Split push with Oracle Lens. With 2 items he can't 1v1 you.",
+          "Sweep shrooms before Dragon and Void Grubs so your team can walk in."
+        ],
+        "lategame": [
+          "Dive him or the ADC in fights. He dies to one full rotation.",
+          "Don't face-check bushes without a sweep."
+        ]
+      },
+      "threats": [
+        "Blinding Dart (Q): your autos and W miss while blinded",
+        "Noxious Trap (R, from 6): slow plus damage over time, so sweep them",
+        "Guerrilla Warfare camouflage: bush ambushes"
+      ],
+      "killWindows": [
+        "Right after he uses Blinding Dart on the wave",
+        "Level 2-3 if he walks up without Q",
+        "Level 6+ with Ignite once Move Quick is down"
+      ],
+      "avoid": [
+        "Chasing him through shroomed jungle",
+        "Fighting in his bush without vision",
+        "Trading while blinded"
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/jax/counters/",
+        "https://lolalytics.com/lol/jax/vs/teemo/build/",
+        "https://www.counterstats.net/league-of-legends/jax/vs-teemo/top/all"
+      ]
+    },
+    "Quinn": {
+      "name": "Quinn",
+      "difficulty": 5,
+      "winRate": 43.03,
+      "winRateSource": "lolalytics Emerald+ 26.19, Jax top vs Quinn top, 251 games; counterstats all ranks ~46%",
+      "summary": "This is one of your worst lanes. Quinn out-ranges you, blinds you, and Vault resets your engage. Play for farm and scaling, never chase, and make her come to you.",
+      "runes": "Grasp of the Undying with Second Wind. Press the Attack is the other common pick.",
+      "summoners": "Flash + Teleport (farm lane), or Flash + Ignite if your jungler plays top side",
+      "start": "Doran's Shield + Health Potion",
+      "buildNotes": "Rush Plated Steelcaps, then Trinity Force. Sterak's Gage and Randuin's Omen blunt her burst and crits. Zhonya's Hourglass had high win rates in small samples here.",
+      "skillNotes": "Take E at level 1. Counter Strike dodges her autos and Harrier procs. Max W, then Q.",
+      "phases": {
+        "lvl1_3": [
+          "Farm at max range and let the wave push to you.",
+          "If she walks into melee range to auto, press Counter Strike and step toward her so the stun lands."
+        ],
+        "lvl4_5": [
+          "Engage with Leap Strike only after she has used Vault.",
+          "Hold a freeze near your tower so she has to overextend for CS, then call your jungler."
+        ],
+        "post6": [
+          "She roams with Behind Enemy Lines. Ping it and shove the wave into her tower.",
+          "Grandmaster-at-Arms' armor lets you win an all-in if Leap Strike + Counter Strike both land."
+        ],
+        "midgame": [
+          "With Trinity Force + Plated Steelcaps you out-duel her. Fight near your jungler.",
+          "Ward your flanks. She picks off lone split pushers."
+        ],
+        "lategame": [
+          "You scale better. Look for picks with your team's CC.",
+          "In fights, wait for Vault before you jump."
+        ]
+      },
+      "threats": [
+        "Blinding Assault (Q): blind plus Harrier mark",
+        "Vault (E): knockback plus slow that cancels your engage",
+        "Behind Enemy Lines (R): fast roams and returns"
+      ],
+      "killWindows": [
+        "Vault on cooldown while she's near your minions",
+        "Jungle gank with Ignite",
+        "Right after she misses Blinding Assault"
+      ],
+      "avoid": [
+        "Opening with Leap Strike while Vault is up",
+        "Chasing her past river",
+        "Leaving the wave in mid-lane where she can poke freely"
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/jax/counters/",
+        "https://lolalytics.com/lol/jax/vs/quinn/build/",
+        "https://www.counterstats.net/league-of-legends/jax"
+      ]
+    },
+    "Singed": {
+      "name": "Singed",
+      "difficulty": 5,
+      "winRate": 42.78,
+      "winRateSource": "lolalytics Emerald+ 26.19, Jax top vs Singed top, 699 games; counterstats all ranks ~43%",
+      "summary": "This is your lowest-win-rate matchup. Singed proxies and kites with Poison Trail, and you can't catch him. Don't chase. Farm, take plates while he proxies, and outvalue him in side lanes.",
+      "runes": "Grasp of the Undying (standard)",
+      "summoners": "Flash + Exhaust (shuts down Insanity Potion), or Flash + Teleport",
+      "start": "Doran's Shield + Health Potion",
+      "buildNotes": "Lolalytics shows Blade of The Ruined King (slow, %HP damage) into Trinity Force. Take Mercury's Treads or Boots of Swiftness. Zhonya's Hourglass later.",
+      "skillNotes": "Max W for waveclear, then Q. Take E by level 3.",
+      "phases": {
+        "lvl1_3": [
+          "Last hit and never follow him into Poison Trail.",
+          "If he proxies behind your tower, stay and farm the tower wave. Chase only with your jungler."
+        ],
+        "lvl4_5": [
+          "Hold Leap Strike until he has used Fling, or he flips you back into Mega Adhesive.",
+          "When he proxies, shove your wave into his tower for plates."
+        ],
+        "post6": [
+          "Insanity Potion gives him speed, tenacity and sustain. Walk away or Exhaust him.",
+          "Tell your team he'll roam, and keep your lane pushed."
+        ],
+        "midgame": [
+          "Split push on the opposite side from him. Don't waste time dueling.",
+          "In fights, go past him to his carries."
+        ],
+        "lategame": [
+          "You scale harder. Dive the backline and ignore Singed.",
+          "Ward flanks so he can't proxy freely."
+        ]
+      },
+      "threats": [
+        "Mega Adhesive (W): grounds you so you can't Leap Strike or Flash",
+        "Fling (E): flips you into poison or his team",
+        "Insanity Potion (R): speed, tenacity and sustain"
+      ],
+      "killWindows": [
+        "He uses Fling and Mega Adhesive and has no escape left",
+        "He gets caught proxying near your tower",
+        "Jungle gank while he's in your lane"
+      ],
+      "avoid": [
+        "Chasing him through Poison Trail",
+        "Leap Strike into Mega Adhesive",
+        "Leaving your wave to follow him"
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/jax/counters/",
+        "https://lolalytics.com/lol/jax/vs/singed/build/",
+        "https://www.counterstats.net/league-of-legends/jax/vs-singed/top/all"
+      ]
+    },
+    "Vladimir": {
+      "name": "Vladimir",
+      "difficulty": 4,
+      "winRate": 45.66,
+      "winRateSource": "lolalytics Emerald+ 26.19, Jax top vs Vladimir top, 587 games; counterstats all ranks ~49%",
+      "summary": "You're much stronger at levels 1-5, and Vladimir outscales you. Punish him early, deny farm, and bait Sanguine Pool before you stun.",
+      "runes": "Grasp of the Undying, or Press the Attack for early all-ins",
+      "summoners": "Flash + Ignite (cuts his healing)",
+      "start": "Doran's Bow + 2 Health Potion",
+      "buildNotes": "Buy Chempunk Chainsword for anti-heal. Mercury's Treads. Then Wit's End, Kaenic Rookern, or Maw of Malmortius against his burst. Zhonya's Hourglass and Death's Dance show high win rates here.",
+      "skillNotes": "Take E first. Max W, then Q. Save Counter Strike's stun for when Sanguine Pool ends.",
+      "phases": {
+        "lvl1_3": [
+          "Walk up and trade hard. He can't match your autos early.",
+          "Bait out Transfusion, then all-in."
+        ],
+        "lvl4_5": [
+          "When he uses Sanguine Pool, wait at its edge and Ignite as it ends so he can't heal back.",
+          "Stand in his wave to deny last hits."
+        ],
+        "post6": [
+          "Hemoplague makes all-ins risky. Engage right after he uses R or Sanguine Pool.",
+          "Chempunk Chainsword keeps him from outhealing you."
+        ],
+        "midgame": [
+          "Split push. He can't stop you 1v1 until later.",
+          "Get anti-heal and magic resist before you fight him again."
+        ],
+        "lategame": [
+          "He's a teamfight threat. Dive him fast, and use Zhonya's Hourglass against Hemoplague.",
+          "Hold Counter Strike's stun for when he exits Sanguine Pool."
+        ]
+      },
+      "threats": [
+        "Sanguine Pool (W): untargetable, dodges your Counter Strike stun",
+        "Hemoplague (R): big delayed burst",
+        "Tides of Blood (E): AoE slow and burst"
+      ],
+      "killWindows": [
+        "Levels 1-5",
+        "Right after Sanguine Pool is used",
+        "Jungle gank before 6"
+      ],
+      "avoid": [
+        "Stunning with Counter Strike while he can still Pool",
+        "Long fights without anti-heal",
+        "Letting him farm freely"
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/jax/counters/",
+        "https://lolalytics.com/lol/jax/vs/vladimir/build/",
+        "https://www.counterstats.net/league-of-legends/jax"
+      ]
+    },
+    "Kennen": {
+      "name": "Kennen",
+      "difficulty": 4,
+      "winRate": 49.32,
+      "winRateSource": "lolalytics Emerald+ 26.19, Jax top vs Kennen top, 661 games; counterstats all ranks ~43%",
+      "summary": "Kennen pokes you out with Thundering Shuriken and escapes with Lightning Rush. You win once you have magic resist and he has wasted Lightning Rush.",
+      "runes": "Grasp of the Undying with Second Wind",
+      "summoners": "Flash + Exhaust",
+      "start": "Doran's Shield + Health Potion (or Doran's Helm)",
+      "buildNotes": "Rush Mercury's Treads. Wit's End and Kaenic Rookern are great here. Stridebreaker and Sterak's Gage show high win rates in this matchup.",
+      "skillNotes": "Take E first. Counter Strike dodges his autos and reduces AoE damage. Max W, then Q.",
+      "phases": {
+        "lvl1_3": [
+          "Farm behind minions to block Thundering Shuriken.",
+          "Trade only when he's close."
+        ],
+        "lvl4_5": [
+          "Watch Lightning Rush. When it's on cooldown, jump him with Leap Strike.",
+          "Don't let him stack Mark of the Storm to 3, which stuns you."
+        ],
+        "post6": [
+          "Slicing Maelstrom is dangerous in teamfights. Exhaust him when he uses R.",
+          "Counter Strike reduces his AoE damage."
+        ],
+        "midgame": [
+          "Split push. With 2 items and Mercury's Treads he can't duel you.",
+          "Ward your flanks. He roams and flanks."
+        ],
+        "lategame": [
+          "Dive him in fights, and turn on Counter Strike when he casts Slicing Maelstrom.",
+          "Save Exhaust for his all-in."
+        ]
+      },
+      "threats": [
+        "Thundering Shuriken (Q): poke",
+        "Mark of the Storm: stun at 3 stacks",
+        "Lightning Rush (E): escape and engage",
+        "Slicing Maelstrom (R): AoE stun and damage"
+      ],
+      "killWindows": [
+        "Lightning Rush on cooldown",
+        "Jungle gank",
+        "When he's out of energy in lane"
+      ],
+      "avoid": [
+        "Getting stacked to 3 Marks of the Storm",
+        "Chasing him while Lightning Rush is up"
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/jax/counters/",
+        "https://lolalytics.com/lol/jax/vs/kennen/build/",
+        "https://www.counterstats.net/league-of-legends/jax"
+      ]
+    },
+    "Gangplank": {
+      "name": "Gangplank",
+      "difficulty": 4,
+      "winRate": 47.74,
+      "winRateSource": "lolalytics Emerald+ 26.19, Jax top vs Gangplank top, 1,441 games; counterstats all ranks ~45%",
+      "summary": "Gangplank pokes you with Parrrley and barrels and outscales you late. Pressure him early. Remove Scurvy cleanses your Counter Strike stun.",
+      "runes": "Grasp of the Undying, or Press the Attack (most picked here)",
+      "summoners": "Flash + Ignite (cuts Remove Scurvy healing), or Flash + Teleport",
+      "start": "Doran's Bow + 2 Health Potion (Doran's Shield against heavy poke)",
+      "buildNotes": "Plated Steelcaps, then Trinity Force. Zhonya's Hourglass and Death's Dance show high win rates here.",
+      "skillNotes": "Take E first. Max W, then Q.",
+      "phases": {
+        "lvl1_3": [
+          "Walk up and trade. He's weak before barrels are set up.",
+          "Never stand next to a barrel."
+        ],
+        "lvl4_5": [
+          "Engage after he uses Remove Scurvy, so your stun can't be cleansed.",
+          "Jump him with Leap Strike when he has no barrels out."
+        ],
+        "post6": [
+          "Cannon Barrage is global. Ping when he uses it.",
+          "Keep pressure on him so he can't farm freely."
+        ],
+        "midgame": [
+          "Split push. He can't match you 1v1 until 3 items.",
+          "Take plates when he uses R elsewhere."
+        ],
+        "lategame": [
+          "He's a teamfight threat with barrels. Flank and dive him.",
+          "Turn on Counter Strike when he detonates a barrel chain."
+        ]
+      },
+      "threats": [
+        "Powder Keg (E): barrel chains deal big AoE damage",
+        "Remove Scurvy (W): cleanse and heal",
+        "Cannon Barrage (R): global AoE slow"
+      ],
+      "killWindows": [
+        "Remove Scurvy on cooldown",
+        "Levels 1-3 before barrel setups",
+        "Jungle gank"
+      ],
+      "avoid": [
+        "Standing next to barrels",
+        "Stunning while Remove Scurvy is up"
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/jax/counters/",
+        "https://lolalytics.com/lol/jax/vs/gangplank/build/",
+        "https://www.counterstats.net/league-of-legends/jax"
+      ]
+    },
+    "Cassiopeia": {
+      "name": "Cassiopeia",
+      "difficulty": 4,
+      "winRate": 44.96,
+      "winRateSource": "lolalytics Emerald+ 26.19, Jax top vs Cassiopeia top, 129 games (small sample)",
+      "summary": "Cassiopeia out-damages you with poison, and Miasma grounds you. Petrifying Gaze stuns you if you face her. Play safe until you have magic resist and Zhonya's Hourglass.",
+      "runes": "Grasp of the Undying with Second Wind",
+      "summoners": "Flash + Ignite, or Flash + Teleport",
+      "start": "Doran's Shield + Health Potion (or Doran's Helm)",
+      "buildNotes": "Mercury's Treads. Kaenic Rookern, Wit's End, or Maw of Malmortius against her damage. Zhonya's Hourglass is useful here.",
+      "skillNotes": "Take E first. Max W, then Q.",
+      "phases": {
+        "lvl1_3": [
+          "Stay out of Noxious Blast range and last hit carefully.",
+          "Never walk into Miasma."
+        ],
+        "lvl4_5": [
+          "Leap Strike onto her only after she has cast Miasma, so you can't be grounded.",
+          "Face away from her when she casts Petrifying Gaze."
+        ],
+        "post6": [
+          "Petrifying Gaze stuns you only if you're facing her. Turn around and you just take the slow.",
+          "Engage after she has used R."
+        ],
+        "midgame": [
+          "Split push once you have magic resist items.",
+          "Ward your flanks."
+        ],
+        "lategame": [
+          "Dive her with Zhonya's Hourglass ready.",
+          "Hold Counter Strike's stun until she has used Petrifying Gaze."
+        ]
+      },
+      "threats": [
+        "Miasma (W): grounds you so you can't Leap Strike or Flash",
+        "Petrifying Gaze (R): stun if you face her",
+        "Twin Fang (E): high sustained damage"
+      ],
+      "killWindows": [
+        "After Miasma is used",
+        "After Petrifying Gaze is used",
+        "Jungle gank"
+      ],
+      "avoid": [
+        "Leap Strike while Miasma is up",
+        "Facing her when she casts Petrifying Gaze"
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/jax/counters/",
+        "https://lolalytics.com/lol/jax/vs/cassiopeia/build/"
+      ]
+    },
+    "Akali": {
+      "name": "Akali",
+      "difficulty": 3,
+      "winRate": 49.55,
+      "winRateSource": "lolalytics Emerald+ 26.19, Jax top vs Akali top, 991 games; counterstats all ranks ~43%",
+      "summary": "Even lane. You win extended trades before 6 once she's low on energy, and she spikes at 6 with Perfect Execution. Counter Strike's AoE stun still hits her inside Twilight Shroud.",
+      "runes": "Grasp of the Undying with Second Wind",
+      "summoners": "Flash + Ignite",
+      "start": "Doran's Shield + Health Potion",
+      "buildNotes": "Mercury's Treads. Maw of Malmortius or Zhonya's Hourglass as your 3rd item stops her burst. Wit's End if she's ahead.",
+      "skillNotes": "Take E first. Counter Strike dodges her Assassin's Mark empowered auto. Max W, then Q.",
+      "phases": {
+        "lvl1_3": [
+          "She pokes with Five Point Strike and backs off. Walk up when her energy bar is low after 2 Qs, then W-reset auto trade.",
+          "When she drops Twilight Shroud, turn on Counter Strike and walk to the center of the shroud. The stun hits her even though she's invisible."
+        ],
+        "lvl4_5": [
+          "If Shuriken Flip hits you, hold Counter Strike for the recast. She dashes to you, and you stun her on arrival.",
+          "Track Shuriken Flip's cooldown. Without it she has no gap closer, so Leap Strike onto her."
+        ],
+        "post6": [
+          "Perfect Execution's 2nd cast deals more damage the lower your HP. Back off before you drop below half HP.",
+          "After both R casts are used, she's out of escapes. All-in with Grandmaster-at-Arms."
+        ],
+        "midgame": [
+          "She roams mid at 6. Ping and push your wave.",
+          "Buy magic resist before you duel her again."
+        ],
+        "lategame": [
+          "In teamfights, dive her after she commits. Zhonya's Hourglass cancels Perfect Execution.",
+          "Save Counter Strike for Twilight Shroud."
+        ]
+      },
+      "threats": [
+        "Twilight Shroud (W): invisibility zone",
+        "Shuriken Flip (E): long-range engage and escape",
+        "Perfect Execution (R): execute burst and escape"
+      ],
+      "killWindows": [
+        "Levels 1-5 when she's low on energy",
+        "Shuriken Flip on cooldown",
+        "Right after both Perfect Execution casts"
+      ],
+      "avoid": [
+        "Chasing her into Twilight Shroud without Counter Strike ready",
+        "Trading at low HP after she hits 6"
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/jax/counters/",
+        "https://www.counterstats.net/league-of-legends/jax"
+      ]
+    },
+    "Aurora": {
+      "name": "Aurora",
+      "difficulty": 4,
+      "winRate": 47.44,
+      "winRateSource": "lolalytics Emerald+ 26.19, Jax top vs Aurora top, 156 games (small sample)",
+      "summary": "Aurora pokes with Twofold Hex and escapes with Across the Veil. Between Worlds traps you in her zone. Play for magic resist and scaling, and commit only when her escape is down.",
+      "runes": "Grasp of the Undying with Second Wind",
+      "summoners": "Flash + Exhaust",
+      "start": "Doran's Shield + Health Potion (or Doran's Helm)",
+      "buildNotes": "Mercury's Treads. Wit's End and Kaenic Rookern against her damage. Maw of Malmortius if she's ahead.",
+      "skillNotes": "Take E first. Counter Strike dodges her autos, which stack Spirit Abjuration. Max W, then Q.",
+      "phases": {
+        "lvl1_3": [
+          "Farm behind your minions and sidestep Twofold Hex. Getting hit by both casts is her main trade.",
+          "Don't chase her. She kites with autos and moves faster than you."
+        ],
+        "lvl4_5": [
+          "After she uses Across the Veil (long cooldown early), Leap Strike onto a minion next to her.",
+          "The Weirding knocks you away. Hold Leap Strike to get back to her."
+        ],
+        "post6": [
+          "Between Worlds creates a zone that pulls you back when you try to leave. Don't fight inside it at low HP.",
+          "Engage when R and Across the Veil are both down."
+        ],
+        "midgame": [
+          "Split push once you have magic resist. She can't hold a side lane against you.",
+          "Ward flanks. She roams well."
+        ],
+        "lategame": [
+          "Dive her when a teammate has CC on her. She has no answer to Leap Strike + Counter Strike when her W is down.",
+          "Exhaust her when she casts Between Worlds."
+        ]
+      },
+      "threats": [
+        "Twofold Hex (Q): poke with a recast",
+        "Across the Veil (W): hop plus invisibility",
+        "The Weirding (E): knockback away",
+        "Between Worlds (R): trap zone"
+      ],
+      "killWindows": [
+        "Across the Veil on cooldown",
+        "Jungle gank"
+      ],
+      "avoid": [
+        "Fighting inside Between Worlds",
+        "Chasing her while Across the Veil is up"
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/jax/counters/"
+      ]
+    },
+    "Gnar": {
+      "name": "Gnar",
+      "difficulty": 3,
+      "winRate": 51.39,
+      "winRateSource": "lolalytics Emerald+ 26.19, Jax top vs Gnar top, 792 games; counterstats all ranks ~52%",
+      "summary": "Even lane that you slightly favor. Kill Mini Gnar when his rage is low. Mega Gnar can lock you down, especially near walls.",
+      "runes": "Grasp of the Undying",
+      "summoners": "Flash + Exhaust, or Flash + Ignite",
+      "start": "Doran's Shield + Health Potion",
+      "buildNotes": "Plated Steelcaps, then Trinity Force.",
+      "skillNotes": "Take E first. Counter Strike dodges Mini Gnar's autos, which stack Hyper. Max W, then Q.",
+      "phases": {
+        "lvl1_3": [
+          "Trade against Mini Gnar when his rage bar is low. He can't turn Mega mid-fight.",
+          "When his rage bar is nearly full, back off. He'll transform soon."
+        ],
+        "lvl4_5": [
+          "After he uses Hop, Leap Strike onto him.",
+          "Right after Mega Gnar turns back into Mini, his rage can't build for a few seconds. All-in then."
+        ],
+        "post6": [
+          "GNAR! stuns you if you hit a wall. Fight in the middle of the lane, away from walls.",
+          "Turn on Counter Strike to reduce Mega Gnar's AoE damage."
+        ],
+        "midgame": [
+          "With 2 items you out-duel him. Split push.",
+          "Ward your flanks."
+        ],
+        "lategame": [
+          "Engage after he uses GNAR!.",
+          "Save Counter Strike for Mega Gnar's AoE."
+        ]
+      },
+      "threats": [
+        "Mega Gnar: transformation with AoE CC",
+        "GNAR! (R): stun near walls",
+        "Hop (E): engage and escape"
+      ],
+      "killWindows": [
+        "Mini Gnar with low rage",
+        "Right after he turns back into Mini",
+        "After GNAR! is used"
+      ],
+      "avoid": [
+        "Fighting near walls against Mega Gnar",
+        "Engaging when his rage bar is full"
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/jax/counters/",
+        "https://www.counterstats.net/league-of-legends/jax"
+      ]
+    },
+    "Heimerdinger": {
+      "name": "Heimerdinger",
+      "difficulty": 3,
+      "winRate": 51.0,
+      "winRateSource": "lolalytics Emerald+ 26.19, Jax top vs Heimerdinger top, 300 games; counterstats all ranks ~46%",
+      "summary": "Heimerdinger zones you with turrets and stuns you with CH-2 Electron Storm Grenade. Fight away from his turret nest, and freeze so he has to set up turrets near your tower.",
+      "runes": "Grasp of the Undying with Second Wind",
+      "summoners": "Flash + Ignite",
+      "start": "Doran's Shield + Health Potion (or Doran's Helm)",
+      "buildNotes": "Mercury's Treads. Kaenic Rookern and Wit's End against his damage.",
+      "skillNotes": "Take E first. Counter Strike reduces his AoE damage. Max W, then Q.",
+      "phases": {
+        "lvl1_3": [
+          "Don't fight inside his turret nest. His turrets shoot you when you hit him.",
+          "Freeze the wave near your tower. He has to walk up to place turrets."
+        ],
+        "lvl4_5": [
+          "When he misses CH-2 Electron Storm Grenade, Leap Strike onto him.",
+          "Kill his turrets with autos when he's away from them."
+        ],
+        "post6": [
+          "UPGRADE!!! empowers one ability. Engage after he has used R.",
+          "Turn on Counter Strike against his upgraded AoE."
+        ],
+        "midgame": [
+          "Split push. He can't duel you.",
+          "Ward your flanks."
+        ],
+        "lategame": [
+          "Dive him when a teammate has CC on him.",
+          "Save Counter Strike for his burst."
+        ]
+      },
+      "threats": [
+        "H-28G Evolution Turret (Q): zone control",
+        "CH-2 Electron Storm Grenade (E): stun",
+        "UPGRADE!!! (R): empowered abilities"
+      ],
+      "killWindows": [
+        "After he misses CH-2 Electron Storm Grenade",
+        "Jungle gank"
+      ],
+      "avoid": [
+        "Fighting in his turret nest",
+        "Standing still in grenade range"
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/jax/counters/",
+        "https://www.counterstats.net/league-of-legends/jax"
+      ]
+    },
+    "Jayce": {
+      "name": "Jayce",
+      "difficulty": 3,
+      "winRate": 52.2,
+      "winRateSource": "lolalytics Emerald+ 26.19, Jax top vs Jayce top, 1,429 games; counterstats all ranks ~52%",
+      "summary": "Jayce pokes you early with Shock Blast. You win the all-in once he misses his poke. Save Leap Strike to get back to him after Thundering Blow knocks you away.",
+      "runes": "Grasp of the Undying with Second Wind",
+      "summoners": "Flash + Ignite",
+      "start": "Doran's Shield + Health Potion",
+      "buildNotes": "Plated Steelcaps, then Trinity Force. Maw of Malmortius if his poke is too much.",
+      "skillNotes": "Take E first. Counter Strike dodges his autos in both forms. Max W, then Q.",
+      "phases": {
+        "lvl1_3": [
+          "Farm behind minions to block Shock Blast.",
+          "He wants short trades. Take them only when his Shock Blast is down."
+        ],
+        "lvl4_5": [
+          "After he misses Shock Blast, Leap Strike onto him with Counter Strike active.",
+          "If Thundering Blow knocks you back, walk back in or save Leap Strike to re-engage."
+        ],
+        "post6": [
+          "Engage after he has used Thundering Blow.",
+          "Keep your HP high. Accelerated Shock Blast hurts."
+        ],
+        "midgame": [
+          "Split push. He can't duel you.",
+          "Ward your flanks."
+        ],
+        "lategame": [
+          "Dive him when a teammate has CC on him.",
+          "Save Counter Strike for his hammer-form burst."
+        ]
+      },
+      "threats": [
+        "Shock Blast (Q): poke, much stronger through Acceleration Gate",
+        "Thundering Blow (E): knockback",
+        "To the Skies! (hammer Q): gap closer"
+      ],
+      "killWindows": [
+        "After he misses Shock Blast",
+        "After Thundering Blow is used",
+        "Jungle gank"
+      ],
+      "avoid": [
+        "Getting poked low",
+        "Chasing him while Acceleration Gate speed is up"
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/jax/counters/",
+        "https://www.counterstats.net/league-of-legends/jax"
+      ]
+    },
+    "Kayle": {
+      "name": "Kayle",
+      "difficulty": 2,
+      "winRate": 53.22,
+      "winRateSource": "lolalytics Emerald+ 26.19, Jax top vs Kayle top, 684 games; counterstats all ranks ~55%",
+      "summary": "You win lane hard early. Kayle is melee until 6 and scales massively later, so punish her before 6, freeze, and deny her farm.",
+      "runes": "Grasp of the Undying, or Press the Attack",
+      "summoners": "Flash + Ignite (Ignite cuts Celestial Blessing's heal)",
+      "start": "Doran's Bow + 2 Health Potion",
+      "buildNotes": "Plated Steelcaps, then Trinity Force. Hullbreaker helps you end before she scales.",
+      "skillNotes": "Take E first. Counter Strike dodges her autos. Max W, then Q.",
+      "phases": {
+        "lvl1_3": [
+          "She's melee range until 6. Trade hard every time she walks up to last hit.",
+          "Stand in her wave to deny CS."
+        ],
+        "lvl4_5": [
+          "Freeze near your tower and zone her off the wave.",
+          "Engage when Celestial Blessing is on cooldown, so she can't heal or run."
+        ],
+        "post6": [
+          "She becomes ranged at 6. Divine Judgement makes her (or an ally) invulnerable, so hold Counter Strike's stun until it ends.",
+          "Keep pushing your advantage and take her tower plates."
+        ],
+        "midgame": [
+          "Split push and take towers. She can't match you until later.",
+          "Invade her jungle side with your jungler to deny farm."
+        ],
+        "lategame": [
+          "She's a hard carry after level 16. Dive her immediately in fights.",
+          "Stun her right after Divine Judgement ends."
+        ]
+      },
+      "threats": [
+        "Celestial Blessing (W): heal plus speed",
+        "Divine Judgement (R): invulnerability",
+        "Late-game scaling (level 11 and 16 spikes)"
+      ],
+      "killWindows": [
+        "Levels 1-5",
+        "After Divine Judgement is used",
+        "Jungle gank"
+      ],
+      "avoid": [
+        "Letting her farm freely",
+        "Stunning her during Divine Judgement"
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/jax/counters/",
+        "https://www.counterstats.net/league-of-legends/jax"
+      ]
+    },
+    "Rumble": {
+      "name": "Rumble",
+      "difficulty": 3,
+      "winRate": 50.56,
+      "winRateSource": "lolalytics Emerald+ 26.19, Jax top vs Rumble top, 358 games; counterstats all ranks ~48%",
+      "summary": "Rumble has strong AoE with Flamespitter in Danger Zone. Engage when he overheats and is silenced. Counter Strike dodges his burning overheated autos.",
+      "runes": "Grasp of the Undying with Second Wind",
+      "summoners": "Flash + Ignite",
+      "start": "Doran's Shield + Health Potion",
+      "buildNotes": "Mercury's Treads. Kaenic Rookern and Wit's End against his damage.",
+      "skillNotes": "Take E first. Counter Strike reduces Flamespitter's AoE damage and dodges his overheated autos. Max W, then Q.",
+      "phases": {
+        "lvl1_3": [
+          "Stay out of Flamespitter's cone and farm safely.",
+          "Trade when his heat is low. He hasn't built up Danger Zone yet."
+        ],
+        "lvl4_5": [
+          "When he overheats, he's silenced. Leap Strike onto him with Counter Strike active to dodge his overheated autos.",
+          "Electro Harpoon slows you. Don't chase after being hit twice."
+        ],
+        "post6": [
+          "The Equalizer zones you with a burning line. Walk out of it immediately.",
+          "Engage after he has used R."
+        ],
+        "midgame": [
+          "Split push once you have magic resist.",
+          "Ward your flanks."
+        ],
+        "lategame": [
+          "Dive him when a teammate has CC on him.",
+          "Turn on Counter Strike against Flamespitter."
+        ]
+      },
+      "threats": [
+        "Flamespitter (Q): AoE cone damage",
+        "Electro Harpoon (E): slow",
+        "The Equalizer (R): zone control"
+      ],
+      "killWindows": [
+        "When he overheats",
+        "Jungle gank"
+      ],
+      "avoid": [
+        "Fighting him at 50+ heat (Danger Zone)",
+        "Standing in The Equalizer"
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/jax/counters/",
+        "https://www.counterstats.net/league-of-legends/jax"
+      ]
+    },
+    "Ryze": {
+      "name": "Ryze",
+      "difficulty": 2,
+      "winRate": 51.57,
+      "winRateSource": "lolalytics Emerald+ 26.19, Jax top vs Ryze top, 159 games (small sample)",
+      "summary": "You win early trades, and Ryze scales later. Engage when Rune Prison is on cooldown so he can't root you.",
+      "runes": "Grasp of the Undying",
+      "summoners": "Flash + Ignite",
+      "start": "Doran's Bow + 2 Health Potion",
+      "buildNotes": "Mercury's Treads. Kaenic Rookern and Wit's End against his damage.",
+      "skillNotes": "Take E first. Max W, then Q.",
+      "phases": {
+        "lvl1_3": [
+          "Trade hard. He's weak early.",
+          "Rune Prison roots you. Don't Leap Strike in while it's up."
+        ],
+        "lvl4_5": [
+          "Once he uses Rune Prison, Leap Strike on him and all-in.",
+          "Deny his last hits by standing in his wave."
+        ],
+        "post6": [
+          "Realm Warp lets his team escape or reposition. Watch where he stands.",
+          "Keep up the pressure."
+        ],
+        "midgame": [
+          "Split push. He can't duel you.",
+          "Ward your flanks."
+        ],
+        "lategame": [
+          "Dive him when a teammate has CC on him.",
+          "Save Counter Strike for his burst."
+        ]
+      },
+      "threats": [
+        "Rune Prison (W): root (AoE if Flux'd)",
+        "Spell Flux (E): damage amp",
+        "Realm Warp (R): team escape"
+      ],
+      "killWindows": [
+        "After Rune Prison is used",
+        "Levels 1-5",
+        "Jungle gank"
+      ],
+      "avoid": [
+        "Getting rooted",
+        "Letting him farm freely"
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/jax/counters/"
+      ]
+    },
+    "Smolder": {
+      "name": "Smolder",
+      "difficulty": 2,
+      "winRate": null,
+      "winRateSource": "lolalytics top-vs-top sample is only 37 games (56.76%), too small to use; the 51.26% (911 games) default figure is against Smolder bot",
+      "summary": "You win lane early. Counter Strike dodges his autos but not Super Scorcher Breath. Kill him before his stacks scale.",
+      "runes": "Grasp of the Undying, or Press the Attack",
+      "summoners": "Flash + Ignite",
+      "start": "Doran's Bow + 2 Health Potion",
+      "buildNotes": "Plated Steelcaps, then Trinity Force.",
+      "skillNotes": "Take E first. Max W, then Q.",
+      "phases": {
+        "lvl1_3": [
+          "Trade hard. He's weak early and needs to stack Super Scorcher Breath.",
+          "Deny his last hits. Every CS he takes with Q adds stacks."
+        ],
+        "lvl4_5": [
+          "Engage when Flap is on cooldown. Flap flies over walls.",
+          "Achooo! slows you. Leap Strike through it."
+        ],
+        "post6": [
+          "MMOOOMMMM! heals him if he's in the middle of it. Don't fight inside it.",
+          "Keep up the pressure."
+        ],
+        "midgame": [
+          "Split push and take towers before he scales.",
+          "Ward your flanks."
+        ],
+        "lategame": [
+          "Dive him when a teammate has CC on him.",
+          "Turn on Counter Strike against his autos."
+        ]
+      },
+      "threats": [
+        "Flap (E): escape over walls",
+        "Achooo! (W): slow",
+        "Late-game scaling from stacks"
+      ],
+      "killWindows": [
+        "Levels 1-5",
+        "After Flap is used",
+        "Jungle gank"
+      ],
+      "avoid": [
+        "Letting him farm freely"
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/jax/vs/smolder/build/?vslane=top"
+      ]
+    },
+    "Swain": {
+      "name": "Swain",
+      "difficulty": 3,
+      "winRate": 51.01,
+      "winRateSource": "lolalytics Emerald+ 26.19, Jax top vs Swain top, 149 games (small sample)",
+      "summary": "Swain drains you with Demonic Ascension, and Nevermove roots you on its way back. Dodge the return path and buy anti-heal.",
+      "runes": "Grasp of the Undying",
+      "summoners": "Flash + Ignite",
+      "start": "Doran's Shield + Health Potion",
+      "buildNotes": "Mercury's Treads. Chempunk Chainsword for anti-heal. Kaenic Rookern against his damage.",
+      "skillNotes": "Take E first. Max W, then Q.",
+      "phases": {
+        "lvl1_3": [
+          "Nevermove roots you on its return. Step sideways out of its path.",
+          "Trade when Nevermove is on cooldown."
+        ],
+        "lvl4_5": [
+          "After he misses Nevermove, Leap Strike onto him.",
+          "Death's Hand pokes. Don't stand in its cone."
+        ],
+        "post6": [
+          "Demonic Ascension drains nearby enemies. Walk out of its range unless you have anti-heal.",
+          "Engage after he has used R."
+        ],
+        "midgame": [
+          "Split push. With anti-heal he can't duel you.",
+          "Ward your flanks."
+        ],
+        "lategame": [
+          "Dive him when a teammate has CC on him.",
+          "Save Counter Strike for his engage."
+        ]
+      },
+      "threats": [
+        "Nevermove (E): root on return",
+        "Demonic Ascension (R): drain",
+        "Demonflare (R recast): burst"
+      ],
+      "killWindows": [
+        "After he misses Nevermove",
+        "Jungle gank"
+      ],
+      "avoid": [
+        "Fighting him during Demonic Ascension without anti-heal"
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/jax/counters/"
+      ]
+    },
+    "Sylas": {
+      "name": "Sylas",
+      "difficulty": 2,
+      "winRate": 53.85,
+      "winRateSource": "lolalytics Emerald+ 26.19, Jax top vs Sylas top, 260 games",
+      "summary": "You win lane. Counter Strike dodges his Petricite Burst autos. Hold it for when Abduct pulls him in. He can steal your Grandmaster-at-Arms with Hijack.",
+      "runes": "Grasp of the Undying",
+      "summoners": "Flash + Ignite (cuts Kingslayer's heal)",
+      "start": "Doran's Bow + 2 Health Potion",
+      "buildNotes": "Mercury's Treads. Chempunk Chainsword for anti-heal.",
+      "skillNotes": "Take E first. Max W, then Q.",
+      "phases": {
+        "lvl1_3": [
+          "Trade hard. He's weak early.",
+          "Turn on Counter Strike when he empowers his autos with Petricite Burst."
+        ],
+        "lvl4_5": [
+          "When Abduct pulls him to you, Counter Strike stuns him as he lands.",
+          "Kingslayer heals more when he's low. Ignite before he casts it."
+        ],
+        "post6": [
+          "He can steal your R with Hijack.",
+          "Engage after he has used Abscond/Abduct."
+        ],
+        "midgame": [
+          "Split push. He can't duel you.",
+          "Ward your flanks."
+        ],
+        "lategame": [
+          "Dive him when a teammate has CC on him.",
+          "Turn on Counter Strike against his autos."
+        ]
+      },
+      "threats": [
+        "Abscond/Abduct (E): engage and escape",
+        "Kingslayer (W): heal",
+        "Hijack (R): steals ultimates"
+      ],
+      "killWindows": [
+        "After Abscond/Abduct is used",
+        "Levels 1-5",
+        "Jungle gank"
+      ],
+      "avoid": [
+        "Fighting without anti-heal"
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/jax/counters/"
+      ]
+    },
+    "Vayne": {
+      "name": "Vayne",
+      "difficulty": 3,
+      "winRate": 52.08,
+      "winRateSource": "lolalytics Emerald+ 26.19, Jax top vs Vayne top, 313 games; counterstats all ranks ~50%",
+      "summary": "Even lane. Counter Strike dodges her autos so she can't stack Silver Bolts. Stay away from walls to avoid Condemn.",
+      "runes": "Grasp of the Undying",
+      "summoners": "Flash + Ignite",
+      "start": "Doran's Shield + Health Potion",
+      "buildNotes": "Plated Steelcaps, then Trinity Force. Randuin's Omen or Frozen Heart against her autos.",
+      "skillNotes": "Take E first. Max W, then Q.",
+      "phases": {
+        "lvl1_3": [
+          "Turn on Counter Strike when she walks in to auto. She can't stack Silver Bolts.",
+          "Trade when she's in melee range."
+        ],
+        "lvl4_5": [
+          "Engage after she uses Tumble.",
+          "Fight in the middle of the lane, away from walls."
+        ],
+        "post6": [
+          "Final Hour boosts her damage and makes her invisible on Tumble. Engage after R ends.",
+          "Keep your HP high."
+        ],
+        "midgame": [
+          "Split push. With armor items she can't duel you.",
+          "Ward your flanks."
+        ],
+        "lategame": [
+          "Dive her when a teammate has CC on her.",
+          "Turn on Counter Strike against her autos."
+        ]
+      },
+      "threats": [
+        "Condemn (E): stun near walls",
+        "Silver Bolts (W): true damage every 3rd hit",
+        "Final Hour (R): damage boost"
+      ],
+      "killWindows": [
+        "After Condemn is used",
+        "Jungle gank"
+      ],
+      "avoid": [
+        "Fighting near walls"
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/jax/counters/",
+        "https://www.counterstats.net/league-of-legends/jax"
+      ]
+    },
+    "Varus": {
+      "name": "Varus",
+      "difficulty": 1,
+      "winRate": 58.4,
+      "winRateSource": "lolalytics Emerald+ 26.19, Jax top vs Varus top, 351 games; counterstats all ranks ~53%",
+      "summary": "You win hard. Varus is squishy with no dash. All-in after he fires Piercing Arrow.",
+      "runes": "Grasp of the Undying, or Press the Attack",
+      "summoners": "Flash + Ignite",
+      "start": "Doran's Bow + 2 Health Potion",
+      "buildNotes": "Plated Steelcaps, then Trinity Force.",
+      "skillNotes": "Take E first. Counter Strike dodges his autos, which stack Blight. Max W, then Q.",
+      "phases": {
+        "lvl1_3": [
+          "Trade hard. He's weak early.",
+          "Deny his last hits."
+        ],
+        "lvl4_5": [
+          "After he fires Piercing Arrow, Leap Strike onto him and all-in.",
+          "Hail of Arrows applies Grievous Wounds. Kill him fast."
+        ],
+        "post6": [
+          "Chain of Corruption roots you. Engage after he has used R.",
+          "Keep up the pressure."
+        ],
+        "midgame": [
+          "Split push. He can't duel you.",
+          "Ward your flanks."
+        ],
+        "lategame": [
+          "Dive him when a teammate has CC on him.",
+          "Turn on Counter Strike against his autos."
+        ]
+      },
+      "threats": [
+        "Piercing Arrow (Q): long-range poke",
+        "Chain of Corruption (R): root"
+      ],
+      "killWindows": [
+        "After Piercing Arrow is fired",
+        "Levels 1-5",
+        "Jungle gank"
+      ],
+      "avoid": [
+        "Getting poked low before your all-in"
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/jax/counters/",
+        "https://lolalytics.com/lol/jax/vs/varus/build/"
+      ]
+    },
+    "TahmKench": {
+      "name": "Tahm Kench",
+      "difficulty": 3,
+      "winRate": 50.26,
+      "winRateSource": "lolalytics Emerald+ 26.19, Jax top vs Tahm Kench top, 384 games; counterstats all ranks ~52%",
+      "summary": "Tahm Kench is tanky with Thick Skin, and you scale better. Keep trades short so he can't reach 3 An Acquired Taste stacks.",
+      "runes": "Grasp of the Undying",
+      "summoners": "Flash + Ignite",
+      "start": "Doran's Shield + Health Potion",
+      "buildNotes": "Plated Steelcaps, then Trinity Force. Blade of The Ruined King against his HP.",
+      "skillNotes": "Take E first. Counter Strike dodges his autos, which stack An Acquired Taste. Max W, then Q.",
+      "phases": {
+        "lvl1_3": [
+          "Keep trades short. Walk away before he reaches 3 stacks.",
+          "Turn on Counter Strike when he walks up to auto."
+        ],
+        "lvl4_5": [
+          "After he uses Tongue Lash, Leap Strike onto him.",
+          "Thick Skin converts damage to grey health. Burst him before he activates it."
+        ],
+        "post6": [
+          "Devour saves an ally or drags you into his team. Watch where he stands.",
+          "Keep up the pressure."
+        ],
+        "midgame": [
+          "Split push. With Blade of The Ruined King he can't duel you.",
+          "Ward your flanks."
+        ],
+        "lategame": [
+          "Dive his carries instead of him.",
+          "Save Counter Strike for his engage."
+        ]
+      },
+      "threats": [
+        "An Acquired Taste: stun at 3 stacks",
+        "Thick Skin (E): grey health",
+        "Devour (R): save an ally or kill you"
+      ],
+      "killWindows": [
+        "After Tongue Lash is used",
+        "Jungle gank"
+      ],
+      "avoid": [
+        "Long trades early"
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/jax/counters/",
+        "https://www.counterstats.net/league-of-legends/jax"
+      ]
+    },
+    "Zac": {
+      "name": "Zac",
+      "difficulty": 3,
+      "winRate": 48.87,
+      "winRateSource": "lolalytics Emerald+ 26.19, Jax top vs Zac top, 133 games (small sample)",
+      "summary": "Zac is tanky and heals from his blobs. Step on his blobs to deny the healing, and buy anti-heal. When he dies, kill the bloblets from Cell Division before they revive him.",
+      "runes": "Grasp of the Undying",
+      "summoners": "Flash + Ignite",
+      "start": "Doran's Shield + Health Potion",
+      "buildNotes": "Mercury's Treads. Blade of The Ruined King against his HP. Chempunk Chainsword for anti-heal.",
+      "skillNotes": "Take E first. Max W, then Q.",
+      "phases": {
+        "lvl1_3": [
+          "Walk over his blobs to destroy them.",
+          "Trade when he's close."
+        ],
+        "lvl4_5": [
+          "When Elastic Slingshot lands on you, Counter Strike reduces the damage and stuns him.",
+          "Walk over blobs mid-fight to deny his healing."
+        ],
+        "post6": [
+          "Let's Bounce! is his engage. Engage after he has used R.",
+          "Keep up the pressure."
+        ],
+        "midgame": [
+          "Split push. With Blade of The Ruined King he can't duel you.",
+          "Ward your flanks."
+        ],
+        "lategame": [
+          "Dive his carries instead of him.",
+          "Save Counter Strike for his engage."
+        ]
+      },
+      "threats": [
+        "Elastic Slingshot (E): long-range engage",
+        "Let's Bounce! (R): AoE knockup",
+        "Blobs: healing",
+        "Cell Division: revive"
+      ],
+      "killWindows": [
+        "After Elastic Slingshot is used",
+        "Jungle gank"
+      ],
+      "avoid": [
+        "Letting him heal from blobs"
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/jax/counters/"
+      ]
+    },
+    "Galio": {
+      "name": "Galio",
+      "difficulty": 2,
+      "winRate": 51.92,
+      "winRateSource": "lolalytics Emerald+ 26.19, Jax top vs Galio top, 104 games (small sample)",
+      "summary": "Galio is an AP tank with magic damage reduction on Shield of Durand. He roams at 6 with Hero's Entrance, so ping it. You win by split pushing.",
+      "runes": "Grasp of the Undying",
+      "summoners": "Flash + Teleport",
+      "start": "Doran's Bow + 2 Health Potion",
+      "buildNotes": "Mercury's Treads. Blade of The Ruined King against his HP. Hullbreaker for split pushing.",
+      "skillNotes": "Take E first. Max W, then Q.",
+      "phases": {
+        "lvl1_3": [
+          "Trade hard. He's weak early against physical damage.",
+          "Deny his last hits."
+        ],
+        "lvl4_5": [
+          "After he uses Justice Punch, Leap Strike onto him.",
+          "Shield of Durand taunts you. Don't fight inside its range."
+        ],
+        "post6": [
+          "When he uses Hero's Entrance to join a fight elsewhere, ping and hit his tower.",
+          "Push the wave while he roams."
+        ],
+        "midgame": [
+          "Split push. He can't duel you.",
+          "Ward your flanks."
+        ],
+        "lategame": [
+          "Dive his carries instead of him.",
+          "Save Counter Strike for his engage."
+        ]
+      },
+      "threats": [
+        "Shield of Durand (W): taunt",
+        "Justice Punch (E): engage",
+        "Hero's Entrance (R): global roam"
+      ],
+      "killWindows": [
+        "After Justice Punch is used",
+        "Levels 1-5",
+        "Jungle gank"
+      ],
+      "avoid": [
+        "Getting taunted during his combo"
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/jax/counters/"
+      ]
+    },
+    "Anivia": {
+      "name": "Anivia",
+      "difficulty": 4,
+      "winRate": 47.55,
+      "winRateSource": "lolalytics Emerald+ 26.19, Jax top vs Anivia top, 204 games (small sample)",
+      "summary": "Anivia zones you with Glacial Storm and stuns you with Flash Frost. Leap Strike to a target goes over her Crystallize wall. Kill her egg fast after Rebirth.",
+      "runes": "Grasp of the Undying with Second Wind",
+      "summoners": "Flash + Ignite",
+      "start": "Doran's Shield + Health Potion (or Doran's Helm)",
+      "buildNotes": "Mercury's Treads. Kaenic Rookern and Wit's End against her damage.",
+      "skillNotes": "Take E first. Max W, then Q.",
+      "phases": {
+        "lvl1_3": [
+          "Sidestep Flash Frost. It's slow and easy to dodge.",
+          "Trade when she's close."
+        ],
+        "lvl4_5": [
+          "After she misses Flash Frost, Leap Strike onto her.",
+          "Crystallize blocks your path. Leap Strike to a target goes over it."
+        ],
+        "post6": [
+          "Glacial Storm slows and zones you. Don't fight inside it.",
+          "Engage after she has used R."
+        ],
+        "midgame": [
+          "Split push once you have magic resist.",
+          "Ward your flanks."
+        ],
+        "lategame": [
+          "Dive her when a teammate has CC on her.",
+          "Kill her egg fast after Rebirth."
+        ]
+      },
+      "threats": [
+        "Flash Frost (Q): stun",
+        "Crystallize (W): wall",
+        "Glacial Storm (R): zone control",
+        "Rebirth: egg"
+      ],
+      "killWindows": [
+        "After she misses Flash Frost",
+        "Jungle gank"
+      ],
+      "avoid": [
+        "Fighting in Glacial Storm"
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/jax/counters/"
+      ]
+    },
+    "Lissandra": {
+      "name": "Lissandra",
+      "difficulty": 3,
+      "winRate": 48.48,
+      "winRateSource": "lolalytics Emerald+ 26.19, Jax top vs Lissandra top, 165 games (small sample)",
+      "summary": "Lissandra roots you with Ring of Frost and escapes with Glacial Path. Engage once her root is down.",
+      "runes": "Grasp of the Undying with Second Wind",
+      "summoners": "Flash + Ignite",
+      "start": "Doran's Shield + Health Potion (or Doran's Helm)",
+      "buildNotes": "Mercury's Treads. Kaenic Rookern and Wit's End against her damage.",
+      "skillNotes": "Take E first. Max W, then Q.",
+      "phases": {
+        "lvl1_3": [
+          "Farm safely and dodge Ice Shard.",
+          "Trade when she's close."
+        ],
+        "lvl4_5": [
+          "If you Leap Strike in, Ring of Frost roots you. Bait it first, or Leap in with Counter Strike active so your stun lands anyway.",
+          "Glacial Path is her escape. Engage after she uses it."
+        ],
+        "post6": [
+          "Frozen Tomb on herself puts her in stasis. Wait it out. On you, it stuns you.",
+          "Engage after she has used R."
+        ],
+        "midgame": [
+          "Split push once you have magic resist.",
+          "Ward your flanks."
+        ],
+        "lategame": [
+          "Dive her when a teammate has CC on her.",
+          "Save Counter Strike for her engage."
+        ]
+      },
+      "threats": [
+        "Ring of Frost (W): root",
+        "Glacial Path (E): escape",
+        "Frozen Tomb (R): stasis or stun"
+      ],
+      "killWindows": [
+        "After Ring of Frost is used",
+        "Jungle gank"
+      ],
+      "avoid": [
+        "Getting rooted"
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/jax/counters/"
+      ]
+    },
+    "Malzahar": {
+      "name": "Malzahar",
+      "difficulty": 1,
+      "winRate": 61.11,
+      "winRateSource": "lolalytics Emerald+ 26.19, Jax top vs Malzahar top, 126 games (small sample)",
+      "summary": "You win hard. Break Void Shift with an auto before you commit, since it makes him CC-immune. Nether Grasp is his only real threat.",
+      "runes": "Grasp of the Undying",
+      "summoners": "Flash + Ignite",
+      "start": "Doran's Bow + 2 Health Potion",
+      "buildNotes": "Mercury's Treads.",
+      "skillNotes": "Take E first. Max W, then Q.",
+      "phases": {
+        "lvl1_3": [
+          "Trade hard. He's weak early.",
+          "Auto him once to break Void Shift before you all-in."
+        ],
+        "lvl4_5": [
+          "Engage after he uses Call of the Void, which silences you.",
+          "Voidlings from Void Swarm attack you. Kill them or step away."
+        ],
+        "post6": [
+          "Nether Grasp suppresses you, and tenacity doesn't reduce it. Keep your HP high.",
+          "Keep up the pressure."
+        ],
+        "midgame": [
+          "Split push. He can't duel you.",
+          "Ward your flanks."
+        ],
+        "lategame": [
+          "Dive him when a teammate has CC on him.",
+          "Save Counter Strike for his engage."
+        ]
+      },
+      "threats": [
+        "Nether Grasp (R): suppression",
+        "Void Shift: damage reduction and CC immunity",
+        "Call of the Void (Q): silence"
+      ],
+      "killWindows": [
+        "Levels 1-5",
+        "After Nether Grasp is used",
+        "Jungle gank"
+      ],
+      "avoid": [
+        "Getting suppressed"
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/jax/counters/"
+      ]
+    }
+  }
+}

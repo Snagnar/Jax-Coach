@@ -1,0 +1,1909 @@
+{
+  "champion": "DrMundo",
+  "role": "top",
+  "_notes": {
+    "note": "Win rates are lolalytics Mundo top matchup data, Emerald+, patch 26.19 (site label 16.19), pulled 2026-09-30. Samples are small (roughly 190 to 2,200 games per matchup), so treat differences of 2 points or less as noise. op.gg cross-checks are noted per entry where they disagree. Mundo's overall Emerald+ top win rate on lolalytics is about 51.4%.",
+    "sources": [
+      "https://lolalytics.com/lol/drmundo/counters/",
+      "https://lolalytics.com/lol/drmundo/build/",
+      "https://op.gg/lol/champions/drmundo/counters/top",
+      "https://mobalytics.gg/lol/champions/drmundo/counters/top/vs-aatrox",
+      "https://www.counterstats.net/league-of-legends/dr-mundo",
+      "https://lolalytics.com/lol/drmundo/counters/?lane=top&tier=emerald_plus",
+      "https://lolalytics.com/lol/drmundo/build/?lane=top",
+      "https://www.op.gg/lol/champions/drmundo/counters/top",
+      "https://mobalytics.gg/lol/champions/drmundo/counters/top/vs-garen",
+      "https://lolalytics.com/lol/drmundo/vs/kled/build/",
+      "https://mobalytics.gg/lol/champions/drmundo/counters/top/vs-nasus",
+      "https://lolalytics.com/lol/drmundo/vs/renekton/build/",
+      "https://lolalytics.com/lol/drmundo/vs/shen/build/",
+      "https://wiki.leagueoflegends.com/en-us/Zaahen",
+      "https://wiki.leagueoflegends.com/en-us/Dr._Mundo"
+    ]
+  },
+  "matchups": {
+    "Aatrox": {
+      "name": "Aatrox",
+      "difficulty": 4,
+      "winRate": 45.44,
+      "winRateSource": "lolalytics Dr. Mundo top counters, Emerald+, patch 26.19 (client 16.19), 1,569 games",
+      "summary": "Aatrox is favored. His Deathbringer Stance (passive) and Umbral Dash (E) let him out-heal and out-trade you in extended fights, and World Ender (R) beats your all-ins. Dodge the Q edges, trade only when his Q is down, and buy Bramble Vest early.",
+      "runes": "Grasp of the Undying (Demolish, Second Wind, Overgrowth) + Inspiration (Magical Footwear, Biscuit Delivery). Doran's Helm start helps you survive the poke.",
+      "summoners": "Flash + Ignite (Ignite cuts his healing and wins short all-ins); Flash + Teleport if you fall behind",
+      "start": "Doran's Shield + Health Potion (Doran's Helm + Health Potion is the default)",
+      "buildNotes": "Bramble Vest on first back, then Heartsteel > Plated Steelcaps > Thornmail (finish it once he is healing and hitting hard) > Warmog's Armor. Spirit Visage is not needed unless his team is heavy AP.",
+      "skillNotes": "Start Q. Take E at 2 (or W if you plan to trade), W at 3. Max Q first, then E.",
+      "phases": {
+        "lvl1_3": [
+          "Stand so his Q hits you on the inner part, not the sweet-spot edge. Walk into him as he winds up Q.",
+          "Trade right after he uses a Q, when it has a cooldown. Q him from max range and step back.",
+          "Don't take even trades. He heals from Deathbringer Stance every time he hits a champion."
+        ],
+        "lvl4_5": [
+          "Sidestep or walk toward the middle of Infernal Chains (W) so it doesn't drag you back. Q him while he is in it.",
+          "Farm under tower if he is ahead in levels. Your Q is a safe last hit."
+        ],
+        "post6": [
+          "Don't fight inside World Ender (R). He heals and gets move speed. Turn on Heart Zapper (W) only when the fight is short or he is low.",
+          "Use Maximum Dosage (R) to heal back after a trade, then walk away and let his R end."
+        ],
+        "midgame": [
+          "Buy Thornmail as soon as he has an item. Hit him while his R is used up.",
+          "Splitting is hard against him. Stay near your team and wait for his Q to miss."
+        ],
+        "lategame": [
+          "Front line and let him engage on you with your R ready. Never chase him into his team while his R is up."
+        ]
+      },
+      "threats": [
+        "Darkin Blade (Q) sweet spot knockup, and it combos into a W pull.",
+        "Deathbringer Stance (passive) and R healing beat your sustain in long fights.",
+        "Umbral Dash (E) lets him reposition Q and dodge your cleavers."
+      ],
+      "killWindows": [
+        "Right after he misses Q3 or uses E.",
+        "When he has used his R and you have Ignite plus Thornmail."
+      ],
+      "avoid": [
+        "Standing at the edge of Q range.",
+        "Long all-ins without anti-heal.",
+        "Fighting inside his R."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/drmundo/counters/",
+        "https://lolalytics.com/lol/drmundo/vs/aatrox/build/",
+        "https://mobalytics.gg/lol/champions/drmundo/counters/top/vs-aatrox"
+      ]
+    },
+    "Ambessa": {
+      "name": "Ambessa",
+      "difficulty": 4,
+      "winRate": 46.64,
+      "winRateSource": "lolalytics Dr. Mundo top counters, Emerald+, patch 26.19 (client 16.19), 774 games",
+      "summary": "Ambessa is favored. She dashes through you, has burst, and gets sustain that is hard to stop. You beat her early when you play behind minions, and after level 6 you must answer her with anti-heal on first back.",
+      "runes": "Grasp of the Undying (Demolish, Second Wind, Overgrowth) + Inspiration (Magical Footwear, Biscuit Delivery)",
+      "summoners": "Flash + Ignite; Flash + Teleport to play safe",
+      "start": "Doran's Shield + Health Potion (Doran's Helm + Health Potion also fine)",
+      "buildNotes": "Bramble Vest on first back, then Heartsteel > Plated Steelcaps > Thornmail > Warmog's Armor. Sunfire Aegis is a good second item into her all-in.",
+      "skillNotes": "Start Q. E at 2 for trades, W at 3. Max Q, then E.",
+      "phases": {
+        "lvl1_3": [
+          "Play behind minions so her dashes can't reach you without going through the wave. Punish her when she walks up.",
+          "Cleaver her when she steps in for a last hit. Her energy is limited early, so trade when she has just dashed."
+        ],
+        "lvl4_5": [
+          "Don't stand still when Repudiation (W) is winding up. Sidestep and cleaver her.",
+          "Farm safely under tower. Her all-in is stronger than yours until you have a first item."
+        ],
+        "post6": [
+          "Public Execution (R) is her all-in. Keep your distance and use Maximum Dosage (R) to survive it.",
+          "Fight her after her dashes are used. Her sustain gets hard to beat, so buy anti-heal."
+        ],
+        "midgame": [
+          "Play near your team and force her to commit dashes into a tank. Thornmail makes her all-in cost her.",
+          "Take side waves only when her position is known."
+        ],
+        "lategame": [
+          "Stay near your team. When she dashes in, hit her with Q and Warmog's Armor tanks the rest."
+        ]
+      },
+      "threats": [
+        "Dash chain (Cunning Sweep and Sundering Slam) closes the gap and stops you from kiting her.",
+        "Public Execution (R) gap-close and burst after her passive.",
+        "Sustain that outlasts your Heart Zapper (W)."
+      ],
+      "killWindows": [
+        "After she has used her dashes on a wave.",
+        "Post-6, after her R is used, with Ignite ready."
+      ],
+      "avoid": [
+        "Standing in front of the wave without a plan.",
+        "Long extended fights without anti-heal.",
+        "Fighting when she has all her dashes."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/drmundo/counters/",
+        "https://lolalytics.com/lol/drmundo/vs/ambessa/build/",
+        "https://www.counterstats.net/league-of-legends/dr-mundo"
+      ]
+    },
+    "Camille": {
+      "name": "Camille",
+      "difficulty": 4,
+      "winRate": 46.94,
+      "winRateSource": "lolalytics Dr. Mundo top counters, Emerald+, patch 26.19 (client 16.19), 686 games",
+      "summary": "Camille is slightly favored. Her Hookshot (E) gives her reach and her Hextech Ultimatum (R) locks you in. You win by playing safe and taking her all-in with Thornmail and Sunfire Aegis, since she has to auto you.",
+      "runes": "Grasp of the Undying (Demolish, Second Wind, Overgrowth) + Inspiration (Magical Footwear, Biscuit Delivery)",
+      "summoners": "Flash + Ignite; Flash + Teleport if you want to play safe",
+      "start": "Doran's Shield + Health Potion",
+      "buildNotes": "Sunfire Aegis or Heartsteel first > Plated Steelcaps > Thornmail. Spirit Visage is not needed. Buy Bramble Vest early if she heals a lot.",
+      "skillNotes": "Start Q. E at 2, W at 3. Max Q, then E.",
+      "phases": {
+        "lvl1_3": [
+          "Cleaver her when she walks up to auto. Her Precision Protocol (Q) needs basic attacks, so hit first.",
+          "Don't trade when her Q2 (true damage) is ready. Back off and trade after it is spent."
+        ],
+        "lvl4_5": [
+          "Stay out of the outer edge of Tactical Sweep (W). It slows and heals her.",
+          "Hookshot (E) needs a wall or a target. Stand away from walls so she can't E onto you."
+        ],
+        "post6": [
+          "Hextech Ultimatum (R) locks you in. Turn on Heart Zapper (W) inside it and use Maximum Dosage (R). She can't leave either.",
+          "Fight her inside her R with Thornmail. Don't run out of it."
+        ],
+        "midgame": [
+          "Watch for her flank and Hookshot on your carries. Keep Q to peel her.",
+          "Avoid a side lane 1v1 unless you have Thornmail."
+        ],
+        "lategame": [
+          "Front line and cleaver her when she Hookshots in. Warmog's Armor lets you outlast her burst."
+        ]
+      },
+      "threats": [
+        "Precision Protocol (Q2) true damage.",
+        "Hookshot (E) stun onto you.",
+        "Hextech Ultimatum (R) zone you can't leave."
+      ],
+      "killWindows": [
+        "After she uses E to engage and Q2 is spent.",
+        "Inside her R with Thornmail and Maximum Dosage up."
+      ],
+      "avoid": [
+        "Fighting near walls.",
+        "Standing in the outer edge of her W.",
+        "Chasing her when her E is up."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/drmundo/counters/",
+        "https://lolalytics.com/lol/drmundo/vs/camille/build/",
+        "https://www.counterstats.net/league-of-legends/dr-mundo"
+      ]
+    },
+    "Chogath": {
+      "name": "Cho'Gath",
+      "difficulty": 2,
+      "winRate": 54.65,
+      "winRateSource": "lolalytics Dr. Mundo top counters, Emerald+, patch 26.19 (client 16.19), 913 games",
+      "summary": "You are favored. Cho'Gath is slow and his early damage is low. You out-trade him with cleavers and heal through his poke. Watch for his Rupture (Q) and Feral Scream (W), and don't get executed by Feast (R) at low HP.",
+      "runes": "Grasp of the Undying (Demolish, Second Wind, Overgrowth) + Inspiration (Magical Footwear, Biscuit Delivery)",
+      "summoners": "Flash + Ignite",
+      "start": "Doran's Helm + Health Potion (default) or Doran's Shield + Health Potion",
+      "buildNotes": "Heartsteel > Plated Steelcaps or Mercury's Treads (his magic damage) > Spirit Visage > Warmog's Armor. Titanic Hydra is a good damage slot later.",
+      "skillNotes": "Start Q. E at 2, W at 3. Max Q, then E.",
+      "phases": {
+        "lvl1_3": [
+          "Push and cleaver him. Sidestep Rupture (Q) after the ground bubbles start.",
+          "Trade when his Q is down. He has no dash and you can walk him down."
+        ],
+        "lvl4_5": [
+          "Leave the middle of the lane when he casts Rupture. Then step in and hit him with Q and E.",
+          "Keep your health above 50% so Feast can't finish you."
+        ],
+        "post6": [
+          "Feast (R) executes on true damage. Don't fight at low HP once he has R. Turn on Maximum Dosage (R) before the fight, not after.",
+          "All-in with Ignite when his Q is down."
+        ],
+        "midgame": [
+          "He gets tankier with Feast stacks. Play on the side and take towers. Spirit Visage plus Warmog's Armor beat his AP poke.",
+          "Don't get caught by Rupture and a follow-up. Stay with your team."
+        ],
+        "lategame": [
+          "He is a big tank. Hit the carries. Titanic Hydra and Heartsteel let you fight him."
+        ]
+      },
+      "threats": [
+        "Rupture (Q) knockup and slow.",
+        "Feast (R) true damage execute.",
+        "Vorpal Spikes (E) poke while you cleaver him."
+      ],
+      "killWindows": [
+        "Right after Rupture misses.",
+        "Early levels when he has no Feast stacks."
+      ],
+      "avoid": [
+        "Standing in the ground bubbles of Rupture.",
+        "Low HP fights after level 6."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/drmundo/counters/",
+        "https://lolalytics.com/lol/drmundo/vs/chogath/build/"
+      ]
+    },
+    "Darius": {
+      "name": "Darius",
+      "difficulty": 2,
+      "winRate": 55.17,
+      "winRateSource": "lolalytics Dr. Mundo top counters, Emerald+, patch 26.19 (client 16.19), 2,059 games (op.gg Emerald+ lists Darius as a counter at 53.16% with 1,392 games, and the direction of its column was not clear, so lolalytics is used)",
+      "summary": "You are favored on lolalytics. Darius wants short bleed stacks, but Mundo out-heals and kites his Q with cleavers. Never fight at 5 bleed stacks, and watch Noxian Guillotine (R) when you are low.",
+      "runes": "Grasp of the Undying (Demolish, Second Wind, Overgrowth) + Inspiration (Magical Footwear, Biscuit Delivery)",
+      "summoners": "Flash + Ignite; Flash + Teleport also fine",
+      "start": "Doran's Shield + Health Potion",
+      "buildNotes": "Heartsteel or Sunfire Aegis first > Plated Steelcaps > Thornmail > Warmog's Armor. Buy Bramble Vest early if his Q healing wins trades.",
+      "skillNotes": "Start Q. E at 2, W at 3. Max Q, then E.",
+      "phases": {
+        "lvl1_3": [
+          "Cleaver him from max range and stay out of his Decimate (Q) outer edge. Walk into the handle if he casts it.",
+          "Don't auto trade with bleed stacks on you. Back off, heal, then poke again."
+        ],
+        "lvl4_5": [
+          "Use Heart Zapper (W) only when he is next to you and you are ready to trade. It drains you fast.",
+          "Trade when his Q is on cooldown. Apprehend (E) pulls you, so don't walk away after cleaver into it."
+        ],
+        "post6": [
+          "Noxian Guillotine (R) is true damage that scales with bleed. Stay above 40% HP. Use Maximum Dosage (R) early in the fight.",
+          "You win the all-in after his E and Q are used."
+        ],
+        "midgame": [
+          "Thornmail makes his bleed autos costly. Play near your team and split push when he is away.",
+          "Never take a long fight with 5 bleed stacks on you."
+        ],
+        "lategame": [
+          "Warmog's Armor and Heartsteel keep you alive. Hit his team's back line and let him come to you."
+        ]
+      },
+      "threats": [
+        "Decimate (Q) heals him and applies bleed.",
+        "Apprehend (E) pull.",
+        "Noxian Guillotine (R) true damage execute that resets on kills."
+      ],
+      "killWindows": [
+        "After his Q misses and his E is used.",
+        "When he is below 50% and you have Ignite."
+      ],
+      "avoid": [
+        "Trading with 3 or more bleed stacks.",
+        "Standing at blade range while his Q is up.",
+        "Low HP near his R."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/drmundo/counters/",
+        "https://lolalytics.com/lol/drmundo/vs/darius/build/",
+        "https://op.gg/lol/champions/drmundo/counters/top"
+      ]
+    },
+    "Fiora": {
+      "name": "Fiora",
+      "difficulty": 3,
+      "winRate": 48.77,
+      "winRateSource": "lolalytics Dr. Mundo top counters, Emerald+, patch 26.19 (client 16.19), 810 games",
+      "summary": "Slightly unfavored and it gets worse late. Bully her early with cleavers before her healing and Riposte matter, then buy Thornmail because she scales past you. Her Riposte (W) can negate your Infected Bonesaw (Q) slow and damage, so cleaver her when it is down.",
+      "runes": "Grasp of the Undying (Demolish, Second Wind, Overgrowth) + Inspiration (Magical Footwear, Biscuit Delivery). Ignite makes early bullying stronger.",
+      "summoners": "Flash + Ignite (bully lane); Flash + Teleport if you cannot win lane",
+      "start": "Doran's Shield + Health Potion (Doran's Helm + Health Potion also fine)",
+      "buildNotes": "Bramble Vest on first back, then Heartsteel > Plated Steelcaps > Thornmail > Randuin's Omen or Warmog's Armor. Thornmail is key against her because of her vital procs and Grand Challenge healing.",
+      "skillNotes": "Start Q. E at 2, W at 3. Max Q, then E. Take W early if you plan to trade with her.",
+      "phases": {
+        "lvl1_3": [
+          "Cleaver her from max range. Step back when a vital faces you. Don't let her auto you for free.",
+          "Trade when Riposte (W) is down. If she parries a cleaver, back off and wait for it to reset."
+        ],
+        "lvl4_5": [
+          "Fight before her healing scales. Her Bladework (E) crits at level 3 and hurts if you stand still.",
+          "Use Heart Zapper (W) only after she has used Lunge (Q)."
+        ],
+        "post6": [
+          "Grand Challenge (R) heals her and gets vital marks. Kill her fast with Ignite and Maximum Dosage (R) or leave.",
+          "Don't chase her into her team once R is on."
+        ],
+        "midgame": [
+          "You don't beat her late in a 1v1. Group with your team and take objectives. Thornmail makes her lose fights.",
+          "Ward her flank paths. She splits harder than you."
+        ],
+        "lategame": [
+          "Peel her out and stay with your team. Front line with Heartsteel and Warmog's Armor. Use Ignite before her R heals her."
+        ]
+      },
+      "threats": [
+        "Riposte (W) blocks and returns damage if you hit her with CC.",
+        "Vitals and Grand Challenge (R) heals.",
+        "Lunge (Q) mobility to dodge cleavers.",
+        "Late-game 1v1 scaling."
+      ],
+      "killWindows": [
+        "Levels 1-3 when her Riposte is down and you have Ignite.",
+        "After she uses Lunge (Q) with no dash left."
+      ],
+      "avoid": [
+        "Letting her hit vitals for free.",
+        "Long 1v1s in side lane late.",
+        "Fights without Thornmail once she has R."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/drmundo/counters/",
+        "https://lolalytics.com/lol/drmundo/vs/fiora/build/",
+        "https://www.counterstats.net/league-of-legends/dr-mundo"
+      ]
+    },
+    "Gangplank": {
+      "name": "Gangplank",
+      "difficulty": 2,
+      "winRate": 52.74,
+      "winRateSource": "lolalytics Dr. Mundo top counters, Emerald+, patch 26.19 (client 16.19), 1,149 games",
+      "summary": "You are slightly favored. Gangplank's Parrrley (Q) poke and Powder Keg (E) barrels hurt, but Mundo heals and gets tanky. Stay away from barrels, use cleavers and Health Potions to trade, and play for Heartsteel scaling.",
+      "runes": "Grasp of the Undying (Demolish, Second Wind, Overgrowth) + Inspiration (Magical Footwear, Biscuit Delivery)",
+      "summoners": "Flash + Ignite; Flash + Teleport if you want to play safe",
+      "start": "Doran's Helm + Health Potion (Doran's Shield + Health Potion also fine)",
+      "buildNotes": "Heartsteel > Plated Steelcaps or Mercury's Treads (only if his team has heavy magic damage or CC) > Warmog's Armor > Titanic Hydra. Sunfire Aegis if he is poking you a lot.",
+      "skillNotes": "Start Q. E at 2, W at 3. Max Q, then E.",
+      "phases": {
+        "lvl1_3": [
+          "Break the first barrel with an auto or cleaver only when he is not next to it. Avoid standing next to barrels.",
+          "Cleaver him when he goes for Parrrley last hits. Trade when his Q is down."
+        ],
+        "lvl4_5": [
+          "Watch his Powder Keg count. A chained barrel combo does big damage, so stay out of range of the barrel line.",
+          "Use Heart Zapper (W) to clear barrels and fight him. It hits barrels around you."
+        ],
+        "post6": [
+          "Cannon Barrage (R) can hit anywhere. It is a slow, so walk out of the area. Don't stand still.",
+          "All-in with Ignite and Maximum Dosage (R) when his barrels are used and his Q is down."
+        ],
+        "midgame": [
+          "He is a scaling poke champion. Force him to react to side waves and use Heartsteel to stay big.",
+          "Stay out of barrel range in teamfights."
+        ],
+        "lategame": [
+          "Flank him and hit his team with Q. Warmog's Armor and Titanic Hydra let you dive."
+        ]
+      },
+      "threats": [
+        "Powder Keg (E) barrel chain burst.",
+        "Parrrley (Q) crit poke and gold.",
+        "Cannon Barrage (R) global slow and damage."
+      ],
+      "killWindows": [
+        "After he uses his barrels and Q.",
+        "When he is low from poking and you have Ignite ready."
+      ],
+      "avoid": [
+        "Standing next to a barrel.",
+        "Taking poke without healing.",
+        "Fighting in a barrel chain."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/drmundo/counters/",
+        "https://lolalytics.com/lol/drmundo/vs/gangplank/build/"
+      ]
+    },
+    "Garen": {
+      "name": "Garen",
+      "difficulty": 3,
+      "winRate": 50.75,
+      "winRateSource": "lolalytics Dr. Mundo top counters, Emerald+, patch 26.19 (site label 16.19), 1,206 games (op.gg patch 16.19: 48.88%, 806 games)",
+      "summary": "Even lane between two sustain champions. Garen's Perseverance and Q burst beat you if you throw cleavers carelessly, but you out-trade him from range and out-tank him once you have Heartsteel. Poke with Infected Bonesaw and stay out of his Judgment spin.",
+      "runes": "Grasp of the Undying (Demolish, Second Wind, Overgrowth) + Inspiration (Magical Footwear, Cosmic Insight). Adaptive Force, Adaptive Force, Scaling Health shards.",
+      "summoners": "Flash + Ignite (Ignite cuts his passive regen and finishes kills)",
+      "start": "Doran's Shield + Health Potion (Doran's Helm is also fine)",
+      "buildNotes": "Heartsteel > Plated Steelcaps > Thornmail or Spirit Visage > Warmog's Armor. Buy Thornmail early if he builds Trinity Force or Sundered Sky: it cuts his heals and reflects his spin.",
+      "skillNotes": "Start Q. Take W or E at 2, max E first, then Q, then W. Use Q from range to keep his passive Perseverance from resetting.",
+      "phases": {
+        "lvl1_3": [
+          "Poke with Infected Bonesaw (Q) when he walks up to last hit. Stay at range so his Decisive Strike (Q) can't reach you.",
+          "Don't trade while his Perseverance regen is running. Poke, then back off until he stops regenerating.",
+          "Use Blunt Force Trauma (E) on a wave with minions low, or on him when he is committed to his Q."
+        ],
+        "lvl4_5": [
+          "Turn on Heart Zapper (W) only when he is already in melee range, then turn it off if you are trading badly.",
+          "Step out of Judgment (E) spin instead of standing in it. He is at his weakest while his E is on cooldown."
+        ],
+        "post6": [
+          "Demacian Justice (R) executes on your missing health. Use Maximum Dosage (R) to heal before he gets to your health bar.",
+          "Fight him after he has used his ultimate or his Q. Your R and Adrenaline Rush let you win a longer fight."
+        ],
+        "midgame": [
+          "Split push and let him come to you. He can't kill you if you keep your health high with Warmog's Armor.",
+          "In teamfights, throw Q on his team's carries and don't chase him if he retreats."
+        ],
+        "lategame": [
+          "Fight him when you have Thornmail and Spirit Visage. His damage falls off against your health and armor.",
+          "Stay above half health so his R execute doesn't finish you."
+        ]
+      },
+      "threats": [
+        "Decisive Strike (Q) silence and burst.",
+        "Judgment (E) spin damage in melee range.",
+        "Demacian Justice (R) execute on your missing health.",
+        "Perseverance regen makes short pokes wasteful."
+      ],
+      "killWindows": [
+        "After he wastes Decisive Strike (Q) on a minion or in the air.",
+        "Post-6, after his ultimate is used and you have R available."
+      ],
+      "avoid": [
+        "Standing in his Judgment spin.",
+        "Chasing him at low health into his R execute range.",
+        "Poking him right before he regens back to full."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/drmundo/counters/?lane=top&tier=emerald_plus",
+        "https://www.op.gg/lol/champions/drmundo/counters/top",
+        "https://lolalytics.com/lol/drmundo/vs/garen/build/",
+        "https://mobalytics.gg/lol/champions/drmundo/counters/top/vs-garen"
+      ]
+    },
+    "Gnar": {
+      "name": "Gnar",
+      "difficulty": 3,
+      "winRate": 51.91,
+      "winRateSource": "lolalytics Dr. Mundo top counters, Emerald+, patch 26.19 (site label 16.19), 759 games (op.gg patch 16.19: 51.49%, 536 games)",
+      "summary": "Slightly favorable but Mini Gnar outranges and pokes you. Punish Gnar when he transforms into Mega Gnar with no rage left, and stay behind minions so his boomerang Q is blocked.",
+      "runes": "Grasp of the Undying (Demolish, Second Wind, Overgrowth) + Inspiration (Magical Footwear, Cosmic Insight). Adaptive Force, Adaptive Force, Scaling Health shards.",
+      "summoners": "Flash + Ignite (Flash + Teleport if you want to scale safely)",
+      "start": "Doran's Shield + Health Potion",
+      "buildNotes": "Heartsteel > Plated Steelcaps (Mercury's Treads if he is the only threat plus AP) > Spirit Visage > Warmog's Armor. Thornmail is good if his team is heavy AD.",
+      "skillNotes": "Start Q. Take W at 2 for waveclear and trading, then E as your main max. Use Q to farm safely under tower.",
+      "phases": {
+        "lvl1_3": [
+          "Stay behind your minions so Boomerang Throw (Q) hits the wave, not you.",
+          "Hit him with Infected Bonesaw (Q) whenever he walks up to last hit. He can't punish you easily at level 1 and you take less than you give.",
+          "Don't chase Mini Gnar. Trade and back off."
+        ],
+        "lvl4_5": [
+          "Watch his Rage bar. At full rage he turns into Mega Gnar with Wallop and Crunch. Step away from his Wallop's (W) line and stay away from the wall for his Crunch.",
+          "After he turns back into Mini Gnar he has no rage. Punish with Q and E now."
+        ],
+        "post6": [
+          "GNAR! (R) knocks you into a wall for a stun. Don't stand next to walls or terrain while he has R.",
+          "Use Maximum Dosage (R) when you fight him in a lane. His damage doesn't kill you with your heal running."
+        ],
+        "midgame": [
+          "Split push with Heartsteel stacks and take fights where he has no rage.",
+          "In teamfights, fight away from walls and use Q on the closest target."
+        ],
+        "lategame": [
+          "Peel for your carries and Q the front line. Don't chase Gnar through walls."
+        ]
+      },
+      "threats": [
+        "Boomerang Throw (Q) slow and poke as Mini Gnar.",
+        "GNAR! (R) wall stun.",
+        "Mega Gnar Wallop (W) and Crunch (Q) burst.",
+        "Hyper (passive) attack speed and mana."
+      ],
+      "killWindows": [
+        "Right after he transforms back to Mini Gnar.",
+        "When his Q is on cooldown and he has no rage."
+      ],
+      "avoid": [
+        "Fighting next to walls or terrain.",
+        "Chasing Mini Gnar out of range.",
+        "Standing in a straight line with him without minions in between."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/drmundo/counters/?lane=top&tier=emerald_plus",
+        "https://www.op.gg/lol/champions/drmundo/counters/top"
+      ]
+    },
+    "Gragas": {
+      "name": "Gragas",
+      "difficulty": 2,
+      "winRate": 53.55,
+      "winRateSource": "lolalytics Dr. Mundo top counters, Emerald+, patch 26.19 (site label 16.19), 816 games (op.gg patch 16.19: 51.03%, 580 games)",
+      "summary": "You are favored. Gragas is a tanky bruiser or mage with a lot of CC but low pressure in lane. You out-sustain his poke and out-scale him in fights. Dodge Body Slam (E) and Explosive Cask (R) to avoid his combo.",
+      "runes": "Grasp of the Undying (Demolish, Second Wind, Overgrowth) + Inspiration (Magical Footwear, Cosmic Insight). Adaptive Force, Adaptive Force, Scaling Health shards.",
+      "summoners": "Flash + Ignite (Flash + Teleport is a good safe alternative)",
+      "start": "Doran's Shield + Health Potion (Doran's Helm if he is an AP Gragas)",
+      "buildNotes": "AP Gragas: Heartsteel > Mercury's Treads > Spirit Visage > Force of Nature. AD or tank Gragas: Heartsteel > Plated Steelcaps > Thornmail or Randuin's Omen > Warmog's Armor.",
+      "skillNotes": "Start Q. Take W at 2, then max E, then Q. Use Q to poke him when Drunken Rage (W) is up and he walks to farm.",
+      "phases": {
+        "lvl1_3": [
+          "Poke with Infected Bonesaw (Q) and trade with Blunt Force Trauma (E). He has few ways to punish you.",
+          "Body Slam (E) and Barrel Roll (Q) are his engage. Stay away from the barrel when it lands and sidestep Body Slam."
+        ],
+        "lvl4_5": [
+          "Don't stand in Barrel Roll's zone. It slows and does damage. Trade when he has just thrown it.",
+          "Turn on Heart Zapper (W) only when he is in melee range with you."
+        ],
+        "post6": [
+          "Explosive Cask (R) knocks you back and can push you into his team. Keep your distance from your side of the lane when he has R.",
+          "Use Maximum Dosage (R) when you take an all-in from him. His burst is low and you out-sustain it."
+        ],
+        "midgame": [
+          "Split push. He can't beat you 1v1 in a side lane and has to come with his team.",
+          "Watch for his ultimate as an engage or a disengage on your team."
+        ],
+        "lategame": [
+          "Q the priority target and stay in front of your carries. He is more dangerous with his R than in a duel."
+        ]
+      },
+      "threats": [
+        "Explosive Cask (R) knockback into his team.",
+        "Body Slam (E) engage and stun.",
+        "Barrel Roll (Q) slow.",
+        "Drunken Rage (W) damage reduction."
+      ],
+      "killWindows": [
+        "After he wastes Barrel Roll (Q) or Body Slam (E).",
+        "When he has no wave to Body Slam through."
+      ],
+      "avoid": [
+        "Standing in Barrel Roll.",
+        "Fighting when his E and R are both up and his jungler is near."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/drmundo/counters/?lane=top&tier=emerald_plus",
+        "https://www.op.gg/lol/champions/drmundo/counters/top"
+      ]
+    },
+    "Gwen": {
+      "name": "Gwen",
+      "difficulty": 5,
+      "winRate": 43.91,
+      "winRateSource": "lolalytics Dr. Mundo top counters, Emerald+, patch 26.19 (site label 16.19), 1,100 games (op.gg patch 16.19: 42.89%, 774 games; Mobalytics 26.19 shows Gwen at 57.8% vs Mundo)",
+      "summary": "Your worst matchup here. Gwen's Snip Snip! (Q) and autos deal percent-health damage that ignores your tankiness, and Hallowed Mist (W) blocks your Infected Bonesaw. Play safe, take Thornmail or Mercury's Treads when it helps, and survive to scale.",
+      "runes": "Grasp of the Undying (Demolish, Second Wind, Overgrowth) + Inspiration (Magical Footwear, Cosmic Insight). Adaptive Force, Adaptive Force, Scaling Health shards.",
+      "summoners": "Flash + Ignite (Ignite reduces her healing). Flash + Teleport if you want to farm safely.",
+      "start": "Doran's Shield + Health Potion (Doran's Helm if she is the only AP source)",
+      "buildNotes": "Mercury's Treads > Spirit Visage > Heartsteel > Force of Nature. Rush Kaenic Rookern if she is far ahead. Thornmail doesn't help much because her damage is magic.",
+      "skillNotes": "Start Q. Take W at 2. Max E, then Q. Don't waste Q on Gwen while her Hallowed Mist (W) is up.",
+      "phases": {
+        "lvl1_3": [
+          "Do not fight her in melee. Her autos and Q deal magic damage that ignores your armor, and Snip Snip! shreds you at low level.",
+          "Stand behind your minions to block Q. Use Infected Bonesaw (Q) only to farm and to poke when she doesn't have Mist.",
+          "Let the wave come to you. Concede lane pressure and take health potions instead of trading."
+        ],
+        "lvl4_5": [
+          "Hallowed Mist (W) makes her untargetable and reduces damage from outside. Wait for it to end before you use Blunt Force Trauma (E) or Q.",
+          "Don't chase her. Skip 'n Slash (E) resets her attack timer and she kites you."
+        ],
+        "post6": [
+          "Needlework (R) needles slow and damage. Use Maximum Dosage (R) to survive, but don't chase her with it.",
+          "Fight only when she has no Mist and no E up and you are healthy."
+        ],
+        "midgame": [
+          "Don't duel her in a side lane. Group with your team and fight her when she has to commit.",
+          "Buy Spirit Visage or Force of Nature and stay at full health. Her damage is high in teamfights."
+        ],
+        "lategame": [
+          "Peel for your team and Q her whenever she is outside the Mist. She still kills you in a duel, so stay grouped."
+        ]
+      },
+      "threats": [
+        "Snip Snip! (Q) percent health true and magic damage.",
+        "Hallowed Mist (W) untargetability blocks Infected Bonesaw.",
+        "Skip 'n Slash (E) attack speed and dash.",
+        "Needlework (R) slow."
+      ],
+      "killWindows": [
+        "After she uses Skip 'n Slash (E) and her Mist is down.",
+        "When she has overextended and your jungler is nearby."
+      ],
+      "avoid": [
+        "Fighting in melee range.",
+        "Wasting Infected Bonesaw (Q) into Mist.",
+        "Duelling her in a side lane at any point."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/drmundo/counters/?lane=top&tier=emerald_plus",
+        "https://www.op.gg/lol/champions/drmundo/counters/top",
+        "https://mobalytics.gg/lol/champions/gwen/counters/top/vs-drmundo"
+      ]
+    },
+    "Illaoi": {
+      "name": "Illaoi",
+      "difficulty": 4,
+      "winRate": 48.36,
+      "winRateSource": "lolalytics Dr. Mundo top counters, Emerald+, patch 26.19 (site label 16.19), 519 games (op.gg patch 16.19: 44.86%, 350 games; Mobalytics 26.19 shows Illaoi at 51.3% vs Mundo)",
+      "summary": "Slightly unfavorable. Illaoi's tentacles and Test of Spirit (E) beat your Q poke, and she out-sustains you in a long trade. Stay out of tentacle range, use Q from behind minions, and don't fight near a tentacle.",
+      "runes": "Grasp of the Undying (Demolish, Second Wind, Overgrowth) + Inspiration (Magical Footwear, Cosmic Insight). Adaptive Force, Adaptive Force, Scaling Health shards.",
+      "summoners": "Flash + Ignite (Ignite for her heals). Flash + Teleport if you want to play safe.",
+      "start": "Doran's Shield + Health Potion",
+      "buildNotes": "Heartsteel > Plated Steelcaps > Thornmail > Spirit Visage or Warmog's Armor. Thornmail counters her healing and her AD damage. Buy Randuin's Omen if she goes crit or attack speed.",
+      "skillNotes": "Start Q. Take W at 2 for damage in short trades. Max E, then Q. Use Q from a distance to farm near your tower.",
+      "phases": {
+        "lvl1_3": [
+          "Stay behind minions so Test of Spirit (E) is blocked. If it pulls your spirit, walk away before tentacles slam.",
+          "Poke with Infected Bonesaw (Q) from range and keep away from the tentacles she has spawned. Don't fight next to one.",
+          "Trade when her E is on cooldown."
+        ],
+        "lvl4_5": [
+          "Don't trade in a tentacle zone. Her Tentacle Smash (Q) does most of the damage when you stand inside it.",
+          "Use Blunt Force Trauma (E) to last hit, not to trade. She wins long trades."
+        ],
+        "post6": [
+          "Leap of Faith (R) summons tentacles around her and heals her. Move away and use Maximum Dosage (R) if you must fight it.",
+          "All-in only when her E and R are both down and you are on your own side of the lane."
+        ],
+        "midgame": [
+          "Split push away from her. If she comes, back off and let your team fight her.",
+          "Take Thornmail so her sustain runs low. Team fights are fine when you are in front."
+        ],
+        "lategame": [
+          "Don't fight on her tentacles. Q her out from behind your team and stay away from her ultimate."
+        ]
+      },
+      "threats": [
+        "Test of Spirit (E): pulls your spirit and makes tentacle hits stronger.",
+        "Leap of Faith (R) tentacles and heal.",
+        "Tentacle Smash (Q) and passive tentacles in lane.",
+        "Vessel lifesteal from her W."
+      ],
+      "killWindows": [
+        "After her E misses and her tentacles are far away.",
+        "After her R is used and you have R up."
+      ],
+      "avoid": [
+        "Fighting on her tentacles.",
+        "Standing in line for Test of Spirit (E) with no minions.",
+        "Fighting inside her ultimate."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/drmundo/counters/?lane=top&tier=emerald_plus",
+        "https://www.op.gg/lol/champions/drmundo/counters/top",
+        "https://mobalytics.gg/lol/champions/illaoi/counters/top/vs-drmundo"
+      ]
+    },
+    "Irelia": {
+      "name": "Irelia",
+      "difficulty": 4,
+      "winRate": 47.95,
+      "winRateSource": "lolalytics Dr. Mundo top counters, Emerald+, patch 26.19 (site label 16.19), 709 games (op.gg patch 16.19: 46.91%, 486 games; Mobalytics 26.19 shows Irelia at 58.3% vs Mundo)",
+      "summary": "Unfavorable. Irelia dashes onto minions to reach you and uses Defiant Dance (W) to soak your damage. You can't hit her reliably. Hold your ground behind minions, force her to use Flawless Duet (E), and scale into Thornmail.",
+      "runes": "Grasp of the Undying (Demolish, Second Wind, Overgrowth) + Inspiration (Magical Footwear, Cosmic Insight). Adaptive Force, Adaptive Force, Scaling Health shards.",
+      "summoners": "Flash + Ignite (Ignite for her healing). Flash + Teleport is a safer scaling option.",
+      "start": "Doran's Shield + Health Potion",
+      "buildNotes": "Heartsteel > Plated Steelcaps > Thornmail > Spirit Visage or Randuin's Omen. Thornmail is important against her autos and healing. Add Randuin's Omen or Frozen Heart if she builds attack speed.",
+      "skillNotes": "Start Q. Take W at 2. Max E, then Q. Keep Q for when she uses her dash on a minion.",
+      "phases": {
+        "lvl1_3": [
+          "Keep your distance and use Infected Bonesaw (Q) on her while she builds Ionian Fervor stacks on minions.",
+          "Don't fight in melee when she has a full stack. Wait until she has used her Q dash to close.",
+          "Trade if she gets too close: turn on Heart Zapper (W) briefly and back away."
+        ],
+        "lvl4_5": [
+          "Sidestep Flawless Duet (E). Its first blade is hard to see, so stay away from a line between you and a minion.",
+          "Kill the minions she wants to Bladesurge on, or keep the wave cleared so she has no dash targets."
+        ],
+        "post6": [
+          "Vanguard's Edge (R) walls block your Q and slow you. Use Maximum Dosage (R) to escape or fight at the wall's edge.",
+          "Fight when her E and R have both been used. You can chase her only when she is out of dashes."
+        ],
+        "midgame": [
+          "Take Thornmail and stay with your team. She wins 1v1s when she has more dashes, so don't split push into her.",
+          "Q her when she dives to your carry."
+        ],
+        "lategame": [
+          "Front line and Q her when she jumps in. Don't try to chase her around walls."
+        ]
+      },
+      "threats": [
+        "Bladesurge (Q) resets on kills and low-health minions.",
+        "Flawless Duet (E) stun.",
+        "Defiant Dance (W) damage reduction and heal.",
+        "Vanguard's Edge (R) slow and blade wall."
+      ],
+      "killWindows": [
+        "After she has used E and is out of dash targets.",
+        "When she has no minions near her and her W is down."
+      ],
+      "avoid": [
+        "Trading when she has full Ionian Fervor stacks.",
+        "Fighting without minions in the lane.",
+        "Chasing her when she has her dashes."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/drmundo/counters/?lane=top&tier=emerald_plus",
+        "https://www.op.gg/lol/champions/drmundo/counters/top",
+        "https://mobalytics.gg/lol/champions/irelia/counters/top/vs-drmundo"
+      ]
+    },
+    "Jax": {
+      "name": "Jax",
+      "difficulty": 3,
+      "winRate": 54.05,
+      "winRateSource": "lolalytics Dr. Mundo top counters, Emerald+, patch 26.19 (site label 16.19), 1,186 games (op.gg patch 16.19: 50.36%, 836 games)",
+      "summary": "Favorable early and even later. Jax wins if the game reaches two or three items and he has Grandmaster's Might. You beat him at levels 1-5 with Infected Bonesaw pokes, and Counter Strike (E) only blocks autos, so keep hitting him with Q and Blunt Force Trauma.",
+      "runes": "Grasp of the Undying (Demolish, Second Wind, Overgrowth) + Inspiration (Magical Footwear, Cosmic Insight). Adaptive Force, Adaptive Force, Scaling Health shards.",
+      "summoners": "Flash + Ignite (Flash + Teleport if you want to scale safely)",
+      "start": "Doran's Shield + Health Potion",
+      "buildNotes": "Heartsteel > Plated Steelcaps > Thornmail (reflects his auto damage and cuts his healing) > Spirit Visage or Randuin's Omen. Buy Frozen Heart or Randuin's Omen if he is stacking attack speed. Warmog's Armor last.",
+      "skillNotes": "Start Q. Take W at 2 for trades, then max E and Q. Q is your main tool because it is not blocked by his Counter Strike.",
+      "phases": {
+        "lvl1_3": [
+          "Infected Bonesaw (Q) is an ability, so his Counter Strike doesn't dodge it. Keep poking him whenever he walks up.",
+          "When he pops Counter Strike, back away and don't auto him. Come back in when it ends."
+        ],
+        "lvl4_5": [
+          "Trade with Q, then Blunt Force Trauma (E) on a low minion or on him. Back away before he can Leap Strike (Q) onto you with a stun.",
+          "Take advantage of his early weakness. He has little sustain and you regen with Adrenaline Rush (passive)."
+        ],
+        "post6": [
+          "Use Maximum Dosage (R) when he goes in with Grandmaster's Might. You have more health and can out-fight him at that point.",
+          "All-in after he has used Counter Strike on nothing. His stun is his best tool against you."
+        ],
+        "midgame": [
+          "Don't duel him with 2+ items without Thornmail. His Relentless Assault stacks beat you in a long duel.",
+          "Split push with Heartsteel and force him to answer you in the side lane."
+        ],
+        "lategame": [
+          "Front line and keep him off your carries. Q him when he leaps and don't chase him out of the fight."
+        ]
+      },
+      "threats": [
+        "Counter Strike (E) blocks your autos and stuns.",
+        "Grandmaster's Might (R) resists and damage.",
+        "Leap Strike (Q) engage and gap closer.",
+        "Relentless Assault (passive) attack speed stacks in long fights."
+      ],
+      "killWindows": [
+        "Levels 1-5 while he has no items and no Trinity Force.",
+        "After his Counter Strike was wasted and he can't stun you."
+      ],
+      "avoid": [
+        "Auto attacking into his active Counter Strike.",
+        "Long duels late without Thornmail.",
+        "Fighting with no health while he has Leap Strike ready."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/drmundo/counters/?lane=top&tier=emerald_plus",
+        "https://www.op.gg/lol/champions/drmundo/counters/top"
+      ]
+    },
+    "Jayce": {
+      "name": "Jayce",
+      "difficulty": 2,
+      "winRate": 56.09,
+      "winRateSource": "lolalytics Dr. Mundo top counters, Emerald+, patch 26.19 (client 16.19), 1,182 games (op.gg Emerald+ 26.19: 54.52, 840 games)",
+      "summary": "You are favored. Jayce pokes you with Shock Blast (Q) in ranged form, but you out-sustain the poke and he can't stop your Infected Bonesaw (Q) chase. Stay healthy, keep hitting Qs, and punish him when he is in hammer form with no way out.",
+      "runes": "Grasp of the Undying (Demolish, Second Wind, Overgrowth) + Inspiration (Magical Footwear, Cosmic Insight). Second Wind gives sustain against his poke.",
+      "summoners": "Flash + Ignite (Flash + Teleport if you want to play safe)",
+      "start": "Doran's Shield + Health Potion (Doran's Helm is also fine on lolalytics)",
+      "buildNotes": "Heartsteel > Plated Steelcaps > Spirit Visage or Titanic Hydra > Warmog's Armor. Buy Bami's Cinder or Sunfire Aegis if he keeps poking you. Jayce deals mixed damage, so Plated Steelcaps early, then Force of Nature if he goes AP.",
+      "skillNotes": "Start Q. Take E at 2, W at 3. Max Q, then E, then W.",
+      "phases": {
+        "lvl1_3": [
+          "Stand beside minions so Shock Blast (Q) hits a minion first. Don't line up behind the wave.",
+          "Walk up and hit him with Infected Bonesaw (Q) when he uses his Q or E. Q costs health, so only throw it when it will land.",
+          "Last hit under his range with Q if he is zoning you, but don't waste health on missed Qs."
+        ],
+        "lvl4_5": [
+          "When he swaps to hammer form, he has to be next to you. Q him, turn on Heart Zapper (W), and stay on him.",
+          "Trade with Q + E auto + W. His Thundering Blow (E) knockback and Lightning Field (W) hurt, so leave after two auto attacks if you are below 50%."
+        ],
+        "post6": [
+          "Turn on Maximum Dosage (R) for the heal and speed and chase him. You out-heal his burst.",
+          "He can Acceleration Gate (E in ranged form) away, so don't chase far from your tower unless he is dead."
+        ],
+        "midgame": [
+          "Split push. He wants to poke and siege, so a Mundo in side lane forces him to answer you.",
+          "In teamfights, walk through the poke with Warmog's Armor and only engage on him after he has used Q and E."
+        ],
+        "lategame": [
+          "You outscale his poke with Warmog's Armor and Spirit Visage. Flank his backline and don't stand in front of his cannon."
+        ]
+      },
+      "threats": [
+        "Shock Blast (Q) plus Acceleration Gate for burst poke.",
+        "Thundering Blow (E) knockback and percent health damage in hammer form.",
+        "Ranged poke that wears you down before you can reach him."
+      ],
+      "killWindows": [
+        "When he is in hammer form and his E and Q are on cooldown.",
+        "Post-6 when Maximum Dosage is up and he has used his gate.",
+        "After he is stuck in a gank with no dash left."
+      ],
+      "avoid": [
+        "Standing in a line with the wave behind you for his Q.",
+        "Spamming Q while below 40% health. It costs health.",
+        "Chasing him far from your tower with his gate available."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/drmundo/counters/",
+        "https://op.gg/lol/champions/drmundo/counters/top"
+      ]
+    },
+    "KSante": {
+      "name": "K'Sante",
+      "difficulty": 3,
+      "winRate": 53.77,
+      "winRateSource": "lolalytics Dr. Mundo top counters, Emerald+, patch 26.19 (client 16.19), 584 games (op.gg Emerald+ 26.19: 52.10, 428 games)",
+      "summary": "A slightly favorable but frustrating lane. K'Sante has Path Maker (W) and Footwork (E) mobility to dodge your Qs and a tanky early game. Only throw Q when he can't dodge, and win with sustain and your health items.",
+      "runes": "Grasp of the Undying (Demolish, Second Wind, Overgrowth) + Inspiration (Magical Footwear, Cosmic Insight)",
+      "summoners": "Flash + Ignite (Flash + Teleport if you get bullied)",
+      "start": "Doran's Shield + Health Potion",
+      "buildNotes": "Heartsteel > Plated Steelcaps > Spirit Visage or Titanic Hydra > Warmog's Armor. Buy Thornmail if he builds AD and heals. He is a tank, so Titanic Hydra and your percent health damage from Heart Zapper (W) matter.",
+      "skillNotes": "Start Q. Take E at 2, W at 3. Max Q, then E, then W.",
+      "phases": {
+        "lvl1_3": [
+          "His Ntofo Strikes (Q) shoves and lowers your armor. Don't walk into it for free, but you can trade with Q + auto when he wastes his Q.",
+          "Hit Infected Bonesaw (Q) when he is trading with the wave, because the Q also slows him. Don't throw it at range where he dodges with Footwork (E)."
+        ],
+        "lvl4_5": [
+          "Trade after he uses his E. Without a dash he has to stand and fight, and your Heart Zapper (W) and Blunt Force Trauma (E) win the extended trade.",
+          "His Path Maker (W) knocks you back and stuns. Step sideways out of the line."
+        ],
+        "post6": [
+          "Turn on Maximum Dosage (R) to heal and chase. His All Out (R) lowers his own mobility, so fight it out when he transforms.",
+          "He can knock you into a wall with All Out. Don't stand next to walls or your tower when he has R."
+        ],
+        "midgame": [
+          "Split push and let your team fight. He deals damage slowly, and you out-sustain him with Warmog's Armor.",
+          "In teamfights, walk through his dashes and focus the carries that he can't peel for."
+        ],
+        "lategame": [
+          "Both of you are tanks. Split push and don't take a 1v1 in the middle of the map. Keep your health high and hit Qs on the carry."
+        ]
+      },
+      "threats": [
+        "Path Maker (W) knockback stun.",
+        "All Out (R) into a wall or turret.",
+        "Footwork (E) dash and shield dodges your Q.",
+        "Tanky early game makes trades slow."
+      ],
+      "killWindows": [
+        "After he uses Footwork (E) and Path Maker (W) in a trade.",
+        "During a gank when he has no dash left.",
+        "When he is low and you have Ignite."
+      ],
+      "avoid": [
+        "Throwing Q into his dash range without a chance to land it.",
+        "Standing near a wall or your own tower while he has R.",
+        "Fighting his all-in with no health."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/drmundo/counters/",
+        "https://op.gg/lol/champions/drmundo/counters/top"
+      ]
+    },
+    "Kled": {
+      "name": "Kled",
+      "difficulty": 4,
+      "winRate": 44.53,
+      "winRateSource": "lolalytics Dr. Mundo top counters, Emerald+, patch 26.19 (client 16.19), 393 games (op.gg Emerald+ 26.19: 44.53, 274 games). Older: mobalytics Emerald+ 26.16, 446 games, 45.7%",
+      "summary": "One of your worst matchups. Kled wins levels 1-5 with Beartrap on a Rope (Q) and Violent Tendencies (W) burst, and his Skaarl passive lets him fight you again after being dismounted. Play safe early, keep your health up, and win after the mount breaks and through your scaling.",
+      "runes": "Grasp of the Undying (Demolish, Second Wind, Overgrowth) + Inspiration (Magical Footwear, Cosmic Insight). Take Second Wind to survive his poke.",
+      "summoners": "Flash + Ignite. Ignite cuts his heals and helps finish him after dismount.",
+      "start": "Doran's Shield + Health Potion. Doran's Shield helps vs his poke and sustains you.",
+      "buildNotes": "Bami's Cinder or Sunfire Aegis first back if he is winning lane, then Heartsteel > Plated Steelcaps > Spirit Visage > Warmog's Armor. Add Thornmail when he builds AD and Force of Nature if his team is AP.",
+      "skillNotes": "Start Q. Take E at 2, W at 3. Max Q, then E, then W.",
+      "phases": {
+        "lvl1_3": [
+          "Give up the extra CS and stay near your wave. Don't be the one who walks up for a Q trade at level 1.",
+          "If Beartrap on a Rope (Q) hits you, walk away from him to break the tether. Don't walk into him.",
+          "Trade only when his Violent Tendencies (W) is on cooldown, because it gives him four fast autos."
+        ],
+        "lvl4_5": [
+          "When Skaarl is dismounted, Kled is weak and slow. Q him and all-in, using Heart Zapper (W) and E autos.",
+          "Sidestep the first dash of Jousting (E). The second cast follows you."
+        ],
+        "post6": [
+          "Turn on Maximum Dosage (R) when you fight him, because the heal and speed win extended trades once Skaarl is gone.",
+          "Ward the side lanes. His Chaaaaaaaarge!!! (R) makes him engage from far away with his team."
+        ],
+        "midgame": [
+          "You outscale him. Take your farm, kill Skaarl, then fight Kled after he has dismounted.",
+          "In teamfights, keep Q for his charge in and try to hit the lower half of his health bar."
+        ],
+        "lategame": [
+          "With Warmog's Armor and Spirit Visage you out-heal him. Split push and don't be caught alone in the dark for his charge."
+        ]
+      },
+      "threats": [
+        "Beartrap on a Rope (Q) pull and tether.",
+        "Violent Tendencies (W) four-hit burst.",
+        "Chaaaaaaaarge!!! (R) long-range engage.",
+        "Levels 1-5 all-ins."
+      ],
+      "killWindows": [
+        "When Skaarl is dismounted.",
+        "After he wastes Q and W on the wave.",
+        "Post-6 with Maximum Dosage active and Ignite ready."
+      ],
+      "avoid": [
+        "Trading at level 1-3 with his W up.",
+        "Standing on the tether after Q hits.",
+        "Fighting him next to the enemy jungler's side of the map."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/drmundo/counters/",
+        "https://op.gg/lol/champions/drmundo/counters/top",
+        "https://lolalytics.com/lol/drmundo/vs/kled/build/",
+        "https://mobalytics.gg/lol/champions/drmundo/counters/top/vs-kled"
+      ]
+    },
+    "Malphite": {
+      "name": "Malphite",
+      "difficulty": 2,
+      "winRate": 56.26,
+      "winRateSource": "lolalytics Dr. Mundo top counters, Emerald+, patch 26.19 (client 16.19), 2,158 games (op.gg Emerald+ 26.19: 54.58, 1,517 games)",
+      "summary": "You are favored. Malphite's Seismic Shard (Q) poke is easy to sustain, and you win extended fights with Heart Zapper (W) and your heal. Don't fight when his Granite Shield is up, and stay away from Unstoppable Force (R) in fights.",
+      "runes": "Grasp of the Undying (Demolish, Second Wind, Overgrowth) + Inspiration (Magical Footwear, Cosmic Insight)",
+      "summoners": "Flash + Ignite (Flash + Teleport is also fine)",
+      "start": "Doran's Shield + Health Potion (Doran's Helm is also common)",
+      "buildNotes": "Heartsteel > Plated Steelcaps > Spirit Visage or Titanic Hydra > Warmog's Armor. He deals magic damage from his Q, W and R: get Force of Nature and Mercury's Treads instead of Steelcaps if his team is AP.",
+      "skillNotes": "Start Q. Take E at 2, W at 3. Max Q, then E, then W.",
+      "phases": {
+        "lvl1_3": [
+          "Trade after his Granite Shield breaks. Hit him with Q and then Blunt Force Trauma (E) auto.",
+          "His Seismic Shard (Q) slows and steals your move speed, so don't chase him over the wave. Hit Q when he steps up to last hit."
+        ],
+        "lvl4_5": [
+          "Use Heart Zapper (W) on him in melee range. His Q slow makes you stay in it, so let the W burn.",
+          "Trade when Ground Slam (E) is on cooldown, because he loses his attack-speed slow."
+        ],
+        "post6": [
+          "Unstoppable Force (R) knocks you up. Don't walk into him at range or in a straight line.",
+          "Maximum Dosage (R) lets you out-heal his damage. Walk toward him when he wastes R on the wave or a teammate."
+        ],
+        "midgame": [
+          "Split push. He can't catch you and the tanks on his team are slow.",
+          "In teamfights, don't clump. Stay behind your engage so his R hits fewer allies."
+        ],
+        "lategame": [
+          "You out-heal his poke with Warmog's Armor. Kill his backline after he uses R."
+        ]
+      },
+      "threats": [
+        "Unstoppable Force (R) knockup, especially with a team.",
+        "Seismic Shard (Q) slow and move speed steal.",
+        "Granite Shield absorbs your first trade.",
+        "Armor stacking makes his tank build hard to burst."
+      ],
+      "killWindows": [
+        "After his shield is broken and his Q is on cooldown.",
+        "When he wastes his R in a teamfight.",
+        "Post-6 with Maximum Dosage up."
+      ],
+      "avoid": [
+        "Walking in a straight line into his R.",
+        "Trading into his passive shield.",
+        "Chasing him up the wave with his Q up."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/drmundo/counters/",
+        "https://op.gg/lol/champions/drmundo/counters/top"
+      ]
+    },
+    "Mordekaiser": {
+      "name": "Mordekaiser",
+      "difficulty": 4,
+      "winRate": 50.26,
+      "winRateSource": "lolalytics Dr. Mundo top counters, Emerald+, patch 26.19 (client 16.19), 971 games (op.gg Emerald+ 26.19: 46.71, 638 games). Older: mobalytics Emerald+ 26.15, 703 games, 47.8%",
+      "summary": "Harder than it looks. Mordekaiser out-trades you with Obliterate (Q) and Indestructible (W) shield, and Realm of Death (R) steals your stats in the 1v1. Play short trades, save Ignite for his shield, and scale with magic resist.",
+      "runes": "Grasp of the Undying (Demolish, Second Wind, Overgrowth) + Inspiration (Magical Footwear, Cosmic Insight)",
+      "summoners": "Flash + Ignite (Ignite reduces his shield heal and helps the kill in his R)",
+      "start": "Doran's Shield + Health Potion",
+      "buildNotes": "Heartsteel > Mercury's Treads > Spirit Visage > Force of Nature > Warmog's Armor. He deals magic damage, so build magic resist early. Kaenic Rookern is an option if his team is heavy AP.",
+      "skillNotes": "Start Q. Take E at 2, W at 3. Max Q, then E, then W.",
+      "phases": {
+        "lvl1_3": [
+          "His Obliterate (Q) does more damage when you are alone. Stay near minions and walk off the line.",
+          "Hit him with Infected Bonesaw (Q) when he steps up to last hit, then walk back. He has no dash to chase you."
+        ],
+        "lvl4_5": [
+          "Trade when his Indestructible (W) is on cooldown. Don't hit the shield, and turn Heart Zapper (W) off until it breaks.",
+          "Sidestep Death's Grasp (E). Its pull is slow, so walk out of the line."
+        ],
+        "post6": [
+          "Realm of Death (R) steals part of your stats and puts you in a 1v1. Use Maximum Dosage (R) inside it and Ignite to survive.",
+          "Play safe when he has R and you are below 50% health."
+        ],
+        "midgame": [
+          "Split push with Spirit Visage. Both of you want the side lane, so take the wave that is away from his team.",
+          "In teamfights, watch for his R on your carry. Your team can't help them inside the realm."
+        ],
+        "lategame": [
+          "Keep your health high with Warmog's Armor. Force Mordekaiser to use R on you instead of your carry."
+        ]
+      },
+      "threats": [
+        "Realm of Death (R) stat steal.",
+        "Obliterate (Q) isolation damage.",
+        "Indestructible (W) shield and heal.",
+        "Death's Grasp (E) pull.",
+        "Magic damage bypasses your armor."
+      ],
+      "killWindows": [
+        "After his Q misses and his W is on cooldown.",
+        "When he uses R on someone else.",
+        "In his R, when you have Ignite and Maximum Dosage."
+      ],
+      "avoid": [
+        "Standing alone away from minions.",
+        "Hitting his W shield when it is up.",
+        "Fighting him with low health when he has R."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/drmundo/counters/",
+        "https://op.gg/lol/champions/drmundo/counters/top",
+        "https://mobalytics.gg/lol/champions/drmundo/counters/top/vs-mordekaiser"
+      ]
+    },
+    "Nasus": {
+      "name": "Nasus",
+      "difficulty": 3,
+      "winRate": 48.99,
+      "winRateSource": "lolalytics Dr. Mundo top counters, Emerald+, patch 26.19 (client 16.19), 1,286 games (op.gg Emerald+ 26.19: 46.99, 879 games). mobalytics Emerald+ 26.18 (older, 57 games) showed 59.6%, too small to trust",
+      "summary": "Slightly unfavorable to even. Nasus is weak early, so you can poke him with Infected Bonesaw (Q), but Wither (W) shuts down your chase and he scales into a huge health bar. Deny stacks early, keep Ignite, and close the game before he gets three items.",
+      "runes": "Grasp of the Undying (Demolish, Second Wind, Overgrowth) + Inspiration (Magical Footwear, Cosmic Insight)",
+      "summoners": "Flash + Ignite",
+      "start": "Doran's Shield + Health Potion (Doran's Helm is also fine)",
+      "buildNotes": "Heartsteel > Plated Steelcaps > Thornmail > Titanic Hydra > Warmog's Armor. Thornmail applies Grievous Wounds against his Spirit Fire and his R healing. Titanic Hydra deals percent health damage to his large health bar.",
+      "skillNotes": "Start Q. Take E at 2, W at 3. Max Q, then E, then W.",
+      "phases": {
+        "lvl1_3": [
+          "Poke him with Infected Bonesaw (Q) whenever he steps up for Siphoning Strike (Q). Don't let him farm stacks freely.",
+          "Trade Q + E auto when his Q is on cooldown. He has low damage early."
+        ],
+        "lvl4_5": [
+          "His Wither (W) slows you and lowers your attack speed. Q from range and don't walk into it.",
+          "Look for a level 3-5 all-in with Ignite. Kill him before he gets a few stacks."
+        ],
+        "post6": [
+          "Fury of the Sands (R) makes him big and tanky. Back off for its duration unless you have Maximum Dosage up and a kill.",
+          "Take the wave. Freeze or crash the lane so he loses stacks."
+        ],
+        "midgame": [
+          "Split push and force him to answer side waves. Don't 1v1 him after his third item.",
+          "Shove waves and roam. He is slow to react."
+        ],
+        "lategame": [
+          "He scales harder than you. End the game with your team or fight his Wither out and buy Thornmail."
+        ]
+      },
+      "threats": [
+        "Wither (W) slow and attack speed cut.",
+        "Siphoning Strike (Q) stack scaling.",
+        "Fury of the Sands (R) tankiness and healing.",
+        "Spirit Fire (E) armor shred."
+      ],
+      "killWindows": [
+        "Levels 2-5 with Ignite when his Q is on cooldown.",
+        "When his W is on cooldown.",
+        "After he wastes his R on the wave or a teammate."
+      ],
+      "avoid": [
+        "Letting him farm stacks under tower.",
+        "Fighting inside his R with no lead.",
+        "Chasing into Wither with low health."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/drmundo/counters/",
+        "https://op.gg/lol/champions/drmundo/counters/top",
+        "https://mobalytics.gg/lol/champions/drmundo/counters/top/vs-nasus"
+      ]
+    },
+    "Olaf": {
+      "name": "Olaf",
+      "difficulty": 3,
+      "winRate": 51.38,
+      "winRateSource": "lolalytics Dr. Mundo top counters, Emerald+, patch 26.19 (client 16.19), 471 games (op.gg Emerald+ 26.19: 48.41, 347 games)",
+      "summary": "An even lane. Olaf wins short all-ins with Undertow (Q) and Reckless Swing (E) true damage, and Ragnarok (R) makes him immune to your slows and CC. Dodge the axe, trade after he throws it, and win the longer fights with your health.",
+      "runes": "Grasp of the Undying (Demolish, Second Wind, Overgrowth) + Inspiration (Magical Footwear, Cosmic Insight)",
+      "summoners": "Flash + Ignite (Ignite helps against his Tough It Out heal)",
+      "start": "Doran's Shield + Health Potion",
+      "buildNotes": "Heartsteel > Plated Steelcaps > Thornmail or Spirit Visage > Titanic Hydra > Warmog's Armor. Thornmail is good against his healing and physical damage. Note his true damage from Reckless Swing ignores your armor, so health items are the answer.",
+      "skillNotes": "Start Q. Take E at 2, W at 3. Max Q, then E, then W.",
+      "phases": {
+        "lvl1_3": [
+          "Sidestep Undertow (Q) and step between him and the axe. He has to walk to pick it up.",
+          "Trade Q + E auto when the axe is on the ground. Reckless Swing (E) costs him health, so he trades worse when he is low."
+        ],
+        "lvl4_5": [
+          "Avoid long fights near 40% health. His Tough It Out (W) heals more when he is low.",
+          "Turn on Heart Zapper (W) when he stands still to grab the axe."
+        ],
+        "post6": [
+          "During Ragnarok (R) he is immune to CC and hits hard. Walk away or use Maximum Dosage (R) to run and fight after it ends.",
+          "All-in when his R is used and your Ignite is ready."
+        ],
+        "midgame": [
+          "Split push. He is a strong diver, so ward and watch where he is.",
+          "In teamfights, wait for him to use R and then focus him or walk back."
+        ],
+        "lategame": [
+          "You outscale him with Warmog's Armor and Spirit Visage. Keep your health high and don't fight in his R."
+        ]
+      },
+      "threats": [
+        "Undertow (Q) slow and damage.",
+        "Reckless Swing (E) true damage.",
+        "Ragnarok (R) CC immunity.",
+        "Tough It Out (W) heal and attack speed."
+      ],
+      "killWindows": [
+        "After he has thrown his axe and it is far from him.",
+        "After his R has ended.",
+        "When he is low from his own Reckless Swing."
+      ],
+      "avoid": [
+        "Fighting inside his R.",
+        "Trading when his axe is up and you are below 50% health.",
+        "Standing in a line for Undertow."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/drmundo/counters/",
+        "https://op.gg/lol/champions/drmundo/counters/top"
+      ]
+    },
+    "Ornn": {
+      "name": "Ornn",
+      "difficulty": 3,
+      "winRate": 49.02,
+      "winRateSource": "lolalytics Dr. Mundo top counters, Emerald+, patch 26.19 (client 16.19), 871 games",
+      "summary": "Even to slightly unfavorable. Ornn has little kill pressure early, but he out-tanks you and out-scales in fights. Farm safely, keep your health up, and force him to answer your side lane.",
+      "runes": "Grasp of the Undying (Demolish, Second Wind, Overgrowth) + Inspiration (Magical Footwear, Cosmic Insight)",
+      "summoners": "Flash + Ignite (Flash + Teleport if you plan to split push)",
+      "start": "Doran's Shield + Health Potion",
+      "buildNotes": "Heartsteel > Plated Steelcaps > Sunfire Aegis > Warmog's Armor > Spirit Visage. Swap in Thornmail if his team leans on healing.",
+      "skillNotes": "Start Q. Take E at 2, W at 3. Max Q, then W, then E.",
+      "phases": {
+        "lvl1_3": [
+          "Sidestep Volcanic Rupture (Q). The pillar it leaves blocks your Infected Bonesaw, so don't throw Q into it.",
+          "Only cast Infected Bonesaw when it will hit. It costs health.",
+          "Trade with Blunt Force Trauma (E) when his Q is down."
+        ],
+        "lvl4_5": [
+          "Step out of Bellows Breath (W) or trade back right after it ends.",
+          "Keep Heart Zapper (W) on only during trades. Turn it off while farming to save health."
+        ],
+        "post6": [
+          "Don't fight his Call to Arms (R) elemental. Walk around it and play for the wave.",
+          "Trade when his Q and W are used. Maximum Dosage (R) lets you win the longer fight."
+        ],
+        "midgame": [
+          "Stack Heartsteel and push side lane. He has to answer you.",
+          "Don't duel him while brittle from his W. Wait for it to end."
+        ],
+        "lategame": [
+          "He wins teamfights if you fight head-on. Keep pressure on a side lane.",
+          "Save Maximum Dosage for when his team dives you."
+        ]
+      },
+      "threats": [
+        "Volcanic Rupture (Q) knock-up, and the pillar blocks your Q.",
+        "Bellows Breath (W) brittle, which sets up his team's damage.",
+        "Call to Arms (R) slow wave with knock-up."
+      ],
+      "killWindows": [
+        "Right after Volcanic Rupture is used and you are past the pillars.",
+        "When he is low after a wave clash and Bellows Breath is down."
+      ],
+      "avoid": [
+        "Throwing Infected Bonesaw into a pillar.",
+        "Chasing him into his elemental at low health."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/drmundo/counters/",
+        "https://lolalytics.com/lol/drmundo/vs/ornn/build/"
+      ]
+    },
+    "Poppy": {
+      "name": "Poppy",
+      "difficulty": 3,
+      "winRate": 54.74,
+      "winRateSource": "lolalytics Dr. Mundo top counters, Emerald+, patch 26.19 (client 16.19), 190 games (small sample; op.gg Emerald+ 26.19 lists Poppy at 55.56 against Mundo, so the true matchup is closer to even)",
+      "summary": "Roughly even despite the lolalytics number. Poppy's Heroic Charge (E) into a wall is her burst, and her Steadfast Presence (W) stops dashes (you have none anyway). Fight in open space and out-sustain her.",
+      "runes": "Grasp of the Undying (Demolish, Second Wind, Overgrowth) + Inspiration (Magical Footwear, Cosmic Insight)",
+      "summoners": "Flash + Ignite",
+      "start": "Doran's Shield + Health Potion",
+      "buildNotes": "Heartsteel > Plated Steelcaps > Sunfire Aegis > Warmog's Armor. Add Thornmail if she gets fed and starts hitting hard with autos.",
+      "skillNotes": "Start Q. Take E at 2, W at 3. Max Q, then W, then E.",
+      "phases": {
+        "lvl1_3": [
+          "Stay away from walls. Her Heroic Charge only does big damage and stun when she pins you into terrain.",
+          "Trade with Blunt Force Trauma when her Hammer Shock (Q) is down."
+        ],
+        "lvl4_5": [
+          "Stand in open space between waves. If she uses E with no wall behind you, walk into her and zap.",
+          "Don't overspend health on Infected Bonesaw for pokes."
+        ],
+        "post6": [
+          "Keeper's Verdict (R) knocks you back. Don't fight low health near her when she has R.",
+          "Press Maximum Dosage as she commits, not before."
+        ],
+        "midgame": [
+          "Push waves and split with Heartsteel stacks. Watch for her pins on your carries.",
+          "Fight her away from walls."
+        ],
+        "lategame": [
+          "You out-tank her in side lane. Stay with your team when she has R for the engage."
+        ]
+      },
+      "threats": [
+        "Heroic Charge (E) wall stun.",
+        "Keeper's Verdict (R) knock-up.",
+        "Steadfast Presence (W) blocks dashes and slows her chasers."
+      ],
+      "killWindows": [
+        "After she uses Heroic Charge with no wall behind you.",
+        "When Hammer Shock (Q) is on cooldown and you have Blunt Force Trauma ready."
+      ],
+      "avoid": [
+        "Fighting with a wall behind you.",
+        "Extended fights while she has R."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/drmundo/counters/",
+        "https://op.gg/lol/champions/drmundo/counters/top"
+      ]
+    },
+    "Renekton": {
+      "name": "Renekton",
+      "difficulty": 2,
+      "winRate": 56.89,
+      "winRateSource": "lolalytics Dr. Mundo top counters, Emerald+, patch 26.19 (client 16.19), 1,292 games (the vs page showed 57.21 in 1,262 games; op.gg Emerald+ 26.19 lists Renekton at 55.68 against Mundo, so sources disagree)",
+      "summary": "Favorable on lolalytics. Renekton wants short all-in trades, but his long cooldowns leave him open when you walk up and zap. Heartsteel and Sunfire Aegis outlast his combo. Sources disagree, so respect his level 3 all-in.",
+      "runes": "Grasp of the Undying (Demolish, Second Wind, Overgrowth) + Inspiration (Magical Footwear, Cosmic Insight)",
+      "summoners": "Flash + Ignite (best win rate summoner pair on lolalytics, small sample)",
+      "start": "Doran's Shield + Health Potion (Doran's Helm is also common)",
+      "buildNotes": "Heartsteel > Plated Steelcaps > Sunfire Aegis > Warmog's Armor. Buy Bramble Vest early if his Ruthless Predator sustain wins trades.",
+      "skillNotes": "Start Q. Take E at 2, W at 3. Max Q, then W, then E.",
+      "phases": {
+        "lvl1_3": [
+          "Respect his level 3 all-in (E > W > Q). Keep your health high going into level 3.",
+          "Keep Heart Zapper (W) on and step up when his fury is low."
+        ],
+        "lvl4_5": [
+          "Watch his fury. At 50+ fury his empowered abilities do more damage and stun longer. Back off then.",
+          "Trade after he uses Slice and Dice (E). Without it he can't get out."
+        ],
+        "post6": [
+          "Dominus (R) gives him health and damage. Don't fight the first seconds. Press Maximum Dosage when he commits.",
+          "All-in when his fury is low and E is down."
+        ],
+        "midgame": [
+          "Push and split. He falls off, and Sunfire Aegis plus Warmog's Armor make him unable to kill you.",
+          "Join fights on your terms."
+        ],
+        "lategame": [
+          "Take side-lane duels. Hold Maximum Dosage for his engage."
+        ]
+      },
+      "threats": [
+        "Ruthless Predator (W) stun, strongest at high fury.",
+        "Slice and Dice (E) double dash to engage and escape.",
+        "Dominus (R) health and damage surge."
+      ],
+      "killWindows": [
+        "After he dashes in and Slice and Dice is on cooldown.",
+        "When his fury is low and W is down."
+      ],
+      "avoid": [
+        "Trading when his fury is 50+.",
+        "Standing still after his dash when he still has E."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/drmundo/counters/",
+        "https://lolalytics.com/lol/drmundo/vs/renekton/build/",
+        "https://op.gg/lol/champions/drmundo/counters/top"
+      ]
+    },
+    "Riven": {
+      "name": "Riven",
+      "difficulty": 3,
+      "winRate": 53.16,
+      "winRateSource": "lolalytics Dr. Mundo top counters, Emerald+, patch 26.19 (client 16.19), 412 games (op.gg Emerald+ 26.19 lists Riven at 53.76 against Mundo, so treat it as even)",
+      "summary": "Even. Riven is mobile and can burst you with her Q3 knock-up and W stun, then dance out. Stay healthy, fight when her dashes are used, and out-tank her.",
+      "runes": "Grasp of the Undying (Demolish, Second Wind, Overgrowth) + Inspiration (Magical Footwear, Cosmic Insight)",
+      "summoners": "Flash + Ignite",
+      "start": "Doran's Shield + Health Potion",
+      "buildNotes": "Heartsteel > Plated Steelcaps > Sunfire Aegis > Warmog's Armor > Thornmail. She is all physical damage, so armor is good.",
+      "skillNotes": "Start Q. Take E at 2, W at 3. Max Q, then W, then E.",
+      "phases": {
+        "lvl1_3": [
+          "Don't throw Infected Bonesaw randomly. She dodges it with Valor (E) or Q.",
+          "Stay near your wave. Don't fight on her terms at low health."
+        ],
+        "lvl4_5": [
+          "Keep Heart Zapper (W) on when she is close. Riven fights in melee range.",
+          "Trade after she uses Broken Wings (Q3) and Valor (E). She has no gap-closer left."
+        ],
+        "post6": [
+          "Blade of the Exile (R) gives her damage and Wind Slash, an execute. Don't sit at low health near her.",
+          "Press Maximum Dosage before her combo lands."
+        ],
+        "midgame": [
+          "Push and split. She can't stop your waves or duel Warmog's Armor plus Sunfire Aegis.",
+          "In fights, use Infected Bonesaw slow to peel her off your carries."
+        ],
+        "lategame": [
+          "Take side-lane duels. Keep Maximum Dosage for her engage."
+        ]
+      },
+      "threats": [
+        "Ki Burst (W) stun.",
+        "Broken Wings (Q3) knock-up.",
+        "Wind Slash (R) execute."
+      ],
+      "killWindows": [
+        "After she uses Q3 and Valor (E).",
+        "When her W is on cooldown and Blunt Force Trauma is ready."
+      ],
+      "avoid": [
+        "Trading at low health while she has R.",
+        "Throwing Infected Bonesaw when she can dash out of it."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/drmundo/counters/",
+        "https://op.gg/lol/champions/drmundo/counters/top"
+      ]
+    },
+    "Rumble": {
+      "name": "Rumble",
+      "difficulty": 3,
+      "winRate": 50.0,
+      "winRateSource": "lolalytics Dr. Mundo top counters, Emerald+, patch 26.19 (client 16.19), 268 games (small sample)",
+      "summary": "Even. Rumble pokes with Flamespitter (Q) and overheats to burst you, but you out-sustain him. Close the distance, force melee fights, and buy magic resist.",
+      "runes": "Grasp of the Undying (Demolish, Second Wind, Overgrowth) + Inspiration (Magical Footwear, Cosmic Insight)",
+      "summoners": "Flash + Ignite (Flash + Teleport to play safe)",
+      "start": "Doran's Shield + Health Potion",
+      "buildNotes": "Heartsteel > Mercury's Treads > Spirit Visage > Sunfire Aegis > Warmog's Armor. He deals magic damage, so build magic resist early.",
+      "skillNotes": "Start Q. Take E at 2, W at 3. Max Q, then W, then E.",
+      "phases": {
+        "lvl1_3": [
+          "Stay out of the Flamespitter (Q) cone. Last hit under your tower if he zones you.",
+          "Trade when his Junkyard Titan (W) shield is down and his heat is low."
+        ],
+        "lvl4_5": [
+          "Walk into him after he uses Electro Harpoon (E). Force melee range with Heart Zapper (W) on.",
+          "Don't take extended poke fights at range."
+        ],
+        "post6": [
+          "The Equalizer (R) is a zone over the wave. Step out of it, or press Maximum Dosage and trade through it.",
+          "All-in after he has used his ult."
+        ],
+        "midgame": [
+          "Split push. Spirit Visage and Heartsteel make his poke weak.",
+          "Stay out of his ult in fights and dive him when it is used."
+        ],
+        "lategame": [
+          "Stay with your team and use Infected Bonesaw slow to pick him off. He ults zones, so don't stand in them."
+        ]
+      },
+      "threats": [
+        "Flamespitter (Q) cone burst and burn.",
+        "Electro Harpoon (E) slow.",
+        "The Equalizer (R) zone damage."
+      ],
+      "killWindows": [
+        "When his heat is low and Flamespitter is used.",
+        "After his ult, while you are still healthy."
+      ],
+      "avoid": [
+        "Standing in the Equalizer.",
+        "Trading at range while he has heat."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/drmundo/counters/",
+        "https://lolalytics.com/lol/drmundo/vs/rumble/build/"
+      ]
+    },
+    "Sett": {
+      "name": "Sett",
+      "difficulty": 2,
+      "winRate": 53.07,
+      "winRateSource": "lolalytics Dr. Mundo top counters, Emerald+, patch 26.19 (client 16.19), 1,091 games",
+      "summary": "Favorable. Sett's percent health damage is annoying, but your sustain wins long trades. Stay out of the center of Haymaker (W) and don't get pinned between him and a wall.",
+      "runes": "Grasp of the Undying (Demolish, Second Wind, Overgrowth) + Inspiration (Magical Footwear, Cosmic Insight)",
+      "summoners": "Flash + Ignite",
+      "start": "Doran's Shield + Health Potion",
+      "buildNotes": "Heartsteel > Plated Steelcaps > Sunfire Aegis > Warmog's Armor. Buy Thornmail if he builds Blade of the Ruined King or lifesteal.",
+      "skillNotes": "Start Q. Take E at 2, W at 3. Max Q, then W, then E.",
+      "phases": {
+        "lvl1_3": [
+          "Don't stand between him and a wall or minion. His Facebreaker (E) pulls from both sides and stuns.",
+          "Trade after he uses Knuckle Down (Q)."
+        ],
+        "lvl4_5": [
+          "Step out of Haymaker (W) center. The edge does less damage and no true damage.",
+          "Trade when his W and E are down. Heart Zapper burn wins the long fight."
+        ],
+        "post6": [
+          "The Show Stopper (R) throws you and does bonus damage. Keep your health high near him.",
+          "Press Maximum Dosage right after he lands it."
+        ],
+        "midgame": [
+          "Split push. Sett needs a target and can't out-tank Warmog's Armor.",
+          "Tank for your carries in fights."
+        ],
+        "lategame": [
+          "Fight after his W has been used. Keep Maximum Dosage for his engage."
+        ]
+      },
+      "threats": [
+        "Haymaker (W) center true damage.",
+        "Facebreaker (E) stun.",
+        "The Show Stopper (R) throw and damage."
+      ],
+      "killWindows": [
+        "After he uses Haymaker and Facebreaker.",
+        "When Knuckle Down (Q) is down and Blunt Force Trauma is ready."
+      ],
+      "avoid": [
+        "Standing in the center of Haymaker.",
+        "Fighting between him and a wall."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/drmundo/counters/",
+        "https://lolalytics.com/lol/drmundo/vs/sett/build/"
+      ]
+    },
+    "Shen": {
+      "name": "Shen",
+      "difficulty": 4,
+      "winRate": 47.8,
+      "winRateSource": "lolalytics Dr. Mundo top counters, Emerald+, patch 26.19 (client 16.19), 774 games (the vs page showed 48.07 in 751 games)",
+      "summary": "The hardest of this group. Spirit's Refuge (W) blocks your empowered autos and his Shadow Dash (E) taunt and shield win short trades. Play for sustain and scale, and don't waste health on Infected Bonesaw when his W is up.",
+      "runes": "Grasp of the Undying (Demolish, Second Wind, Overgrowth) + Inspiration (Magical Footwear, Cosmic Insight)",
+      "summoners": "Flash + Ignite (Flash + Teleport if you want to answer his ult)",
+      "start": "Doran's Shield + Health Potion",
+      "buildNotes": "Heartsteel > Plated Steelcaps > Sunfire Aegis > Warmog's Armor > Thornmail. Buy Bramble Vest early if he builds healing.",
+      "skillNotes": "Start Q. Take E at 2, W at 3. Max Q, then W, then E.",
+      "phases": {
+        "lvl1_3": [
+          "Don't throw Infected Bonesaw or Blunt Force Trauma into an active Spirit's Refuge. It blocks the hit.",
+          "Trade after his Spirit's Refuge or Shadow Dash (E) is used."
+        ],
+        "lvl4_5": [
+          "After a Shadow Dash taunt, trade back with Blunt Force Trauma and Heart Zapper.",
+          "Don't spend health on poke when his shield is up. Farm and stack Heartsteel."
+        ],
+        "post6": [
+          "Stand United (R) lets him teleport to an ally and shield them. Keep your health high and stay with your team.",
+          "Punish him when his ult is used on an ally and he is out of position."
+        ],
+        "midgame": [
+          "Split push with Warmog's Armor. Make him choose between his lane and his team.",
+          "Keep away from his R flank."
+        ],
+        "lategame": [
+          "Fight after his W and E have been used. Stay with your team and don't go alone into his flank."
+        ]
+      },
+      "threats": [
+        "Spirit's Refuge (W) blocks your empowered attacks.",
+        "Shadow Dash (E) taunt into follow-up damage.",
+        "Stand United (R) teleport and shield."
+      ],
+      "killWindows": [
+        "After Shadow Dash and Spirit's Refuge are used.",
+        "When he ults an ally and leaves lane."
+      ],
+      "avoid": [
+        "Throwing Infected Bonesaw into Spirit's Refuge.",
+        "Fighting into his shield at low health."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/drmundo/counters/",
+        "https://lolalytics.com/lol/drmundo/vs/shen/build/"
+      ]
+    },
+    "Sion": {
+      "name": "Sion",
+      "difficulty": 2,
+      "winRate": 51.73,
+      "winRateSource": "lolalytics Dr. Mundo top vs Sion, Emerald+, patch 26.19 (client 16.19), 692 games",
+      "summary": "Slightly favored. Sion is a tank who wants to hit Decimating Smash (Q) and scale, and you out-sustain his trades with Heart Zapper (W) and Infected Bonesaw (Q). Win the early levels, keep your HP healthy, and don't let him farm freely.",
+      "runes": "Grasp of the Undying (Demolish, Second Wind, Overgrowth) + Precision (Triumph, Legend: Alacrity); Grasp is the best-performing keystone here on lolalytics",
+      "summoners": "Flash + Teleport, or Ghost + Teleport (best win rate on lolalytics, 377 games)",
+      "start": "Doran's Helm + Health Potion",
+      "buildNotes": "Heartsteel > Boots of Swiftness > Warmog's Armor > Spirit Visage (strong here on lolalytics) > Titanic Hydra or Randuin's Omen. Buy Plated Steelcaps if he builds AD damage.",
+      "skillNotes": "Start E, take Q at 2, W at 3. Max Q, then E.",
+      "phases": {
+        "lvl1_3": [
+          "Poke with Q on the wave. Q refunds its health cost when it hits, so throw it every time it's safe.",
+          "Step out of his Decimating Smash (Q) area when he charges it. It's a long, visible channel.",
+          "Trade with E-empowered autos when he last hits. His Soul Furnace (W) shield is weak early."
+        ],
+        "lvl4_5": [
+          "Turn Heart Zapper (W) on when he engages and detonate it when the trade ends to heal back.",
+          "Push the wave and shove him under his tower if you win the level, then recall on your terms."
+        ],
+        "post6": [
+          "Maximum Dosage (R) makes his trades pointless. Fight him when you have R and he doesn't.",
+          "Don't chase him during Unstoppable Onslaught (R). Walk away and come back after he has stopped."
+        ],
+        "midgame": [
+          "Split push. He wants to group and scale with Soul Furnace, so make him answer side lanes.",
+          "Hit his Q knock-ups' wind-up: sidestep, then Q him."
+        ],
+        "lategame": [
+          "Stay out of the front-to-back charge lines and peel for your carries. Kill him after his R has been spent."
+        ]
+      },
+      "threats": [
+        "Decimating Smash (Q) knockup and stun if you stand still in the circle.",
+        "Soul Furnace (W) shield gets bigger as he scales.",
+        "Unstoppable Onslaught (R) engage from far away.",
+        "He out-scales you if he farms freely."
+      ],
+      "killWindows": [
+        "After his Q whiffs and his W shield has been popped.",
+        "Levels 3-5 when you have Q, E and W and he has no shield.",
+        "Right after his R has been used."
+      ],
+      "avoid": [
+        "Standing in the middle of his Q circle.",
+        "Letting him farm for free while you sit at low HP.",
+        "Fighting at low HP because your abilities cost health."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/drmundo/vs/sion/build/",
+        "https://lolalytics.com/lol/drmundo/counters/"
+      ]
+    },
+    "Trundle": {
+      "name": "Trundle",
+      "difficulty": 3,
+      "winRate": 48.8,
+      "winRateSource": "lolalytics Dr. Mundo top vs Trundle, Emerald+, patch 26.19 (client 16.19), 459 games",
+      "summary": "Slightly unfavored. Trundle's Chomp (Q) steals your AD and his Pillar of Ice (E) traps your Q path, and Subjugate (R) drains your health and resistances, which are your main stats. Don't take long trades into his Q and kill him with W plus items later.",
+      "runes": "Grasp of the Undying (Demolish, Second Wind, Overgrowth) + Inspiration (Magical Footwear, Approach Velocity)",
+      "summoners": "Flash + Ignite (Ghost + Ignite is the top pairing on lolalytics)",
+      "start": "Doran's Shield + Health Potion (Doran's Helm is also common)",
+      "buildNotes": "Heartsteel > Boots of Swiftness or Plated Steelcaps > Randuin's Omen > Warmog's Armor. Thornmail is a good early buy vs his autos and Chomp.",
+      "skillNotes": "Start E. Take Q at 2, W at 3. Max E and Q early, W third.",
+      "phases": {
+        "lvl1_3": [
+          "Don't stand next to him when he casts Chomp (Q). It is his best trade tool and steals your AD.",
+          "Trade after he has used Chomp with your E-empowered auto plus Q."
+        ],
+        "lvl4_5": [
+          "Pillar of Ice (E) blocks your Q. Aim Q around it or wait for it to vanish.",
+          "Don't chase him into Frozen Domain (W). It gives him attack speed and move speed."
+        ],
+        "post6": [
+          "Subjugate (R) drains your health and resistances. Turn on Maximum Dosage after he has cast it.",
+          "Fight him when his R is down. Otherwise walk away and take the wave."
+        ],
+        "midgame": [
+          "Split push. His Frozen Domain is only strong in his own area, so fight him away from it.",
+          "Buy Thornmail if he stays on you in fights."
+        ],
+        "lategame": [
+          "Stay near your team in fights and target him only after his R is used."
+        ]
+      },
+      "threats": [
+        "Chomp (Q) AD steal and slow.",
+        "Pillar of Ice (E) traps your path.",
+        "Subjugate (R) steals stats and drains health.",
+        "Frozen Domain (W) buffs."
+      ],
+      "killWindows": [
+        "After his Q has been used and his E is on cooldown.",
+        "Right after he casts Subjugate on someone else."
+      ],
+      "avoid": [
+        "Fighting in his Frozen Domain (W).",
+        "All-ins with low HP while his R is up.",
+        "Q into the pillar."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/drmundo/vs/trundle/build/",
+        "https://www.counterstats.net/league-of-legends/dr-mundo"
+      ]
+    },
+    "Urgot": {
+      "name": "Urgot",
+      "difficulty": 2,
+      "winRate": 53.32,
+      "winRateSource": "lolalytics Dr. Mundo top vs Urgot, Emerald+, patch 26.19 (client 16.19), 784 games",
+      "summary": "Favored. Urgot is slow and hard to kite with, and your Q slow and sustain out-trade his Echoing Flames. The one real danger is Fear Beyond Death (R), which executes at low HP, so stay above his threshold.",
+      "runes": "Grasp of the Undying (Demolish, Second Wind, Overgrowth) (53.66% win rate here, 751 games)",
+      "summoners": "Flash + Ignite (best win rate on lolalytics, small sample) or Flash + Teleport",
+      "start": "Doran's Helm + Health Potion",
+      "buildNotes": "Heartsteel > Boots of Swiftness > Spirit Visage > Randuin's Omen or Overlord's Bloodmail. Plated Steelcaps if he builds AD damage.",
+      "skillNotes": "Start E. Take Q at 2, W at 3. Max Q, then E.",
+      "phases": {
+        "lvl1_3": [
+          "Q him every time you can. Its refund keeps your HP up and the slow stops him from kiting.",
+          "Step out of Purge (W) range. Don't stand near it when it is spinning."
+        ],
+        "lvl4_5": [
+          "Sidestep Disdain (E) and punish him after it. Without it he can't escape.",
+          "Turn on Heart Zapper (W) before a trade and detonate it afterward to heal."
+        ],
+        "post6": [
+          "Fear Beyond Death (R) executes at low HP and pulls you in. Don't fight below about 35% HP.",
+          "Use Maximum Dosage (R) before you commit to an all-in."
+        ],
+        "midgame": [
+          "Split push. He is slow and easy to out-walk.",
+          "Keep your HP high in fights to stay out of his execute window."
+        ],
+        "lategame": [
+          "Stay near your team. Let him spend R on someone else, then engage."
+        ]
+      },
+      "threats": [
+        "Fear Beyond Death (R) execute and pull.",
+        "Disdain (E) flip and shield.",
+        "Purge (W) shred when you stay close to him."
+      ],
+      "killWindows": [
+        "After his E misses and you have your Q slow.",
+        "When he is low, before he can use his R."
+      ],
+      "avoid": [
+        "Fighting at low HP once he has R.",
+        "Staying inside Purge for long."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/drmundo/vs/urgot/build/"
+      ]
+    },
+    "Volibear": {
+      "name": "Volibear",
+      "difficulty": 2,
+      "winRate": 52.07,
+      "winRateSource": "lolalytics Dr. Mundo top vs Volibear, Emerald+, patch 26.19 (client 16.19), 772 games",
+      "summary": "Slightly favored. Volibear wins short all-ins with Thundering Smash (Q) and Frenzied Maul (W), but you out-sustain him and beat him in long trades with Heart Zapper and Maximum Dosage. Don't let him get a free early trade.",
+      "runes": "Grasp of the Undying (Demolish, Second Wind, Overgrowth) + Inspiration (Magical Footwear, Approach Velocity)",
+      "summoners": "Flash + Ignite (best on lolalytics)",
+      "start": "Doran's Shield + Health Potion",
+      "buildNotes": "Heartsteel > Boots of Swiftness > Warmog's Armor > Spirit Visage > Titanic Hydra. Plated Steelcaps and Thornmail if he builds AD.",
+      "skillNotes": "Take Q first, E at 2 if you want an early trade, W at 3. Max Q, then E.",
+      "phases": {
+        "lvl1_3": [
+          "Don't stand still when he sprints in. Q him to slow him, then walk back.",
+          "Trade back with E-empowered autos after his Q. His W bite heals him more when he is low."
+        ],
+        "lvl4_5": [
+          "Stay outside Sky Splitter's (E) circle when the lightning lands.",
+          "Turn on Heart Zapper (W) when he engages and detonate it after."
+        ],
+        "post6": [
+          "Use Maximum Dosage (R) and fight him. You out-heal his damage.",
+          "Don't fall below half HP near his tower dives."
+        ],
+        "midgame": [
+          "Split push. He is weaker in side lane than you once you have 2 items.",
+          "Watch out for his R dives on your carries."
+        ],
+        "lategame": [
+          "Peel for your backline and keep your R for when he dives."
+        ]
+      },
+      "threats": [
+        "Thundering Smash (Q) engage and knockback.",
+        "Frenzied Maul (W) double bite healing.",
+        "Sky Splitter (E) damage and shield.",
+        "Stormbringer (R) dive."
+      ],
+      "killWindows": [
+        "After his Q is used and you have Maximum Dosage.",
+        "When his E misses."
+      ],
+      "avoid": [
+        "Standing in Sky Splitter's circle.",
+        "Falling low while his W stacks are on you."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/drmundo/vs/volibear/build/"
+      ]
+    },
+    "Yone": {
+      "name": "Yone",
+      "difficulty": 4,
+      "winRate": 46.53,
+      "winRateSource": "lolalytics Dr. Mundo top vs Yone, Emerald+, patch 26.19 (client 16.19), 1,930 games",
+      "summary": "Unfavored, and one of the most common top opponents you will see. Yone's Mortal Steel (Q) and Spirit Cleave (W) bully you early and he mixes physical and magic damage, which makes it hard to stack armor. Play safe, use your Q slow, and win later with items.",
+      "runes": "Grasp of the Undying (Demolish, Second Wind, Overgrowth) + Precision (Triumph, Presence of Mind)",
+      "summoners": "Flash + Ignite, or Ghost + Teleport",
+      "start": "Doran's Helm + Health Potion",
+      "buildNotes": "Heartsteel > Boots of Swiftness (50.69% win rate here) or Mercury's Treads > Warmog's Armor > Spirit Visage. Buy Bramble Vest early into Thornmail for his healing and crits.",
+      "skillNotes": "Start E. Take Q at 2, W at 3. Max Q, then E.",
+      "phases": {
+        "lvl1_3": [
+          "Don't trade when his Q3 is close. The knockup gives him a full combo.",
+          "Q him when he steps in to last hit. Its refund and slow are safe pokes.",
+          "Take the wave to your tower if he is winning the level."
+        ],
+        "lvl4_5": [
+          "Play around his Soul Unbound (E). He snaps back when it ends, so chase him at that point.",
+          "Turn on Heart Zapper (W) if you're forced into a trade and detonate it after."
+        ],
+        "post6": [
+          "Fate Sealed (R) knocks up and gets the reset. Turn on Maximum Dosage before you commit.",
+          "Don't fight him when he has E and R and you are under 60% HP."
+        ],
+        "midgame": [
+          "Split push and avoid 1v1s until you have Heartsteel and Thornmail.",
+          "Don't chase him. His E and R dashes let him escape and reset."
+        ],
+        "lategame": [
+          "Stay near your team and peel. Let him spend his R first, then dive him."
+        ]
+      },
+      "threats": [
+        "Mortal Steel (Q3) knockup and dash.",
+        "Soul Unbound (E) free damage that snaps back.",
+        "Mixed physical and magic damage.",
+        "Fate Sealed (R) engage and reset."
+      ],
+      "killWindows": [
+        "After his E snaps back and his Q has been used.",
+        "When he has been slowed by your Q and has no dash left."
+      ],
+      "avoid": [
+        "Trading while his Q3 is up.",
+        "Chasing him into the enemy jungle.",
+        "Walking into his E spirit form with low HP."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/drmundo/vs/yone/build/",
+        "https://matchupcoach.gg/matchup/top/dr-mundo-vs-yone/"
+      ]
+    },
+    "Yorick": {
+      "name": "Yorick",
+      "difficulty": 4,
+      "winRate": 48.74,
+      "winRateSource": "lolalytics Dr. Mundo top vs Yorick, Emerald+, patch 26.19 (client 16.19), 554 games (op.gg Emerald+ 26.19: 45.55)",
+      "summary": "Unfavored, and op.gg notes he is very hard to beat in lane. Yorick's Dark Procession (E) and ghouls out-trade you, and his Mourning Mist (W) cage stops your escapes. Q his ghouls, use W to clear them, and don't chase him.",
+      "runes": "Grasp of the Undying (Demolish, Second Wind, Overgrowth) + Inspiration (Magical Footwear, Approach Velocity)",
+      "summoners": "Flash + Ignite (standard here)",
+      "start": "Doran's Helm + Health Potion",
+      "buildNotes": "Heartsteel > Mercury's Treads (or Plated Steelcaps) > Warmog's Armor > Titanic Hydra (its wave clear helps against his ghouls) > Thornmail or Overlord's Bloodmail.",
+      "skillNotes": "Take Q first, E at 2, W at 3. Max Q, then E.",
+      "phases": {
+        "lvl1_3": [
+          "Q him when he goes to last hit. Don't walk into Last Rites (Q) empowered autos.",
+          "Keep the wave near your tower if he freezes it."
+        ],
+        "lvl4_5": [
+          "Turn on Heart Zapper (W) when ghouls are near. It hits them too.",
+          "Don't stand in his Dark Procession (E) line. It also hurts based on your missing HP."
+        ],
+        "post6": [
+          "Eulogy of the Isles (R) gives him a Maiden of the Mist. Use Maximum Dosage and focus the Maiden or the Yorick.",
+          "Don't chase him through walls. His Mourning Mist (W) cages you."
+        ],
+        "midgame": [
+          "Split push. He wants the same, so take the side lane away from him and deny his ghouls.",
+          "Use Thornmail against his autos if he builds AD."
+        ],
+        "lategame": [
+          "Stay with your team. Kill his Maiden in fights first, then dive him."
+        ]
+      },
+      "threats": [
+        "Ghouls (Q) empowered autos and Maiden.",
+        "Mourning Mist (W) cage that traps you.",
+        "Dark Procession (E) poke that heals him.",
+        "Eulogy of the Isles (R) Maiden."
+      ],
+      "killWindows": [
+        "After his W and E are used.",
+        "When his Maiden is dead."
+      ],
+      "avoid": [
+        "Chasing him into his cage.",
+        "Extended trades while his ghouls are alive.",
+        "Standing in the E line."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/drmundo/vs/yorick/build/",
+        "https://op.gg/lol/champions/drmundo/counters/top",
+        "https://mobalytics.gg/lol/champions/yorick/counters/top/vs-drmundo"
+      ]
+    },
+    "Zaahen": {
+      "name": "Zaahen",
+      "difficulty": 4,
+      "winRate": 44.59,
+      "winRateSource": "lolalytics Dr. Mundo top vs Zaahen, Emerald+, patch 26.19 (client 16.19), 471 games (lolalytics lists Zaahen among Mundo's weakest top matchups)",
+      "summary": "Unfavored. Zaahen is a new Darkin bruiser with a healing Q, a pull with W, a dash with E and a revive passive. He beats you in extended trades, so avoid long fights and kill him after he has spent his revive.",
+      "runes": "Grasp of the Undying (Demolish, Second Wind, Overgrowth) + Inspiration (Magical Footwear, Approach Velocity)",
+      "summoners": "Ghost + Teleport (lolalytics), or Flash + Ignite for an all-in",
+      "start": "Doran's Helm + Health Potion (Doran's Shield if you expect heavy poke)",
+      "buildNotes": "Heartsteel > Plated Steelcaps > Thornmail (his heals and autos) > Warmog's Armor > Randuin's Omen. Buy Bramble Vest early.",
+      "skillNotes": "Start E. Take Q at 2, W at 3. Max Q, then E.",
+      "phases": {
+        "lvl1_3": [
+          "Don't trade when his Q is ready. Its double strike heals him and the recast knocks you up.",
+          "Q him from range when he steps up to farm. Don't let him stack Determination for free."
+        ],
+        "lvl4_5": [
+          "Sidestep Dreaded Return (W). At max range it pulls and stuns you briefly.",
+          "Trade only when his E is on cooldown. Without it he can't reach you."
+        ],
+        "post6": [
+          "Grim Deliverance (R) gives him crowd control immunity while it is cast. Don't stun or bait into it. Turn on Maximum Dosage after.",
+          "His passive revives him at max stacks. Save your all-in for after the revive."
+        ],
+        "midgame": [
+          "Avoid 1v1s until you have Thornmail. He beats you in long fights with stacked Determination.",
+          "Keep your team near for fights so you don't take him alone."
+        ],
+        "lategame": [
+          "Kill him twice: after his revive he is weak and slow to reset. Peel with Q slows and Heart Zapper."
+        ]
+      },
+      "threats": [
+        "Cultivation of War (passive) revive and stacked bonus AD.",
+        "The Darkin Glaive (Q) double strike heal and knockup recast.",
+        "Dreaded Return (W) pull.",
+        "Aureate Rush (E) dash gap close.",
+        "Grim Deliverance (R) CC immunity and heal."
+      ],
+      "killWindows": [
+        "After his passive has revived him and his E is on cooldown.",
+        "After he has used Q and W and missed."
+      ],
+      "avoid": [
+        "Fighting when he has stacked Determination.",
+        "Extended trades where his Q keeps healing him.",
+        "Trying to stun or CC him during his R."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/drmundo/vs/zaahen/build/",
+        "https://lolalytics.com/lol/drmundo/build/",
+        "https://wiki.leagueoflegends.com/en-us/Zaahen"
+      ]
+    },
+    "DrMundo": {
+      "name": "Dr. Mundo",
+      "difficulty": 3,
+      "winRate": null,
+      "winRateSource": "Mirror matchup (about 50% by definition), no stats page available",
+      "summary": "An even mirror. Both of you trade through Infected Bonesaw (Q) and Heart Zapper (W), so the one who lands Q more and heals more wins. Don't walk into his Q, and use Ignite so his sustain doesn't win the lane.",
+      "runes": "Grasp of the Undying (Demolish, Second Wind, Overgrowth) + Inspiration (Magical Footwear, Approach Velocity)",
+      "summoners": "Flash + Ignite (cuts his healing), or Ghost + Teleport",
+      "start": "Doran's Shield + Health Potion (Doran's Helm is also common)",
+      "buildNotes": "Heartsteel > Boots of Swiftness or Plated Steelcaps > Thornmail (his heals and autos) > Warmog's Armor > Spirit Visage. Buy Bramble Vest early if his healing wins fights.",
+      "skillNotes": "Start E. Take Q at 2, W at 3. Max Q, then E.",
+      "phases": {
+        "lvl1_3": [
+          "Sidestep his Q, or stand behind a minion so it hits the minion instead.",
+          "Q him only when he is not about to Q back. Don't throw it while low on HP."
+        ],
+        "lvl4_5": [
+          "Turn on Heart Zapper (W) after he engages. The stored damage heals you at detonation.",
+          "Your Q hurts more the more current HP he has, so poke him early in a trade. When he is low, finish with E-empowered autos."
+        ],
+        "post6": [
+          "Use Maximum Dosage (R) after he has used his. The last R wins the fight.",
+          "Don't fight into his R with your own on cooldown."
+        ],
+        "midgame": [
+          "Split push and match him. The one with Thornmail and Heartsteel first wins side lane.",
+          "Group for fights with your team rather than taking even 1v1s."
+        ],
+        "lategame": [
+          "Stay near your team and dive him after his R has been used. Buy Thornmail if not already done."
+        ]
+      },
+      "threats": [
+        "His Q slow and current-HP damage.",
+        "Heart Zapper (W) heal.",
+        "Maximum Dosage (R) regeneration in fights."
+      ],
+      "killWindows": [
+        "After his Q has missed and his R is used.",
+        "When he is low and has no W stored."
+      ],
+      "avoid": [
+        "Standing in a straight line for his Q.",
+        "Fighting into his R with none of your own.",
+        "Long trades with your HP low."
+      ],
+      "sources": [
+        "https://lolalytics.com/lol/drmundo/build/",
+        "https://wiki.leagueoflegends.com/en-us/Dr._Mundo"
+      ]
+    }
+  }
+}

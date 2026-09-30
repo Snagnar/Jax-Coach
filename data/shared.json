@@ -1,0 +1,310 @@
+{
+  "patch": "26.19",
+  "lastUpdated": "2026-09-28",
+  "objectiveTimers": {
+    "voidgrubs": {
+      "spawn": "08:00",
+      "notes": "3 Voidgrubs, spawn once per game (no respawn). Despawn at 14:45 (14:55 if in combat). Each grub gives your team a Touch of the Void stack (structure burn); 3 stacks add Hunger of the Void (allied Voidmites on turrets) - very strong for a splitpusher like you."
+    },
+    "riftHerald": {
+      "spawn": "15:00",
+      "notes": "Spawns once in the grub pit, despawns 19:45 (19:55 in combat). Eye of the Herald summons a pushing Herald - use it top to take plates/turret when your jungler can help."
+    },
+    "dragon": {
+      "spawn": "05:00",
+      "respawn": "5:00"
+    },
+    "elderDragon": {
+      "spawn": "After a team secures Dragon Soul (4th drake)",
+      "respawn": "6:00"
+    },
+    "baron": {
+      "spawn": "20:00",
+      "respawn": "6:00"
+    },
+    "otherNotes": "Atakhan no longer exists (removed 26.1). Minions spawn 0:30, jungle camps 0:55. Hand of Baron lasts 180 s. Your top quest finishes around 13:35 at the latest - plan Teleport plays around Herald (15:00) and drakes."
+  },
+  "seasonFacts": [
+    "Atakhan was removed in 26.1; Baron spawns at 20:00 again (6:00 respawn).",
+    "Voidgrubs: one camp of 3 at 8:00, despawns 14:45. Rift Herald: once at 15:00, despawns 19:45. Dragon: 5:00, respawns 5:00 after kill; Elder 6:00 after the 4th drake.",
+    "Minions spawn at 0:30 (was 1:05). Feats of Strength removed: First Blood +100g, first turret +300g.",
+    "Turret plates are permanent (no 14:00 fall-off) and exist on inner and inhibitor turrets too. Melee champions deal 20% more damage to turrets.",
+    "Crystalline Overgrowth builds on a turret not hit for ~90s; the next champion attack consumes it for bonus true damage to the turret.",
+    "Top role quest (1200 pts): +2/minion and +40/plate in top lane, +50 turret, +15 takedown, +30 epic monster, plus passive gain; recalling pauses passive gain 12s; progress outside your lane is penalized early. Jax average completion ~12:30. Rewards: bonus XP, +11% XP gain, +80 XP per takedown, level cap 20, and a free Teleport (390s cd as of 26.19) or, if you took Teleport, an upgraded TP with a max-HP shield.",
+    "Jax gets +1.5% attack speed per passive stack at level 19 (26.1). Leap Strike costs 50 mana; Counter Strike deals 4-8% target max HP (26.12)."
+  ],
+  "damageProfilesNotes": "Share of each champion's damage that is magic (0 = all physical, 1 = all magic) with the usual build. A list [full AD build, full AP build, usual build] marks champions whose items decide it: once they own damage items, the app moves them inside that range. Champions not listed are estimated from their class. True damage counts as neither.",
+  "damageProfiles": {
+    "Aatrox": 0.05,
+    "Ahri": 0.95,
+    "Akali": 0.9,
+    "Akshan": 0.1,
+    "Alistar": 0.85,
+    "Ambessa": 0.1,
+    "Amumu": 0.9,
+    "Anivia": 1,
+    "Annie": 1,
+    "Aphelios": 0.05,
+    "Ashe": 0.05,
+    "AurelionSol": 1,
+    "Aurora": 0.95,
+    "Azir": 0.95,
+    "Bard": 0.8,
+    "Belveth": 0.1,
+    "Blitzcrank": 0.8,
+    "Brand": 1,
+    "Braum": 0.8,
+    "Briar": 0.1,
+    "Caitlyn": 0.05,
+    "Camille": 0.1,
+    "Cassiopeia": 1,
+    "Chogath": 0.8,
+    "Corki": 0.65,
+    "Darius": 0.05,
+    "Diana": 0.95,
+    "DrMundo": 0.45,
+    "Draven": 0.05,
+    "Ekko": 0.95,
+    "Elise": 0.95,
+    "Evelynn": 0.95,
+    "Ezreal": [
+      0.25,
+      0.85,
+      0.3
+    ],
+    "Fiddlesticks": 1,
+    "Fiora": 0.05,
+    "Fizz": 0.95,
+    "Galio": 0.95,
+    "Gangplank": 0.1,
+    "Garen": 0.05,
+    "Gnar": 0.1,
+    "Gragas": 0.9,
+    "Graves": 0.05,
+    "Gwen": 0.9,
+    "Hecarim": 0.1,
+    "Heimerdinger": 1,
+    "Hwei": 1,
+    "Illaoi": 0.05,
+    "Irelia": 0.1,
+    "Ivern": 0.9,
+    "Janna": 0.9,
+    "JarvanIV": 0.1,
+    "Jax": [
+      0.35,
+      0.7,
+      0.35
+    ],
+    "Jayce": 0.1,
+    "Jhin": 0.02,
+    "Jinx": 0.05,
+    "KSante": 0.1,
+    "Kaisa": [
+      0.2,
+      0.75,
+      0.3
+    ],
+    "Kalista": 0.05,
+    "Karma": 0.95,
+    "Karthus": 1,
+    "Kassadin": 1,
+    "Katarina": [
+      0.6,
+      0.9,
+      0.85
+    ],
+    "Kayle": [
+      0.4,
+      0.8,
+      0.6
+    ],
+    "Kayn": 0.1,
+    "Kennen": 0.9,
+    "Khazix": 0.05,
+    "Kindred": 0.05,
+    "Kled": 0.05,
+    "KogMaw": [
+      0.4,
+      0.8,
+      0.45
+    ],
+    "Leblanc": 1,
+    "LeeSin": 0.1,
+    "Leona": 0.85,
+    "Lillia": 1,
+    "Lissandra": 1,
+    "Lucian": 0.05,
+    "Lulu": 0.9,
+    "Lux": 1,
+    "Malphite": [
+      0.55,
+      0.95,
+      0.75
+    ],
+    "Malzahar": 1,
+    "Maokai": 0.9,
+    "MasterYi": 0.05,
+    "Mel": 1,
+    "Milio": 0.9,
+    "MissFortune": 0.1,
+    "MonkeyKing": 0.05,
+    "Mordekaiser": 0.95,
+    "Morgana": 1,
+    "Naafiri": 0.05,
+    "Nami": 0.9,
+    "Nasus": 0.2,
+    "Nautilus": 0.8,
+    "Neeko": 1,
+    "Nidalee": [
+      0.15,
+      0.9,
+      0.85
+    ],
+    "Nilah": 0.05,
+    "Nocturne": 0.05,
+    "Nunu": 0.95,
+    "Olaf": 0.05,
+    "Orianna": 1,
+    "Ornn": 0.4,
+    "Pantheon": 0.05,
+    "Poppy": 0.1,
+    "Pyke": 0.05,
+    "Qiyana": 0.05,
+    "Quinn": 0.05,
+    "Rakan": 0.9,
+    "Rammus": 0.7,
+    "RekSai": 0.1,
+    "Rell": 0.9,
+    "Renata": 0.95,
+    "Renekton": 0.05,
+    "Rengar": 0.05,
+    "Riven": 0.05,
+    "Rumble": 1,
+    "Ryze": 1,
+    "Samira": 0.05,
+    "Sejuani": 0.85,
+    "Senna": 0.05,
+    "Seraphine": 1,
+    "Sett": 0.05,
+    "Shaco": [
+      0.1,
+      0.9,
+      0.4
+    ],
+    "Shen": 0.65,
+    "Shyvana": [
+      0.2,
+      0.85,
+      0.55
+    ],
+    "Singed": 1,
+    "Sion": 0.3,
+    "Sivir": 0.05,
+    "Skarner": 0.3,
+    "Smolder": 0.15,
+    "Sona": 1,
+    "Soraka": 1,
+    "Swain": 1,
+    "Sylas": 0.95,
+    "Syndra": 1,
+    "TahmKench": 0.8,
+    "Taliyah": 1,
+    "Talon": 0.05,
+    "Taric": 0.9,
+    "Teemo": [
+      0.6,
+      0.95,
+      0.9
+    ],
+    "Thresh": 0.8,
+    "Tristana": [
+      0.1,
+      0.8,
+      0.15
+    ],
+    "Trundle": 0.05,
+    "Tryndamere": 0.05,
+    "TwistedFate": [
+      0.6,
+      0.95,
+      0.9
+    ],
+    "Twitch": [
+      0.1,
+      0.8,
+      0.1
+    ],
+    "Udyr": [
+      0.2,
+      0.8,
+      0.4
+    ],
+    "Urgot": 0.05,
+    "Varus": [
+      0.15,
+      0.7,
+      0.3
+    ],
+    "Vayne": 0.05,
+    "Veigar": 1,
+    "Velkoz": 1,
+    "Vex": 1,
+    "Vi": 0.05,
+    "Viego": 0.1,
+    "Viktor": 1,
+    "Vladimir": 1,
+    "Volibear": [
+      0.3,
+      0.8,
+      0.5
+    ],
+    "Warwick": 0.35,
+    "Xayah": 0.05,
+    "Xerath": 1,
+    "XinZhao": 0.05,
+    "Yasuo": 0.05,
+    "Yone": 0.25,
+    "Yorick": 0.05,
+    "Yunara": 0.1,
+    "Yuumi": 1,
+    "Zaahen": 0.1,
+    "Zac": 0.95,
+    "Zed": 0.05,
+    "Zeri": 0.1,
+    "Ziggs": 1,
+    "Zilean": 1,
+    "Zoe": 1,
+    "Zyra": 1
+  },
+  "rulesNotes": "Rules every playbook gets, placed before the rule named in 'before'. A playbook overrides one by having a rule with the same id. They have no voice: the app announces Dragon Soul point and Elder separately, with an alert tone.",
+  "rules": [
+    {
+      "id": "soul_point",
+      "before": "objective",
+      "when": "bigDragon && bigDragon.stakes == 'soul'",
+      "mode": "group",
+      "headline": "{bigDragon.point == 'theirs' ? 'Their soul point' : bigDragon.point == 'ours' ? 'Our soul point' : 'Soul point for both'} · {bigDragon.status == 'up' ? 'Dragon is up' : 'Dragon in ' + clock(bigDragon.in)}",
+      "reason": "{bigDragon.point == 'theirs' ? 'If they take it they have Dragon Soul for the rest of the game. ' : bigDragon.point == 'ours' ? 'This dragon gives your team Dragon Soul. ' : 'Whoever takes it gets Dragon Soul. '}{bigDragon.status == 'up' ? 'Be at the pit with your team, or make them pay with a tower or Baron on the other side' : 'Push your wave now, reset if you need to, and move down with your team before it spawns'}",
+      "voiceKey": "soul-{round(bigDragon.next)}"
+    },
+    {
+      "id": "elder_dragon",
+      "before": "objective",
+      "when": "bigDragon && bigDragon.stakes == 'elder'",
+      "mode": "group",
+      "headline": "{bigDragon.status == 'up' ? 'Elder Dragon is up' : 'Elder Dragon in ' + clock(bigDragon.in)}",
+      "reason": "{bigDragon.status == 'up' ? 'Elder executes low-health enemies: fight for it together, never alone' : 'Push your wave and group before it spawns'}",
+      "voiceKey": "elder-{round(bigDragon.next)}"
+    }
+  ],
+  "triggers": {
+    "dragon_soul_point": [
+      "Push your side wave and reset before the spawn so you arrive with full HP and items.",
+      "If your team can't contest, trade it: take a tower, Herald or Baron on the other side at the same moment."
+    ],
+    "elder_dragon": [
+      "Elder decides games: arrive together, never face-check the river alone.",
+      "Whoever gets Elder should force a fight right away while the execute lasts."
+    ]
+  }
+}

@@ -45,6 +45,8 @@ const Demo = (() => {
     { EventName: 'ChampionKill', EventTime: 1506, KillerName: 'Foxfire', VictimName: 'Starchild', Assisters: ['You'] },
     { EventName: 'TurretKilled', EventTime: 1530, KillerName: 'Noxianmight', TurretKilled: 'Turret_T1_L_02_A', Assisters: [] },
     { EventName: 'BaronKill', EventTime: 1560, KillerName: 'Blindmonk' },
+    { EventName: 'DragonKill', EventTime: 1325, KillerName: 'Piltoverfist', DragonType: 'Earth' },
+    { EventName: 'DragonKill', EventTime: 1640, KillerName: 'Piltoverfist', DragonType: 'Hextech' },
     { EventName: 'ChampionKill', EventTime: 1830, KillerName: 'Noxianmight', VictimName: 'You', Assisters: ['Piltoverfist', 'Darksov'] },
   ];
 
