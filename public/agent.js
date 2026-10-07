@@ -24,8 +24,17 @@ const Agent = (() => {
   const MIN_GAP = 120;      // seconds of game time between automatic reassessments
   let applyHook = () => {};
 
+  // Review jobs stay on the server, and every page load reads finished jobs again: a review you dismissed or
+  // worked through is remembered in jc.proposalsGone so it doesn't come back. Reviews older than a week are stale.
+  const PROPOSAL_DAYS = 7;
+  let gone = [];
   try { S.proposals = JSON.parse(localStorage.getItem('jc.proposals') || '[]'); } catch {}
-  const saveProposals = () => { try { localStorage.setItem('jc.proposals', JSON.stringify(S.proposals.slice(-20))); } catch {} };
+  try { gone = JSON.parse(localStorage.getItem('jc.proposalsGone') || '[]'); } catch {}
+  const saveProposals = () => { try { localStorage.setItem('jc.proposals', JSON.stringify(S.proposals.slice(-20))); localStorage.setItem('jc.proposalsGone', JSON.stringify(gone.slice(-300))); } catch {} };
+  const fresh = (at) => Date.now() - at < PROPOSAL_DAYS * 86400000;
+  const retire = (jobId) => { S.proposals = S.proposals.filter((x) => x.jobId !== jobId); if (!gone.includes(jobId)) gone.push(jobId); };
+  for (const p of S.proposals.filter((x) => !fresh(x.at))) retire(p.jobId);
+  saveProposals();
 
   const ready = () => !!(S.status && S.status.installed && S.status.loggedIn);
   async function getJSON(url, opts) { const r = await fetch(url, { cache: 'no-store', ...opts }); const j = await r.json().catch(() => ({})); if (!r.ok) throw new Error(j.error || `HTTP ${r.status}`); return j; }
@@ -289,8 +298,10 @@ const Agent = (() => {
     }
     if (j.type === 'review') {
       try {
+        const at = new Date(j.created).getTime() || Date.now();
+        if (gone.includes(j.id) || S.proposals.some((p) => p.jobId === j.id) || !fresh(at)) return;   // already known: keep what you did with it
         const proposal = await getJSON(`/api/agent/jobs/${j.id}/out/proposal.json`);
-        if (proposal && Array.isArray(proposal.changes)) { S.proposals = [...S.proposals.filter((p) => p.jobId !== j.id), { jobId: j.id, champ: j.champion, proposal, at: Date.now(), done: {} }]; saveProposals(); }
+        if (proposal && Array.isArray(proposal.changes)) { S.proposals.push({ jobId: j.id, champ: j.champion, proposal, at, done: {} }); saveProposals(); }
       } catch {}
     }
   }
@@ -313,9 +324,12 @@ const Agent = (() => {
   }
   function markProposal(jobId, idx, state) {
     const p = S.proposals.find((x) => x.jobId === jobId);
-    if (p) { p.done[idx] = state; saveProposals(); changed(); }
+    if (!p) return;
+    p.done[idx] = state;
+    if ((p.proposal.changes || []).every((c, i) => p.done[i])) retire(jobId);   // nothing left to decide
+    saveProposals(); changed();
   }
-  function dismissProposal(jobId) { S.proposals = S.proposals.filter((x) => x.jobId !== jobId); saveProposals(); changed(); }
+  function dismissProposal(jobId) { retire(jobId); saveProposals(); changed(); }
 
   // ---------- loop ----------
   let tickN = 0;

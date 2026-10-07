@@ -1276,14 +1276,14 @@ function renderPlaybook() {
   const mine = jobs.filter((j) => j.champion === cid).slice(0, 8);
   const others = jobs.filter((j) => j.champion !== cid).slice(0, 6);
 
-  // post-game review proposals
-  const props = Agent.state.proposals.filter((p) => p.champ === cid);
+  // post-game review proposals: only the changes still to decide, newest review first
+  const props = Agent.state.proposals.filter((p) => p.champ === cid && openChanges(p).length).sort((a, b) => b.at - a.at);
   const propHtml = props.map((p) => `<div class="sub">
       <div class="row"><b>Review from ${ago(p.at)} ago</b><span class="grow"></span><button class="btn small ghost" data-dismiss="${esc(p.jobId)}">Dismiss</button></div>
       ${p.proposal.summary ? `<div class="small">${esc(p.proposal.summary)}</div>` : ''}
       ${arr(p.proposal.lessons).length ? list(p.proposal.lessons, 'small') : ''}
-      ${arr(p.proposal.changes).map((c, i) => `<div class="proposal ${p.done[i] || ''}"><div class="grow"><b>${esc(c.title || 'Change')}</b> <span class="chip">${esc(c.part || 'rules')}</span><div class="small muted">${esc(c.why || '')}</div></div>
-        ${p.done[i] === 'applied' ? '<span class="chip good">applied</span>' : p.done[i] === 'skipped' ? '<span class="chip">skipped</span>' : `<button class="btn small" data-apply="${esc(p.jobId)}" data-idx="${i}">Apply</button><button class="btn small ghost" data-skip="${esc(p.jobId)}" data-idx="${i}">Skip</button>`}</div>`).join('')}
+      ${openChanges(p).map(({ c, i }) => `<div class="proposal"><div class="grow"><b>${esc(c.title || 'Change')}</b> <span class="chip">${esc(c.part || 'rules')}</span><div class="small muted">${esc(c.why || '')}</div></div>
+        <button class="btn small" data-apply="${esc(p.jobId)}" data-idx="${i}">Apply</button><button class="btn small ghost" data-skip="${esc(p.jobId)}" data-idx="${i}">Skip</button></div>`).join('')}
     </div>`).join('');
 
   // rules explorer
@@ -1331,10 +1331,22 @@ function renderPlaybook() {
     </div>
   </div>`;
 }
+// A review's changes you haven't decided yet. A change already saved as a playbook version (this review or an
+// earlier one suggesting the same thing) counts as applied, even if this browser forgot it.
+const reviewNote = (c) => `Review: ${c.title || 'change'}`;
+function openChanges(p) {
+  const notes = new Set(arr((Playbooks.info(p.champ) || {}).versions).map((v) => String(v.note || '').trim().toLowerCase()));
+  return arr(p.proposal.changes).map((c, i) => ({ c, i })).filter(({ c, i }) => !p.done[i] && !notes.has(reviewNote(c).trim().toLowerCase()));
+}
+function decideProposal(jobId, idx, state) {
+  Agent.markProposal(jobId, idx, state);
+  const p = Agent.state.proposals.find((x) => x.jobId === jobId);
+  if (p && !openChanges(p).length) Agent.dismissProposal(jobId);   // the rest was applied from another review
+}
 async function applyProposal(jobId, idx) {
   const p = Agent.state.proposals.find((x) => x.jobId === jobId);
   const c = p && arr(p.proposal.changes)[idx];
-  if (!c) return;
+  if (!c || !openChanges(p).some((o) => o.i === idx)) return;
   const champ = p.champ, part = c.part || 'rules';
   await Playbooks.load(champ, true);
   const eff = Playbooks.effective(champ, D.dd, null);
@@ -1357,8 +1369,8 @@ async function applyProposal(jobId, idx) {
     if (bad.length) { alert(`This change has broken rules and wasn't applied:\n${bad.map((b) => `${b.where}: ${b.error}`).join('\n')}`); return; }
   }
   try {
-    await Playbooks.saveVersion(champ, { [part]: next }, `Review: ${c.title || 'change'}`, `review:${jobId}`);
-    Agent.markProposal(jobId, idx, 'applied');
+    await Playbooks.saveVersion(champ, { [part]: next }, reviewNote(c), `review:${jobId}`);
+    decideProposal(jobId, idx, 'applied');
     if (champ === S.champ) await useChamp(champ, { fresh: true });
   } catch (e) { alert(`Couldn't save: ${e.message}`); }
   renderPlaybook();
@@ -1805,9 +1817,9 @@ function renderReport() {
       <span class="small faint">${new Date(g.end).toLocaleDateString(undefined, { weekday: 'short' })} ${new Date(g.end).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span></button>`).join('');
   const waiting = RS.waiting ? `<div class="notice">Waiting for Riot to publish your last game (usually 1–5 minutes)… this page opens it automatically.</div>` : '';
   // the review agent's suggestions for the playbook (approve them on the Playbook tab)
-  const pend = Agent.state.proposals.filter((p) => arr(p.proposal.changes).some((c, i) => !p.done[i]));
+  const pend = Agent.state.proposals.filter((p) => openChanges(p).length).sort((a, b) => b.at - a.at);
   const reviewing = Agent.state.jobs.find((j) => j.type === 'review' && j.status === 'running');
-  const agentNote = pend.length ? `<div class="notice"><b>${pend.reduce((n, p) => n + arr(p.proposal.changes).filter((c, i) => !p.done[i]).length, 0)} suggested playbook changes</b> from the post-game review${pend[0].proposal.summary ? `: ${esc(pend[0].proposal.summary)}` : ''} <button class="btn small ghost" data-action="goto-playbook" data-champ="${esc(pend[0].champ)}">Review changes</button></div>`
+  const agentNote = pend.length ? `<div class="notice"><b>${pend.reduce((n, p) => n + openChanges(p).length, 0)} suggested playbook changes</b> from the post-game review${pend[0].proposal.summary ? `: ${esc(pend[0].proposal.summary)}` : ''} <button class="btn small ghost" data-action="goto-playbook" data-champ="${esc(pend[0].champ)}">Review changes</button></div>`
     : reviewing ? `<div class="notice small">A review agent is comparing what the playbook said with how this game went (${ago(reviewing.created)}).</div>` : '';
   const head = `<div class="card"><header><h2>Game report</h2><span class="grow"></span><button class="btn small ghost" data-action="report-refresh">Refresh list</button></header>
     <div class="rep-games">${games || (RS.listTried ? '<span class="small muted">Loading your recent games…</span>' : '')}${RS.list.length > RS.listLimit ? `<button class="rep-game more" data-action="report-more">${RS.list.length - RS.listLimit} older…</button>` : ''}</div>${waiting}${agentNote}</div>`;
@@ -1943,7 +1955,7 @@ function wireUi() {
     if (t.dataset.activate) { Playbooks.activate(t.dataset.activate, +t.dataset.v).then(() => (t.dataset.activate === S.champ ? useChamp(S.champ, { fresh: true }) : null)).then(renderPlaybook).catch((err) => alert(err.message)); return; }
     if (t.dataset.cancel) { Agent.cancel(t.dataset.cancel); return; }
     if (t.dataset.apply) { applyProposal(t.dataset.apply, +t.dataset.idx); return; }
-    if (t.dataset.skip) { Agent.markProposal(t.dataset.skip, +t.dataset.idx, 'skipped'); renderPlaybook(); return; }
+    if (t.dataset.skip) { decideProposal(t.dataset.skip, +t.dataset.idx, 'skipped'); renderPlaybook(); return; }
     if (t.dataset.dismiss) { Agent.dismissProposal(t.dataset.dismiss); renderPlaybook(); return; }
     if (t.dataset.focus) { Focus.setPick(t.dataset.focus); renderLive(); return; }
     if (t.dataset.report) { Report.open(D, t.dataset.report); return; }
