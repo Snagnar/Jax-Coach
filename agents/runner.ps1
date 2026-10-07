@@ -182,6 +182,7 @@ $JobTypes = @{
   gameplan = @{ model = 'fast'; maxMin = 10; installs = $false; tools = 'Read,Write,Edit,Glob,Grep,WebSearch,WebFetch' }
   adapt    = @{ model = 'fast'; maxMin = 8;  installs = $false; tools = 'Read,Write,Edit,Glob,Grep,WebSearch,WebFetch' }
   review   = @{ model = 'fast'; maxMin = 20; installs = $false; tools = 'Read,Write,Edit,Glob,Grep,WebSearch,WebFetch' }
+  ask      = @{ model = 'fast'; maxMin = 4;  installs = $false; tools = 'Read,Write,Edit,Glob,Grep,WebSearch,WebFetch' }
 }
 $script:JobsTickAt = [DateTime]::MinValue
 

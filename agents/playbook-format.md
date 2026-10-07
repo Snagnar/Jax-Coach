@@ -242,6 +242,21 @@ Applied immediately for the current game only. The card shows it; the build and 
 everything you'd still buy, boots included if not bought. Extra `rules` are inserted at the `plan` anchor
 (or before the rule named in `before`); `{ "id": "x", "disable": "<rule id>" }` switches a rule off for this game.
 
+## Live coach answer (`out/answer.json`), written by the ask agent
+
+The player typed a question in game or champ select. `answer` is shown and read aloud; `plan`, if present, replaces
+the game plan at once (the player can undo it); `playbookNote` goes to the post-game review.
+
+```jsonc
+{
+  "answer": "at most 30 words, what to do now, plain spoken words",   // required
+  "bullets": ["0-3 details, at most 16 words each"],
+  "plan": { /* optional: a complete game plan in the shape above */ },
+  "playbookNote": "optional: lasting feedback for the playbook, one sentence",
+  "sources": ["https://..."]
+}
+```
+
 ## Post-game proposal (`out/proposal.json`), written by the review agent
 
 Nothing is applied until the player clicks Apply on a change.

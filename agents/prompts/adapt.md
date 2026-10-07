@@ -18,6 +18,12 @@ matters in this game, e.g. how to itemize against a fed champion with a certain 
 from behind in this kind of comp (stats sites, the League wiki, r/summonerschool, champion subreddits).
 Don't use sub-agents.
 
+## What the player said
+`input.json` may have `playerChat`: what the player asked or told the live coach this game (`messages`, and
+`playbookNotes`). Plans with `kind` "chat" in `history` were changed because of the player; "undo" means they took
+that change back. Respect what they asked for (a build, split pushing, not fighting someone) unless the game has
+clearly made it wrong; then say so in `changes`.
+
 ## Think about
 - The reason you were called, then the whole picture: gold and objective state, who is fed on both sides, what
   the enemy is building (armor or MR stacking, anti-heal, crit), which lanes are lost or won.

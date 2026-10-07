@@ -538,3 +538,19 @@ body.wash-alarm #wash .wash-text { display: block; }
 button.pill.upd-pill { cursor: pointer; font: inherit; font-size: 12px; font-weight: 600; color: var(--text); border-color: color-mix(in srgb, var(--good) 50%, var(--line)); }
 button.pill.upd-pill.warn i { background: var(--gold); animation: livedot 1.6s infinite; }
 .updates { display: grid; gap: 6px; }
+
+/* "Ask the coach" inside the plan card */
+.ask { border-top: 1px solid var(--line); margin-top: 4px; padding-top: 10px; display: flex; flex-direction: column; gap: 8px; }
+.ask-you { align-self: flex-end; max-width: 85%; background: var(--panel-2); border-radius: 10px 10px 2px 10px; padding: 6px 10px; font-size: 13px; }
+.ask-coach { max-width: 95%; border-left: 3px solid var(--accent); padding: 2px 0 2px 10px; }
+.ask-coach.err { border-left-color: var(--warn); color: var(--muted); }
+.ask-coach ul { margin: 4px 0 0; }
+.ask-meta { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 4px; }
+.ask-meta a { color: inherit; }
+.ask-older { display: flex; flex-direction: column; gap: 8px; }
+.ask-older[open] { padding-bottom: 4px; }
+.ask-older > :not(summary) { margin-top: 8px; }
+.ask-form { display: flex; gap: 6px; }
+.ask-form input { flex: 1; min-width: 0; background: var(--panel-2); border: 1px solid var(--line); color: var(--text); border-radius: 8px; padding: 6px 10px; font: inherit; font-size: 13px; }
+.ask-form input:focus { outline: none; border-color: var(--accent); }
+.plan-from-chat { color: var(--accent); display: flex; align-items: center; gap: 8px; }

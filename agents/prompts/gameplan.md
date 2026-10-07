@@ -21,6 +21,12 @@ the playbook and your knowledge first. Do a few targeted web lookups (at most 4)
 an unusual matchup, a comp you're unsure about, or a build question for this patch (stats sites, the League wiki,
 r/summonerschool or champion subreddits). Don't use sub-agents.
 
+## What the player said
+`input.json` may have `playerChat`: what the player asked or told the live coach this game (`messages`, and
+`playbookNotes`). Plans with `kind` "chat" in `history` were changed because of the player; "undo" means they took
+that change back. Respect what they asked for (a build, split pushing, not fighting someone) unless the game has
+clearly made it wrong; then say so in `changes`.
+
 ## Think about
 - The lane: who wins early, the kill windows, the jungle matchup (who ganks top, who invades).
 - The two teams: engage, poke, pick, scaling, split push, frontline, damage profile (AD/AP), healing, crowd

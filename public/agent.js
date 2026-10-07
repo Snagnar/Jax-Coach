@@ -17,6 +17,7 @@ const Agent = (() => {
     csPlan: null,           // plan made in champ select, adopted at game start: { champ, plan, at, jobId }
     csKey: null, csPlanJob: null,
     proposals: [],          // post-game review proposals: { jobId, champ, proposal, at, done: {} }
+    chat: null,             // "Ask the coach": { key, champ, at, msgs, notes, job, undo } for this game or champ select
     lastError: null,
   };
   const listeners = [];
@@ -35,6 +36,9 @@ const Agent = (() => {
   const retire = (jobId) => { S.proposals = S.proposals.filter((x) => x.jobId !== jobId); if (!gone.includes(jobId)) gone.push(jobId); };
   for (const p of S.proposals.filter((x) => !fresh(x.at))) retire(p.jobId);
   saveProposals();
+  // the chat survives a page reload in the same game (its key is the game's key)
+  try { S.chat = JSON.parse(localStorage.getItem('jc.chat') || 'null'); if (S.chat) S.chat.sending = false; } catch {}
+  const saveChat = () => { try { localStorage.setItem('jc.chat', JSON.stringify(S.chat)); } catch {} };
 
   const ready = () => !!(S.status && S.status.installed && S.status.loggedIn);
   async function getJSON(url, opts) { const r = await fetch(url, { cache: 'no-store', ...opts }); const j = await r.json().catch(() => ({})); if (!r.ok) throw new Error(j.error || `HTTP ${r.status}`); return j; }
@@ -146,6 +150,7 @@ const Agent = (() => {
   // ---------- champ select ----------
   function onChampSelect(cs, D) {
     if (!cs) return;
+    S.lastCs = cs;
     const idOf = (key) => (key ? D.dd.keyToId[String(key)] : null);
     const mine = (cs.myTeam || []).find((p) => p.cellId === cs.localPlayerCellId) || {};
     const myChamp = idOf(mine.championId || mine.championPickIntent);
@@ -192,6 +197,8 @@ const Agent = (() => {
     // things that already happened before the app saw the game don't trigger a reassessment
     const marks = { deaths: (me.scores.deaths || 0) - (me.isDead ? 1 : 0), legs: A.legendaries, m14: A.t >= 840, m20: A.t >= 1200, m28: A.t >= 1680 };
     S.game = { key: `${A.champ}-${Math.round((Date.now() - A.t * 1000) / 60000)}`, champ: A.champ, plan: null, history: [], lastAdaptAt: -1e9, lastT: A.t, startedAt: Date.now(), marks, pending: null, jobId: null, lastSnap: null };
+    const C = S.chat;
+    if (C && C.key.startsWith('cs|') && Date.now() - C.at < 20 * 60000) { C.key = S.game.key; C.champ = A.champ; C.undo = null; saveChat(); }
     const cp = S.csPlan;
     if (cp && cp.champ === A.champ && Date.now() - cp.at < 20 * 60000) { S.game.plan = cp.plan; S.game.history.push({ t: 0, kind: 'gameplan', headline: cp.plan.headline, jobId: cp.jobId }); S.csPlan = null; applyHook(); }
     changed();
@@ -239,7 +246,8 @@ const Agent = (() => {
     const name = Engine.champ(D, A.champ).name;
     const job = await start(type, {
       champion: A.champ, championName: name, key: `${type}-${G.key}`, patch: patchLabel(D), title: `${type === 'gameplan' ? 'Game plan' : 'Reassess'} at ${A.clock}: ${reason}`,
-      when: 'in game', reason, game: snapshot(A, D), history: G.history.filter((h) => h.kind !== 'check').map((h) => ({ at: Engine.fmtClock(h.t), headline: h.headline, changes: h.changes || [] })), player: type === 'gameplan' ? playerProfile(A.champ, A.P.opp ? A.P.opp.cid : null) : undefined,
+      when: 'in game', reason, game: snapshot(A, D), history: G.history.filter((h) => h.kind !== 'check').map((h) => ({ at: Engine.fmtClock(h.t), kind: h.kind, headline: h.headline, changes: h.changes || [] })), player: type === 'gameplan' ? playerProfile(A.champ, A.P.opp ? A.P.opp.cid : null) : undefined,
+      playerChat: chatDigest(G.key),
     });
     if (job) { G.jobId = job.id; G.jobReason = reason; G.jobT = A.t; }
     changed();
@@ -263,6 +271,7 @@ const Agent = (() => {
   }
   async function finished(j) {
     S.handled[j.id] = true;
+    if (j.type === 'ask') return answered(j);
     if (j.status !== 'done' && !['champion', 'quick'].includes(j.type)) {
       if (S.game && S.game.jobId === j.id) { S.game.jobId = null; S.game.lastError = j.error; }
       return;
@@ -279,6 +288,7 @@ const Agent = (() => {
       if (G && G.jobId === j.id) G.jobId = null;
       if (!plan) return;
       plan.at = Date.now(); plan.jobId = j.id; plan.kind = j.type;
+      if (G && G.chatPlanAt && new Date(j.created).getTime() < G.chatPlanAt - 1000) return;   // started before your message changed the plan
       if (G && G.champ === j.champion && (j.key || '').endsWith(G.key)) {
         if (j.type === 'adapt' && plan.changed === false && G.plan) {
           // same decision (maybe reworded): keep the words the player already read; take the build and rules quietly
@@ -306,6 +316,109 @@ const Agent = (() => {
     }
   }
 
+  // ---------- "Ask the coach": questions about this game, answered by an agent that may change the plan ----------
+  const csKeyOf = (cs) => `cs|${(cs && cs.gameId) || ''}`;
+  // the chat for what's on screen: this game, or champ select
+  function chatFor(A, cs, create) {
+    const G = S.game;
+    const key = A && G ? G.key : cs ? csKeyOf(cs) : null;
+    if (!key) return null;
+    if (S.chat && S.chat.key === key) return S.chat;
+    if (!create) return null;
+    S.chat = { key, champ: A ? A.champ : null, at: Date.now(), msgs: [], notes: [], job: null, undo: null };
+    return S.chat;
+  }
+  function ask(text, A, D, cs) {
+    text = String(text || '').replace(/\s+/g, ' ').trim().slice(0, 400);
+    if (!text || !ready()) return false;
+    const C = chatFor(A, cs, true);
+    if (!C) return false;
+    C.msgs.push({ who: 'you', text, at: Date.now(), clock: A ? A.clock : null });
+    saveChat(); changed();
+    pumpChat(A, D);
+    return true;
+  }
+  // one question at a time: what you typed while the coach was busy goes out together once it answers
+  async function pumpChat(A, D) {
+    const C = S.chat, cs = A ? null : S.lastCs;
+    if (!C || C.job || C.sending || !ready() || C !== chatFor(A, cs, false)) return;
+    const open = C.msgs.filter((m) => m.who === 'you' && !m.sent);
+    if (!open.length) return;
+    const G = S.game && C.key === S.game.key ? S.game : null;
+    const mine = cs ? (cs.myTeam || []).find((p) => p.cellId === cs.localPlayerCellId) || {} : {};
+    const champ = A ? A.champ : D.dd.keyToId[String(mine.championId || mine.championPickIntent || '')] || null;
+    const name = champ ? Engine.champ(D, champ).name : null;
+    const plan = G ? G.plan : S.csPlan ? S.csPlan.plan : null;
+    const { at, jobId, kind, checkedAt, ...planOut } = plan || {};
+    C.sending = true;
+    const job = await start('ask', {
+      champion: champ, championName: name, key: `ask-${C.key}-${C.msgs.length}`, patch: patchLabel(D),
+      title: `Question${A ? ` at ${A.clock}` : ' in champ select'}: ${open.map((m) => m.text).join(' / ').slice(0, 80)}`,
+      when: A ? 'in game' : 'champ select', question: open.map((m) => m.text).join('\n'),
+      conversation: C.msgs.filter((m) => m.sent || m.who === 'coach').slice(-12).map((m) => ({ from: m.who === 'you' ? 'player' : 'coach', at: m.clock, text: m.text, bullets: m.bullets })),
+      game: A ? snapshot(A, D) : null, lineup: !A && cs ? champSelectFacts(cs, D) : null,
+      currentPlan: plan ? planOut : null, canChangePlan: !!(G || S.csPlan),
+      history: G ? G.history.filter((h) => h.kind !== 'check').map((h) => ({ at: Engine.fmtClock(h.t), kind: h.kind, headline: h.headline })) : [],
+      player: playerProfile(champ, A && A.P.opp ? A.P.opp.cid : null),
+    });
+    C.sending = false;
+    if (!job) { C.msgs.push({ who: 'coach', error: true, text: `Couldn't ask the coach${S.lastError ? ` (${S.lastError})` : ''}.`, at: Date.now() }); for (const m of open) m.sent = 'failed'; }
+    else { C.job = job.id; C.jobAt = Date.now(); for (const m of open) m.sent = job.id; }
+    saveChat(); changed();
+  }
+  async function answered(j) {
+    const C = S.chat;
+    if (!C || C.job !== j.id) return;           // an earlier session's question, already answered there
+    C.job = null;
+    // the answer goes right under the question(s) it answers, above anything you typed while it ran
+    const put = (m) => { let i = -1; C.msgs.forEach((x, k) => { if (x.sent === j.id) i = k; }); C.msgs.splice(i < 0 ? C.msgs.length : i + 1, 0, m); };
+    let a = null;
+    if (j.status === 'done') { try { a = await getJSON(`/api/agent/jobs/${j.id}/out/answer.json`); } catch {} }
+    if (!a || !a.answer) {
+      put({ who: 'coach', error: true, text: j.status === 'done' ? "The coach didn't write an answer. Ask again?" : `The coach couldn't answer${j.error ? `: ${String(j.error).slice(0, 120)}` : ''}.`, at: Date.now(), jobId: j.id });
+      saveChat(); changed(); return;
+    }
+    const msg = { who: 'coach', text: String(a.answer), bullets: (Array.isArray(a.bullets) ? a.bullets : []).slice(0, 3).map(String), sources: (Array.isArray(a.sources) ? a.sources : []).slice(0, 3).map(String), at: Date.now(), jobId: j.id };
+    const G = S.game && C.key === S.game.key ? S.game : null;
+    const plan = validPlan(a.plan);
+    if (plan && (G || S.csPlan)) {
+      plan.at = Date.now(); plan.jobId = j.id; plan.kind = 'chat'; plan.changed = true;
+      if (G) {
+        C.undo = { plan: G.plan, jobId: j.id };
+        G.plan = plan; G.chatPlanAt = Date.now();
+        G.history.push({ t: G.lastT, kind: 'chat', headline: plan.headline, changes: plan.changes || [], jobId: j.id });
+      } else {
+        C.undo = { plan: S.csPlan.plan, jobId: j.id };
+        S.csPlan = { ...S.csPlan, plan, at: Date.now() };
+      }
+      msg.planChanged = true;
+      applyHook();
+    }
+    const note = typeof a.playbookNote === 'string' ? a.playbookNote.trim() : '';
+    if (note) { C.notes.push({ text: note.slice(0, 300), at: (C.msgs.filter((m) => m.sent === j.id).pop() || {}).clock || null }); msg.note = note.slice(0, 300); }
+    put(msg);
+    saveChat(); changed();
+  }
+  function undoChatPlan() {
+    const C = S.chat;
+    if (!C || !C.undo) return;
+    const G = S.game && C.key === S.game.key ? S.game : null;
+    if (G) { G.plan = C.undo.plan; G.history.push({ t: G.lastT, kind: 'undo', headline: G.plan ? G.plan.headline : '(no plan)', changes: [], jobId: C.undo.jobId }); }
+    else if (S.csPlan) S.csPlan = { ...S.csPlan, plan: C.undo.plan };
+    const m = C.msgs.find((x) => x.jobId === C.undo.jobId);
+    if (m) m.undone = true;
+    C.undo = null;
+    saveChat(); applyHook(); changed();
+  }
+  // what the player said, for the other agents (reassessments, the post-game review)
+  function chatDigest(key) {
+    const C = S.chat;
+    if (!C || C.key !== key || !C.msgs.length) return undefined;
+    return { messages: C.msgs.filter((m) => !m.error).slice(-16).map((m) => ({ from: m.who === 'you' ? 'player' : 'coach', at: m.clock || undefined, text: m.text, planChanged: m.planChanged ? (m.undone ? 'undone by the player' : true) : undefined })), playbookNotes: C.notes.length ? C.notes : undefined };
+  }
+  function chatLog() { return S.game ? chatDigest(S.game.key) || null : null; }
+  function lastAnswer() { const C = S.chat; const m = C && C.msgs.filter((x) => x.who === 'coach').sort((a, b) => b.at - a.at)[0]; return m && !m.error ? m : null; }
+
   // ---------- after the game ----------
   function startReview(D, record, report) {
     if (!ready() || !record || !record.champ) return;
@@ -315,7 +428,7 @@ const Agent = (() => {
       champion: record.champ, championName: name, key: `review-${record.champ}-${record.endedAt}`, patch: patchLabel(D), title: `Review: ${name} vs ${record.opp ? Engine.champ(D, record.opp).name : '?'}`,
       game: {
         result: record.result, minutes: Math.round(record.gameTime / 6) / 10, opponent: record.opp ? Engine.champ(D, record.opp).name : null,
-        deaths: record.deaths, dashboardTimeByMode: record.modeTime, focus: record.focus, plans: record.plans || [],
+        deaths: record.deaths, dashboardTimeByMode: record.modeTime, focus: record.focus, plans: record.plans || [], playerChat: record.chat || undefined,
         report: R ? { verdict: R.verdict, rating: R.me && R.me.rating, story: R.story, fix: R.fix, moreFix: R.moreFix, good: R.good, stats: R.stats,
           deaths: (R.deaths || []).map((d) => ({ at: Engine.fmtClock(d.t), kind: d.kind, killers: d.killers, zone: d.zone, dashboardSaid: d.mode })) } : null,
       },
@@ -353,6 +466,9 @@ const Agent = (() => {
     if (tickN % 150 === 0) refreshStatus(false);
     if (tickN % 300 === 5 && !A) refreshForPatch(D);
     if (A) drain(A, D);
+    // a question whose job vanished (logs cleared, server restarted mid-run) doesn't block the chat forever
+    if (S.chat && S.chat.job && Date.now() - (S.chat.jobAt || 0) > 6 * 60000 && !S.jobs.some((j) => j.id === S.chat.job && j.status === 'running')) { S.chat.job = null; saveChat(); }
+    if (S.chat && !S.chat.job) pumpChat(A, D);
   }
   // a new patch: refresh each playbook once, outside games (the old version stays active until the new one is done)
   function refreshForPatch(D) {
@@ -379,6 +495,7 @@ const Agent = (() => {
   return {
     state: S, ready, refreshStatus, refreshJobs, login, start, cancel, research, ensureChampion, onChampSelect, onGame, reassessNow, tick,
     planFor, gameLog, endGame, startReview, markProposal, dismissProposal, running, snapshot,
+    chatFor, ask, undoChatPlan, chatLog, lastAnswer,
     onChange: (f) => listeners.push(f), onApply: (f) => { applyHook = f; },
   };
 })();

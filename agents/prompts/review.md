@@ -13,6 +13,13 @@ and propose improvements to the champion's playbook. Today is {{DATE}}.
 You can only read and write inside this folder. You may search and read the web (a few lookups) to check a claim,
 e.g. a matchup detail or a build choice for this patch. Don't use sub-agents. There is no shell (no Bash, Python or Node): write every file directly with the Write tool, and merge files by reading them and writing the result.
 
+## What the player told the coach
+`game.playerChat` (may be missing) is what the player typed into the live coach during the game and its answers.
+`playbookNotes` are things the coach flagged as lasting feedback about the playbook or the dashboard. Take every
+note seriously: it is the player's own experience. For each one either propose a change that addresses it or say
+in `summary` why the playbook should stay as it is. Questions and complaints in `messages` are evidence too (what
+confused or frustrated them, which advice they disagreed with).
+
 ## What to look for
 - Deaths while the dashboard said all-in or trade: was the fight score too optimistic for this matchup or state?
 - Deaths the dashboard warned about (play safe / back off): the advice was right; that is a lesson for the player,

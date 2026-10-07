@@ -25,6 +25,11 @@ browser (a second monitor works best):
     fed enemies, new threats, Baron or Soul, 14:00/20:00/28:00, or the Reassess button), an agent looks at the game
     again. It updates the build and the plan, including how the game can still be won. The card and the voice only
     change when the decision changes; a check that changes nothing updates the build quietly.
+  - **Ask the coach.** A box at the bottom of the plan card (in game and in champ select) takes your question or
+    complaint ("Sett keeps winning trades"). An agent answers for this game within about half a minute, looking things
+    up online when needed; the one-line answer is read aloud. If you ask for something different (split push, another
+    item) or the answer means the plan is wrong, it changes the plan right away, with an Undo button. Later plan
+    updates respect what you said, and lasting feedback goes to the post-game review, which must address it.
   - **Suggested playbook changes after the game.** A review agent compares what the playbook said with what
     happened. You approve each change; every change is a new playbook version you can roll back.
 

@@ -189,6 +189,7 @@ async function poll() {
   if (S.A && S.A.champ !== S.champ && D.dd.champs[S.A.champ]) { await useChamp(S.A.champ); S.A = Engine.analyze(S.game, D, { memory: S.memory, overrideOppId: S.overrideOpp }); }
   if (S.A && !S.demo) Agent.onGame(S.A, D);
   Agent.tick(S.demo ? null : S.A, D);
+  if (!S.demo) askVoice();
   if (S.A) {
     Voice.setMinGap(S.A.t < 14 * 60 ? 8 : S.A.t < 25 * 60 ? 20 : 40);   // less talk once laning is over
     gamePlanVoice(S.A);
@@ -479,8 +480,15 @@ function respawnVoice(A) {
 // ---------- a new plan is read out once; a check that changed nothing stays quiet ----------
 function planVoice(A) {
   const p = D.plan;
-  if (!p || !p.jobId || p.changed === false || Date.now() - p.at > 60000) return;
+  if (!p || !p.jobId || p.changed === false || p.kind === 'chat' || Date.now() - p.at > 60000) return;
   Voice.say(`${p.kind === 'adapt' ? 'New plan' : 'Game plan'}: ${speakable(p.headline, 140)}`, { key: `plan-${p.jobId}`, repeatAfter: 99999 });
+}
+
+// the coach's answer to your question: the one-line "do this now" is read out once (bullets stay on screen)
+function askVoice() {
+  const m = Agent.lastAnswer();
+  if (!m || m.spoken || Date.now() - m.at > 60000) return;
+  if (Voice.announce([speakable(m.text, 220)], { key: `ask-${m.jobId}`, repeatAfter: 99999 })) m.spoken = true;
 }
 
 // ---------- record live games (what the dashboard said) for the Review tab ----------
@@ -500,6 +508,7 @@ function record(A) {
   if (A.P.opp) r.opp = A.P.opp.cid;
   r.focus = Focus.result(A);
   r.plans = Agent.gameLog();
+  r.chat = Agent.chatLog();
   const end = A.events.find((e) => e.EventName === 'GameEnd');
   if (end) finishRecording(end.Result || null);
 }
@@ -511,7 +520,7 @@ function finishRecording(result) {
   const L = S.lastSaved;
   if (L && L.champ === r.champ && L.opp === r.opp && Math.abs(L.gameTime - r.gameTime) < 120 && Date.now() - L.at < 15 * 60000) return;
   S.lastSaved = { champ: r.champ, opp: r.opp, gameTime: r.gameTime, at: Date.now() };
-  const body = { v: 1, endedAt: Date.now(), champ: r.champ, riotId: r.riotId, opp: r.opp, result, gameTime: Math.round(r.gameTime), deaths: r.deaths, modeTime: r.modeTime, focus: r.focus || null, plans: r.plans || [], ignored: r.ignored || 0, budget: r.budget || null };
+  const body = { v: 1, endedAt: Date.now(), champ: r.champ, riotId: r.riotId, opp: r.opp, result, gameTime: Math.round(r.gameTime), deaths: r.deaths, modeTime: r.modeTime, focus: r.focus || null, plans: r.plans || [], chat: r.chat || null, ignored: r.ignored || 0, budget: r.budget || null };
   S.lastFocus = r.focus || null;
   if (result === 'Win' || result === 'Lose') S.todayPending = [...(S.todayPending || []), { end: Date.now(), win: result === 'Win', champ: r.champ, opp: r.opp }];
   fetch('/api/history', { method: 'POST', body: JSON.stringify(body) }).then(() => Focus.loadHistory()).catch(() => {});
@@ -679,7 +688,15 @@ function renderStatus() {
 }
 
 // ---------- LIVE ----------
+// the live view is rebuilt on every poll: the coach box keeps its text (S.askDraft), focus and cursor
 function renderLive() {
+  const inp = document.getElementById('askInput');
+  const had = inp && document.activeElement === inp ? { s: inp.selectionStart, e: inp.selectionEnd } : null;
+  renderLiveView();
+  const n = document.getElementById('askInput');
+  if (n && had) { n.focus(); try { n.setSelectionRange(had.s, had.e); } catch {} }
+}
+function renderLiveView() {
   const el = $('#view-live');
   if (!S.A) { el.innerHTML = S.cs ? champSelectHtml(S.cs) : waitingHtml(); return; }
   const A = S.A, { me, opp, enemies } = A.P;
@@ -1216,21 +1233,49 @@ function planCard(A) {
   const G = Agent.state.game;
   const plan = D.plan;
   const job = G && G.jobId ? Agent.state.jobs.find((j) => j.id === G.jobId) : (!A && Agent.state.csPlanJob ? Agent.state.jobs.find((j) => j.id === Agent.state.csPlanJob.id && j.status === 'running') : null);
-  if (!plan && !job) return A ? '<div class="card plan-card"><header><h2>Game plan</h2><span class="chip">AI</span></header><div class="small muted">A plan for this game is being prepared.</div></div>' : '';
+  const chat = askBox(A);
+  if (!plan && !job) return A ? `<div class="card plan-card"><header><h2>Game plan</h2><span class="chip">AI</span></header><div class="small muted">A plan for this game is being prepared.</div>${chat}</div>`
+    : chat ? `<div class="card plan-card"><header><h2>Coach</h2><span class="chip">AI</span></header><div class="small muted">Ask about this draft: the matchup, runes, what to build. The game plan follows once the lane opponent is known.</div>${chat}</div>` : '';
   const thinking = job && job.status === 'running' ? `<div class="plan-thinking"><span class="spin"></span><div><b>${esc(G && G.jobReason ? `Reassessing: ${G.jobReason}` : 'Preparing the game plan')}</b> · ${ago(job.created)}<div class="small muted">${esc(jobActivity(job))}</div></div></div>` : '';
-  if (!plan) return `<div class="card plan-card"><header><h2>Game plan</h2><span class="chip">AI</span></header>${thinking}</div>`;
+  if (!plan) return `<div class="card plan-card"><header><h2>Game plan</h2><span class="chip">AI</span></header>${thinking}${chat}</div>`;
   const b = plan.build && plan.build.order;
-  const when = `${plan.kind === 'adapt' ? `updated ${ago(plan.at)} ago` : `made ${ago(plan.at)} ago`}${plan.checkedAt ? ` · checked ${ago(plan.checkedAt)} ago` : ''}`;
+  const when = `${plan.kind === 'adapt' ? `updated ${ago(plan.at)} ago` : plan.kind === 'chat' ? `changed ${ago(plan.at)} ago` : `made ${ago(plan.at)} ago`}${plan.checkedAt ? ` · checked ${ago(plan.checkedAt)} ago` : ''}`;
+  const C = Agent.state.chat;
+  const undo = plan.kind === 'chat' && C && C.undo && C.undo.jobId === plan.jobId;
   const fresh = plan.changed !== false && Date.now() - plan.at < 12000;
   return `<div class="card plan-card ${fresh ? 'fresh' : ''}">
     <header><h2>Game plan</h2><span class="chip">AI · ${esc(when)}</span><span class="grow"></span>${A && !S.demo ? '<button class="btn small ghost" data-action="reassess" title="Ask the agent to look at the game again now">Reassess</button>' : ''}</header>
+    ${plan.kind === 'chat' ? `<div class="plan-from-chat small">Changed after your question${undo ? ' <button class="btn small ghost" data-action="chat-undo" title="Go back to the plan before your question">Undo</button>' : ''}</div>` : ''}
     <div class="plan-head">${esc(plan.headline)}</div>
     ${list(plan.bullets)}
     ${plan.summary || arr(plan.changes).length ? `<details class="small muted"><summary>${arr(plan.changes).length ? 'What changed' : 'Why'}</summary>${plan.summary ? `<div>${esc(plan.summary)}</div>` : ''}${list(plan.changes, 'small')}</details>` : ''}
     ${b && b.length ? `<div><h3>Build for this game</h3><div class="row" style="margin-top:6px">${b.map((n) => `<span title="${esc((plan.build.why || {})[n] || '')}">${itemChip(n)}</span>`).join('<span class="arrow">›</span>')}</div>${plan.build.note ? `<div class="small muted">${esc(plan.build.note)}</div>` : ''}</div>` : ''}
     ${!A && (plan.runes || plan.summoners) ? `<dl class="kv">${plan.runes ? `<dt>Runes</dt><dd>${esc(plan.runes)}</dd>` : ''}${plan.summoners ? `<dt>Spells</dt><dd>${esc(plan.summoners)}</dd>` : ''}</dl>` : ''}
     ${arr(plan.rules).length ? `<div class="small muted">Dashboard rules for this game: ${arr(plan.rules).map((r) => esc(r.headline || r.id)).join(' · ')}</div>` : ''}
-    ${thinking}
+    ${thinking}${chat}
+  </div>`;
+}
+// "Ask the coach": the latest question and answer stay open, older ones fold away
+function askBox(A) {
+  if (S.demo || !Agent.ready()) return '';
+  const C = Agent.chatFor(A, A ? null : S.cs, false);
+  const msgs = C ? C.msgs : [];
+  let s = msgs.length;
+  while (s > 0 && msgs[s - 1].who === 'you') s--;                    // waiting for an answer
+  if (s > 0 && msgs[s - 1].who === 'coach') { s--; while (s > 0 && msgs[s - 1].who === 'you') s--; }   // the last answer and its question
+  const link = (u) => { try { const x = new URL(u); return /^https?:$/.test(x.protocol) ? `<a href="${esc(x.href)}" target="_blank" rel="noopener noreferrer">${esc(x.hostname.replace(/^www\./, ''))}</a>` : ''; } catch { return ''; } };
+  const msg = (m) => m.who === 'you' ? `<div class="ask-you">${esc(m.text)}</div>`
+    : `<div class="ask-coach ${m.error ? 'err' : ''}"><div>${esc(m.text)}</div>${arr(m.bullets).length ? list(m.bullets, 'small') : ''}
+        ${m.planChanged || m.note || arr(m.sources).length ? `<div class="ask-meta small faint">${m.planChanged ? `<span class="chip ${m.undone ? '' : 'info'}">${m.undone ? 'plan change undone' : 'plan updated'}</span>` : ''}${m.note ? '<span title="' + esc(m.note) + '">noted for the post-game review</span>' : ''}${arr(m.sources).map(link).filter(Boolean).join(' ')}</div>` : ''}</div>`;
+  const job = C && C.job ? Agent.state.jobs.find((j) => j.id === C.job) : null;
+  const busy = C && (C.job || C.sending);
+  const thinking = busy ? `<div class="plan-thinking"><span class="spin"></span><div><b>Coach is thinking</b>${job ? ` · ${ago(job.created)}` : ''}<div class="small muted">${esc(job ? jobActivity(job) : 'starting')}</div></div></div>` : '';
+  const older = msgs.slice(0, s);
+  return `<div class="ask">
+    ${older.length ? `<details class="ask-older"><summary class="small muted">${older.filter((m) => m.who === 'you').length} earlier question${older.filter((m) => m.who === 'you').length === 1 ? '' : 's'}</summary>${older.map(msg).join('')}</details>` : ''}
+    ${msgs.slice(s).map(msg).join('')}${thinking}
+    <form id="askForm" class="ask-form" autocomplete="off"><input id="askInput" maxlength="400" placeholder="${A ? 'Ask the coach about this game…' : 'Ask the coach about this draft…'}" value="${esc(S.askDraft || '')}"><button class="btn small" type="submit">${busy ? 'Queue' : 'Ask'}</button></form>
+    ${busy ? '<div class="small faint">Anything you send now goes out with the next question.</div>' : ''}
   </div>`;
 }
 function whyPanel(A) {
@@ -1946,6 +1991,7 @@ function wireUi() {
     if (t.dataset.action === 'update-open') { $('#settingsBtn').click(); return; }
     if (t.dataset.action === 'why') { S.showWhy = !S.showWhy; renderLive(); return; }
     if (t.dataset.action === 'reassess') { Agent.reassessNow(S.A, D); renderLive(); return; }
+    if (t.dataset.action === 'chat-undo') { Agent.undoChatPlan(); renderLive(); return; }
     if (t.dataset.action === 'goto-playbook') { S.pbSel = t.dataset.champ || S.champ; setView('playbook'); return; }
     if (t.dataset.action === 'agent-login') { Agent.login(); return; }
     if (t.dataset.action === 'agent-check') { Agent.refreshStatus(true).then(() => { renderPlaybook(); renderLive(); }); return; }
@@ -1989,12 +2035,18 @@ function wireUi() {
   });
   $('#champChip').addEventListener('click', () => { S.pbSel = S.champ; setView('playbook'); });
   document.body.addEventListener('input', (e) => {
+    if (e.target.id === 'askInput') S.askDraft = e.target.value;
     if (e.target.id === 'muSearch') {
       S.muFilter = e.target.value; const pos = e.target.selectionStart; renderMatchups();
       const s = $('#muSearch'); s.focus(); s.setSelectionRange(pos, pos);
     }
   });
   document.body.addEventListener('submit', (e) => {
+    if (e.target.id === 'askForm') {
+      e.preventDefault();
+      if (Agent.ask(S.askDraft, S.demo ? null : S.A, D, S.A ? null : S.cs)) { S.askDraft = ''; renderLive(); const n = $('#askInput'); if (n) n.focus(); }
+      return;
+    }
     if (e.target.id !== 'idForm') return;
     e.preventDefault();
     const [gameName, tagLine] = String(new FormData(e.target).get('rid') || '').split('#').map((s) => s.trim());
