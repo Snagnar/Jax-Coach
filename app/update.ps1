@@ -72,7 +72,9 @@ if ($Apply) {
     $b = Get-Build
     if (-not $b -or -not $b.repo) { throw 'This copy has no build information (a development copy): update it with git pull.' }
     Set-Status 'downloading' 'Downloading the latest version from GitHub...'
-    if (Test-Path $Work) { Remove-Item $Work -Recurse -Force }
+    # a process started from the old folder can keep it locked: then use a fresh one (old ones are cleaned up later)
+    if (Test-Path $Work) { try { Remove-Item $Work -Recurse -Force -ErrorAction Stop } catch { $Work = Join-Path $env:TEMP ('JaxCoachUpdate-' + (Get-Date -Format 'yyyyMMddHHmmss')) } }
+    Get-ChildItem $env:TEMP -Directory -Filter 'JaxCoachUpdate-*' -ErrorAction SilentlyContinue | Where-Object { $_.FullName -ne $Work } | ForEach-Object { Remove-Item $_.FullName -Recurse -Force -ErrorAction SilentlyContinue }
     New-Item -ItemType Directory -Force $Work | Out-Null
     $src = Join-Path $Work 'src'
     Invoke-Git @('clone', '--depth', '1', '--branch', $b.branch, $b.repo, $src) 180 | Out-Null
@@ -93,7 +95,7 @@ if ($Apply) {
     Copy-Item (Join-Path $src 'app\update.ps1') $finisher -Force
     Set-Status 'installing' 'Closing Jax Coach and installing the update...'
     $env:JAXCOACH_ROOT = $Root
-    Start-Process powershell.exe -WindowStyle Hidden -WorkingDirectory $Work -ArgumentList @('-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', "`"$finisher`"", '-Finish', '-Setup', "`"$exe`"")
+    Start-Process powershell.exe -WindowStyle Hidden -WorkingDirectory $env:TEMP -ArgumentList @('-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', "`"$finisher`"", '-Finish', '-Setup', "`"$exe`"")
     exit 0
   } catch { Set-Status 'failed' $_.Exception.Message; exit 1 }
 }
@@ -114,7 +116,7 @@ if ($Finish) {
     $desktop = Join-Path ([Environment]::GetFolderPath('Desktop')) 'Jax Coach.lnk'
     if (-not (Test-Path $desktop)) { $setupArgs += "/nodesktop" }
     Log "running $Setup $($setupArgs -join " ")"
-    Start-Process $Setup -ArgumentList $setupArgs
+    Start-Process $Setup -ArgumentList $setupArgs -WorkingDirectory $env:TEMP
     Set-Status 'done' 'The installer is running; Jax Coach starts again when it is done.'
   } catch { Set-Status 'failed' $_.Exception.Message; exit 1 }
 }

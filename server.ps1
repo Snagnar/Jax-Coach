@@ -598,7 +598,7 @@ function Handle-Update($ctx, [string]$sub) {
   }
   if ($sub -eq '/apply' -and $ctx.Request.HttpMethod -eq 'POST') {
     [IO.File]::WriteAllText($status, '{"state":"starting","message":"Starting the update..."}')
-    Start-Process powershell.exe -WindowStyle Hidden -ArgumentList @('-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', "`"$UpdateScript`"", '-Apply')
+    Start-Process powershell.exe -WindowStyle Hidden -WorkingDirectory $Root -ArgumentList @('-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', "`"$UpdateScript`"", '-Apply')
     Send $ctx 202 '{"ok":true}'
     return
   }

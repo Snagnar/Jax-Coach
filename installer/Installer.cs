@@ -214,7 +214,9 @@ namespace JaxCoachSetup
         void StartApp()
         {
             if (installedRoot == null) return;
-            Process.Start(new ProcessStartInfo(Path.Combine(Environment.SystemDirectory, "wscript.exe"), Quote(Path.Combine(installedRoot, "Jax Coach.vbs"))) { UseShellExecute = false });
+            // started in the install folder: inheriting the installer's folder (the updater's temp folder) would keep
+            // it locked and break the next update
+            Process.Start(new ProcessStartInfo(Path.Combine(Environment.SystemDirectory, "wscript.exe"), Quote(Path.Combine(installedRoot, "Jax Coach.vbs"))) { UseShellExecute = false, WorkingDirectory = installedRoot });
         }
 
         // ---------- install ----------

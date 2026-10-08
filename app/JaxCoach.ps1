@@ -20,7 +20,7 @@ if (-not $createdNew -or (Test-Up)) { Open-App; exit }
 New-Item -ItemType Directory -Force $LogDir | Out-Null
 function Start-Server {
   $env:JAXCOACH_NO_BROWSER = '1'
-  $script:Server = Start-Process powershell.exe -PassThru -WindowStyle Hidden `
+  $script:Server = Start-Process powershell.exe -PassThru -WindowStyle Hidden -WorkingDirectory $Root `
     -ArgumentList @('-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', "`"$(Join-Path $Root 'server.ps1')`"") `
     -RedirectStandardOutput (Join-Path $LogDir 'server.log') -RedirectStandardError (Join-Path $LogDir 'server-errors.log')
 }
@@ -48,7 +48,7 @@ $mUpdate = $menu.Items.Add('Check for updates...')
 $mUpdate.add_Click({
   if ($script:UpdateProc -and -not $script:UpdateProc.HasExited) { return }
   $script:UpdateOut = [IO.Path]::GetTempFileName()
-  $script:UpdateProc = Start-Process powershell.exe -PassThru -WindowStyle Hidden -RedirectStandardOutput $script:UpdateOut `
+  $script:UpdateProc = Start-Process powershell.exe -PassThru -WindowStyle Hidden -WorkingDirectory $Root -RedirectStandardOutput $script:UpdateOut `
     -ArgumentList @('-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', "`"$(Join-Path $PSScriptRoot 'update.ps1')`"", '-Check')
   $mUpdate.Text = 'Checking for updates...'; $mUpdate.Enabled = $false
   $script:UpdateTimer.Start()
@@ -65,7 +65,7 @@ $script:UpdateTimer.add_Tick({
   if (-not $r.available) { $tray.ShowBalloonTip(3500, 'Jax Coach', "You're up to date ($(& $short $r.current.commit)).", 'Info'); return }
   $msg = "A new version is on GitHub ($(& $short $r.latest)); you have $(& $short $r.current.commit).`n`nUpdate now? Jax Coach closes, installs it and starts again (about a minute). Your settings and history stay.`n`nDon't update during a game."
   if ([System.Windows.Forms.MessageBox]::Show($msg, 'Jax Coach update', 'YesNo', 'Question') -eq 'Yes') {
-    Start-Process powershell.exe -WindowStyle Hidden -ArgumentList @('-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', "`"$(Join-Path $PSScriptRoot 'update.ps1')`"", '-Apply')
+    Start-Process powershell.exe -WindowStyle Hidden -WorkingDirectory $Root -ArgumentList @('-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', "`"$(Join-Path $PSScriptRoot 'update.ps1')`"", '-Apply')
     $tray.ShowBalloonTip(5000, 'Jax Coach', 'Downloading the update. Jax Coach restarts when it is installed.', 'Info')
   }
 })
