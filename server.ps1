@@ -378,7 +378,9 @@ function Lcu-Error($r) {
 function Get-OwnPage($lcu) {
   $r = Lcu-Call $lcu 'GET' '/lol-perks/v1/pages' $null
   if ($r.status -ne 200) { return @{ ok = $false; err = Lcu-Error $r } }
-  $pages = @($r.body | ConvertFrom-Json)
+  # Windows PowerShell passes a JSON array through the pipeline as ONE object: assign first, then @() it
+  $parsed = $r.body | ConvertFrom-Json
+  $pages = @($parsed)
   return @{ ok = $true; pages = $pages; own = @($pages | Where-Object { $_.name -eq $LoadoutName -and $_.isDeletable }) }
 }
 function Set-LoadoutRunes($lcu, $page) {
