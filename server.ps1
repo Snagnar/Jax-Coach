@@ -362,9 +362,12 @@ function Handle-Lcu($ctx, [string]$path) {
 $LoadoutName = 'Jax Coach'
 function Lcu-Call($lcu, [string]$method, [string]$path, [string]$body) {
   $url = "https://127.0.0.1:$($lcu.port)$path"
-  if ($method -eq 'GET') { $r = [JcHttp]::Get($url, $null, 4000, $lcu.auth); return @{ status = $r.Status; body = $r.Body } }
-  $r = [JcHttp]::Send($method, $url, $lcu.auth, $(if ($body) { $body } else { '' }), 6000)
+  if ($method -eq 'GET') { $r = [JcHttp]::Get($url, $null, 6000, $lcu.auth); return @{ status = $r.Status; body = $r.Body } }
+  $r = [JcHttp]::Send($method, $url, $lcu.auth, $(if ($body) { $body } else { '' }), 12000)
   $b = if ($r.Data) { [Text.Encoding]::UTF8.GetString($r.Data) } else { "$($r.Error)" }
+  # every write and its answer goes to logs\server.log, so a failure can be traced
+  $short = if ($b.Length -gt 300) { $b.Substring(0, 300) } else { $b }
+  Write-Host "Loadout: $method $path -> $($r.Status) $short"
   return @{ status = $r.Status; body = $b }
 }
 function Lcu-Error($r) {
@@ -372,30 +375,52 @@ function Lcu-Error($r) {
   if ($r.status -eq 0) { return 'the League client did not answer' }
   return "HTTP $($r.status)"
 }
+function Get-OwnPage($lcu) {
+  $r = Lcu-Call $lcu 'GET' '/lol-perks/v1/pages' $null
+  if ($r.status -ne 200) { return @{ ok = $false; err = Lcu-Error $r } }
+  $pages = @($r.body | ConvertFrom-Json)
+  return @{ ok = $true; pages = $pages; own = @($pages | Where-Object { $_.name -eq $LoadoutName -and $_.isDeletable }) }
+}
 function Set-LoadoutRunes($lcu, $page) {
   $ids = @($page.selectedPerkIds | ForEach-Object { [int]$_ })
   if ($ids.Count -ne 9 -or -not $page.primaryStyleId -or -not $page.subStyleId) { return @{ ok = $false; msg = 'incomplete rune page' } }
-  $r = Lcu-Call $lcu 'GET' '/lol-perks/v1/pages' $null
-  if ($r.status -ne 200) { return @{ ok = $false; msg = "couldn't read your rune pages ($(Lcu-Error $r))" } }
-  $pages = @($r.body | ConvertFrom-Json)
+  $st = Get-OwnPage $lcu
+  if (-not $st.ok) { return @{ ok = $false; msg = "couldn't read your rune pages ($($st.err))" } }
+  $body = [ordered]@{ name = $LoadoutName; primaryStyleId = [int]$page.primaryStyleId; subStyleId = [int]$page.subStyleId; selectedPerkIds = $ids; current = $true }
+  $json = $body | ConvertTo-Json -Compress
   $note = ''
-  foreach ($old in @($pages | Where-Object { $_.name -eq $LoadoutName -and $_.isDeletable })) { $null = Lcu-Call $lcu 'DELETE' "/lol-perks/v1/pages/$([long]$old.id)" $null }
-  $new = [ordered]@{ name = $LoadoutName; primaryStyleId = [int]$page.primaryStyleId; subStyleId = [int]$page.subStyleId; selectedPerkIds = $ids; current = $true }
-  $json = $new | ConvertTo-Json -Compress
-  $p = Lcu-Call $lcu 'POST' '/lol-perks/v1/pages' $json
-  if ($p.status -ge 400 -or $p.status -eq 0) {
-    # all pages in use and none of them ours yet: replace the selected page (this happens once)
-    $c = Lcu-Call $lcu 'GET' '/lol-perks/v1/currentpage' $null
-    $cur = $null; try { $cur = $c.body | ConvertFrom-Json } catch {}
-    if (-not $cur -or -not $cur.isDeletable) { $cur = @($pages | Where-Object { $_.isDeletable -and $_.name -ne $LoadoutName })[0] }
-    if (-not $cur) { return @{ ok = $false; msg = "no rune page can be replaced ($(Lcu-Error $p))" } }
-    $d = Lcu-Call $lcu 'DELETE' "/lol-perks/v1/pages/$([long]$cur.id)" $null
-    if ($d.status -ge 400 -or $d.status -eq 0) { return @{ ok = $false; msg = "couldn't make room for the page ($(Lcu-Error $d))" } }
-    $note = " (replaced your page '$($cur.name)')"
-    $p = Lcu-Call $lcu 'POST' '/lol-perks/v1/pages' $json
-    if ($p.status -ge 400 -or $p.status -eq 0) { return @{ ok = $false; msg = "the client refused the page: $(Lcu-Error $p)" } }
+  if ($st.own.Count) {
+    # our page exists: edit it in place (no slot is freed or taken)
+    $id = [long]$st.own[0].id
+    $p = Lcu-Call $lcu 'PUT' "/lol-perks/v1/pages/$id" $json
+    if ($p.status -ge 200 -and $p.status -lt 300) {
+      $null = Lcu-Call $lcu 'PUT' '/lol-perks/v1/currentpage' "$id"
+      return @{ ok = $true; msg = "rune page '$LoadoutName' updated" }
+    }
+    # editing refused: replace our own page (and only ours)
+    $d = Lcu-Call $lcu 'DELETE' "/lol-perks/v1/pages/$id" $null
+    if ($d.status -ge 300 -or $d.status -eq 0) { return @{ ok = $false; msg = "the client refused the page: $(Lcu-Error $p)" } }
+  } else {
+    # no page of ours yet: only when every slot is used, the selected page makes room (once)
+    $inv = Lcu-Call $lcu 'GET' '/lol-perks/v1/inventory' $null
+    $full = $false
+    try { $o = $inv.body | ConvertFrom-Json; $full = ($o.canAddCustomPage -eq $false) } catch {}
+    if ($full) {
+      $c = Lcu-Call $lcu 'GET' '/lol-perks/v1/currentpage' $null
+      $cur = $null; try { $cur = $c.body | ConvertFrom-Json } catch {}
+      if (-not $cur -or -not $cur.isDeletable) { $cur = @($st.pages | Where-Object { $_.isDeletable })[0] }
+      if (-not $cur) { return @{ ok = $false; msg = 'all rune pages are in use and none can be replaced' } }
+      $d = Lcu-Call $lcu 'DELETE' "/lol-perks/v1/pages/$([long]$cur.id)" $null
+      if ($d.status -ge 300 -or $d.status -eq 0) { return @{ ok = $false; msg = "couldn't make room for the page ($(Lcu-Error $d))" } }
+      $note = " (all slots were used: replaced your page '$($cur.name)')"
+    }
   }
-  return @{ ok = $true; msg = "rune page '$LoadoutName' set$note" }
+  $p = Lcu-Call $lcu 'POST' '/lol-perks/v1/pages' $json
+  if ($p.status -ge 200 -and $p.status -lt 300) { return @{ ok = $true; msg = "rune page '$LoadoutName' set$note" } }
+  # a slow client may have saved it anyway
+  $again = Get-OwnPage $lcu
+  if ($again.ok -and $again.own.Count) { return @{ ok = $true; msg = "rune page '$LoadoutName' set$note" } }
+  return @{ ok = $false; msg = "the client refused the page: $(Lcu-Error $p)" }
 }
 function Set-LoadoutSpells($lcu, $spells) {
   $a = [int]$spells.spell1Id; $b = [int]$spells.spell2Id
