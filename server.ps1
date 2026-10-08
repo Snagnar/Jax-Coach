@@ -613,7 +613,11 @@ function Handle-Request($ctx) {
   $raw = $req.RawUrl
   $path = $raw.Split('?')[0]
 
+  # an open Jax Coach tab polls /api/live every 2 s (and reconnects by itself after a restart): the tray asks
+  # /api/page-seen on startup and only opens a new tab when no tab checked in
+  if ($path -eq '/api/page-seen') { $s = if ($script:PageSeenAt) { [int]((Get-Date) - $script:PageSeenAt).TotalSeconds } else { -1 }; Send $ctx 200 ('{"seconds":' + $s + '}'); return }
   if ($path -eq '/api/live') {
+    $script:PageSeenAt = Get-Date
     # Windows takes ~1-2s to refuse a connection to a closed local port, and this server is single-threaded:
     # only ask the game when its process actually exists.
     if (-not (Get-Process -Name 'League of Legends' -ErrorAction SilentlyContinue)) { Send $ctx 200 '{"inGame":false,"status":-1}'; return }

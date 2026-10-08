@@ -11,6 +11,14 @@ try { $c = Get-Content (Join-Path $Root 'config.json') -Raw | ConvertFrom-Json; 
 $Url = "http://localhost:$port/"
 function Test-Up { try { (Invoke-WebRequest -UseBasicParsing "$($Url)api/config" -TimeoutSec 2).StatusCode -eq 200 } catch { $false } }
 function Open-App { Start-Process $Url }
+# a Jax Coach tab that's already open reconnects within a few seconds of the server starting: then don't open another
+function Test-TabOpen {
+  for ($i = 0; $i -lt 8; $i++) {
+    try { $s = (Invoke-RestMethod "$($Url)api/page-seen" -TimeoutSec 2).seconds; if ($s -ge 0 -and $s -le 5) { return $true } } catch {}
+    Start-Sleep -Seconds 1
+  }
+  return $false
+}
 
 # one tray icon only: a second click on the shortcut just opens the page
 $createdNew = $false
@@ -97,8 +105,8 @@ $watch.Start()
 
 if ($ok) {
   $tray.Text = 'Jax Coach (running)'
-  Open-App
-  $tray.ShowBalloonTip(3500, 'Jax Coach is running', 'Click this icon to open it again. Right-click to quit.', 'Info')
+  if (Test-TabOpen) { $tray.ShowBalloonTip(3500, 'Jax Coach is running', 'Your open Jax Coach tab reconnected.', 'Info') }
+  else { Open-App; $tray.ShowBalloonTip(3500, 'Jax Coach is running', 'Click this icon to open it again. Right-click to quit.', 'Info') }
 } else {
   $tray.ShowBalloonTip(6000, 'Jax Coach', 'The server did not start. Right-click the icon: Show log.', 'Warning')
 }
