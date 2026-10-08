@@ -800,11 +800,19 @@ function loadoutFor(oppCid, enemyCids) {
   }
   if (!start.some((i) => /potion/i.test(i.name))) start.push({ name: 'Health Potion', count: 1 });
 
-  // rune page: the keystone the matchup mentions first, else vs-ranged / standard
+  // rune page: the keystone the matchup mentions first, else vs-ranged / standard. A page made for ranged lanes
+  // only fits a ranged opponent: vs a melee one it's used just for its keystone, named after the matchup.
   const pages = arr(meta.runes);
+  const ranged = !!(oppCid && isRanged(oppCid));
+  const forRanged = (p) => /ranged/i.test(`${p.id || ''} ${p.name || ''}`);
   const ks = earliestMention(mu && mu.runes, pages.map((p) => (p.primary || {}).keystone).filter(Boolean));
-  let page = ks ? pages.find((p) => (p.primary || {}).keystone === ks) : null;
-  if (!page) page = (oppCid && isRanged(oppCid) && pages.find((p) => p.id === 'vs-ranged')) || pages[0];
+  let page = null;
+  if (ks) {
+    const withKs = pages.filter((p) => (p.primary || {}).keystone === ks);
+    page = withKs.find((p) => forRanged(p) === ranged) || withKs[0];
+    if (page && forRanged(page) && !ranged) page = { ...page, name: `${ks} (vs ${oppName})`, when: '' };
+  }
+  if (!page) page = (ranged && pages.find(forRanged)) || pages.find((p) => !forRanged(p)) || pages[0];
 
   // summoner spells
   let spells = mu && mu.summoners ? firstOption(mu.summoners).split(/\s*\+\s*/).map((s) => s.trim()).filter(Boolean) : [];
@@ -869,7 +877,10 @@ function champSelectHtml(cs) {
   const myChamp = idOf(mine.championId || mine.championPickIntent);
   const myLocked = !!mine.championId;
   const enemies = (cs.theirTeam || []).map((p) => idOf(p.championId)).filter(Boolean);
-  let opp = S.csOpp && enemies.includes(S.csOpp) ? S.csOpp : null;
+  // your lane opponent: the one you picked, else the enemy assigned to your lane (when the client shows positions)
+  const myPos = String(mine.assignedPosition || '').toLowerCase();
+  const posOpp = myPos ? idOf(((cs.theirTeam || []).find((p) => p.championId && String(p.assignedPosition || '').toLowerCase() === myPos) || {}).championId) : null;
+  let opp = S.csOpp && enemies.includes(S.csOpp) ? S.csOpp : posOpp;
   if (!opp) opp = enemies.find((id) => D.matchups[id] && !['Marksman', 'Support'].includes(((D.dd.champs[id] || {}).tags || [])[0])) || enemies.find((id) => D.matchups[id])
     || enemies.find((id) => ['Fighter', 'Tank'].includes(((D.dd.champs[id] || {}).tags || [])[0])) || enemies[0] || null;
   const mu = opp ? D.matchups[opp] : null;
