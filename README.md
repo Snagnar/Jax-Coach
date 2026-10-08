@@ -25,6 +25,9 @@ browser (a second monitor works best):
     fed enemies, new threats, Baron or Soul, 14:00/20:00/28:00, or the Reassess button), an agent looks at the game
     again. It updates the build and the plan, including how the game can still be won. The card and the voice only
     change when the decision changes; a check that changes nothing updates the build quietly.
+  - **Loadout into the client.** In champ select, "Apply to client" on the Loadout card sets the shown rune page (as a
+    page named "Jax Coach", made once; if all your pages are full the first time, it replaces the selected one),
+    your summoner spells (Flash stays on its key) and a "Jax Coach" item set for the shop.
   - **Ask the coach.** A box at the bottom of the plan card (in game and in champ select) takes your question or
     complaint ("Sett keeps winning trades"). An agent answers for this game within about half a minute, looking things
     up online when needed; the one-line answer is read aloud. If you ask for something different (split push, another
@@ -33,8 +36,9 @@ browser (a second monitor works best):
   - **Suggested playbook changes after the game.** A review agent compares what the playbook said with what
     happened. You approve each change; every change is a new playbook version you can roll back.
 
-It only uses Riot's official, read-only interfaces. It never presses keys or clicks for you, and it has no enemy
-cooldown or Flash timers.
+It only uses Riot's official interfaces. The only thing it ever changes is your loadout in champ select, and only
+when you click "Apply to client": a rune page named "Jax Coach", your summoner spells and a "Jax Coach" item set.
+It never presses keys or clicks in the game, and it has no enemy cooldown or Flash timers.
 
 ---
 

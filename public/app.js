@@ -835,6 +835,86 @@ function loadoutFor(oppCid, enemyCids) {
     situational: plan.items.situational.filter((s) => s.matched.some((t) => t.startsWith('vs_'))).slice(0, 4),
   };
 }
+// ---------- loadout -> League client: rune page, summoner spells, item set (champ select, on your click) ----------
+const SPELL_ID = { Flash: 4, Ignite: 14, Teleport: 12, Exhaust: 3, Ghost: 6, Heal: 7, Barrier: 21, Cleanse: 1, Smite: 11 };
+// stat shards per row (offense, flex, defense)
+const SHARD_ID = [
+  { adaptiveforce: 5008, attackspeed: 5005, abilityhaste: 5007 },
+  { adaptiveforce: 5008, movespeed: 5010, movementspeed: 5010, healthscaling: 5001, scalinghealth: 5001 },
+  { health: 5011, bonushealth: 5011, flathealth: 5011, tenacityandslowresist: 5013, tenacity: 5013, healthscaling: 5001, scalinghealth: 5001 },
+];
+const normName = (s) => String(s || '').toLowerCase().replace(/[^a-z]/g, '');
+async function clientRunePage(p) {
+  if (!D.dd.runes) D.dd.runes = await getJSON('/api/dd/runesReforged');
+  const trees = arr(D.dd.runes);
+  const tree = (n) => trees.find((t) => normName(t.name) === normName(n) || normName(t.key) === normName(n));
+  const perk = (t, n) => { for (const sl of arr(t && t.slots)) for (const r of arr(sl.runes)) if (normName(r.name) === normName(n) || normName(r.key) === normName(n)) return r.id; return null; };
+  const pri = p.primary || {}, sec = p.secondary || {};
+  const pt = tree(pri.tree), st = tree(sec.tree), bad = [];
+  if (!pt) bad.push(`tree "${pri.tree}"`);
+  if (!st) bad.push(`tree "${sec.tree}"`);
+  const want = [[pt, pri.keystone], ...arr(pri.runes).filter((n) => normName(n) !== normName(pri.keystone)).slice(0, 3).map((n) => [pt, n]), ...arr(sec.runes).slice(0, 2).map((n) => [st, n])];
+  const ids = want.map(([t, n]) => { const id = t ? perk(t, n) : null; if (t && !id) bad.push(`"${n}"`); return id; });
+  arr(p.shards).slice(0, 3).forEach((n, i) => { const id = SHARD_ID[i][normName(n)]; if (!id) bad.push(`shard "${n}"`); ids.push(id); });
+  if (bad.length) throw new Error(`unknown rune names in the playbook: ${bad.join(', ')}`);
+  if (ids.length !== 9) throw new Error('the playbook page is incomplete');
+  return { primaryStyleId: pt.id, subStyleId: st.id, selectedPerkIds: ids };
+}
+// Flash stays on the key where you have it (remembered from earlier champ selects; F if never seen)
+function clientSpells(names) {
+  const ids = arr(names).map((n) => SPELL_ID[Object.keys(SPELL_ID).find((k) => normName(k) === normName(n))]).filter(Boolean);
+  if (ids.length < 2 || ids[0] === ids[1]) throw new Error('the loadout has no two summoner spells');
+  const mine = ((S.cs && S.cs.myTeam) || []).find((p) => p.cellId === S.cs.localPlayerCellId) || {};
+  let slot = mine.spell1Id === 4 ? 1 : mine.spell2Id === 4 ? 2 : 0;
+  try { if (slot) localStorage.setItem('jc.flashSlot', slot); else slot = +localStorage.getItem('jc.flashSlot') || 2; } catch { slot = slot || 2; }
+  let [a, b] = ids;
+  if (a === 4 || b === 4) { const other = a === 4 ? b : a; [a, b] = slot === 1 ? [4, other] : [other, 4]; }
+  return { spell1Id: a, spell2Id: b };
+}
+function clientItemSet(L, champ) {
+  const id = (n) => D.dd.itemByName[String(n || '').toLowerCase().trim()];
+  const firstItem = (t) => String(t || '').split(/\s+-\s+|[(,;+:]|\bor\b|\bthen\b/i).map(id).find(Boolean);
+  const block = (type, ids) => ({ type, items: [...new Set(ids.filter(Boolean))].map((x) => ({ id: x, count: 1 })) });
+  const order = D.plan && D.plan.build && arr(D.plan.build.order).length ? D.plan.build.order : arr((D.meta.coreBuild || {}).typicalOrder);
+  const start = { type: `Start${L.mu ? ` vs ${L.mu.name}` : ''}`, items: L.start.map((i) => ({ id: id(i.name), count: i.count || 1 })).filter((i) => i.id) };
+  const blocks = [start,
+    block('First back', arr(L.firstBack).map((b) => firstItem(typeof b === 'string' ? b : b.buy || b.item))),
+    block(D.plan && D.plan.build ? 'Build for this game (game plan)' : 'Core build', order.map(id)),
+    block('Boots', [id(L.boots.name)]),
+    block('Situational for their comp', L.situational.map((s) => id(s.name)))].filter((b) => b.items.length);
+  if (!blocks.length) throw new Error('no items to put in the set');
+  return { associatedChampions: [+((D.dd.champs[champ] || {}).key || 0)].filter(Boolean), blocks };
+}
+async function applyLoadout() {
+  const X = S.csLoadout;
+  if (!X || S.loadoutBusy) return;
+  S.loadoutBusy = true; renderLive();
+  const body = {}, local = {};
+  try { body.runes = await clientRunePage(X.L.page || {}); } catch (e) { local.runes = { ok: false, msg: e.message }; }
+  try { body.spells = clientSpells(X.L.spells); } catch (e) { local.spells = { ok: false, msg: e.message }; }
+  try { body.items = clientItemSet(X.L, X.champ); } catch (e) { local.items = { ok: false, msg: e.message }; }
+  let res;
+  try {
+    const r = await fetch('/api/loadout/apply', { method: 'POST', body: JSON.stringify(body) });
+    res = await r.json().catch(() => ({}));
+    if (!r.ok) res = { error: res.error === 'client_not_running' ? 'The League client was not found.' : `Couldn't reach the client (${res.error || r.status}).` };
+  } catch (e) { res = { error: `Couldn't reach Jax Coach (${e.message}).` }; }
+  S.loadoutRes = { ...res, ...local, at: Date.now(), key: X.key };
+  S.loadoutBusy = false; renderLive();
+}
+function loadoutApplyRow() {
+  if (!S.cs || S.A || S.demo) return '';
+  const R = S.loadoutRes && S.loadoutRes.key.split('|')[0] === String(S.cs.gameId) ? S.loadoutRes : null;
+  const stale = R && S.csLoadout && R.key !== S.csLoadout.key;
+  const parts = [['runes', 'Rune page'], ['spells', 'Spells'], ['items', 'Item set']].filter(([k]) => R && R[k]);
+  const notes = parts.map(([k]) => R[k]).filter((x) => !x.ok || /replaced/.test(x.msg)).map((x) => x.msg);
+  return `<div class="apply-row small">
+      <button class="btn small" data-action="loadout-apply" ${S.loadoutBusy ? 'disabled' : ''} title="Sets this rune page (as 'Jax Coach'), the summoner spells and a 'Jax Coach' item set in the League client">${S.loadoutBusy ? 'Setting…' : R && !stale ? 'Apply again' : 'Apply to client'}</button>
+      ${!R ? '<span class="faint">sets these runes, spells and items in the League client</span>'
+        : R.error ? `<span class="warn-t">${esc(R.error)}</span>`
+        : `${parts.map(([k, l]) => `<span class="${R[k].ok ? 'good-t' : 'warn-t'}" title="${esc(R[k].msg)}">${R[k].ok ? '✓' : '✗'} ${l}</span>`).join('')}<span class="faint">${stale ? 'the loadout changed since: apply again' : `${ago(R.at)} ago`}</span>`}
+    </div>${notes.length ? `<div class="small muted">${notes.map(esc).join(' · ')}</div>` : ''}`;
+}
 const SPELL_IMG = { Flash: 'SummonerFlash', Ignite: 'SummonerDot', Teleport: 'SummonerTeleport', Exhaust: 'SummonerExhaust', Ghost: 'SummonerHaste', Heal: 'SummonerHeal', Barrier: 'SummonerBarrier', Cleanse: 'SummonerBoost', Smite: 'SummonerSmite' };
 const spellChip = (s) => `<span class="item-chip">${SPELL_IMG[s] ? `<img class="ii" src="${DD()}/img/spell/${SPELL_IMG[s]}.png" alt="">` : ''}${esc(s)}</span>`;
 const itemCountChip = (i) => `${itemChip(i.name)}${i.count > 1 ? `<span class="small muted">×${i.count}</span>` : ''}`;
@@ -847,6 +927,7 @@ function loadoutHtml(L) {
   const step = (label, content, why) => `<div class="bp-step"><div class="bp-l">${label}</div><div class="bp-c">${content}${why ? `<div class="small muted">${esc(why)}</div>` : ''}</div></div>`;
   return `<div class="card">
     <header><h2>Loadout</h2>${L.mu ? `<span class="chip">for ${esc(L.mu.name)}</span>` : '<span class="chip">standard</span>'}</header>
+    ${loadoutApplyRow()}
     <div class="sub rune-card">
       <div class="row"><h3>Runes</h3><b>${esc(p.name || '')}</b></div>
       <div><span class="muted">${esc((p.primary || {}).tree)}</span> · <span class="keystone">${esc((p.primary || {}).keystone)}</span> · ${esc(arr((p.primary || {}).runes).join(' · '))}</div>
@@ -907,6 +988,7 @@ function champSelectHtml(cs) {
   const banSuggest = Object.values(D.matchups).filter((m) => m.winRate != null).sort((a, b) => a.winRate - b.winRate).slice(0, 5);
 
   const L = loadoutFor(opp, enemies);
+  S.csLoadout = { L, champ: S.champ, key: [cs.gameId, S.champ, opp, (L.page || {}).name, L.spells.join('+'), D.plan ? D.plan.at : 0].join('|') };
   const hist = opp ? (Review.state.all || []).filter((g) => g.opp && D.dd.champByName[g.opp.toLowerCase()] === opp) : [];
   const histHtml = hist.length ? (() => {
     const w = hist.filter((g) => g.win).length, early = hist.flatMap((g) => g.deaths.filter((d) => d.t < 840));
@@ -2003,6 +2085,7 @@ function wireUi() {
     if (t.dataset.action === 'why') { S.showWhy = !S.showWhy; renderLive(); return; }
     if (t.dataset.action === 'reassess') { Agent.reassessNow(S.A, D); renderLive(); return; }
     if (t.dataset.action === 'chat-undo') { Agent.undoChatPlan(); renderLive(); return; }
+    if (t.dataset.action === 'loadout-apply') { applyLoadout(); return; }
     if (t.dataset.action === 'goto-playbook') { S.pbSel = t.dataset.champ || S.champ; setView('playbook'); return; }
     if (t.dataset.action === 'agent-login') { Agent.login(); return; }
     if (t.dataset.action === 'agent-check') { Agent.refreshStatus(true).then(() => { renderPlaybook(); renderLive(); }); return; }

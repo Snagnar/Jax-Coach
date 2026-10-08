@@ -355,6 +355,91 @@ function Handle-Lcu($ctx, [string]$path) {
   Send $ctx $r.Status $body
 }
 
+# ---------------- loadout: set the rune page, summoner spells and item set in the client (champ select) ----------------
+# Only on your click. Writes exactly three things: a rune page named "Jax Coach" (made once; if all your pages are
+# full it replaces the page you have selected that one time), your two summoner spells, and an item set named
+# "Jax Coach". Nothing else in the client is touched.
+$LoadoutName = 'Jax Coach'
+function Lcu-Call($lcu, [string]$method, [string]$path, [string]$body) {
+  $url = "https://127.0.0.1:$($lcu.port)$path"
+  if ($method -eq 'GET') { $r = [JcHttp]::Get($url, $null, 4000, $lcu.auth); return @{ status = $r.Status; body = $r.Body } }
+  $r = [JcHttp]::Send($method, $url, $lcu.auth, $(if ($body) { $body } else { '' }), 6000)
+  $b = if ($r.Data) { [Text.Encoding]::UTF8.GetString($r.Data) } else { "$($r.Error)" }
+  return @{ status = $r.Status; body = $b }
+}
+function Lcu-Error($r) {
+  try { $o = $r.body | ConvertFrom-Json; if ($o.message) { return "$($o.message)" } } catch {}
+  if ($r.status -eq 0) { return 'the League client did not answer' }
+  return "HTTP $($r.status)"
+}
+function Set-LoadoutRunes($lcu, $page) {
+  $ids = @($page.selectedPerkIds | ForEach-Object { [int]$_ })
+  if ($ids.Count -ne 9 -or -not $page.primaryStyleId -or -not $page.subStyleId) { return @{ ok = $false; msg = 'incomplete rune page' } }
+  $r = Lcu-Call $lcu 'GET' '/lol-perks/v1/pages' $null
+  if ($r.status -ne 200) { return @{ ok = $false; msg = "couldn't read your rune pages ($(Lcu-Error $r))" } }
+  $pages = @($r.body | ConvertFrom-Json)
+  $note = ''
+  foreach ($old in @($pages | Where-Object { $_.name -eq $LoadoutName -and $_.isDeletable })) { $null = Lcu-Call $lcu 'DELETE' "/lol-perks/v1/pages/$([long]$old.id)" $null }
+  $new = [ordered]@{ name = $LoadoutName; primaryStyleId = [int]$page.primaryStyleId; subStyleId = [int]$page.subStyleId; selectedPerkIds = $ids; current = $true }
+  $json = $new | ConvertTo-Json -Compress
+  $p = Lcu-Call $lcu 'POST' '/lol-perks/v1/pages' $json
+  if ($p.status -ge 400 -or $p.status -eq 0) {
+    # all pages in use and none of them ours yet: replace the selected page (this happens once)
+    $c = Lcu-Call $lcu 'GET' '/lol-perks/v1/currentpage' $null
+    $cur = $null; try { $cur = $c.body | ConvertFrom-Json } catch {}
+    if (-not $cur -or -not $cur.isDeletable) { $cur = @($pages | Where-Object { $_.isDeletable -and $_.name -ne $LoadoutName })[0] }
+    if (-not $cur) { return @{ ok = $false; msg = "no rune page can be replaced ($(Lcu-Error $p))" } }
+    $d = Lcu-Call $lcu 'DELETE' "/lol-perks/v1/pages/$([long]$cur.id)" $null
+    if ($d.status -ge 400 -or $d.status -eq 0) { return @{ ok = $false; msg = "couldn't make room for the page ($(Lcu-Error $d))" } }
+    $note = " (replaced your page '$($cur.name)')"
+    $p = Lcu-Call $lcu 'POST' '/lol-perks/v1/pages' $json
+    if ($p.status -ge 400 -or $p.status -eq 0) { return @{ ok = $false; msg = "the client refused the page: $(Lcu-Error $p)" } }
+  }
+  return @{ ok = $true; msg = "rune page '$LoadoutName' set$note" }
+}
+function Set-LoadoutSpells($lcu, $spells) {
+  $a = [int]$spells.spell1Id; $b = [int]$spells.spell2Id
+  if ($a -le 0 -or $b -le 0 -or $a -eq $b) { return @{ ok = $false; msg = 'invalid summoner spells' } }
+  $r = Lcu-Call $lcu 'PATCH' '/lol-champ-select/v1/session/my-selection' ('{"spell1Id":' + $a + ',"spell2Id":' + $b + '}')
+  if ($r.status -ge 400 -or $r.status -eq 0) { return @{ ok = $false; msg = "couldn't set summoner spells ($(Lcu-Error $r))" } }
+  return @{ ok = $true; msg = 'summoner spells set' }
+}
+function Set-LoadoutItems($lcu, $set) {
+  $me = Lcu-Call $lcu 'GET' '/lol-summoner/v1/current-summoner' $null
+  if ($me.status -ne 200) { return @{ ok = $false; msg = "couldn't read your account ($(Lcu-Error $me))" } }
+  $sid = [long](($me.body | ConvertFrom-Json).summonerId)
+  $r = Lcu-Call $lcu 'GET' "/lol-item-sets/v1/item-sets/$sid/sets" $null
+  if ($r.status -ne 200) { return @{ ok = $false; msg = "couldn't read your item sets ($(Lcu-Error $r))" } }
+  $all = $r.body | ConvertFrom-Json
+  $blocks = @(foreach ($bl in @($set.blocks)) {
+    $items = @(foreach ($it in @($bl.items)) { if ("$($it.id)" -match '^\d{1,6}$') { [ordered]@{ id = "$($it.id)"; count = [Math]::Max(1, [Math]::Min(9, [int]$it.count)) } } })
+    if ($items.Count) { [ordered]@{ type = "$($bl.type)"; items = $items } }
+  })
+  $champs = @($set.associatedChampions | ForEach-Object { [int]$_ } | Where-Object { $_ -gt 0 })
+  $new = [ordered]@{ title = $LoadoutName; type = 'custom'; map = 'any'; mode = 'any'; sortrank = 0; startedFrom = 'blank'
+    associatedChampions = $champs; associatedMaps = @(11); blocks = $blocks; preferredItemSlots = @(); uid = [guid]::NewGuid().ToString() }
+  $all.itemSets = @(@($all.itemSets) | Where-Object { $_ -and $_.title -ne $LoadoutName }) + @([pscustomobject]$new)
+  $put = Lcu-Call $lcu 'PUT' "/lol-item-sets/v1/item-sets/$sid/sets" ($all | ConvertTo-Json -Depth 12 -Compress)
+  if ($put.status -ge 400 -or $put.status -eq 0) { return @{ ok = $false; msg = "couldn't save the item set ($(Lcu-Error $put))" } }
+  return @{ ok = $true; msg = "item set '$LoadoutName' saved" }
+}
+function Handle-LoadoutApply($ctx) {
+  if ($ctx.Request.HttpMethod -ne 'POST') { Send $ctx 405 '{"error":"post_only"}'; return }
+  $lcu = Get-Lcu
+  if (-not $lcu) { Send $ctx 503 '{"error":"client_not_running"}'; return }
+  try { $in = (Read-Body $ctx) | ConvertFrom-Json } catch { Send $ctx 400 '{"error":"bad_json"}'; return }
+  $out = [ordered]@{}
+  foreach ($part in @('runes', 'spells', 'items')) {
+    $v = $in.$part
+    if (-not $v) { continue }
+    try {
+      $res = switch ($part) { 'runes' { Set-LoadoutRunes $lcu $v } 'spells' { Set-LoadoutSpells $lcu $v } 'items' { Set-LoadoutItems $lcu $v } }
+    } catch { $res = @{ ok = $false; msg = "$($_.Exception.Message)" } }
+    $out[$part] = $res
+  }
+  Send $ctx 200 ($out | ConvertTo-Json -Depth 4 -Compress)
+}
+
 # ---------------- text-to-speech via Groq (Orpheus), cached on disk ----------------
 $TtsVoices = @('autumn', 'diana', 'hannah', 'austin', 'daniel', 'troy')
 $script:GroqCalls = @()
@@ -528,13 +613,14 @@ function Handle-Request($ctx) {
     Send $ctx 200 ('{"hasKey":' + ([bool]$Config.riotApiKey).ToString().ToLower() + ',"keyHint":' + (Json-Escape $hint) + ',"keySource":' + (Json-Escape $script:KeySource) + ',"hasGroq":' + ([bool]$script:GroqKey).ToString().ToLower() + ',"hasKokoro":' + ([bool]$script:HasKokoro).ToString().ToLower() + ',"kokoroPort":' + $KokoroPort + ',"platform":' + (Json-Escape $Config.platform) + '}')
     return
   }
-  if ($path -match '^/api/dd/(champion|item)$') {
+  if ($path -match '^/api/dd/(champion|item|runesReforged)$') {
     $body = Get-DDFile $Matches[1]
     if ($body) { Send $ctx 200 $body } else { Send $ctx 502 '{"error":"ddragon_unavailable"}' }
     return
   }
   if ($raw -match '^/api/riot/(platform|match|account)(/.*)$') { Handle-Riot $ctx $Matches[1] $Matches[2]; return }
   if ($path -match '^/api/lcu(/.*)$') { Handle-Lcu $ctx $Matches[1]; return }
+  if ($path -eq '/api/loadout/apply') { Handle-LoadoutApply $ctx; return }
   if ($path -eq '/api/replay/playback') { Handle-Replay $ctx; return }
   if ($path -eq '/api/replay/config') {
     # read-only: is the Replay API switched on in the game's config file?
