@@ -240,8 +240,11 @@ async function loadStorage(clear) {
 function handleMode(A) {
   const m = A.mode, ms = S.modeState;
   // a line that couldn't play (another one was talking) is retried for ~20s while the decision still stands
+  // after laning the game announces spawns itself, so "X is up" stays on screen only; from 25:00 the one-minute
+  // heads-up only for Baron (Dragon Soul and Elder have their own alerts)
+  const quiet = (x) => x.rule === 'objective' && (/ is up\.$/.test(x.voice) || (A.t >= 25 * 60 && !/^Baron/.test(x.voice)));
   const speak = (x) => {
-    if (!x.voice) { ms.unspoken = null; return; }
+    if (!x.voice || quiet(x)) { ms.unspoken = null; return; }
     const ok = Voice.say(x.voice, { key: x.voiceKey, urgent: x.mode === 'push' || x.mode === 'retreat', repeatAfter: x.voiceKey === x.mode ? 60 : 900 });
     ms.unspoken = ok || Voice.wasSaid(x.voiceKey) ? null : { key: x.voiceKey, until: Date.now() + 20000 };
   };
@@ -419,7 +422,7 @@ function warnWatch(A) {
     const m = S.modeState.cur, hard = (m && m.mode === 'retreat') || !!(A.guard && A.guard.strict);
     if (W.hp.length >= 2 && peak - now >= (hard ? 0.12 : 0.2) && A.t - W.lastAt >= 20) {
       W.lastAt = A.t; W.ignored++; W.alarmUntil = Date.now() + 6000; W.hp = [];
-      Voice.announce(['Back. Now.'], { key: `ignored-${Math.round(A.t)}`, alert: true });
+      if (A.t < 20 * 60) Voice.announce(['Back. Now.'], { key: `ignored-${Math.round(A.t)}`, alert: true });
     }
   }
   // Back off and the farm-only lock tint the whole window; an ignored warning flashes it
@@ -462,16 +465,20 @@ function budgetChip(A) {
     <div class="small muted">Death budget</div><b class="num">${b.d} / ${b.allowed}</b><div class="small">${esc(b.sub)}</div></div>`;
 }
 
-// ---------- respawn: one line, the time you shouldn't die before (and the farm-only lock) ----------
+// ---------- respawn: the death budget only when it's news (and the farm-only lock) ----------
+// Silent while you're inside the budget. "Don't die before minute X" once per new X, and only before 20:00.
+// Going over the budget is said once per game: after that you know, and every respawn reminder is noise.
 function respawnVoice(A) {
   const me = A.P.me;
   if (!S.resp || A.t < S.resp.lastT - 5) S.resp = { dead: me.isDead };
   const R = S.resp;
   R.lastT = A.t;
   if (R.dead && !me.isDead && A.t > 60) {
-    const lines = [budgetState(A).line];
+    const b = budgetState(A), lines = [];
+    if (b.level === 'over' && !R.saidOver) { lines.push(b.line); R.saidOver = true; }
+    else if (b.level === 'limit' && A.t < 20 * 60 && R.saidLimit !== b.next) { lines.push(b.line); R.saidLimit = b.next; }
     if (A.guard && A.guard.kind === 'lock') lines.push(`${A.guard.headline}.`);
-    R.say = { lines, key: `respawn-${me.scores.deaths}-${Math.round(A.t)}`, until: A.t + 20 };
+    if (lines.length) R.say = { lines, key: `respawn-${me.scores.deaths}-${Math.round(A.t)}`, until: A.t + 20 };
   }
   R.dead = me.isDead;
   if (R.say && A.t < R.say.until && Voice.announce(R.say.lines, { key: R.say.key })) R.say = null;
@@ -481,7 +488,8 @@ function respawnVoice(A) {
 function planVoice(A) {
   const p = D.plan;
   if (!p || !p.jobId || p.changed === false || p.kind === 'chat' || Date.now() - p.at > 60000) return;
-  Voice.say(`${p.kind === 'adapt' ? 'New plan' : 'Game plan'}: ${speakable(p.headline, 140)}`, { key: `plan-${p.jobId}`, repeatAfter: 99999 });
+  if (A.t >= 20 * 60 && S.planSaidT != null && A.t - S.planSaidT < 240 && A.t >= S.planSaidT) return;
+  if (Voice.say(`${p.kind === 'adapt' ? 'New plan' : 'Game plan'}: ${speakable(p.headline, 140)}`, { key: `plan-${p.jobId}`, repeatAfter: 99999 })) S.planSaidT = A.t;
 }
 
 // the coach's answer to your question: the one-line "do this now" is read out once (bullets stay on screen)
