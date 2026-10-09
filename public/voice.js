@@ -5,7 +5,8 @@
 // Engine "groq": Groq's Orpheus voices via the local server (free tier: 10 new lines/minute, 100/day).
 // Engine "browser": the system voices, the last fallback.
 // Deliberately quiet: each decision key speaks once per `repeatAfter`, and nothing within the minimum gap
-// of the last line unless it's urgent.
+// after the last line FINISHED (generating and speaking takes seconds) unless it's urgent, an alert, or the
+// answer to the player's own question.
 
 const Voice = (() => {
   const LS_ON = 'jc_voice', LS_CFG = 'jc_voice_cfg';
@@ -16,8 +17,8 @@ const Voice = (() => {
   const avail = { groq: false, kokoro: false, kokoroPort: 8788 };
   const failed = { groq: 0, kokoro: 0 };   // consecutive failures -> skip that engine for the session after 3
   let unlocked = false;                    // browsers only allow sound after a click on the page
-  let lastAt = 0, playing = null;
-  let minGap = 8000;                       // quiet time between non-urgent lines; the app raises it later in the game
+  let lastEnd = 0, playing = null;         // when the last line finished (or was cut off)
+  let minGap = 30000;                      // silence after a line before the next non-urgent one; the app raises it late
   const spoken = new Map();
 
   const KOKORO_VOICES = [
@@ -127,6 +128,7 @@ const Voice = (() => {
   // Every utterance resolves when it has finished, so lines can be chained. `seq` cancels whatever is running.
   let seq = 0, sequencing = false;
   function stop() {
+    if (busy()) lastEnd = Date.now();
     seq++; sequencing = false;
     if (playing) { try { playing.pause(); } catch {} playing = null; }
     if (hasSpeech) speechSynthesis.cancel();
@@ -189,7 +191,7 @@ const Voice = (() => {
       await speakLine(lines[i], c, my);
       if (i < lines.length - 1) await new Promise((r) => setTimeout(r, 300));
     }
-    if (my === seq) sequencing = false;
+    if (my === seq) { sequencing = false; lastEnd = Date.now(); }
   }
   const speakNow = (text) => speakLines([text]);
   const busy = () => sequencing || !!playing || (hasSpeech && speechSynthesis.speaking);
@@ -198,24 +200,26 @@ const Voice = (() => {
     if (!enabled || !unlocked || !text) return false;
     const now = Date.now();
     if (spoken.has(key) && now - spoken.get(key) < repeatAfter * 1000) return false;
-    if (!urgent && (now - lastAt < minGap || busy())) return false;
+    if (!urgent && (now - lastEnd < minGap || busy())) return false;
     if (urgent) stop();
     speakNow(text);
-    lastAt = now; spoken.set(key, now);
+    spoken.set(key, now);
     return true;
   }
 
   // several lines in a row (briefings). Not spoken while something else plays; the caller simply retries on
   // its next tick until it goes through (it's keyed, so it plays exactly once).
-  // alert: true plays the alert tone first and interrupts whatever is playing
-  function announce(lines, { key, repeatAfter = 3600, alert = false } = {}) {
+  // alert: true plays the alert tone first and interrupts whatever is playing; answer: true (the reply to the
+  // player's own question) skips the quiet gap but still waits for the current line to finish
+  function announce(lines, { key, repeatAfter = 3600, alert = false, answer = false } = {}) {
     lines = lines.filter(Boolean);
     if (!enabled || !unlocked || !lines.length || (!alert && busy())) return false;
     const now = Date.now();
+    if (!alert && !answer && now - lastEnd < minGap) return false;
     if (key && spoken.has(key) && now - spoken.get(key) < repeatAfter * 1000) return false;
     if (alert) stop();
     speakLines(lines, { ...cfg }, { alert });
-    lastAt = now; if (key) spoken.set(key, now);
+    if (key) spoken.set(key, now);
     return true;
   }
 

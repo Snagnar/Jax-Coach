@@ -191,7 +191,7 @@ async function poll() {
   Agent.tick(S.demo ? null : S.A, D);
   if (!S.demo) askVoice();
   if (S.A) {
-    Voice.setMinGap(S.A.t < 14 * 60 ? 8 : S.A.t < 25 * 60 ? 20 : 40);   // less talk once laning is over
+    Voice.setMinGap(S.A.t < 25 * 60 ? 30 : 45);   // seconds of silence after a line ends; less talk late in the game
     gamePlanVoice(S.A);
     handleMode(S.A);
     alertVoice(S.A);
@@ -496,7 +496,7 @@ function planVoice(A) {
 function askVoice() {
   const m = Agent.lastAnswer();
   if (!m || m.spoken || Date.now() - m.at > 60000) return;
-  if (Voice.announce([speakable(m.text, 220)], { key: `ask-${m.jobId}`, repeatAfter: 99999 })) m.spoken = true;
+  if (Voice.announce([speakable(m.text, 220)], { key: `ask-${m.jobId}`, repeatAfter: 99999, answer: true })) m.spoken = true;
 }
 
 // ---------- record live games (what the dashboard said) for the Review tab ----------
