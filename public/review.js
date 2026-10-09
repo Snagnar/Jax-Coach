@@ -80,7 +80,8 @@ const Review = (() => {
 
     const legendaryBuys = events.filter((e) => e.type === 'ITEM_PURCHASED' && e.participantId === me.participantId && Engine.isLegendary(D, e.itemId))
       .map((e) => ({ t: e.timestamp / 1000, id: e.itemId, name: (Engine.itemData(D, e.itemId) || {}).name || e.itemId }));
-    const wards = events.filter((e) => e.type === 'WARD_PLACED' && e.creatorId === me.participantId);
+    // only real wards: some champions (Warwick) log hundreds of UNDEFINED "ward" events from their abilities
+    const wards = events.filter((e) => e.type === 'WARD_PLACED' && e.creatorId === me.participantId && /^(YELLOW_TRINKET|SIGHT_WARD|CONTROL_WARD|BLUE_TRINKET)$/.test(e.wardType));
     const plates = events.filter((e) => e.type === 'TURRET_PLATE_DESTROYED' && e.killerId === me.participantId).length;
     const soloKills = events.filter((e) => e.type === 'CHAMPION_KILL' && e.killerId === me.participantId && opp && e.victimId === opp.participantId && !(e.assistingParticipantIds || []).length).length;
 
