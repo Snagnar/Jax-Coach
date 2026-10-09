@@ -107,10 +107,22 @@ const Agent = (() => {
       else if (e.EventName === 'InhibKilled') ev.push(`${t} inhibitor ${e.InhibKilled} destroyed`);
     }
     const m = S.game && S.game.plan;
+    // your inventory as the shop sees it: kinds, sell values, free slots, half-built plan items, parts off the plan
+    const order = planOrder(D);
+    const inv = Engine.inventory(D, A.P.me, order);
+    const inventory = {
+      items: inv.bag.map((x) => ({ name: x.name, kind: x.kind, sellsFor: x.sell, ...(x.count > 1 ? { count: x.count } : {}) })),
+      freeSlots: inv.slotsFree, gold: A.items.gold,
+      halfBuilt: inv.halfBuilt.map((x) => ({ item: x.name, have: x.parts, stillCosts: x.left })),
+      offPlanParts: inv.offPlan.map((x) => ({ part: x.name, buildsInto: x.into })),
+      planStillCosts: order.filter((n) => inv.left[(Engine.itemData(D, D.dd.itemByName[String(n).toLowerCase()]) || {}).name] != null)
+        .map((n) => ({ item: n, stillCosts: inv.left[(Engine.itemData(D, D.dd.itemByName[String(n).toLowerCase()]) || {}).name] })),
+      dashboardNextBuy: A.items.buyNow ? A.items.buyNow.text : null,
+    };
     return {
       clock: A.clock, minutes: Math.round(A.t / 6) / 10, phase: A.phaseLabel,
       dashboard: A.mode ? { mode: A.mode.mode, headline: A.mode.headline, reason: A.mode.reason, rule: A.mode.rule } : null,
-      laneState: { label: A.state.label, reasons: A.state.reasons }, me: { ...row(A.P.me), gold: A.items.gold, hp: A.trace && A.trace.ctx ? Math.round(A.trace.ctx.me.hp * 100) : null },
+      laneState: { label: A.state.label, reasons: A.state.reasons }, me: { ...row(A.P.me), gold: A.items.gold, hp: A.trace && A.trace.ctx ? Math.round(A.trace.ctx.me.hp * 100) : null, inventory },
       laneOpponent: A.P.opp ? row(A.P.opp) : null, allies: A.P.allies.map(row), enemies: A.P.enemies.map(row),
       dragonSoul: (() => { const dr = A.objs.find((o) => o.key === 'dragon'); return dr ? { drakes: `${dr.drakes.ours}-${dr.drakes.theirs}`, soulPoint: dr.soulPoint, soul: dr.soul } : null; })(),
       team: { itemGoldDiff: A.lanes.itemGoldDiff, kills: `${A.team.kills}-${A.team.ekills}`, towers: `${A.team.towers}-${A.team.etowers}`, dragons: `${A.lanes.dragons.mine}-${A.lanes.dragons.theirs}`, grubs: `${A.lanes.grubs.mine}-${A.lanes.grubs.theirs}`, heralds: `${A.lanes.heralds.mine}-${A.lanes.heralds.theirs}`, barons: `${A.lanes.barons.mine}-${A.lanes.barons.theirs}` },
@@ -120,6 +132,11 @@ const Agent = (() => {
       enemyJungler: A.jungler ? A.jungler.text : null, nextItem: A.items.priority ? A.items.priority.name : null,
       events: ev, currentPlan: m ? { headline: m.headline, build: m.build ? m.build.order : null, bullets: m.bullets } : null,
     };
+  }
+  // the build still planned for this game: the game plan's order, else the playbook's core build
+  function planOrder(D) {
+    const p = S.game && S.game.plan;
+    return (p && p.build && Array.isArray(p.build.order) && p.build.order.length ? p.build.order : ((D.meta || {}).coreBuild || {}).typicalOrder || []).map(String);
   }
   function champSelectFacts(cs, D) {
     const idOf = (key) => (key ? D.dd.keyToId[String(key)] : null);
@@ -189,7 +206,7 @@ const Agent = (() => {
       return;
     }
     if (A.t < 20) return;
-    const reason = checkpoint(A, G);
+    const reason = checkpoint(A, G, D);
     if (reason) request(A, D, reason.text, reason.urgent);
   }
   function newGame(A, D) {
@@ -204,15 +221,19 @@ const Agent = (() => {
     changed();
   }
   // which moments deserve a fresh look at the plan
-  function checkpoint(A, G) {
+  function checkpoint(A, G, D) {
     const M = G.marks, me = A.P.me;
+    const off = Engine.inventory(D, me, planOrder(D)).offPlan.map((x) => x.name);
     const snap = { deaths: me.scores.deaths || 0, legs: A.legendaries, gold: A.team.goldDiff, tags: [...A.tags].filter((t) => t.startsWith('vs_')).sort().join(','),
       fed: A.P.enemies.filter((p) => (p.scores.kills || 0) >= 4 && (p.scores.kills || 0) - (p.scores.deaths || 0) >= 3).length,
-      big: A.lanes.barons.mine + A.lanes.barons.theirs + (A.objs.find((o) => o.soulTeam) ? 1 : 0) + A.events.filter((e) => e.EventName === 'InhibKilled').length };
+      big: A.lanes.barons.mine + A.lanes.barons.theirs + (A.objs.find((o) => o.soulTeam) ? 1 : 0) + A.events.filter((e) => e.EventName === 'InhibKilled').length, off };
     const last = G.lastSnap || snap;
     if (!G.lastSnap) G.lastSnap = snap;
-    // item gold jumps when someone shops: a swing has to hold for 20 seconds
-    if (Math.abs(snap.gold - last.gold) >= 2500) { if (M.goldSince == null) M.goldSince = A.t; } else M.goldSince = null;
+    // item gold jumps when someone shops: a swing has to hold for 20 seconds, and be big for this stage of the game
+    // (10% of all item gold: 2.5k early, ~6k at 25 minutes) so a normal shopping round doesn't count
+    const bar = Math.max(2500, 0.1 * (A.team.itemGold || 0));
+    if (Math.abs(snap.gold - last.gold) >= bar) { if (M.goldSince == null) M.goldSince = A.t; } else M.goldSince = null;
+    const newOff = off.filter((n) => !(last.off || []).includes(n));
     const min = A.t / 60;
     let r = null;
     if (me.isDead && snap.deaths > (M.deaths || 0) && (me.respawnTimer || 0) >= 12) { M.deaths = snap.deaths; r = { text: `You died (death ${snap.deaths}, ${Math.ceil(me.respawnTimer)}s to respawn)`, urgent: true }; }
@@ -220,7 +241,8 @@ const Agent = (() => {
     else if (!M.m14 && min >= 14) { M.m14 = true; r = { text: 'Laning phase is over (14:00)' }; }
     else if (!M.m20 && min >= 20) { M.m20 = true; r = { text: '20:00: Baron is up' }; }
     else if (!M.m28 && min >= 28) { M.m28 = true; r = { text: '28:00: late game' }; }
-    else if (Math.abs(snap.gold - last.gold) >= 2500 && M.goldSince != null && A.t - M.goldSince >= 20) r = { text: `Team gold swung by ${Math.round((snap.gold - last.gold) / 100) / 10}k since the last plan` };
+    else if (newOff.length) r = { text: `You bought parts the plan doesn't use: ${newOff.join(', ')}` };
+    else if (Math.abs(snap.gold - last.gold) >= bar && M.goldSince != null && A.t - M.goldSince >= 20) r = { text: `Team gold swung by ${Math.round((snap.gold - last.gold) / 100) / 10}k since the last plan` };
     else if (snap.tags !== last.tags && snap.tags.length > last.tags.length) r = { text: `New enemy threat: ${snap.tags}` };
     else if (snap.fed > last.fed) r = { text: `${snap.fed} enemies are fed now` };
     else if (snap.big > last.big) r = { text: 'Baron, Dragon Soul or an inhibitor changed hands' };

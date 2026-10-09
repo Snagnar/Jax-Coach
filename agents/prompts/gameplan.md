@@ -27,6 +27,23 @@ r/summonerschool or champion subreddits). Don't use sub-agents.
 that change back. Respect what they asked for (a build, split pushing, not fighting someone) unless the game has
 clearly made it wrong; then say so in `changes`.
 
+## Items: start from what the player owns (in game)
+Only when `when` is "in game"; in champ select nothing is bought yet.
+`game.me.inventory` is the inventory as the shop sees it: each item with its `kind` (legendary, boots, component,
+starter, consumable) and `sellsFor`; `freeSlots` (of 6); `gold`; `halfBuilt` (planned items they own parts of,
+with what they still cost); `offPlanParts` (parts that go into no planned item, with what each `buildsInto`);
+`planStillCosts`; and `dashboardNextBuy` (what the dashboard tells them to buy right now).
+- `build.order` is what is still to buy. Never list an item they own.
+- A half-built item comes first unless it is clearly wrong now: parts are weak until finished, and selling them
+  gets back only part of the price (`sellsFor`).
+- `offPlanParts` means the player went their own way. Work out from `buildsInto` and their other parts what they
+  are building. Usually put that item into the build (first, if most of it is bought) and say so in `changes`.
+  Tell them to switch only if it is clearly bad in this game, and then say which of their parts still fit.
+- Say "buy X now" only when `gold` covers its `stillCosts`; otherwise name the part they can afford.
+- Six slots. When the next buys need more slots than `freeSlots` (finishing an item frees its parts' slots), add
+  `build.sell`: what to sell and when. A starter (Doran's, Cull) is the usual first sale, once the slot is needed.
+  Don't sell boots or finished items without a clear reason (e.g. a full build, or an item that is useless here).
+
 ## Think about
 - The lane: who wins early, the kill windows, the jungle matchup (who ganks top, who invades).
 - The two teams: engage, poke, pick, scaling, split push, frontline, damage profile (AD/AP), healing, crowd
@@ -41,7 +58,8 @@ clearly made it wrong; then say so in `changes`.
 
 ## Write `out/plan.json`
 In the documented shape: `headline` (required), `summary` (one sentence, at most 25 words: the win condition),
-`bullets`, `build` (`order` = everything still to buy, in order, boots included; `why` per item), `runes` and
+`bullets`, `build` (`order` = everything still to buy, in order, boots included; `why` per item; in game `sell`
+when a slot or a swap is needed), `runes` and
 `summoners` (champ select only, exact names, no explanation), optional `rules`, `params`, `phaseNotes` (at most 2
 short lines per phase), `sources`.
 

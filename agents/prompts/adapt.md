@@ -24,10 +24,26 @@ Don't use sub-agents.
 that change back. Respect what they asked for (a build, split pushing, not fighting someone) unless the game has
 clearly made it wrong; then say so in `changes`.
 
+## Items: start from what the player owns
+`game.me.inventory` is the inventory as the shop sees it: each item with its `kind` (legendary, boots, component,
+starter, consumable) and `sellsFor`; `freeSlots` (of 6); `gold`; `halfBuilt` (planned items they own parts of,
+with what they still cost); `offPlanParts` (parts that go into no planned item, with what each `buildsInto`);
+`planStillCosts`; and `dashboardNextBuy` (what the dashboard tells them to buy right now).
+- `build.order` is what is still to buy. Never list an item they own.
+- A half-built item comes first unless it is clearly wrong now: parts are weak until finished, and selling them
+  gets back only part of the price (`sellsFor`).
+- `offPlanParts` means the player went their own way. Work out from `buildsInto` and their other parts what they
+  are building. Usually put that item into the build (first, if most of it is bought) and say so in `changes`.
+  Tell them to switch only if it is clearly bad in this game, and then say which of their parts still fit.
+- Say "buy X now" only when `gold` covers its `stillCosts`; otherwise name the part they can afford.
+- Six slots. When the next buys need more slots than `freeSlots` (finishing an item frees its parts' slots), add
+  `build.sell`: what to sell and when. A starter (Doran's, Cull) is the usual first sale, once the slot is needed.
+  Don't sell boots or finished items without a clear reason (e.g. a full build, or an item that is useless here).
+
 ## Think about
 - The reason you were called, then the whole picture: gold and objective state, who is fed on both sides, what
   the enemy is building (armor or MR stacking, anti-heal, crit), which lanes are lost or won.
-- The build: the remaining items in order for this situation. You see the player's items; don't list owned ones.
+- The build: the remaining items in order for this situation, starting from the inventory (above).
 - The win condition from here. Behind: where can the game still be won (a team that outscales, teamfight
   strength, picks, objective trades, stalling for late game)? Ahead: how to close without throwing (who not to
   face alone, when to group for Baron). Be concrete about split push vs grouping and when to switch.
@@ -37,7 +53,8 @@ clearly made it wrong; then say so in `changes`.
 ## Write `out/plan.json`
 The **complete** current plan (it replaces the previous one): `headline` (required: the plan from now on),
 `bullets`, `changes` (1-2 items, at most 12 words each: what is different from the previous plan), `build`
-(`order` = everything still to buy, in order; `why` per item), optional `rules`, `params`, `phaseNotes`, `sources`.
+(`order` = everything still to buy, in order; `why` per item; `sell` when a slot or a swap is needed), optional
+`rules`, `params`, `phaseNotes`, `sources`.
 No `summary`. Keep what was still right in the previous plan.
 `changed` (required): `false` when the player should keep doing what the previous plan says. Rewording is not a
 change; a different thing to do, a new build order or new rules is. With `false` the app keeps showing the previous

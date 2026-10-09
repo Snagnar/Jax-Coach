@@ -199,7 +199,7 @@ const Engine = (() => {
       const owner = /_T1_/.test(e.TurretKilled || '') ? 'ORDER' : /_T2_/.test(e.TurretKilled || '') ? 'CHAOS' : null;
       if (owner === myTeam) etowers++; else if (owner) towers++;
     }
-    return { kills, ekills, goldDiff: gold - egold, towers, etowers };
+    return { kills, ekills, goldDiff: gold - egold, itemGold: gold + egold, towers, etowers };
   }
 
   // ---------- enemy composition ----------
@@ -320,6 +320,52 @@ const Engine = (() => {
     return out;
   }
 
+  // ---------- your inventory: what each item is, free slots, what's half-built, what it sells for ----------
+  const lst = (x) => (Array.isArray(x) ? x : []);
+  const goldOf = (D, id) => ((itemData(D, id) || {}).gold || {}).total || 0;
+  function recipeTree(D, id) {
+    const out = new Set();
+    (function walk(x) { const it = itemData(D, x); if (!it) return; for (const f of it.from || []) { out.add(String(f)); walk(f); } })(id);
+    return out;
+  }
+  function itemKind(D, i) {
+    const it = itemData(D, i.itemID) || {};
+    const tags = it.tags || [];
+    if (tags.includes('Trinket') || i.slot === 6) return 'trinket';
+    if (tags.includes('Consumable') || it.consumed) return 'consumable';
+    if (tags.includes('Boots')) return 'boots';
+    if (isLegendary(D, i.itemID)) return 'legendary';
+    if (tags.includes('Lane') && !(it.from || []).length && !(it.into || []).length) return 'starter';   // Doran's, Cull
+    if ((it.into || []).length) return 'component';
+    return 'other';
+  }
+  // planned = item names the build still wants. halfBuilt: planned items you own parts of (and the gold still
+  // missing); offPlan: parts that go into none of them, with the finished items they can become.
+  function inventory(D, me, planned) {
+    const idOf = (n) => D.dd.itemByName[String(n || '').toLowerCase()];
+    const items = lst(me.items).filter((i) => itemData(D, i.itemID) || i.displayName).map((i) => {
+      const it = itemData(D, i.itemID) || {};
+      return { id: String(i.itemID), name: it.name || i.displayName, kind: itemKind(D, i), count: i.count || 1, sell: ((it.gold || {}).sell || 0) * (it.consumed ? i.count || 1 : 1) };
+    });
+    const bag = items.filter((x) => x.kind !== 'trinket');
+    const want = [...new Set(lst(planned).map(String))].map((n) => ({ name: n, id: idOf(n) }))
+      .filter((w) => w.id && itemData(D, w.id) && !items.some((o) => o.id === String(w.id)))
+      .map((w) => ({ ...w, name: itemData(D, w.id).name, tree: recipeTree(D, w.id), total: goldOf(D, w.id) }));
+    const left = {};
+    const halfBuilt = [];
+    for (const w of want) {
+      const parts = bag.filter((o) => (o.kind === 'component' || o.kind === 'boots') && w.tree.has(o.id));
+      const have = Math.min(w.total, parts.reduce((s, o) => s + goldOf(D, o.id), 0));
+      left[w.name] = w.total - have;
+      if (parts.length) halfBuilt.push({ name: w.name, id: w.id, parts: parts.map((o) => o.name), have, left: w.total - have });
+    }
+    halfBuilt.sort((a, b) => b.have - a.have);
+    const final = (it) => it && it.gold && it.gold.purchasable !== false && (it.maps || {})['11'] && !(it.into || []).length;
+    const offPlan = bag.filter((o) => o.kind === 'component' && !want.some((w) => w.tree.has(o.id)))
+      .map((o) => ({ name: o.name, into: lst((itemData(D, o.id) || {}).into).map((x) => itemData(D, x)).filter(final).map((it) => it.name).slice(0, 8) }));
+    return { items, bag, slotsFree: Math.max(0, 6 - bag.length), halfBuilt, offPlan, left, starters: bag.filter((o) => o.kind === 'starter') };
+  }
+
   // ---------- item recommendations ----------
   function recommendItems(D, me, ap, tags, comp) {
     const meta = D.meta || {};
@@ -375,8 +421,13 @@ const Engine = (() => {
       || (s.matched.includes('vs_healing') && comp.strongHeal.length >= 2)
       || (s.matched.includes('vs_heavy_ap') && comp.apShare >= 0.7)
       || (s.matched.includes('vs_heavy_ad') && comp.apShare <= 0.2));
+    // finish what you started: parts are weak until they're an item (only items this build actually wants)
+    const inv = inventory(D, me, [...core, ...(meta.items || []).map((i) => i.name), ...bootOpts.map((b) => b.item)]);
+    const wanted = new Set([...core, ...situational.map((s) => s.name)].map((n) => String(n).toLowerCase()));
+    const started = inv.halfBuilt.find((x) => !isBootsName(x.name) && wanted.has(x.name.toLowerCase()) && x.have >= 600);
     let priority = null;
-    if (legs === 0 && nextCore[0]) priority = { ...nextCore[0], kind: fromPlan ? 'plan' : 'core', reason: metaWhy(nextCore[0].name) || 'Your first big power spike' };
+    if (started) priority = { name: started.name, id: started.id, kind: 'started', reason: `You already have ${started.parts.join(' + ')}: finish it first (${started.left}g left)` };
+    else if (legs === 0 && nextCore[0]) priority = { ...nextCore[0], kind: fromPlan ? 'plan' : 'core', reason: metaWhy(nextCore[0].name) || 'Your first big power spike' };
     else if (boots && legs >= 1) priority = { name: boots.name, id: boots.id, kind: 'boots', reason: `Boots before your next item: ${boots.why}` };
     else if (urgent && !fromPlan) {   // a game plan already weighed the enemy comp
       const because = urgent.matched.filter((t) => t.startsWith('vs_')).map((t) => TAGTXT[t]).filter(Boolean).join(' and ');
@@ -388,33 +439,64 @@ const Engine = (() => {
       priority.then = after ? after.name : null;
     }
 
-    // what to buy with the gold you have right now (only known for yourself)
+    // what to buy with the gold you have right now (only known for yourself). Six slots: when the buy needs a
+    // slot you don't have, sell what the game plan says, else your starter item, else potions (never the target's parts).
     const gold = Math.floor(ap.currentGold || 0);
     const target = priority || nextCore[0] || situational[0];
     let buyNow = null;
     if (target && target.id) {
       const tIt = itemData(D, target.id);
-      const recipeIds = new Set();
-      (function walk(id) { const it = itemData(D, id); if (!it) return; for (const f of it.from || []) { recipeIds.add(String(f)); walk(f); } })(target.id);
-      const ownedValue = [...ownedIds].filter((id) => recipeIds.has(id)).reduce((s, id) => s + ((itemData(D, id) || {}).gold || {}).total || 0, 0);
-      const remaining = Math.max(0, tIt.gold.total - ownedValue);
-      if (gold >= remaining) buyNow = { text: `Finish ${tIt.name}`, ids: [target.id], cost: remaining };
-      else {
-        // components in the researched first-back order first (e.g. Sheen before Phage), then the most expensive
-        const prefer = ((meta.coreBuild && meta.coreBuild.firstBackBuys) || []).map((f) => String(f.buy).split(/\s*[-–(]/)[0].trim().toLowerCase());
-        const rank = (c) => { const i = prefer.indexOf(c.it.name.toLowerCase()); return i < 0 ? 99 : i; };
-        const comps = (tIt.from || []).map(String).filter((id) => !ownedIds.has(id)).map((id) => ({ id, it: itemData(D, id) })).filter((c) => c.it)
+      const tree = recipeTree(D, target.id);
+      // components in the researched first-back order first (e.g. Sheen before Phage), then the most expensive
+      const prefer = ((meta.coreBuild && meta.coreBuild.firstBackBuys) || []).map((f) => String(f.buy).split(/\s*[-–(]/)[0].trim().toLowerCase());
+      const rank = (c) => { const i = prefer.indexOf(c.it.name.toLowerCase()); return i < 0 ? 99 : i; };
+      const cw = D.itemByNameCache || (D.itemByNameCache = Object.keys(D.dd.items).find((id) => D.dd.items[id].name === 'Control Ward' && (D.dd.items[id].maps || {})['11']));
+      const planSell = lst(meta.coreBuild && meta.coreBuild.sell).map((s) => ({ ...s, o: inv.bag.find((o) => o.name.toLowerCase() === String(s.item || '').toLowerCase() && !tree.has(o.id)) })).filter((s) => s.o);
+      const sellNow = planSell.filter((s) => !/full|slot|room/i.test(s.when || '')).map((s) => s.o);
+      const spare = [...planSell.filter((s) => !sellNow.includes(s.o)).map((s) => s.o), ...inv.starters,
+        ...inv.bag.filter((o) => o.kind === 'consumable' && o.id !== cw)].filter((o, i, a) => a.indexOf(o) === i && !sellNow.includes(o));
+      const shop = (sold) => {
+        const keep = inv.bag.filter((o) => !sold.includes(o));
+        const money = gold + sold.reduce((s, o) => s + o.sell, 0), free = 6 - keep.length;
+        const inTree = keep.filter((o) => tree.has(o.id));
+        const remaining = Math.max(0, tIt.gold.total - Math.min(tIt.gold.total, inTree.reduce((s, o) => s + goldOf(D, o.id), 0)));
+        if (money >= remaining) return { finish: true, cost: remaining, need: 1 - inTree.length, free, money, remaining };
+        const keepIds = new Set(keep.map((o) => o.id));
+        const comps = (tIt.from || []).map(String).filter((id) => !keepIds.has(id)).map((id) => ({ id, it: itemData(D, id) })).filter((c) => c.it)
           .sort((a, b) => rank(a) - rank(b) || b.it.gold.total - a.it.gold.total);
-        let left = gold; const picks = [];
-        for (const c of comps) if (c.it.gold.total <= left) { picks.push(c); left -= c.it.gold.total; }
-        // every back: a Control Ward if there's 75g spare and none in the inventory
-        const cw = D.itemByNameCache || (D.itemByNameCache = Object.keys(D.dd.items).find((id) => D.dd.items[id].name === 'Control Ward' && (D.dd.items[id].maps || {})['11']));
-        if (picks.length && cw && left >= 75 && !(me.items || []).some((i) => String(i.itemID) === cw)) { picks.push({ id: cw, it: itemData(D, cw) }); left -= 75; }
-        if (picks.length) buyNow = { text: `Components for ${tIt.name}: ${picks.map((p) => p.it.name).join(' + ')}`, ids: picks.map((p) => p.id), cost: gold - left };
-        else buyNow = { text: `Save up: ${tIt.name} needs ${remaining - gold}g more (or ${comps.length ? Math.min(...comps.map((c) => c.it.gold.total)) : '?'}g for the cheapest component)`, ids: [], cost: 0 };
+        // a part you own inside a component is used up when you buy it: cheaper, and no extra slot.
+        // A component you can't afford yet: its own parts instead (Long Sword when Hearthbound Axe is too much).
+        const used = new Set(); const picks = []; let left = money, cheapest = null;
+        const priceOf = (id) => { const sub = recipeTree(D, id), eat = keep.filter((o) => !used.has(o) && sub.has(o.id)); return { p: Math.max(0, goldOf(D, id) - eat.reduce((s, o) => s + goldOf(D, o.id), 0)), eat }; };
+        const buy = (c) => { const k = priceOf(c.id); if (k.p > left) return false; picks.push(c); left -= k.p; k.eat.forEach((o) => used.add(o)); return true; };
+        const tryBuy = (c) => {
+          if (buy(c)) return;
+          const k = priceOf(c.id);
+          const subs = (c.it.from || []).map(String).filter((id) => !keepIds.has(id)).map((id) => ({ id, it: itemData(D, id) })).filter((x) => x.it);
+          if (!subs.length && (!cheapest || k.p < cheapest.p)) cheapest = { p: k.p, name: c.it.name };
+          subs.sort((x, y) => goldOf(D, y.id) - goldOf(D, x.id)).forEach(tryBuy);
+        };
+        // whole components first (Phage beats Long Sword + Dagger), then parts of the ones still missing
+        const rest = comps.filter((c) => !buy(c));
+        rest.forEach(tryBuy);
+        return { finish: false, picks, need: picks.length - used.size, used: used.size, free, money, left, remaining, comps, cheapest };
+      };
+      const sold = [...sellNow];
+      let r = shop(sold);
+      while (r.need > r.free && spare.length) { sold.push(spare.shift()); r = shop(sold); }
+      const sells = sold.length ? `Sell ${sold.map((o) => `${o.name} (+${o.sell}g)`).join(' and ')}, then ` : '';
+      const lc = (s) => (sells ? s[0].toLowerCase() + s.slice(1) : s);
+      if (r.need > r.free) buyNow = { text: `Inventory full: sell an item to make room for ${r.finish ? tIt.name : 'its components'}`, ids: [], cost: 0, sell: [] };
+      else if (r.finish) buyNow = { text: `${sells}${lc(`Finish ${tIt.name}`)}`, ids: [target.id], cost: r.cost, sell: sold };
+      else {
+        const picks = r.picks; let left = r.left;
+        // every back: a Control Ward if there's 75g spare, a free slot and none in the inventory
+        if (picks.length && cw && left >= 75 && r.free - r.need >= 1 && !inv.bag.some((o) => o.id === cw)) { picks.push({ id: cw, it: itemData(D, cw) }); left -= 75; }
+        if (picks.length) buyNow = { text: `${sells}${lc(`Components for ${tIt.name}: ${picks.map((p) => p.it.name).join(' + ')}`)}`, ids: picks.map((p) => p.id), cost: r.money - left, sell: sold };
+        else buyNow = { text: `Save up: ${tIt.name} needs ${r.remaining - gold}g more${r.cheapest ? ` (or ${r.cheapest.p}g for a ${r.cheapest.name})` : ''}${r.free <= 0 ? '. Inventory full: sell a part you no longer need' : ''}`, ids: [], cost: 0, sell: [] };
       }
     }
-    return { nextCore, situational, boots, buyNow, gold, priority };
+    return { nextCore, situational, boots, buyNow, gold, priority, inv };
   }
 
   // ---------- triggers ----------
@@ -917,5 +999,5 @@ const Engine = (() => {
     return { comp, tags, items };
   }
 
-  return { analyze, newMemory, csText, planForComp, modesFor, profile, fmtClock, parseClock, champ, champIdOf, itemData, isLegendary, legendaryCount, dmgType, nameIs, PHASE_LABEL, MATCHUP_PHASE, STRONG_HEALERS };
+  return { analyze, newMemory, csText, planForComp, modesFor, profile, fmtClock, parseClock, champ, champIdOf, itemData, isLegendary, legendaryCount, inventory, dmgType, nameIs, PHASE_LABEL, MATCHUP_PHASE, STRONG_HEALERS };
 })();

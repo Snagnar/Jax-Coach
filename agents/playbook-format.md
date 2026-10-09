@@ -227,7 +227,8 @@ Applied immediately for the current game only. The card shows it; the build and 
   "changes": ["1-2 short items: what changed since the previous plan (reassess only)"],
   "changed": true,   // reassess only: false = same decision, the app keeps the previous headline and bullets
   "build": { "order": ["Remaining legendary items and boots in buy order, exact names"],
-             "why": { "Item name": "why, at most 8 words" }, "note": "optional" },
+             "why": { "Item name": "why, at most 8 words" }, "note": "optional",
+             "sell": [{ "item": "Doran's Shield", "when": "when full", "why": "at most 8 words" }] },  // optional, in game
   "runes": "rune page for this game (champ select only)", "summoners": "Flash + ...",
   "params": { "guard": { "goldDown": 700 } },        // optional: overrides rules.params for this game
   "rules": [                                          // optional: extra decisions for this game (see rules above)
@@ -239,7 +240,9 @@ Applied immediately for the current game only. The card shows it; the build and 
 }
 ```
 `build.order` replaces the whole remaining build (items you already own are skipped automatically), so list
-everything you'd still buy, boots included if not bought. Extra `rules` are inserted at the `plan` anchor
+everything you'd still buy, boots included if not bought. `build.sell` (in game): items to sell, exact names;
+`when` "now" (the dashboard tells the player on their next back) or "when full" (only once the next buy needs the
+slot; the dashboard then adds the sell gold to the buy). Extra `rules` are inserted at the `plan` anchor
 (or before the rule named in `before`); `{ "id": "x", "disable": "<rule id>" }` switches a rule off for this game.
 
 ## Live coach answer (`out/answer.json`), written by the ask agent

@@ -58,7 +58,7 @@ const Playbooks = (() => {
     let overlayRules = null;
     if (overlay) {
       if (overlay.build && Array.isArray(overlay.build.order) && overlay.build.order.length) {
-        meta = Rules.merge(meta, { coreBuild: { typicalOrder: overlay.build.order, why: overlay.build.why || {}, source: 'plan' } });
+        meta = Rules.merge(meta, { coreBuild: { typicalOrder: overlay.build.order, why: overlay.build.why || {}, sell: Array.isArray(overlay.build.sell) ? overlay.build.sell : [], source: 'plan' } });
       }
       if (overlay.params) rules = Rules.merge(rules, { params: overlay.params });
       if (overlay.phaseNotes) {
