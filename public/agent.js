@@ -103,8 +103,13 @@ const Agent = (() => {
       const t = Engine.fmtClock(e.EventTime);
       if (e.EventName === 'ChampionKill') ev.push(`${t} ${who(e.KillerName)} killed ${who(e.VictimName)}${(e.Assisters || []).length ? ` (with ${(e.Assisters || []).map(who).join(', ')})` : ''}`);
       else if (/^(Dragon|Herald|Baron|Horde)Kill$/.test(e.EventName)) ev.push(`${t} ${who(e.KillerName)} took ${e.EventName.replace('Kill', '')}${e.DragonType ? ` (${e.DragonType})` : ''}`);
-      else if (e.EventName === 'TurretKilled') ev.push(`${t} turret ${e.TurretKilled} destroyed`);
-      else if (e.EventName === 'InhibKilled') ev.push(`${t} inhibitor ${e.InhibKilled} destroyed`);
+      else if (e.EventName === 'TurretKilled' || e.EventName === 'InhibKilled' || e.EventName === 'InhibRespawned') {
+        // never the raw name ("Turret_TChaos_L1_P2_..."): say whose it is, in plain words
+        const b = Engine.building(e.TurretKilled || e.InhibKilled || e.InhibRespawned);
+        const ours = b.team === A.P.me.team;
+        const what = `${b.team ? (ours ? 'our' : 'their') : 'a'} ${b.lane ? `${b.lane} ` : ''}${b.tier && b.kind === 'turret' ? `${b.tier} ` : ''}${b.kind}`;
+        ev.push(e.EventName === 'InhibRespawned' ? `${t} ${what} is back up` : `${t} ${what} destroyed${b.team ? (ours ? ' (we lost it)' : ' (we took it)') : ''}`);
+      }
     }
     const m = S.game && S.game.plan;
     // your inventory as the shop sees it: kinds, sell values, free slots, half-built plan items, parts off the plan
@@ -125,7 +130,7 @@ const Agent = (() => {
       laneState: { label: A.state.label, reasons: A.state.reasons }, me: { ...row(A.P.me), gold: A.items.gold, hp: A.trace && A.trace.ctx ? Math.round(A.trace.ctx.me.hp * 100) : null, inventory },
       laneOpponent: A.P.opp ? row(A.P.opp) : null, allies: A.P.allies.map(row), enemies: A.P.enemies.map(row),
       dragonSoul: (() => { const dr = A.objs.find((o) => o.key === 'dragon'); return dr ? { drakes: `${dr.drakes.ours}-${dr.drakes.theirs}`, soulPoint: dr.soulPoint, soul: dr.soul } : null; })(),
-      team: { itemGoldDiff: A.lanes.itemGoldDiff, kills: `${A.team.kills}-${A.team.ekills}`, towers: `${A.team.towers}-${A.team.etowers}`, dragons: `${A.lanes.dragons.mine}-${A.lanes.dragons.theirs}`, grubs: `${A.lanes.grubs.mine}-${A.lanes.grubs.theirs}`, heralds: `${A.lanes.heralds.mine}-${A.lanes.heralds.theirs}`, barons: `${A.lanes.barons.mine}-${A.lanes.barons.theirs}` },
+      team: { itemGoldDiff: A.lanes.itemGoldDiff, kills: `${A.team.kills}-${A.team.ekills}`, towers: `${A.team.towers}-${A.team.etowers}`, inhibitorsDown: { ours: A.team.inhibs.lost, theirs: A.team.inhibs.taken }, dragons: `${A.lanes.dragons.mine}-${A.lanes.dragons.theirs}`, grubs: `${A.lanes.grubs.mine}-${A.lanes.grubs.theirs}`, heralds: `${A.lanes.heralds.mine}-${A.lanes.heralds.theirs}`, barons: `${A.lanes.barons.mine}-${A.lanes.barons.theirs}` },
       lanes: A.lanes.rows.map((r) => ({ role: r.role, ally: Engine.champ(D, r.ally.cid).name, enemy: Engine.champ(D, r.enemy.cid).name, verdict: r.verdict, goldDiff: r.diff })),
       enemyComp: { magicDamageShare: Math.round(A.comp.apShare * 100), perEnemy: (A.comp.dmg || []).map((x) => ({ champion: x.name, magicShare: Math.round(x.magic * 100), shareOfTeamDamage: Math.round(x.share * 100) })), tags: [...A.tags].filter((t) => t.startsWith('vs_')), healers: A.comp.strongHeal, tanks: A.comp.tanks },
       objectives: A.objs.map((o) => ({ name: o.label, status: o.status, in: o.status === 'upcoming' ? Engine.fmtClock(o.in) : null })),

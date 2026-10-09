@@ -188,18 +188,36 @@ const Engine = (() => {
     if (min >= 14) reasons.push(`team ${team.goldDiff >= 0 ? '+' : ''}${Math.round(team.goldDiff)}g`);
     return { label, very, est: Math.round(est), csD, lvlD, itemD, reasons };
   }
+  // a building from the live client's event names. Two formats: before 2026 "Turret_T1_L_03_A" / "Barracks_T1_L1"
+  // (T1 = ORDER/blue, T2 = CHAOS/red; L/C/R = top/mid/bot), since 2026 "Turret_TChaos_L1_P2_<id>" / "Inhib_TOrder_L0_P1_<id>"
+  // (L0 = bot, L1 = mid, L2 = top; P1 base, P2 inner, P3 outer, P4/P5 nexus turrets; checked against Riot's match timeline)
+  function building(name) {
+    const n = String(name || '');
+    const team = /_TOrder_|_T1_/i.test(n) ? 'ORDER' : /_TChaos_|_T2_/i.test(n) ? 'CHAOS' : null;
+    const nw = n.match(/_L([012])_/), old = n.match(/_T[12]_([LCR])/);
+    const lane = nw ? ['bot', 'mid', 'top'][+nw[1]] : old ? { L: 'top', C: 'mid', R: 'bot' }[old[1]] : '';
+    const p = n.match(/_P(\d)_/);
+    const tier = p ? { 1: 'base', 2: 'inner', 3: 'outer', 4: 'nexus', 5: 'nexus' }[p[1]] || '' : '';
+    const kind = /^(Inhib|Barracks)/i.test(n) ? 'inhibitor' : /^Turret/i.test(n) ? 'turret' : 'building';
+    return { team, lane, tier, kind };
+  }
   function teamState(D, allies, me, enemies, events, myTeam) {
     const mine = [me, ...allies];
     const sum = (arr, f) => arr.reduce((a, p) => a + f(p), 0);
     const kills = sum(mine, (p) => p.scores.kills || 0), ekills = sum(enemies, (p) => p.scores.kills || 0);
     const gold = sum(mine, (p) => itemValue(D, p)), egold = sum(enemies, (p) => itemValue(D, p));
     let towers = 0, etowers = 0;
+    const inhibDown = new Map();   // name -> building, while it's down (they respawn after 5 minutes)
     for (const e of events) {
-      if (e.EventName !== 'TurretKilled') continue;
-      const owner = /_T1_/.test(e.TurretKilled || '') ? 'ORDER' : /_T2_/.test(e.TurretKilled || '') ? 'CHAOS' : null;
-      if (owner === myTeam) etowers++; else if (owner) towers++;
+      if (e.EventName === 'TurretKilled') {
+        const owner = building(e.TurretKilled).team;
+        if (owner === myTeam) etowers++; else if (owner) towers++;
+      } else if (e.EventName === 'InhibKilled') inhibDown.set(e.InhibKilled, building(e.InhibKilled));
+      else if (e.EventName === 'InhibRespawned') inhibDown.delete(e.InhibRespawned);
     }
-    return { kills, ekills, goldDiff: gold - egold, itemGold: gold + egold, towers, etowers };
+    const down = [...inhibDown.values()];
+    const inhibs = { lost: down.filter((b) => b.team === myTeam).map((b) => b.lane), taken: down.filter((b) => b.team && b.team !== myTeam).map((b) => b.lane) };
+    return { kills, ekills, goldDiff: gold - egold, itemGold: gold + egold, towers, etowers, inhibs };
   }
 
   // ---------- enemy composition ----------
@@ -559,8 +577,7 @@ const Engine = (() => {
 
     for (const e of events) {
       if (e.EventName !== 'TurretKilled' || t - e.EventTime > 45) continue;
-      const owner = /_T1_/.test(e.TurretKilled || '') ? 'ORDER' : /_T2_/.test(e.TurretKilled || '') ? 'CHAOS' : null;
-      const lane = /_L_/.test(e.TurretKilled) ? 'top' : /_C_/.test(e.TurretKilled) ? 'mid' : /_R_/.test(e.TurretKilled) ? 'bot' : '';
+      const { team: owner, lane } = building(e.TurretKilled);
       if (owner === me.team) add('turret_lost', 'warn', `You lost a ${lane} turret`, '');
       else if (owner) add('enemy_turret_taken', 'good', `Your team took a ${lane} turret`, '');
     }
@@ -600,7 +617,7 @@ const Engine = (() => {
         const label = { DragonKill: 'Dragon', HeraldKill: 'Herald', BaronKill: 'Baron', HordeKill: 'Voidgrubs' }[e.EventName];
         sightings.push({ t: e.EventTime, side: e.EventName === 'DragonKill' ? 'bot' : 'top', what: `took ${label}` });
       } else if (e.EventName === 'TurretKilled' && [e.KillerName, ...(e.Assisters || [])].some((n) => nameIs(J, n))) {
-        const side = /_L_/.test(e.TurretKilled) ? 'top' : /_C_/.test(e.TurretKilled) ? 'mid' : 'bot';
+        const side = building(e.TurretKilled).lane || 'mid';
         sightings.push({ t: e.EventTime, side, what: 'took a turret' });
       }
     }
@@ -999,5 +1016,5 @@ const Engine = (() => {
     return { comp, tags, items };
   }
 
-  return { analyze, newMemory, csText, planForComp, modesFor, profile, fmtClock, parseClock, champ, champIdOf, itemData, isLegendary, legendaryCount, inventory, dmgType, nameIs, PHASE_LABEL, MATCHUP_PHASE, STRONG_HEALERS };
+  return { analyze, newMemory, csText, planForComp, modesFor, profile, fmtClock, parseClock, champ, champIdOf, itemData, isLegendary, legendaryCount, inventory, building, dmgType, nameIs, PHASE_LABEL, MATCHUP_PHASE, STRONG_HEALERS };
 })();
