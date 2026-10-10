@@ -4,7 +4,7 @@
 // Riot's. One summary row per game (history\games) feeds Review, the game report list, your stats and the agents.
 
 const Archive = (() => {
-  const ROW_V = 2;                 // bump when the row format changes: rows are rebuilt from the archive (no Riot calls)
+  const ROW_V = 3;                 // bump when the row format changes: rows are rebuilt from the archive (no Riot calls)
   const QUEUES = [420, 440, 400, 490];                // solo/duo, flex, draft, quickplay
   const PACE_MS = 1500;            // ~80 Riot calls per 2 minutes (a development key allows 100), leaves room for scouting
   const S = {
@@ -195,6 +195,7 @@ const Archive = (() => {
       games: g.length, wins: g.filter((r) => r.win).length,
       goldDiff15: mean(d.map((x) => x.at15 && x.at15.goldDiff)), deathsBefore14: d.length ? mean(d.map((x) => x.deaths.filter((y) => y.t < 840).length)) : null,
       soloDeathsBefore14: d.length ? mean(d.map((x) => x.deaths.filter((y) => y.t < 840 && y.kind === 'solo').length)) : null,
+      underOwnTowerBefore14: d.length ? mean(d.map((x) => x.deaths.filter((y) => y.t < 840 && y.underOwnTower).length)) : null,
     };
   }
 

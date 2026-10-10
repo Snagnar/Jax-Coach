@@ -54,7 +54,7 @@ with what they still cost); `offPlanParts` (parts that go into no planned item, 
   should differ from the playbook's default (champ select only).
 - Dashboard rules: add 0-3 rules only if they change what the dashboard should say in this game (for example a
   tank who should stay grouped after 20:00, or "don't split past the river while their Kayle is 3 items").
-  Expressions may only use the documented facts and functions.
+  Expressions may only use the documented facts and functions. Rules may set `position`, `farm` and `trade` (see the format) when the default is wrong.
 
 ## Write `out/plan.json`
 In the documented shape: `headline` (required), `summary` (one sentence, at most 25 words: the win condition),

@@ -90,6 +90,24 @@ const Agent = (() => {
     return start('champion', { champion: cid, championName: name, key: `champion-${cid}`, patch: patchLabel(D), mode, title: `${mode === 'refresh' ? 'Refresh' : 'Research'} ${name}`, classTags: (D.dd.champs[cid] || {}).tags || [], candidateOpponents: topLaners });
   }
 
+  // playbook v2: turn a playbook's matchups into profiles (power curve, kit, threats). Opponents you meet most first.
+  function profiles(D, cid) {
+    const raw = Playbooks.raw(cid) || {};
+    const mus = Object.keys(((raw.matchups || {}).matchups) || {}).filter((k) => !k.startsWith('_'));
+    if (!mus.length) return Promise.resolve(null);
+    const rows = Archive.rows().filter((r) => r.champ === cid && !r.remake && r.opp);
+    const met = {}; for (const r of rows) met[r.opp] = (met[r.opp] || 0) + 1;
+    const idOf = (k) => (D.dd.champs[k] ? k : D.dd.champByName[String(k).toLowerCase()] || k);
+    const opponents = mus.map(idOf).sort((a, b) => (met[b] || 0) - (met[a] || 0) || a.localeCompare(b));
+    const player = {};
+    for (const o of opponents) {
+      const v = Archive.vs(cid, o);
+      if (v && v.games) player[o] = { games: v.games, wins: v.wins, deathsBefore14: v.deathsBefore14 != null ? Math.round(v.deathsBefore14 * 10) / 10 : null, soloDeathsBefore14: v.soloDeathsBefore14 != null ? Math.round(v.soloDeathsBefore14 * 10) / 10 : null, deathsUnderOwnTowerBefore14: v.underOwnTowerBefore14 != null ? Math.round(v.underOwnTowerBefore14 * 10) / 10 : null };
+    }
+    const name = (D.dd.champs[cid] || {}).name || cid;
+    return start('profile', { champion: cid, championName: name, key: `profile-${cid}`, patch: patchLabel(D), title: `Matchup profiles for ${name} (${opponents.length})`, opponents, player });
+  }
+
   // ---------- game facts for the agents (champions only: no player names) ----------
   function snapshot(A, D) {
     const nameOf = {};
@@ -126,7 +144,8 @@ const Agent = (() => {
     };
     return {
       clock: A.clock, minutes: Math.round(A.t / 6) / 10, phase: A.phaseLabel,
-      dashboard: A.mode ? { mode: A.mode.mode, headline: A.mode.headline, reason: A.mode.reason, rule: A.mode.rule } : null,
+      dashboard: A.mode ? { mode: A.mode.mode, headline: A.mode.headline, reason: A.mode.reason, rule: A.mode.rule, position: A.mode.position, farm: A.mode.farm, trade: A.mode.trade,
+        towerSafe: A.trace && A.trace.safety ? A.trace.safety.towerSafe : null, threats: A.trace && A.trace.safety ? A.trace.safety.threats : [] } : null,
       laneState: { label: A.state.label, reasons: A.state.reasons }, me: { ...row(A.P.me), gold: A.items.gold, hp: A.trace && A.trace.ctx ? Math.round(A.trace.ctx.me.hp * 100) : null, inventory },
       laneOpponent: A.P.opp ? row(A.P.opp) : null, allies: A.P.allies.map(row), enemies: A.P.enemies.map(row),
       dragonSoul: (() => { const dr = A.objs.find((o) => o.key === 'dragon'); return dr ? { drakes: `${dr.drakes.ours}-${dr.drakes.theirs}`, soulPoint: dr.soulPoint, soul: dr.soul } : null; })(),
@@ -159,12 +178,12 @@ const Agent = (() => {
     try {
       const out = {};
       const T = Review.state.games.length >= 3 ? Review.trends(Review.state.games) : null;
-      if (T) Object.assign(out, { recentGames: T.n, winRate: T.wr, cs10: T.cs10 != null ? Math.round(T.cs10) : null, goldDiff15: T.gd15 != null ? Math.round(T.gd15) : null, deathsBefore14PerGame: T.earlyDeathsPerGame != null ? Math.round(T.earlyDeathsPerGame * 10) / 10 : null, earlyDeathsThatWereGanks: `${T.earlyGanks.length}/${T.early.length}`, winRateWhenAheadAt15: T.wrAhead, winRateWhenBehindAt15: T.wrBehind });
+      if (T) Object.assign(out, { recentGames: T.n, winRate: T.wr, cs10: T.cs10 != null ? Math.round(T.cs10) : null, goldDiff15: T.gd15 != null ? Math.round(T.gd15) : null, deathsBefore14PerGame: T.earlyDeathsPerGame != null ? Math.round(T.earlyDeathsPerGame * 10) / 10 : null, earlyDeathsThatWereGanks: `${T.earlyGanks.length}/${T.early.length}`, earlyDeathsUnderOwnTower: `${(T.underTower || []).length}/${T.early.length}`, earlyDeathsUnderEnemyTower: `${(T.underEnemyTower || []).length}/${T.early.length}`, winRateWhenAheadAt15: T.wrAhead, winRateWhenBehindAt15: T.wrBehind });
       if (Focus.current) out.focus = Focus.current.title;
       const all = champ ? Archive.rows().filter((r) => r.champ === champ && !r.remake) : [];
       if (all.length) out.championRecord = { games: all.length, wins: all.filter((r) => r.win).length, since: new Date(Math.min(...all.map((r) => r.end))).toISOString().slice(0, 10) };
       const v = champ && opp ? Archive.vs(champ, opp) : null;
-      if (v) out.vsThisOpponent = { opponent: (D.dd.champs[opp] || {}).name || opp, games: v.games, wins: v.wins, goldDiff15: v.goldDiff15 != null ? Math.round(v.goldDiff15) : null, deathsBefore14: v.deathsBefore14 != null ? Math.round(v.deathsBefore14 * 10) / 10 : null, soloDeathsBefore14: v.soloDeathsBefore14 != null ? Math.round(v.soloDeathsBefore14 * 10) / 10 : null };
+      if (v) out.vsThisOpponent = { opponent: (D.dd.champs[opp] || {}).name || opp, games: v.games, wins: v.wins, goldDiff15: v.goldDiff15 != null ? Math.round(v.goldDiff15) : null, deathsBefore14: v.deathsBefore14 != null ? Math.round(v.deathsBefore14 * 10) / 10 : null, soloDeathsBefore14: v.soloDeathsBefore14 != null ? Math.round(v.soloDeathsBefore14 * 10) / 10 : null, deathsUnderOwnTowerBefore14: v.underOwnTowerBefore14 != null ? Math.round(v.underOwnTowerBefore14 * 10) / 10 : null };
       return Object.keys(out).length ? out : null;
     } catch { return null; }
   }
@@ -299,11 +318,11 @@ const Agent = (() => {
   async function finished(j) {
     S.handled[j.id] = true;
     if (j.type === 'ask') return answered(j);
-    if (j.status !== 'done' && !['champion', 'quick'].includes(j.type)) {
+    if (j.status !== 'done' && !['champion', 'quick', 'profile'].includes(j.type)) {
       if (S.game && S.game.jobId === j.id) { S.game.jobId = null; S.game.lastError = j.error; }
       return;
     }
-    if (['champion', 'quick'].includes(j.type)) {
+    if (['champion', 'quick', 'profile'].includes(j.type)) {
       await Playbooks.refreshList();
       if (j.champion) { await Playbooks.load(j.champion, true); applyHook(); }
       return;
@@ -457,7 +476,8 @@ const Agent = (() => {
         result: record.result, minutes: Math.round(record.gameTime / 6) / 10, opponent: record.opp ? Engine.champ(D, record.opp).name : null,
         deaths: record.deaths, dashboardTimeByMode: record.modeTime, focus: record.focus, plans: record.plans || [], playerChat: record.chat || undefined,
         report: R ? { verdict: R.verdict, rating: R.me && R.me.rating, story: R.story, fix: R.fix, moreFix: R.moreFix, good: R.good, stats: R.stats,
-          deaths: (R.deaths || []).map((d) => ({ at: Engine.fmtClock(d.t), kind: d.kind, killers: d.killers, zone: d.zone, dashboardSaid: d.mode })) } : null,
+          deaths: (R.deaths || []).map((d) => ({ at: Engine.fmtClock(d.t), kind: d.kind, killers: d.killers, killer: d.killer, zone: d.zone, behind: d.behind, dashboardSaid: d.mode,
+            underOwnTower: d.underOwnTower || null, underEnemyTower: d.underEnemyTower || null, damageTaken: d.hits || [] })) } : null,
       },
       player: playerProfile(record.champ, record.opp),
     });
@@ -521,7 +541,7 @@ const Agent = (() => {
 
   return {
     state: S, ready, refreshStatus, refreshJobs, login, start, cancel, research, ensureChampion, onChampSelect, onGame, reassessNow, tick,
-    planFor, gameLog, endGame, startReview, markProposal, dismissProposal, running, snapshot,
+    planFor, gameLog, endGame, startReview, markProposal, dismissProposal, running, snapshot, profiles,
     chatFor, ask, undoChatPlan, chatLog, lastAnswer,
     onChange: (f) => listeners.push(f), onApply: (f) => { applyHook = f; },
   };

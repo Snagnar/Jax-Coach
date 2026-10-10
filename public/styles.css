@@ -557,3 +557,15 @@ button.pill.upd-pill.warn i { background: var(--gold); animation: livedot 1.6s i
 
 /* Loadout -> League client */
 .apply-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: -2px 0 6px; }
+
+/* v2 stance: where to stand, what to farm, how to trade */
+.stance { margin-top: 8px; display: flex; flex-direction: column; gap: 3px; }
+.stance-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 2px; }
+.stance-chip { font-size: 12px; font-weight: 600; padding: 2px 9px; border-radius: 999px; background: var(--panel-2); border: 1px solid var(--line); }
+.stance-chip.st-position-behind_tower, .stance-chip.st-position-off_lane, .stance-chip.st-farm-cannons, .stance-chip.st-farm-none { border-color: var(--warn); color: var(--warn); }
+.stance-chip.st-trade-allin, .stance-chip.st-position-forward { border-color: var(--good); color: var(--good); }
+.stance-do, .stance-dont, .stance-hint { font-size: 13px; }
+.stance-do::before { content: "Do: "; font-weight: 600; }
+.stance-dont::before { content: "Don't: "; font-weight: 600; color: var(--warn); }
+.stance-hint { color: var(--muted); }
+.stance-hint::before { content: "· "; }

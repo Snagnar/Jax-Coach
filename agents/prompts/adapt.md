@@ -48,7 +48,7 @@ with what they still cost); `offPlanParts` (parts that go into no planned item, 
   strength, picks, objective trades, stalling for late game)? Ahead: how to close without throwing (who not to
   face alone, when to group for Baron). Be concrete about split push vs grouping and when to switch.
 - Dashboard rules: add, replace or disable 0-3 rules only if the dashboard would otherwise give the wrong call for
-  this situation. Expressions may only use the documented facts and functions.
+  this situation. Expressions may only use the documented facts and functions. Rules may set `position`, `farm` and `trade` (see the format) when the default is wrong.
 
 ## Write `out/plan.json`
 The **complete** current plan (it replaces the previous one): `headline` (required: the plan from now on),

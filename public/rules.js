@@ -172,9 +172,33 @@ const Rules = (() => {
     }
     for (const r of (rules && rules.modes) || []) {
       if (r.when) test(`modes.${r.id}.when`, r.when);
-      for (const f of ['mode', 'headline', 'reason', 'voice', 'voiceKey']) for (const e of exprs(r[f])) test(`modes.${r.id}.${f}`, e);
+      for (const f of ['mode', 'headline', 'reason', 'voice', 'voiceKey', 'position', 'farm', 'trade']) for (const e of exprs(r[f])) test(`modes.${r.id}.${f}`, e);
+      for (const f of ['do', 'dont']) for (const s of [].concat(r[f] || [])) for (const e of exprs(s)) test(`modes.${r.id}.${f}`, e);
+    }
+    for (const h of (rules && rules.hints) || []) {
+      if (h.when) test(`hints.${h.id}.when`, h.when);
+      for (const e of exprs(h.text)) test(`hints.${h.id}.text`, e);
     }
     return problems;
+  }
+  // rules written by agents (game plans, matchup profiles, personal rules) are data, but still checked: known
+  // modes and stance values only, every expression must parse. Ids get a prefix so they can't replace core rules.
+  const MODES = ['allin', 'push', 'trade', 'safe', 'retreat', 'group'];
+  const STANCE_VALUES = { position: ['forward', 'wave', 'tower', 'behind_tower', 'off_lane', 'group', 'side'], farm: ['all', 'safe', 'cannons', 'none'], trade: ['allin', 'short', 'none'] };
+  function clean(rs, prefix) {
+    const out = [];
+    for (const r of rs || []) {
+      if (!r || !r.id || r.use || r.anchor) continue;
+      const id = `${prefix}:${String(r.id).replace(/^[a-z]+:/, '')}`;
+      if (r.disable) { out.push({ id, disable: String(r.disable) }); continue; }
+      const bad = check({ modes: [r] });
+      if (bad.length) { console.warn(`Rule skipped (${prefix})`, r.id, bad); continue; }
+      if (!/\{/.test(String(r.mode)) && !MODES.includes(r.mode)) { console.warn(`Rule skipped (${prefix}, mode)`, r.id, r.mode); continue; }
+      const rule = { ...r, id };
+      for (const [k, ok] of Object.entries(STANCE_VALUES)) if (rule[k] && !/\{/.test(String(rule[k])) && !ok.includes(rule[k])) delete rule[k];
+      out.push(rule);
+    }
+    return out;
   }
 
   // ---------- rule runners ----------
@@ -218,10 +242,14 @@ const Rules = (() => {
         continue;
       }
       try {
+        const list = (x) => [].concat(x || []).map((s) => template(s, ctx)).filter((s) => s != null && String(s).trim());
         const d = {
           mode: template(r.mode, ctx), headline: template(r.headline, ctx), reason: template(r.reason, ctx) || '',
           voice: r.voice ? template(r.voice, ctx) : null, voiceKey: r.voiceKey ? template(r.voiceKey, ctx) : null,
           rule: r.id, source: r.source || null,
+          // v2: where to stand, what to farm, how to trade, and short do / don't lines
+          position: r.position ? template(r.position, ctx) : null, farm: r.farm ? template(r.farm, ctx) : null, trade: r.trade ? template(r.trade, ctx) : null,
+          stanceSet: !!(r.position || r.farm || r.trade), do: list(r.do), dont: list(r.dont),
         };
         if (!d.voiceKey) d.voiceKey = d.mode;
         if (d.voice === '') d.voice = null;
@@ -261,6 +289,6 @@ const Rules = (() => {
     return out;
   }
 
-  return { evaluate, template, compile, check, score, decide, withOverlay, merge, FN };
+  return { evaluate, template, compile, check, clean, score, decide, withOverlay, merge, FN, STANCE_VALUES };
 })();
 if (typeof module !== 'undefined') module.exports = Rules;

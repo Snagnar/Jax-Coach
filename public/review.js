@@ -35,6 +35,43 @@ const Review = (() => {
     return 'jungle';
   }
 
+  // Summoner's Rift turrets, measured from Riot's match timelines (every kill of a turret has the same position)
+  const TURRETS = {
+    100: { 'top-outer': [981, 10441], 'top-inner': [1512, 6699], 'top-base': [1169, 4287], 'mid-outer': [5846, 6396], 'mid-inner': [5048, 4812], 'mid-base': [3651, 3696],
+      'bot-outer': [10504, 1029], 'bot-inner': [6919, 1483], 'bot-base': [4281, 1253], 'nexus-a': [1748, 2270], 'nexus-b': [2177, 1807] },
+    200: { 'top-outer': [4318, 13875], 'top-inner': [7943, 13411], 'top-base': [10481, 13650], 'mid-outer': [8955, 8510], 'mid-inner': [9767, 10113], 'mid-base': [11134, 11207],
+      'bot-outer': [13866, 4505], 'bot-inner': [13327, 8226], 'bot-base': [13624, 10572], 'nexus-a': [12611, 13084], 'nexus-b': [13052, 12612] },
+  };
+  const TURRET_REACH = 900;   // turret range 750 + champion size and a step: "under the tower"
+  const SLOT = ['Q', 'W', 'E', 'R'];
+  // which turret (if any) a death happened under, for one team, counting only turrets still standing at that time
+  function turretAt(teamId, p, t, buildingKills) {
+    if (!p) return null;
+    for (const [key, [x, y]] of Object.entries(TURRETS[teamId] || {})) {
+      if (Math.hypot(p.x - x, p.y - y) > TURRET_REACH) continue;
+      const [lane, tier] = key.split('-');
+      const dead = buildingKills.some((b) => b.teamId === teamId && b.timestamp / 1000 < t && b.buildingType === 'TOWER_BUILDING'
+        && (lane === 'nexus' ? b.towerType === 'NEXUS_TURRET' && Math.hypot(b.position.x - x, b.position.y - y) < 200
+          : b.laneType === `${lane.toUpperCase()}_LANE` && b.towerType === `${tier.toUpperCase()}_TURRET`));
+      if (!dead) return key;
+    }
+    return null;
+  }
+  // who hit you with what in the seconds before a death (Riot's damage breakdown), biggest first
+  function damageTaken(e, byPid) {
+    const sum = {};
+    for (const d of e.victimDamageReceived || []) {
+      const who = d.participantId && byPid[d.participantId] ? byPid[d.participantId].championName : d.type === 'TOWER' ? 'Turret' : d.type === 'MINION' ? 'Minions' : d.name || '?';
+      const SUMM = { summonerdot: 'Ignite', summonerexhaust: 'Exhaust', summonersmite: 'Smite', summonerhaste: 'Ghost' };
+      const sp = String(d.spellName || '');
+      const what = d.basic ? 'basic attacks' : SUMM[sp.toLowerCase()] || (d.spellSlot >= 0 && d.spellSlot <= 3 && d.type === 'OTHER' ? `${SLOT[d.spellSlot]}${sp ? ` (${sp})` : ''}` : sp || d.type || '?');
+      const k = `${who}|${what}`;
+      sum[k] = (sum[k] || 0) + (d.physicalDamage || 0) + (d.magicDamage || 0) + (d.trueDamage || 0);
+    }
+    return Object.entries(sum).map(([k, dmg]) => { const [from, what] = k.split('|'); return { from, what, dmg: Math.round(dmg) }; })
+      .sort((a, b) => b.dmg - a.dmg).slice(0, 4);
+  }
+
   // ---------- one game ----------
   function analyzeGame(D, m, tl, puuid) {
     const info = m.info;
@@ -58,6 +95,7 @@ const Review = (() => {
     };
     const events = frames.flatMap((f) => f.events || []);
     const enemyIds = new Set(info.participants.filter((p) => p.teamId !== me.teamId).map((p) => p.participantId));
+    const buildingKills = events.filter((e) => e.type === 'BUILDING_KILL' && e.position);
 
     const deaths = events.filter((e) => e.type === 'CHAMPION_KILL' && e.victimId === me.participantId).map((e) => {
       const involved = [e.killerId, ...(e.assistingParticipantIds || [])].filter((id) => enemyIds.has(id));
@@ -75,7 +113,10 @@ const Review = (() => {
       // were you behind the killer when you took the fight? (level down or 300g+ behind, last full minute)
       const a = frameAt(Math.floor(t / 60), me.participantId), b = killer && enemyIds.has(e.killerId) ? frameAt(Math.floor(t / 60), e.killerId) : null;
       const behind = !!(a && b && (a.level < b.level || a.totalGold - b.totalGold < -300));
-      return { t, kind, behind, jungler: jg, enemyHalf, zone: zoneOf(p), killers: involved.length, killer: killer ? killer.championName : 'Turret/minions' };
+      // v2: under your own turret (it was still standing), under theirs (a dive), and what did the damage
+      const ownTurret = turretAt(me.teamId, p, t, buildingKills), theirTurret = turretAt(me.teamId === 100 ? 200 : 100, p, t, buildingKills);
+      return { t, kind, behind, jungler: jg, enemyHalf, zone: zoneOf(p), killers: involved.length, killer: killer ? killer.championName : 'Turret/minions',
+        underOwnTower: ownTurret, underEnemyTower: theirTurret, pos: p ? [p.x, p.y] : null, hits: damageTaken(e, byPid) };
     });
 
     const legendaryBuys = events.filter((e) => e.type === 'ITEM_PURCHASED' && e.participantId === me.participantId && Engine.isLegendary(D, e.itemId))
@@ -182,6 +223,8 @@ const Review = (() => {
       soloDeathsPerGame: n ? games.flatMap((g) => g.deaths.filter((d) => d.kind === 'solo' && d.t < 20 * 60)).length / n : null,
       behindSoloPerGame: n ? games.flatMap((g) => g.deaths.filter((d) => d.kind === 'solo' && d.behind && d.t < 20 * 60)).length / n : null,
       controlWards: avg(games.map((g) => g.controlWards)),
+      // v2: deaths before 14:00 under your own (still standing) turret, and dives under theirs
+      underTower: early.filter((d) => d.underOwnTower), underEnemyTower: early.filter((d) => d.underEnemyTower),
       ahead, behind, wrAhead: wr(ahead), wrBehind: wr(behind),
       wardsBefore14: avg(games.map((g) => g.wardsBefore14)),
       byOpp, buckets, liveDeaths,
@@ -208,6 +251,14 @@ const Review = (() => {
       const behindN = soloEarly.filter((d) => d.behind).length;
       out.push({ k: 'warn', score: soloEarly.length / earlyN, title: `Losing 1v1s: ${T.soloDeathsPerGame.toFixed(1)} solo deaths per game before 20:00`, text: `${soloEarly.length} of your ${T.early.length} deaths before 14:00 were to your lane opponent alone${avgT ? `, on average at ${fmt(avgT)}` : ''}. ${behindN} of them came while you were a level down or 300g+ behind.`, tip: 'When the dashboard says "Don\'t fight", don\'t: last-hit and wait for your item or level. Only all-in when it turns green.' });
     }
+    if (T.underTower && T.underTower.length >= 3 && T.underTower.length / earlyN >= 0.15) {
+      const killers = {}; for (const d of T.underTower) killers[d.killer] = (killers[d.killer] || 0) + 1;
+      const top = Object.entries(killers).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([k, n]) => `${k} ${n}×`).join(', ');
+      out.push({ k: 'warn', score: T.underTower.length / earlyN, title: `Dying under your own tower: ${T.underTower.length} of ${T.early.length} early deaths`, text: `Your turret was still standing and didn't save you. Most often: ${top}.`, tip: 'Against champions who pull or dive (Darius, Mordekaiser, Sett…) stand behind the tower, not at its edge, and give up minions when you are behind. The dashboard now says when the tower isn\'t safe.' });
+    }
+    if (T.underEnemyTower && T.underEnemyTower.length >= 3 && T.underEnemyTower.length / earlyN >= 0.15) {
+      out.push({ k: 'warn', score: (T.underEnemyTower.length / earlyN) * 0.8, title: `Dying under their tower: ${T.underEnemyTower.length} early deaths`, text: 'Dives before 14:00 that cost you your life.', tip: 'Only dive with a clear kill and the tower aggro on someone else (minions or an ally).' });
+    }
     if (T.ahead.length >= 3 && T.wrAhead != null && T.wrAhead < 60) {
       out.push({ k: 'warn', title: `Leads not converting: ${T.wrAhead}% win rate when ahead at 15`, text: `You were 500g+ ahead of your lane opponent at 15:00 in ${T.ahead.length} games and won ${T.ahead.filter((g) => g.win).length}.`, tip: 'After laning, split push opposite objectives and join through Teleport; don\'t trade your lead in random mid-lane fights.' });
     } else if (T.ahead.length >= 3 && T.wrAhead >= 70) {
@@ -231,7 +282,7 @@ const Review = (() => {
   }
 
   return {
-    state: S, load, refresh, trends, insights, setIdentity, zoneOf, analyzeGame, QUEUE_NAME, ensurePuuid,
+    state: S, load, refresh, trends, insights, setIdentity, zoneOf, analyzeGame, QUEUE_NAME, ensurePuuid, turretAt, damageTaken,
     setRange: (r) => { S.range = r; refresh(); changed(); },
     onChange: (fn) => { onChange = fn; },
     reset: () => { S.games = []; S.all = []; S.status = 'idle'; },

@@ -542,6 +542,22 @@ function Handle-Replay($ctx) {
   Send $ctx $r.Status $(if ($r.Body) { $r.Body } else { '{}' })
 }
 
+# ---------------- personal rules: what the coach learned about you, for every champion (history\personal.json) ----------------
+# GET: { rules: [...], hints: [...], log: [...] } (empty when nothing is learned yet). POST: the whole file, checked as JSON.
+function Handle-Personal($ctx) {
+  $f = Join-Path $HistoryDir 'personal.json'
+  if ($ctx.Request.HttpMethod -eq 'POST') {
+    $body = Read-Body $ctx
+    try { $o = $body | ConvertFrom-Json } catch { Send $ctx 400 '{"error":"bad_json"}'; return }
+    if ($body.Length -gt 400000 -or -not ($o.PSObject.Properties.Name -contains 'rules')) { Send $ctx 400 '{"error":"bad_personal"}'; return }
+    New-Item -ItemType Directory -Force $HistoryDir | Out-Null
+    [IO.File]::WriteAllText($f, $body, (New-Object Text.UTF8Encoding($false)))
+    Send $ctx 200 $body; return
+  }
+  if (Test-Path $f) { Send $ctx 200 ([IO.File]::ReadAllText($f, [Text.Encoding]::UTF8)); return }
+  Send $ctx 200 '{"rules":[],"hints":[],"log":[]}'
+}
+
 # ---------------- champion playbooks + research agents ----------------
 . (Join-Path $AgentsDir 'runner.ps1')
 
@@ -664,6 +680,7 @@ function Handle-Request($ctx) {
   }
   if ($path -eq '/api/history') { Handle-History $ctx; return }
   if ($path -match '^/api/archive(/.*)?$') { Handle-Archive $ctx "$($Matches[1])"; return }
+  if ($path -eq '/api/personal') { Handle-Personal $ctx; return }
   if ($path -match '^/api/storage(/.*)?$') { Handle-Storage $ctx "$($Matches[1])"; return }
   if ($path -match '^/api/update(/\w+)?$') { Handle-Update $ctx "$($Matches[1])"; return }
   if ($path -match '^/api/playbooks?(/.*)?$') { Handle-Playbook $ctx "$($Matches[1])"; return }

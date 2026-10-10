@@ -121,6 +121,47 @@ in the playbook use the defaults in `reference/shared.json` → `triggers`.
 ```
 `difficulty` feeds the fight score (`matchup.difficulty` below), so be honest about it.
 
+### `profile`: the matchup as data (playbook v2)
+Prose tips are read by the player; the **profile** changes what the dashboard decides. Every matchup should have one.
+
+```jsonc
+"Darius": {
+  "name": "Darius", "difficulty": 3, "summary": "...", /* ...the prose fields above... */
+  "profile": {
+    // who wins at each stage, from YOUR side: -2 (he wins clearly) ... 0 even ... +2 (you win clearly).
+    // short = a quick trade (a combo, then you walk away); extended = a long fight / all-in.
+    // Stages: lvl1_3, lvl4_5, post6 (you have your ultimate, no finished item), item1, item2 (your finished items).
+    "power": {
+      "short":    { "lvl1_3": 0,  "lvl4_5": 0.5, "post6": 0,  "item1": 1, "item2": 1.5 },
+      "extended": { "lvl1_3": -1.5, "lvl4_5": -1, "post6": -1.5, "item1": 0, "item2": 1 }
+    },
+    // what his kit can do to you (flags the rules can read as opp.kit.<flag>)
+    "kit": { "pull": true, "dive": "high", "tankyEarly": true, "poke": false, "sustain": "high", "ranged": false },
+    // situations where the usual safety advice is wrong. "when" uses the facts below; towerUnsafe: your own
+    // tower doesn't protect you (he can pull you out of it or tank it); laneUnsafe: not even standing behind it does.
+    "threats": [
+      { "id": "pull_out_of_tower",
+        "when": "opp.level >= 6 && (lvlD <= -1 || legD <= -1 || itemD <= -700)",
+        "towerUnsafe": true,
+        "headline": "Darius can pull you out of your tower: stand behind it",
+        "why": "His E reaches past the tower's edge and he can tank two shots after 6",
+        "do": "Stand behind the tower; last-hit only cannons; recall below half health",
+        "voice": "Darius can pull you out of tower. Stand behind it.",
+        "note": "Don't stand at the tower's edge while Darius is in lane" }
+    ],
+    // optional: decisions only against this champion, inserted at the plan anchor (same shape as rules.json modes)
+    "rules": [
+      { "id": "darius_stacks", "when": "min < 14 && opp.level >= 6 && e < 1", "mode": "safe",
+        "headline": "Short trades only vs Darius", "reason": "Long fights let him stack bleed and reset his ultimate",
+        "position": "wave", "farm": "safe", "trade": "short", "dont": ["Fighting him after he lands Q"] }
+    ]
+  }
+}
+```
+Keep `threats` to the 1-3 situations that really change what the player should do, with conditions the facts can
+check (levels, items, gold, health, his items or spells). `voice` is spoken once when the threat starts deciding:
+under 80 characters. `note` is shown under the decision while the threat holds, also when another rule decides.
+
 ## rules.json: the in-game decisions
 
 Every two seconds the app computes facts about the game (below), then:
@@ -156,6 +197,19 @@ Rule fields: `id` (unique), `when` (expression; omitted = always), `mode`, `head
 (optional, spoken once per new `voiceKey`), `voiceKey` (optional; default = the mode), `note` (for humans),
 `use` (hand the decision to a built-in), `anchor` (a named insertion point, no decision).
 
+**Stance (playbook v2)**: a decision also says *how* to play it. Optional; each mode has a default.
+- `position`: `forward` · `wave` (with your wave) · `tower` (at your tower) · `behind_tower` · `off_lane` (recall / leave) · `group` · `side`
+- `farm`: `all` · `safe` (only minions you can take safely) · `cannons` (cannons and minions next to your tower) · `none` (give the wave up)
+- `trade`: `allin` · `short` · `none`
+- `do`, `dont`: 0-2 short lines each (templates), shown under the headline.
+Defaults: allin forward/all/allin, push forward/all/short, trade wave/all/short, safe wave/safe/none,
+retreat tower/safe/none, group group. Say it explicitly whenever the default is wrong for this situation
+("Stay under tower" vs a champion who pulls you out of it is wrong: use `behind_tower` + `cannons`).
+
+**Hints** (`rules.json` → `hints`): up to two extra lines shown under the decision, whatever decided it:
+`{ "id": "ward_river", "when": "min < 14 && jg && jg.status == 'unknown'", "text": "Ward the river bush before you push" }`.
+Personal hints come first, then active matchup threat notes, then the playbook's, then the shared ones.
+
 **Modes** (the dashboard color): `allin` (green, fight now), `push` (violet, shove/take something),
 `trade` (blue, trade & farm), `safe` (amber, play safe), `retreat` (red, back off), `group` (teal, objective /
 group with the team), `dead`.
@@ -165,7 +219,11 @@ group with the team), `dead`.
 
 **Keep these rules, in this order, at the top** (copy them from the Jax example; they are tested safety logic):
 `dead`, `numbers`, `opp_dead`, `low_hp`, `lane_jungler_near`, `lane_objective_soon`, `lane_guard`, `objective`,
-`late_lock`, then the `plan` anchor. Below the anchor put the champion-specific logic: when to all-in, trade,
+`late_lock`, then the `plan` anchor. The shared rules `lane_not_safe` and `lane_tower_unsafe` are added before
+`lane_guard` automatically: they turn "stay under tower" into "behind your tower, cannons only" or "recall" when the
+tower doesn't protect the player (a matchup threat with `towerUnsafe`, or a melee opponent far ahead after 6).
+**Personal rules** (learned from this player's games, see the post-game proposal) go before `lane_guard` too;
+**matchup rules** (`profile.rules`) go to the `plan` anchor, only against that opponent. Below the anchor put the champion-specific logic: when to all-in, trade,
 play safe in lane; what to do after laning (split, group, peel, dive, farm, scale). The last rule should have no
 `when` (a fallback).
 
@@ -208,10 +266,20 @@ can be null = silent).
 | `fed` | fed enemies other than your opponent: `{ count, names, verb ('is'/'are'), key }` |
 | `tags` | active tags as booleans, e.g. `tags.vs_healing`, `tags.ahead` (list under meta.json) |
 | `comp` | enemy team `{ apShare, tanks, healers, cc, burst, poke }` (counts). `apShare` is live: each enemy's usual damage, moved by the items they actually buy, weighted by their gold |
-| `e`, `why`, `first`, `reason` | fight score results (modes only) |
+| `e`, `why`, `first`, `reason` | fight score results (modes only). `e` is a long fight / all-in |
+| `eShort` | the same fight score for a short trade (modes only): use it for "trade" rules, `e` for "all-in" rules |
+| `pw`, `power` | the matchup's power curve at this stage: `pw` (use it in fightScore, see below), `power` `{ stage, short, extended, fromProfile }` |
+| `opp.items`, `opp.spells`, `opp.kit` | his item names, his summoner spell names (no cooldowns), his kit flags from the profile (`opp.kit.pull`, ...); `me.items`, `me.spells` too |
+| `deathsGame` | your deaths this game `{ total, toOpp, soloToOpp, lastKiller, lastAgo (s), lastSolo }` |
+| `myLane`, `tower` | your lane (`top`/`mid`/`bot`); `tower` `{ mine, theirs }`: the first turret still standing in your lane on each side (`outer`/`inner`/`base`/`none`) |
+| `towerSafe`, `laneSafe`, `threat`, `threats` | whether your tower protects you now; the deciding matchup threat `{ id, headline, why, do, voice, note }` (or a generic dive check) and the ids of all active threats |
 | `plan` | this game's plan (below) or null |
 
 Enemy HP, mana, cooldowns and positions are **not** in the data: don't write rules that need them.
+
+**fightScore in v2**: one term carries the matchup: `{ "id": "matchup", "when": "opp", "add": "pw", "why": "...", "whyWhen": "abs(pw) >= 1" }`.
+The app scores twice, once with the profile's `extended` curve (= `e`) and once with `short` (= `eShort`). Without a
+profile `pw` is `(3 - difficulty) * 0.5`, as before. Older playbooks are upgraded on load.
 
 ---
 
@@ -279,3 +347,13 @@ Nothing is applied until the player clicks Apply on a change.
 }
 ```
 `patch` is merged into that file: objects merge, arrays and values replace, `null` deletes a key.
+
+**Matchup profiles**: `"part": "matchups"` with `"patch": { "matchups": { "Darius": { "profile": { "threats": [...] } } } }`
+(remember: arrays replace, so send the complete `threats` list).
+
+**Personal rules** (`"part": "personal"`): what this player keeps doing wrong, for every champion they play. Same
+shape as rules, with `addRules` / `removeRules` and `addHints` / `removeHints`:
+`{ "title": "...", "why": "evidence: games and deaths", "part": "personal", "addRules": [ { "id": "behind_vs_pullers", "when": "min < 14 && opp && opp.kit.pull && lane.label == 'behind'", "mode": "retreat", "headline": "Behind vs a pull: stand behind your tower", "position": "behind_tower", "farm": "cannons", "trade": "none" } ], "addHints": [ { "id": "...", "when": "...", "text": "..." } ] }`
+Propose one only when the pattern shows up in several games (the player's history), not from one game. Deaths now
+carry `underOwnTower` / `underEnemyTower` (which turret, if it was still standing) and `damageTaken` (who hit them
+with which ability, biggest first): that is the evidence for "pulled out of tower" or "dove".

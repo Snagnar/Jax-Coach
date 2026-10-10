@@ -27,6 +27,13 @@ confused or frustrated them, which advice they disagreed with).
 - Matchup notes that turned out wrong or were missing (difficulty, threats, kill windows, build notes).
 - Build choices the plans made that worked or didn't.
 - Recurring patterns in the player's trends that the rules could guard against (e.g. a stricter fight guard).
+- Deaths now say `underOwnTower` / `underEnemyTower` (the turret, if it was still standing) and `damageTaken` (who
+  hit them with which ability). Died under their own tower after a pull or a dive? The matchup's `profile.threats`
+  should have warned (`towerUnsafe`): propose the threat, or an earlier condition. A habit across many games and
+  opponents (e.g. `player` shows many early deaths under their own tower) belongs in a **personal** rule or hint
+  (`"part": "personal"`, see the format), which works for every champion they play.
+- Advice that said the right mode but the wrong way to play it ("Stay under tower" when the tower wasn't safe,
+  "Trade" when only short trades worked): fix the stance (`position`, `farm`, `trade`) or the matchup's power curve.
 
 ## Write `out/proposal.json`
 In the documented shape: `summary` (at most 2 sentences), 1-3 `lessons` for the player (at most 20 words each),

@@ -183,6 +183,7 @@ $JobTypes = @{
   adapt    = @{ model = 'fast'; maxMin = 8;  installs = $false; tools = 'Read,Write,Edit,Glob,Grep,WebSearch,WebFetch' }
   review   = @{ model = 'fast'; maxMin = 20; installs = $false; tools = 'Read,Write,Edit,Glob,Grep,WebSearch,WebFetch' }
   ask      = @{ model = 'fast'; maxMin = 4;  installs = $false; tools = 'Read,Write,Edit,Glob,Grep,WebSearch,WebFetch' }
+  profile  = @{ model = 'fast'; maxMin = 40; installs = $true;  tools = 'Read,Write,Edit,Glob,Grep,WebSearch,WebFetch,Agent' }
 }
 $script:JobsTickAt = [DateTime]::MinValue
 
@@ -277,10 +278,38 @@ function Merge-MatchupParts($files, [string]$champ) {
   $res.matchups = $all
   return ($res | ConvertTo-Json -Depth 40)
 }
+# playbook v2: a profile job writes only out\profiles*.json ({ "<Opponent>": { "profile": {...} } }); merge those into
+# the current matchups.json (nothing else in a matchup changes) and save it as a new version
+function Install-Profiles([string]$dir, $job) {
+  $champ = $job.champion
+  $files = @(Get-ChildItem (Join-Path $dir 'out') -Filter 'profiles*.json' -ErrorAction SilentlyContinue)
+  $f = Get-PbPartFile $champ 'matchups'
+  if (-not $files.Count -or -not $f) { $job.warnings = @($job.warnings) + 'no profiles to install'; return }
+  try { $mu = Read-Text $f | ConvertFrom-Json } catch { $job.warnings = @($job.warnings) + 'current matchups.json unreadable'; return }
+  $n = 0
+  foreach ($pf in $files) {
+    try { $o = Read-Text $pf.FullName | ConvertFrom-Json } catch { $job.warnings = @($job.warnings) + "$($pf.Name): not valid JSON"; continue }
+    $src = if ($o.matchups) { $o.matchups } else { $o }
+    foreach ($p in $src.PSObject.Properties) {
+      if (-not ($p.Value -is [pscustomobject]) -or -not $p.Value.profile) { continue }
+      $entry = $mu.matchups.PSObject.Properties | Where-Object { $_.Name -ieq $p.Name -or "$($_.Value.name)" -ieq $p.Name } | Select-Object -First 1
+      if (-not $entry) { continue }
+      $entry.Value | Add-Member -NotePropertyName profile -NotePropertyValue $p.Value.profile -Force
+      $n++
+    }
+  }
+  if (-not $n) { $job.warnings = @($job.warnings) + 'no profile matched a matchup'; return }
+  $text = $mu | ConvertTo-Json -Depth 40
+  $err = Test-PartJson 'matchups' $text
+  if ($err) { $job.warnings = @($job.warnings) + "matchups: $err"; return }
+  $null = New-PbVersion $champ @{ matchups = $text } "job:$($job.id)" "Matchup profiles (v2) for $n opponents"
+  $job.installed = @($job.installed) + "profiles@$n"
+}
 # install finished parts of a champion job. For a champion without a playbook, parts go live as they arrive.
 function Install-JobParts([string]$dir, $job, [bool]$final) {
   $champ = $job.champion
   if (-not $champ) { return }
+  if ($job.type -eq 'profile') { if ($final) { Install-Profiles $dir $job }; return }
   $outDir = Join-Path $dir 'out'
   $parts = @{}
   foreach ($p in $PbParts) {

@@ -148,6 +148,7 @@ const Report = (() => {
 
     // ---------- your deaths ----------
     const myEvents = events.filter((e) => e.type === 'CHAMPION_KILL' && e.victimId === me.pid);
+    const buildingKills = events.filter((e) => e.type === 'BUILDING_KILL' && e.position);
     const liveDeaths = (live && live.deaths) || [];
     const deaths = myEvents.map((e) => {
       const t = e.timestamp / 1000, mi = Math.floor(t / 60);
@@ -166,7 +167,10 @@ const Report = (() => {
       const alliesNear = mine.filter((x) => x.pid !== me.pid).filter((x) => { const q = F(mi, x.pid).position; return Math.hypot(q.x - p.x, q.y - p.y) < 3000; }).length;
       const enemyHalf = p.x != null ? (me.team === 100 ? p.x + p.y > 15400 : p.x + p.y < 14400) : false;
       const lr = liveDeaths.find((x) => Math.abs(x.t - t) < 8);
-      return { t, kind, behind, alliesNear, enemyHalf, zone: Review.zoneOf(p), killers: inv.map((id) => byPid[id].championName), level: a ? a.level : me.level, timer: deathTimer(a ? a.level : 10, t), mode: lr ? lr.mode : null };
+      return { t, kind, behind, alliesNear, enemyHalf, zone: Review.zoneOf(p), killers: inv.map((id) => byPid[id].championName), killer: e.killerId && byPid[e.killerId] ? byPid[e.killerId].championName : null,
+        level: a ? a.level : me.level, timer: deathTimer(a ? a.level : 10, t), mode: lr ? lr.mode : null,
+        underOwnTower: p.x != null ? Review.turretAt(me.team, p, t, buildingKills) : null, underEnemyTower: p.x != null ? Review.turretAt(me.team === 100 ? 200 : 100, p, t, buildingKills) : null,
+        hits: Review.damageTaken(e, byPid) };
     });
     const deadAt = (t) => deaths.some((d) => t >= d.t && t <= d.t + d.timer);
     const posAt = (t) => { const f = frames[clamp(Math.round(t / 60), 0, last)].participantFrames[me.pid]; return f && f.position; };

@@ -19,7 +19,9 @@ You can only read and write inside this folder, and you can search and read the 
    official patch notes for ability details and recent changes.
 2. **`out/rules.json` and `out/phases.json`**: how this champion plays each phase, and the dashboard decisions.
 3. **Matchups** (`out/matchups_part1.json`, `out/matchups_part2.json`, ...): the ~30 most common top-lane opponents of {{CHAMPION_NAME}} on this patch (find the
-   list on a stats site's counters page), with win rates and concrete tips per phase.
+   list on a stats site's counters page), with win rates and concrete tips per phase, and a `profile` for each
+   (power curve, kit flags, threats; see the format). Every threat asks: is the player still safe at their own
+   tower when behind in this matchup?
 
 Use sub-agents (the Agent tool) to work in parallel: for example one for the build (meta.json), one for the game
 plan (phases.json), and three or four for the matchups, each covering a slice of the opponents and writing
@@ -35,8 +37,10 @@ make it about {{CHAMPION_NAME}}:
 - **fightScore**: what makes a fight good or bad for this champion? Level 6 matters a lot for champions with a
   decisive ultimate; item spikes matter more for scaling champions; tanks with weak dueling should get smaller
   positive weights and should not be told to all-in on a bruiser just for a level lead. Use `me.class`,
-  `me.ranged`, `opp.class`, `opp.ranged`, `matchup.difficulty`, `tags` where it helps.
-- **Lane rules**: when to all-in, trade, farm safely, for this champion's kit and power curve.
+  `me.ranged`, `opp.class`, `opp.ranged`, `tags` where it helps, and carry the matchup with the `pw` term
+  (playbook v2: the matchup's power curve; see the format).
+- **Lane rules**: when to all-in (`e`), trade (`eShort`), farm safely, for this champion's kit and power curve.
+  Give each lane rule a stance (`position`, `farm`, `trade`) when the mode's default is wrong.
 - **After laning** (min >= 14): what does this champion do? Split push and duel, group and engage, peel,
   flank, or farm and scale? Replace Jax's split-push rules with rules that fit. Tanks and engage champions
   usually group for objectives and look for engages; duelists split.

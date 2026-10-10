@@ -295,6 +295,45 @@
       "headline": "{bigDragon.status == 'up' ? 'Elder Dragon is up' : 'Elder Dragon in ' + clock(bigDragon.in)}",
       "reason": "{bigDragon.status == 'up' ? 'Elder executes low-health enemies: fight for it together, never alone' : 'Push your wave and group before it spawns'}",
       "voiceKey": "elder-{round(bigDragon.next)}"
+    },
+    {
+      "id": "lane_not_safe",
+      "before": "lane_guard",
+      "note": "v2 safety: the tower doesn't protect you (matchup threat or a big lead after 6) and you're low or their jungler is close",
+      "when": "min < 14 && opp && !opp.dead && !towerSafe && (me.hp < 0.45 || (jg && jg.status == 'near'))",
+      "mode": "retreat",
+      "headline": "Not safe in lane: recall",
+      "reason": "{threat && threat.why ? threat.why : oppName + ' can dive you at your tower'}{me.hp < 0.45 ? ', and you have ' + pct(me.hp) + ' health' : ''}{jg && jg.status == 'near' ? ', ' + jg.name + ' is close' : ''}",
+      "position": "off_lane",
+      "farm": "none",
+      "trade": "none",
+      "do": [
+        "Recall now; the tower takes the wave for you",
+        "Come back with Teleport or after the next wave crashes"
+      ],
+      "voice": "Not safe at your tower now. Recall.",
+      "voiceKey": "lane-not-safe"
+    },
+    {
+      "id": "lane_tower_unsafe",
+      "before": "lane_guard",
+      "note": "v2 safety: the tower won't save you, so 'stay under tower' isn't enough",
+      "when": "min < 14 && opp && !opp.dead && !towerSafe && e < 1",
+      "mode": "retreat",
+      "headline": "{threat && threat.headline ? threat.headline : 'Your tower will not protect you: stay behind it'}",
+      "reason": "{threat && threat.why ? threat.why : oppName + ' is strong enough to dive you'}",
+      "position": "behind_tower",
+      "farm": "cannons",
+      "trade": "none",
+      "do": [
+        "{threat && threat.do ? threat.do : 'Stand behind your tower, never at its edge'}",
+        "Take only cannons and minions right next to the tower"
+      ],
+      "dont": [
+        "Walking up for a minion while {oppName} stands next to the wave"
+      ],
+      "voice": "{threat && threat.voice ? threat.voice : 'Your tower is not safe now. Stay behind it.'}",
+      "voiceKey": "tower-unsafe-{threat ? threat.id : 'dive'}"
     }
   ],
   "triggers": {
@@ -306,5 +345,22 @@
       "Elder decides games: arrive together, never face-check the river alone.",
       "Whoever gets Elder should force a fight right away while the execute lasts."
     ]
-  }
+  },
+  "hints": [
+    {
+      "id": "ghost",
+      "when": "min < 14 && opp && has(opp.spells, 'Ghost')",
+      "text": "{oppName} runs Ghost: don't count on outrunning him"
+    },
+    {
+      "id": "outer_down",
+      "when": "min < 20 && tower.mine == 'inner'",
+      "text": "Your outer turret is gone: the lane is longer, so ganks reach you more easily"
+    },
+    {
+      "id": "killed_twice",
+      "when": "min < 14 && opp && deathsGame.soloToOpp >= 2",
+      "text": "{oppName} killed you {deathsGame.soloToOpp} times alone: fight only when it says All-in"
+    }
+  ]
 }

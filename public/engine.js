@@ -196,8 +196,9 @@ const Engine = (() => {
     const team = /_TOrder_|_T1_/i.test(n) ? 'ORDER' : /_TChaos_|_T2_/i.test(n) ? 'CHAOS' : null;
     const nw = n.match(/_L([012])_/), old = n.match(/_T[12]_([LCR])/);
     const lane = nw ? ['bot', 'mid', 'top'][+nw[1]] : old ? { L: 'top', C: 'mid', R: 'bot' }[old[1]] : '';
-    const p = n.match(/_P(\d)_/);
-    const tier = p ? { 1: 'base', 2: 'inner', 3: 'outer', 4: 'nexus', 5: 'nexus' }[p[1]] || '' : '';
+    const p = n.match(/_P(\d)_/), o = n.match(/_T[12]_([LCR])_0(\d)/);
+    const tier = p ? { 1: 'base', 2: 'inner', 3: 'outer', 4: 'nexus', 5: 'nexus' }[p[1]] || ''
+      : o ? (o[1] === 'C' ? { 5: 'outer', 4: 'inner', 3: 'base', 2: 'nexus', 1: 'nexus' } : { 3: 'outer', 2: 'inner', 1: 'base' })[o[2]] || '' : '';
     const kind = /^(Inhib|Barracks)/i.test(n) ? 'inhibitor' : /^Turret/i.test(n) ? 'turret' : 'building';
     return { team, lane, tier, kind };
   }
@@ -208,16 +209,20 @@ const Engine = (() => {
     const gold = sum(mine, (p) => itemValue(D, p)), egold = sum(enemies, (p) => itemValue(D, p));
     let towers = 0, etowers = 0;
     const inhibDown = new Map();   // name -> building, while it's down (they respawn after 5 minutes)
+    const lost = { mine: new Set(), theirs: new Set() };   // "top-outer" etc.
     for (const e of events) {
       if (e.EventName === 'TurretKilled') {
-        const owner = building(e.TurretKilled).team;
+        const b = building(e.TurretKilled), owner = b.team;
         if (owner === myTeam) etowers++; else if (owner) towers++;
+        if (owner && b.lane && b.tier) lost[owner === myTeam ? 'mine' : 'theirs'].add(`${b.lane}-${b.tier}`);
       } else if (e.EventName === 'InhibKilled') inhibDown.set(e.InhibKilled, building(e.InhibKilled));
       else if (e.EventName === 'InhibRespawned') inhibDown.delete(e.InhibRespawned);
     }
     const down = [...inhibDown.values()];
     const inhibs = { lost: down.filter((b) => b.team === myTeam).map((b) => b.lane), taken: down.filter((b) => b.team && b.team !== myTeam).map((b) => b.lane) };
-    return { kills, ekills, goldDiff: gold - egold, itemGold: gold + egold, towers, etowers, inhibs };
+    // the first turret still standing in each lane (outer > inner > base), 'none' when all three are gone
+    const front = (side) => Object.fromEntries(['top', 'mid', 'bot'].map((l) => [l, ['outer', 'inner', 'base'].find((t) => !lost[side].has(`${l}-${t}`)) || 'none']));
+    return { kills, ekills, goldDiff: gold - egold, itemGold: gold + egold, towers, etowers, inhibs, turrets: { mine: front('mine'), theirs: front('theirs') } };
   }
 
   // ---------- enemy composition ----------
@@ -862,8 +867,27 @@ const Engine = (() => {
       legendaries: legendaryCount(D, p), itemGold: itemValue(D, p), fed: isFed(p), class: (champ(D, p.cid).tags || [])[0] || '',
       ranged: (champ(D, p.cid).range || 0) > 300, damage: dmgType(D, p.cid),
       magic: Math.round((((comp.dmg || []).find((x) => x.cid === p.cid) || {}).magic ?? profile(D, p.cid).def) * 100) / 100,
+      items: (p.items || []).map((i) => (itemData(D, i.itemID) || {}).name || i.displayName).filter(Boolean),
+      spells: [((p.summonerSpells || {}).summonerSpellOne || {}).displayName, ((p.summonerSpells || {}).summonerSpellTwo || {}).displayName].filter(Boolean).map((s) => String(s).replace(/^Hexflash$/, 'Flash')),
     } : null);
     const mu = opp ? D.matchups[opp.cid] : null;
+    const pf = (mu && mu.profile) || null;
+    // your deaths this game, from the kill feed
+    const mine = (n) => nameIs(me, n);
+    const myDeaths = (a.events || []).filter((e) => e.EventName === 'ChampionKill' && mine(e.VictimName));
+    const killerOf = (e) => { const k = [...enemies, ...allies].find((p) => nameIs(p, e.KillerName)); return k || null; };
+    const soloBy = (e, p) => p && nameIs(p, e.KillerName) && !(e.Assisters || []).length;
+    const last = myDeaths[myDeaths.length - 1];
+    const deathsGame = {
+      total: myDeaths.length, toOpp: myDeaths.filter((e) => opp && (nameIs(opp, e.KillerName) || (e.Assisters || []).some((n) => nameIs(opp, n)))).length,
+      soloToOpp: myDeaths.filter((e) => soloBy(e, opp)).length,
+      lastKiller: last ? (killerOf(last) ? champ(D, killerOf(last).cid).name : 'a turret or minions') : null,
+      lastAgo: last ? Math.round(t - last.EventTime) : null, lastSolo: !!(last && soloBy(last, opp)),
+    };
+    // your lane and its turrets (live data names the role TOP/MIDDLE/BOTTOM/UTILITY/JUNGLE)
+    const LANE = { TOP: 'top', MIDDLE: 'mid', MID: 'mid', BOTTOM: 'bot', UTILITY: 'bot' };
+    const myLane = LANE[String(me.position || '').toUpperCase()] || (opp ? 'top' : null);
+    const tw = team.turrets || { mine: {}, theirs: {} };
     const eDead = enemies.filter((p) => p.isDead).length, aDead = [me, ...allies].filter((p) => p.isDead).length;
     const fedP = enemies.filter((p) => p !== opp && !p.isDead && isFed(p));
     const fedNames = fedP.slice(0, 2).map((p) => champ(D, p.cid).name);
@@ -876,7 +900,14 @@ const Engine = (() => {
     const big = dragon && dragon.stakes && (dragon.status === 'up' || dragon.in <= 90) ? dragon : null;
     const meF = { ...person(me), hp, mana, gold: items.gold };
     const oppF = person(opp);
+    if (oppF) oppF.kit = (pf && pf.kit) || {};
     const tagObj = {}; for (const x of tags) tagObj[x] = true;
+    // the matchup's power curve: who wins short trades and long fights at this stage, -2 (they win clearly) .. +2.
+    // Without a profile both come from the matchup difficulty (as before).
+    const stage = meF.legendaries >= 2 ? 'item2' : meF.legendaries >= 1 ? 'item1' : me.level >= 6 ? 'post6' : me.level >= 4 ? 'lvl4_5' : 'lvl1_3';
+    const curve = (k) => { const c = pf && pf.power && pf.power[k]; const v = c ? c[stage] ?? c[{ item2: 'item1', item1: 'post6', post6: 'lvl4_5', lvl4_5: 'lvl1_3' }[stage]] : null; return typeof v === 'number' ? Math.max(-2, Math.min(2, v)) : null; };
+    const base = mu && mu.difficulty != null ? (3 - mu.difficulty) * 0.5 : 0;
+    const power = { stage, short: curve('short') ?? base, extended: curve('extended') ?? base, fromProfile: !!(pf && pf.power) };
     return {
       t, min, clock: fmtClock(t), phase: a.phase,
       me: meF, opp: oppF, oppName: oppF ? oppF.name : 'your opponent',
@@ -895,26 +926,79 @@ const Engine = (() => {
       fed: { count: fedP.length, names: orList(fedNames), verb: fedP.length > 1 ? 'are' : 'is', key: fedNames.join('-') },
       tags: tagObj, comp: { apShare: comp.apShare, tanks: comp.tanks.length, healers: comp.strongHeal.length, cc: comp.cc.length, burst: comp.burst.length, poke: comp.poke.length },
       plan: D.plan || null,
+      deathsGame, myLane, power, pw: power.extended,
+      tower: { mine: myLane ? tw.mine[myLane] : null, theirs: myLane ? tw.theirs[myLane] : null, lanes: tw },
     };
+  }
+  // matchup threats ("profile.threats") that hold right now, and whether your own tower still protects you.
+  // Without a matching threat a generic check: a melee opponent 2 levels or 1.5k item gold up after 6 can dive.
+  function safety(D, ctx) {
+    const mu = ctx.opp ? D.matchups[ctx.opp.champ] : null;
+    const list = ((mu && mu.profile && mu.profile.threats) || []).filter((x) => x && x.id);
+    const on = [];
+    for (const x of list) {
+      let ok = false;
+      try { ok = !!Rules.evaluate(x.when, ctx); } catch { ok = false; }
+      if (!ok) continue;
+      const tx = (s) => { try { return Rules.template(s, ctx); } catch { return ''; } };
+      on.push({ id: x.id, towerUnsafe: !!x.towerUnsafe, laneUnsafe: !!x.laneUnsafe, headline: tx(x.headline) || '', why: tx(x.why) || '', do: tx(x.do) || '', voice: tx(x.voice) || '', note: tx(x.note) || '' });
+    }
+    const o = ctx.opp;
+    const genericDive = !!(o && !o.ranged && o.level >= 6 && (ctx.lvlD <= -2 || ctx.itemD <= -1500));
+    const towerSafe = !on.some((x) => x.towerUnsafe || x.laneUnsafe) && !genericDive && ctx.tower.mine !== 'none';
+    const threat = on.find((x) => x.towerUnsafe || x.laneUnsafe) || on[0] || (genericDive ? { id: 'dive', towerUnsafe: true, headline: '', why: `${ctx.oppName} is far enough ahead to dive you under your tower`, do: '', voice: '', note: '' } : null);
+    return { threats: on.map((x) => x.id), threat, towerSafe, laneSafe: !on.some((x) => x.laneUnsafe), active: on };
   }
   // the decision order: the playbook's rules, plus the shared rules every champion gets (data/shared.json "rules",
   // skipped when the playbook has a rule with the same id), plus the game plan's rules
-  function modesFor(D, R = D.rules || {}, overlay = D.overlayRules) {
+  // v2 adds the lane opponent's matchup rules (matchups.json "profile.rules", only against that champion) at the
+  // plan anchor, and your personal rules (learned from your games) before the lane decisions
+  function modesFor(D, R = D.rules || {}, overlay = D.overlayRules, oppCid = null) {
     const own = new Set((R.modes || []).map((r) => r.id));
     const shared = ((D.shared || {}).rules || []).filter((r) => r && r.id && !own.has(r.id)).map((r) => ({ ...r, source: 'shared' }));
-    return Rules.withOverlay(Rules.withOverlay(R.modes, shared), overlay);
+    const mu = oppCid ? D.matchups[oppCid] : null;
+    const muRules = Rules.clean((mu && mu.profile && mu.profile.rules) || [], 'mu').map((r) => ({ ...r, source: 'matchup' }));
+    const me = Rules.clean(((D.personal || {}).rules) || [], 'me').map((r) => ({ ...r, before: r.before || 'lane_guard', source: 'personal' }));
+    return Rules.withOverlay(Rules.withOverlay(Rules.withOverlay(Rules.withOverlay(R.modes, shared), me), muRules), overlay);
   }
+  // extra lines under the decision: personal first, then the active matchup threats, then playbook and shared hints
+  function hintsFor(D, ctx, sf, decision) {
+    const out = [];
+    const add = (txt, id) => { const s = String(txt || '').trim(); if (s && !out.some((x) => x.text === s) && s !== decision.headline && s !== decision.reason) out.push({ id, text: s }); };
+    const run = (list, src) => { for (const h of list || []) { if (!h || !h.text) continue; try { if (Rules.evaluate(h.when, ctx)) add(Rules.template(h.text, ctx), `${src}:${h.id || ''}`); } catch {} } };
+    run((D.personal || {}).hints, 'me');
+    // a threat's note, unless that threat is what decided (its headline is already on screen)
+    const decidedBy = /^lane_(tower_unsafe|not_safe)$/.test(decision.rule || '') && sf.threat ? sf.threat.id : null;
+    for (const x of sf.active) if (x.note && x.id !== decidedBy && !(decision.rule || '').includes(x.id)) add(x.note, `threat:${x.id}`);
+    run((D.rules || {}).hints, 'pb');
+    run((D.shared || {}).hints, 'shared');
+    return out.slice(0, 2);
+  }
+  // what each mode means for where to stand, what to farm and how to trade, unless the rule says otherwise
+  const STANCE = {
+    allin: { position: 'forward', farm: 'all', trade: 'allin' }, push: { position: 'forward', farm: 'all', trade: 'short' },
+    trade: { position: 'wave', farm: 'all', trade: 'short' }, safe: { position: 'wave', farm: 'safe', trade: 'none' },
+    retreat: { position: 'tower', farm: 'safe', trade: 'none' }, group: { position: 'group', farm: null, trade: null }, dead: {},
+  };
   function playMode(D, a) {
     const R = D.rules || {};
     const ctx = ruleContext(D, a);
-    const sc = Rules.score(R.fightScore, ctx);
-    ctx.e = sc.total; ctx.why = sc.why; ctx.first = sc.why[0] || '';
+    const sf = safety(D, ctx);
+    Object.assign(ctx, { threats: sf.threats, threat: sf.threat, towerSafe: sf.towerSafe, laneSafe: sf.laneSafe });
+    // two fight scores: e = a long fight / all-in (power curve "extended"), eShort = a short trade ("short")
+    const sc = Rules.score(R.fightScore, { ...ctx, pw: ctx.power.extended });
+    const scS = Rules.score(R.fightScore, { ...ctx, pw: ctx.power.short });
+    ctx.e = sc.total; ctx.eShort = scS.total; ctx.why = sc.why; ctx.first = sc.why[0] || '';
     ctx.reason = [sc.why.slice(0, 3).join(', '), ctx.jgNote].filter(Boolean).join(' · ');
-    const modes = modesFor(D, R);
+    const modes = modesFor(D, R, D.overlayRules, a.P.opp ? a.P.opp.cid : null);
     const { decision, trace } = Rules.decide(modes, ctx, { numbers: () => numbersCall(D, a) });
-    a.trace = { score: Math.round(sc.total * 100) / 100, terms: sc.trace, rules: trace, ctx };
+    a.trace = { score: Math.round(sc.total * 100) / 100, scoreShort: Math.round(scS.total * 100) / 100, terms: sc.trace, rules: trace, ctx, safety: sf };
     const d = decision || { mode: 'trade', headline: 'Trade & farm', reason: ctx.reason, voice: null, voiceKey: 'trade', rule: null };
     if (!MODES.has(d.mode)) d.mode = 'trade';
+    const st = STANCE[d.mode] || {};
+    for (const k of ['position', 'farm', 'trade']) if (!d[k]) d[k] = st[k] || null;
+    d.stanceSet = !!(decision && decision.stanceSet);
+    d.hints = hintsFor(D, ctx, sf, d);
     d.voice = capSentences(d.voice) || null;
     if (!d.voiceKey) d.voiceKey = d.mode;
     return d;
@@ -1016,5 +1100,5 @@ const Engine = (() => {
     return { comp, tags, items };
   }
 
-  return { analyze, newMemory, csText, planForComp, modesFor, profile, fmtClock, parseClock, champ, champIdOf, itemData, isLegendary, legendaryCount, inventory, building, dmgType, nameIs, PHASE_LABEL, MATCHUP_PHASE, STRONG_HEALERS };
+  return { analyze, newMemory, csText, planForComp, modesFor, profile, fmtClock, parseClock, champ, champIdOf, itemData, isLegendary, legendaryCount, inventory, building, STANCE, dmgType, nameIs, PHASE_LABEL, MATCHUP_PHASE, STRONG_HEALERS };
 })();

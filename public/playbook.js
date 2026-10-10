@@ -41,6 +41,18 @@ const Playbooks = (() => {
     return out;
   }
 
+  // playbook v2 upgrade for rules written before it, applied on load (no new version needed):
+  // - the fight-score term built on the fixed matchup difficulty uses the matchup's power curve (pw) instead;
+  //   pw is (3 - difficulty) * 0.5 when a matchup has no curve, so old matchups score exactly as before
+  // - the lane "trade" rule uses the short-trade score (eShort); the all-in rule keeps the long-fight score (e)
+  function upgradeRules(rules) {
+    if (!rules || !Array.isArray(rules.fightScore) || rules.fightScore.some((t) => /\bpw\b/.test(String(t.add)))) return rules;
+    const fightScore = rules.fightScore.map((t) => (/matchup\.difficulty/.test(String(t.add))
+      ? { ...t, add: String(t.add).replace(/\(\s*3\s*-\s*\(\s*matchup\.difficulty\s*\|\|\s*3\s*\)\s*\)/g, '(pw * 2)'), why: t.why || "{pw > 0 ? 'you win this stage of the matchup' : oppName + ' wins this stage of the matchup'}", whyWhen: t.whyWhen || 'abs(pw) >= 1' } : t));
+    const modes = (rules.modes || []).map((r) => (r.id === 'lane_trade' && /\be\s*>=/.test(String(r.when)) ? { ...r, when: String(r.when).replace(/\be\s*>=/, 'eShort >=') } : r));
+    return { ...rules, fightScore, modes };
+  }
+
   // the playbook as the engine and views use it, for one champion, with an optional game-plan overlay
   function effective(champ, dd, overlay) {
     const pb = cache[champ] || {};
@@ -53,7 +65,7 @@ const Playbooks = (() => {
       meta = { ...gm, champion: champ, items: bc.items || [], coreBuild: { ...(gm.coreBuild || {}), boots: bc.boots || [] } };
     }
     let phases = pb.phases || gen.phases || {};
-    let rules = pb.rules || gen.rules || {};
+    let rules = upgradeRules(pb.rules || gen.rules || {});
     const matchups = normMatchups((pb.matchups || {}).matchups, dd);
     let overlayRules = null;
     if (overlay) {
@@ -74,19 +86,18 @@ const Playbooks = (() => {
       },
     };
   }
-  const MODES = ['allin', 'push', 'trade', 'safe', 'retreat', 'group'];
-  // agent-written rules are data, but still checked: known modes only, expressions must parse
-  function cleanRules(rs) {
-    const out = [];
-    for (const r of rs || []) {
-      if (!r || !r.id || r.use || r.anchor) continue;
-      if (r.disable) { out.push({ id: String(r.id), disable: String(r.disable) }); continue; }
-      const bad = Rules.check({ modes: [r] });
-      if (bad.length) { console.warn('Plan rule skipped', r.id, bad); continue; }
-      if (!/\{/.test(String(r.mode)) && !MODES.includes(r.mode)) { console.warn('Plan rule skipped (mode)', r.id, r.mode); continue; }
-      out.push({ ...r, id: `plan:${String(r.id).replace(/^plan:/, '')}` });
-    }
-    return out;
+  // agent-written game-plan rules: checked like every agent rule (Rules.clean); "disable" keeps its plain id
+  const cleanRules = (rs) => Rules.clean(rs, 'plan').map((r) => (r.disable ? { id: r.id.replace(/^plan:/, ''), disable: r.disable } : r));
+
+  // your personal rules and hints (learned from your games), shared by all champions: history\personal.json
+  let personal = null;
+  async function loadPersonal() { try { personal = await getJSON('/api/personal'); } catch { personal = personal || { rules: [], hints: [] }; } return personal; }
+  async function savePersonal(next, note) {
+    const r = await fetch('/api/personal', { method: 'POST', body: JSON.stringify({ ...next, updated: new Date().toISOString(), note: note || '' }) });
+    const j = await r.json();
+    if (!r.ok) throw new Error(j.error || `HTTP ${r.status}`);
+    personal = j;
+    return j;
   }
   async function saveVersion(champ, parts, note, source) {
     const body = { parts: {}, note, source };
@@ -107,5 +118,5 @@ const Playbooks = (() => {
     return j;
   }
 
-  return { load, loadGeneric, refreshList, info, has, isDraft, raw, effective, cleanRules, saveVersion, activate, onChange: (f) => listeners.push(f), get list() { return list; } };
+  return { load, loadGeneric, refreshList, info, has, isDraft, raw, effective, cleanRules, saveVersion, activate, loadPersonal, savePersonal, get personal() { return personal; }, onChange: (f) => listeners.push(f), get list() { return list; } };
 })();

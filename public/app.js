@@ -79,7 +79,7 @@ async function boot() {
       if (!D.dd.itemByName[k] || better(id, D.dd.itemByName[k])) D.dd.itemByName[k] = id;
     }
   }
-  await Promise.allSettled([Playbooks.loadGeneric(), Playbooks.refreshList()]);
+  await Promise.allSettled([Playbooks.loadGeneric(), Playbooks.refreshList(), Playbooks.loadPersonal()]);
   let start = 'Jax';
   try { start = localStorage.getItem('jc.champ') || start; } catch {}
   await useChamp(D.dd.champs[start] || start === 'Jax' ? start : 'Jax', { quiet: true });
@@ -136,7 +136,7 @@ async function useChamp(cid, { quiet = false, fresh = false } = {}) {
 function applyPlaybook() {
   const plan = Agent.planFor(S.champ);
   const e = Playbooks.effective(S.champ, D.dd, plan);
-  Object.assign(D, { meta: e.meta, phases: e.phases, rules: e.rules, matchups: e.matchups, overlayRules: e.overlayRules, playbook: e.playbook, plan: plan || null });
+  Object.assign(D, { meta: e.meta, phases: e.phases, rules: e.rules, matchups: e.matchups, overlayRules: e.overlayRules, playbook: e.playbook, plan: plan || null, personal: Playbooks.personal || { rules: [], hints: [] } });
   if (!S.muSel || !D.matchups[S.muSel]) S.muSel = Object.keys(D.matchups).sort()[0] || null;
   const pb = D.playbook;
   $('#champChip').innerHTML = `${champImg(S.champ, 'xs')}<span>${esc(champName(S.champ))}</span>${pb.generic ? '<i class="faint">· no playbook</i>' : pb.draft ? '<i class="faint">· draft</i>' : ''}<span class="caret">▾</span>`;
@@ -213,8 +213,33 @@ async function poll() {
     setWash(false, false);
   }
   document.body.dataset.mode = S.A && S.modeState.cur ? S.modeState.cur.mode : '';
+  maybeProfile();
   renderStatus();
   if (S.view === 'live') renderLive();
+}
+
+// playbook v2: every playbook whose matchups have no profiles yet gets one profile run, one champion at a time and
+// only while nothing else is going on (no game, no champ select). Once per champion and week; the button on the
+// Playbook tab runs it any time.
+async function maybeProfile() {
+  if (S.A || S.cs || S.demo || S.profileBusy || !Agent.ready()) return;
+  if (Agent.state.jobs.some((j) => j.status === 'running' && ['profile', 'champion'].includes(j.type))) return;
+  S.profileTried = S.profileTried || {};
+  const pool = [S.champ, ...Playbooks.list.filter((p) => p.parts && p.parts.matchups).map((p) => p.champion)].filter((c, i, a) => c && a.indexOf(c) === i);
+  const cid = pool.find((c) => !S.profileTried[c] && Playbooks.has(c));
+  if (!cid) return;
+  S.profileTried[cid] = true;
+  S.profileBusy = true;
+  try {
+    await Playbooks.load(cid);
+    const mus = Object.values((((Playbooks.raw(cid) || {}).matchups) || {}).matchups || {}).filter((v) => v && typeof v === 'object' && v.name);
+    if (mus.length < 5 || mus.filter((v) => v.profile).length >= mus.length / 2) return;
+    const k = `jc.profileTried.${cid}`;
+    let last = 0; try { last = +localStorage.getItem(k) || 0; } catch {}
+    if (Date.now() - last < 7 * 86400000) return;
+    try { localStorage.setItem(k, String(Date.now())); } catch {}
+    await Agent.profiles(D, cid);
+  } finally { S.profileBusy = false; }
 }
 
 // ---------- settings: storage per category ----------
@@ -773,10 +798,25 @@ function modeBanner(A) {
   const jg = jt ? `<div class="jg jg-${jt.status}">${champImg(jt.cid, 'sm')}<div><div class="small muted">Enemy jungler · lvl ${jt.level}</div><div class="jg-text">${esc(jt.text)}</div></div></div>` : '';
   return `<div class="mode-banner ${fresh ? 'fresh' : ''}" role="status">
       <div class="mode-icon" aria-hidden="true">${meta.icon}</div>
-      <div class="mode-main"><div class="mode-name">${esc(meta.name)}</div><div class="mode-head">${esc(m.headline)}</div>${m.reason ? `<div class="mode-reason">${esc(m.reason)}</div>` : ''}</div>
+      <div class="mode-main"><div class="mode-name">${esc(meta.name)}</div><div class="mode-head">${esc(m.headline)}</div>${m.reason ? `<div class="mode-reason">${esc(m.reason)}</div>` : ''}${stanceHtml(A, m)}</div>
       ${jg}
       <div class="mode-side">${voiceBtn()}<button class="why-btn ${S.showWhy ? 'on' : ''}" data-action="why" title="Show which rule decided this and why">Why?</button></div>
     </div>`;
+}
+
+// v2: how to play the decision: where to stand, what to farm, how to trade, one do / don't, and up to two hints
+const STANCE_TXT = {
+  position: { forward: 'Stand forward', wave: 'Stand with your wave', tower: 'Stay at your tower', behind_tower: 'Stand behind your tower', off_lane: 'Leave the lane', group: 'Stay with your team', side: 'Side lane' },
+  farm: { all: 'Farm everything', safe: 'Only safe minions', cannons: 'Cannons only', none: 'Give up the wave' },
+  trade: { allin: 'All-in', short: 'Short trades', none: 'No trades' },
+};
+function stanceHtml(A, m) {
+  const lane = A.t < 14 * 60 || m.stanceSet;
+  const chip = (k) => (m[k] && STANCE_TXT[k][m[k]] ? `<span class="stance-chip st-${esc(k)}-${esc(m[k])}">${esc(STANCE_TXT[k][m[k]])}</span>` : '');
+  const chips = lane && !['dead', 'group'].includes(m.mode) ? ['position', 'farm', 'trade'].map(chip).join('') : '';
+  const lines = [...arr(m.do).slice(0, 1).map((s) => `<div class="stance-do">${esc(s)}</div>`), ...arr(m.dont).slice(0, 1).map((s) => `<div class="stance-dont">${esc(s)}</div>`)].join('');
+  const hints = arr(m.hints).map((h) => `<div class="stance-hint">${esc(h.text)}</div>`).join('');
+  return chips || lines || hints ? `<div class="stance">${chips ? `<div class="stance-chips">${chips}</div>` : ''}${lines}${hints}</div>` : '';
 }
 
 // ---------- loadout: runes, spells, start, first buys for a given opponent (matchup data first, then comp) ----------
@@ -1392,7 +1432,7 @@ function whyPanel(A) {
   const rules = T.rules.map((r) => `<span class="rchk ${r.decided ? 'hit' : r.on ? 'on' : ''} ${r.error ? 'err' : ''}" title="${esc(r.error || (r.used ? `built-in: ${r.used}` : ''))}">${r.decided ? '✓' : r.error ? '!' : '✗'} ${esc(r.id)}</span>`).join('');
   const pb = D.playbook || {};
   return `<div class="card why">
-    <header><h2>Why "${esc((MODE_META[m.mode] || {}).name || m.mode)}"?</h2><span class="chip">rule ${esc(m.rule || '–')}</span>${String(m.rule || '').startsWith('plan:') ? '<span class="chip info">from the game plan</span>' : ''}<span class="chip">fight score ${T.score}</span><span class="grow"></span><span class="small faint">playbook: ${esc(champName(pb.champion))}${pb.generic ? ' (generic)' : pb.version ? ` v${pb.version}` : ' (built-in)'}</span></header>
+    <header><h2>Why "${esc((MODE_META[m.mode] || {}).name || m.mode)}"?</h2><span class="chip">rule ${esc(m.rule || '–')}</span>${String(m.rule || '').startsWith('plan:') ? '<span class="chip info">from the game plan</span>' : ''}<span class="chip" title="Long fight / all-in">fight score ${T.score}</span>${T.scoreShort != null && T.scoreShort !== T.score ? `<span class="chip" title="Short trade">short trade ${T.scoreShort}</span>` : ''}${T.safety ? `<span class="chip ${T.safety.towerSafe ? '' : 'warn'}" title="${esc(T.safety.threat ? T.safety.threat.why || T.safety.threat.id : '')}">tower ${T.safety.towerSafe ? 'safe' : 'not safe'}${T.safety.threats.length ? `: ${esc(T.safety.threats.join(', '))}` : ''}</span>` : ''}${T.ctx && T.ctx.power && T.ctx.power.fromProfile ? `<span class="chip" title="Matchup power curve at this stage (short / extended)">${esc(T.ctx.power.stage)} ${T.ctx.power.short} / ${T.ctx.power.extended}</span>` : ''}<span class="grow"></span><span class="small faint">playbook: ${esc(champName(pb.champion))}${pb.generic ? ' (generic)' : pb.version ? ` v${pb.version}` : ' (built-in)'}</span></header>
     <div class="two tight"><div><h3>Fight score (you vs your lane opponent)</h3><table><tbody>${terms || '<tr><td class="muted small">no terms apply</td></tr>'}</tbody></table></div>
     <div><h3>Rules checked, in order</h3><div class="rchks">${rules}</div><div class="small faint" style="margin-top:6px">The first rule whose condition holds decides. The Playbook tab shows every rule.</div></div></div>
   </div>`;
@@ -1449,6 +1489,8 @@ function renderPlaybook() {
   const scoreRow = (x) => `<tr><td><code>${esc(x.id)}</code>${x.group ? ` <span class="faint small">${esc(x.group)}</span>` : ''}</td><td><code class="small">${esc(x.when)}</code></td><td class="num"><code>${esc(x.add)}</code></td><td class="small muted">${esc(x.why || '')}</td></tr>`;
   const versions = info ? arr(info.versions).slice().reverse() : [];
   const src = raw.source || {};
+  const muList = Object.entries(((raw.matchups || {}).matchups) || {}).filter(([k, v]) => !k.startsWith('_') && v && typeof v === 'object');
+  const muTotal = muList.length, muProfiled = muList.filter(([, v]) => v.profile).length;
 
   el.innerHTML = `<div class="pb-layout">
     <div class="col">
@@ -1466,11 +1508,13 @@ function renderPlaybook() {
           <div class="small muted">${info ? `${info.active ? `version ${info.active}${info.draft ? ' (draft)' : ''}` : 'built-in version'} · patch ${esc(info.patch || '?')} · build: ${esc(src.meta || '–')} · plan: ${esc(src.phases || '–')} · matchups: ${esc(src.matchups || '–')} · rules: ${esc(src.rules || '–')}` : 'no playbook yet'}</div></div>
           ${cid !== S.champ ? `<button class="btn small" data-usechamp="${esc(cid)}">Show on dashboard</button>` : ''}
           ${Agent.ready() ? `<button class="btn small ghost" data-research="${esc(cid)}" ${Agent.running(`champion-${cid}`) ? 'disabled' : ''}>${Playbooks.has(cid) ? 'Refresh research' : 'Research now'}</button>` : ''}
+          ${Agent.ready() && muTotal ? `<button class="btn small ghost" data-profiles="${esc(cid)}" ${Agent.running(`profile-${cid}`) ? 'disabled' : ''} title="Turns the matchup texts into data the dashboard decides with: who wins short trades and all-ins at each stage, and when your tower isn't safe">${Agent.running(`profile-${cid}`) ? 'Profiling matchups…' : `Matchup profiles ${muProfiled}/${muTotal}`}</button>` : ''}
         </header>
         ${playbookNotice(cid)}
         ${versions.length ? `<div class="row small"><span class="muted">Versions:</span>${versions.map((v) => `<button class="btn small ${v.v === info.active ? '' : 'ghost'}" data-activate="${esc(cid)}" data-v="${v.v}" title="${esc(`${v.created} · ${v.source} · ${v.note || ''}`)}">v${v.v}</button>`).join('')}${info.shipped ? `<button class="btn small ${info.active ? 'ghost' : ''}" data-activate="${esc(cid)}" data-v="0" title="The version that ships with the app">built-in</button>` : ''}</div>` : ''}
         ${mine.length ? `<h3>Research runs</h3>${mine.map(jobRow).join('')}` : ''}
       </div>
+      ${personalCard()}
       ${propHtml ? `<div class="card"><header><h2>Suggested changes after your games</h2></header><div class="small muted">A review agent compared what the playbook said with what happened. Applying a change saves a new playbook version (you can switch back any time).</div>${propHtml}</div>` : ''}
       <div class="card"><header><h2>Decision rules</h2><span class="chip">${arr(R.modes).length} rules · ${arr(R.fightScore).length} score terms</span>${problems.length ? `<span class="chip warn">${problems.length} broken</span>` : ''}</header>
         ${R.notes ? `<div class="small muted">${esc(R.notes)}</div>` : ''}
@@ -1500,6 +1544,20 @@ async function applyProposal(jobId, idx) {
   const c = p && arr(p.proposal.changes)[idx];
   if (!c || !openChanges(p).some((o) => o.i === idx)) return;
   const champ = p.champ, part = c.part || 'rules';
+  if (part === 'personal') {
+    // your personal rules and hints: one file for every champion (history\personal.json)
+    const cur = Playbooks.personal || { rules: [], hints: [] };
+    let rules = arr(cur.rules).filter((r) => !arr(c.removeRules).includes(r.id)), hints = arr(cur.hints).filter((h) => !arr(c.removeHints).includes(h.id));
+    for (const r of arr(c.addRules)) { if (!r || !r.id || !Rules.clean([r], 'me').length) continue; rules = [...rules.filter((x) => x.id !== r.id), { ...r, from: `review:${jobId}` }]; }
+    for (const h of arr(c.addHints)) { if (!h || !h.id || !h.text || Rules.check({ hints: [h] }).length) continue; hints = [...hints.filter((x) => x.id !== h.id), { ...h, from: `review:${jobId}` }]; }
+    try {
+      await Playbooks.savePersonal({ rules, hints, log: [...arr(cur.log), { at: new Date().toISOString(), note: reviewNote(c), source: `review:${jobId}` }].slice(-50) }, reviewNote(c));
+      decideProposal(jobId, idx, 'applied');
+      applyPlaybook();
+    } catch (e) { alert(`Couldn't save: ${e.message}`); }
+    renderPlaybook();
+    return;
+  }
   await Playbooks.load(champ, true);
   const eff = Playbooks.effective(champ, D.dd, null);
   const base = (Playbooks.raw(champ) || {})[part] || (part === 'matchups' ? { champion: champ, matchups: {} } : part === 'meta' ? eff.meta : part === 'phases' ? eff.phases : eff.rules);
@@ -1526,6 +1584,17 @@ async function applyProposal(jobId, idx) {
     if (champ === S.champ) await useChamp(champ, { fresh: true });
   } catch (e) { alert(`Couldn't save: ${e.message}`); }
   renderPlaybook();
+}
+
+// what the coach learned about you (personal rules and hints, for every champion), with a way to remove each
+function personalCard() {
+  const P = Playbooks.personal || {};
+  const rules = arr(P.rules), hints = arr(P.hints);
+  if (!rules.length && !hints.length) return '';
+  const row = (kind, x) => `<div class="row small" style="justify-content:space-between"><div><b>${esc(x.headline || x.text || x.id)}</b>${x.when ? `<div class="faint"><code>${esc(x.when)}</code></div>` : ''}</div><button class="btn small ghost" data-personal-remove="${kind}:${esc(x.id)}">Remove</button></div>`;
+  return `<div class="card"><header><h2>What the coach learned about you</h2><span class="chip">all champions</span></header>
+    <div class="small muted">Rules from the reviews of your games. They come before the general lane advice on the dashboard.</div>
+    ${rules.map((r) => row('rules', r)).join('')}${hints.map((h) => row('hints', h)).join('')}</div>`;
 }
 
 // ---------- MATCHUPS ----------
@@ -2105,6 +2174,14 @@ function wireUi() {
     if (t.dataset.action === 'agent-check') { Agent.refreshStatus(true).then(() => { renderPlaybook(); renderLive(); }); return; }
     if (t.dataset.pbsel) { S.pbSel = t.dataset.pbsel; Playbooks.load(S.pbSel, true).then(renderPlaybook); renderPlaybook(); return; }
     if (t.dataset.usechamp) { useChamp(t.dataset.usechamp).then(() => { renderPlaybook(); renderLive(); }); return; }
+    if (t.dataset.profiles) { S.profileTried = S.profileTried || {}; S.profileTried[t.dataset.profiles] = true; Agent.profiles(D, t.dataset.profiles).then(renderPlaybook); return; }
+    if (t.dataset.personalRemove) {
+      const [kind, id] = t.dataset.personalRemove.split(':');
+      const cur = Playbooks.personal || {};
+      Playbooks.savePersonal({ ...cur, [kind]: arr(cur[kind]).filter((x) => x.id !== id), log: [...arr(cur.log), { at: new Date().toISOString(), note: `removed ${kind} ${id}` }].slice(-50) })
+        .then(() => { applyPlaybook(); renderPlaybook(); }).catch((e) => alert(`Couldn't save: ${e.message}`));
+      return;
+    }
     if (t.dataset.research) { Agent.research(D, t.dataset.research, Playbooks.has(t.dataset.research) ? 'refresh' : 'new').then(renderPlaybook); return; }
     if (t.dataset.activate) { Playbooks.activate(t.dataset.activate, +t.dataset.v).then(() => (t.dataset.activate === S.champ ? useChamp(S.champ, { fresh: true }) : null)).then(renderPlaybook).catch((err) => alert(err.message)); return; }
     if (t.dataset.cancel) { Agent.cancel(t.dataset.cancel); return; }

@@ -218,7 +218,71 @@
         "https://lolalytics.com/lol/jax/counters/",
         "https://lolalytics.com/lol/jax/vs/darius/build/",
         "https://www.leaguecoachmerch.com/darius-vs-jax/"
-      ]
+      ],
+      "profile": {
+        "power": {
+          "short": {
+            "lvl1_3": 0,
+            "lvl4_5": 0.5,
+            "post6": 0,
+            "item1": 1,
+            "item2": 1.5
+          },
+          "extended": {
+            "lvl1_3": -1.5,
+            "lvl4_5": -1,
+            "post6": -1.5,
+            "item1": 0,
+            "item2": 1
+          }
+        },
+        "kit": {
+          "pull": true,
+          "dive": "high",
+          "tankyEarly": true,
+          "poke": false,
+          "sustain": "high",
+          "ranged": false
+        },
+        "threats": [
+          {
+            "id": "pull_out_of_tower",
+            "when": "opp.level >= 6 && (lvlD <= -1 || legD <= -1 || itemD <= -700)",
+            "towerUnsafe": true,
+            "headline": "Darius can pull you out of your tower: stand behind it",
+            "why": "His E reaches past the tower's edge, and after 6 he tanks two shots for a kill",
+            "do": "Stand behind the tower; last-hit only cannons; recall below half health",
+            "voice": "Darius can pull you out of tower. Stand behind it.",
+            "note": "Don't stand at the tower's edge while Darius is in lane"
+          },
+          {
+            "id": "five_stacks",
+            "when": "opp.level >= 6 && opp.kills - opp.deaths >= 2",
+            "laneUnsafe": false,
+            "towerUnsafe": true,
+            "headline": "Fed Darius dives: give him nothing",
+            "why": "A fed Darius resets his ultimate and kills you through the tower",
+            "do": "Stay behind the tower and only come out with your jungler",
+            "voice": "Darius is fed. Do not stand near him.",
+            "note": "Never take a long fight with Darius at five stacks"
+          }
+        ],
+        "rules": [
+          {
+            "id": "darius_short_only",
+            "when": "min < 14 && opp && !opp.dead && eShort >= 0 && e < 1.5",
+            "mode": "trade",
+            "headline": "Short trades only vs Darius",
+            "reason": "Hit him after his Q, then walk away before the bleed stacks",
+            "position": "wave",
+            "farm": "all",
+            "trade": "short",
+            "dont": [
+              "Staying in a fight after he lands Q"
+            ]
+          }
+        ]
+      }
     },
     "Fiora": {
       "name": "Fiora",
@@ -626,7 +690,46 @@
       "sources": [
         "https://lolalytics.com/lol/jax/counters/",
         "https://lolalytics.com/lol/jax/vs/mordekaiser/build/"
-      ]
+      ],
+      "profile": {
+        "power": {
+          "short": {
+            "lvl1_3": -0.5,
+            "lvl4_5": -0.5,
+            "post6": -1,
+            "item1": 0.5,
+            "item2": 1
+          },
+          "extended": {
+            "lvl1_3": -1,
+            "lvl4_5": -1,
+            "post6": -1.5,
+            "item1": 0,
+            "item2": 1
+          }
+        },
+        "kit": {
+          "pull": true,
+          "dive": "high",
+          "tankyEarly": true,
+          "poke": false,
+          "sustain": "medium",
+          "ranged": false
+        },
+        "threats": [
+          {
+            "id": "realm_ignores_tower",
+            "when": "opp.level >= 6 && (lvlD <= 0 || legD <= -1 || me.hp < 0.6)",
+            "towerUnsafe": true,
+            "headline": "Mordekaiser's ultimate ignores your tower",
+            "why": "His ultimate takes you into his realm, where your tower can't shoot him",
+            "do": "Stay healthy or recall before he reaches 6; stand behind the tower against his E",
+            "voice": "Mordekaiser's ultimate ignores your tower. Stay healthy.",
+            "note": "Under tower doesn't protect you from his ultimate"
+          }
+        ],
+        "rules": []
+      }
     },
     "Nasus": {
       "name": "Nasus",
