@@ -277,6 +277,7 @@ const Report = (() => {
       const live = (hist || []).filter((h) => h.champ === me.championName && Math.abs((h.endedAt || 0) - m.info.gameEndTimestamp) < 15 * 60000).pop() || null;
       const T = Review.state.games.length >= 3 ? Review.trends(Review.state.games) : null;
       S.R = build(D, m, tl, me.puuid, live, T);
+      S.raw = S.R ? { m, tl, puuid: me.puuid } : null;   // the replay coach reads the timeline around a moment
       S.status = 'done';
       replayStatus();
     } catch (e) { S.status = 'error'; S.error = e.message; }
@@ -322,9 +323,9 @@ const Report = (() => {
     changed();
     setTimeout(replayStatus, 1500);
   }
-  async function jump(t) {
-    const r = await fetch('/api/replay/playback', { method: 'POST', body: JSON.stringify({ time: Math.max(0, t), paused: false, speed: 1 }) });
-    if (r.ok) S.replayMsg = `Jumped to ${clock(t)}.`;
+  async function jump(t, paused = false) {
+    const r = await fetch('/api/replay/playback', { method: 'POST', body: JSON.stringify({ time: Math.max(0, t), paused, speed: 1 }) });
+    if (r.ok) S.replayMsg = `Jumped to ${clock(t)}${paused ? ' (paused)' : ''}.`;
     else { let e = ''; try { e = (await r.json()).error; } catch {} S.replayMsg = e === 'replay_not_running' ? 'Open the replay first (Watch replay button), wait until it has loaded, then click again.' : 'REPLAY_API_OFF'; }
     changed();
   }

@@ -162,7 +162,7 @@ function Get-Hosts {
 
 # ---------------- response helpers ----------------
 $Mime = @{ '.html'='text/html'; '.js'='application/javascript'; '.css'='text/css'; '.json'='application/json';
-           '.png'='image/png'; '.svg'='image/svg+xml'; '.ico'='image/x-icon'; '.webp'='image/webp' }
+           '.png'='image/png'; '.jpg'='image/jpeg'; '.svg'='image/svg+xml'; '.ico'='image/x-icon'; '.webp'='image/webp' }
 
 function Send($ctx, [int]$status, [string]$body, [string]$type = 'application/json') {
   $bytes = [Text.Encoding]::UTF8.GetBytes($body)
@@ -542,6 +542,149 @@ function Handle-Replay($ctx) {
   Send $ctx $r.Status $(if ($r.Body) { $r.Body } else { '{}' })
 }
 
+# ---------------- replay coach: camera/fog, screenshots of the replay window, switching the Replay API on ----------------
+$ShotsDir = Join-Path $HistoryDir 'shots'
+function Handle-ReplayRender($ctx) {
+  if (-not (Get-Process -Name 'League of Legends' -ErrorAction SilentlyContinue)) { Send $ctx 503 '{"error":"replay_not_running"}'; return }
+  $url = 'https://127.0.0.1:2999/replay/render'
+  if ($ctx.Request.HttpMethod -eq 'POST') {
+    $in = Read-Body $ctx | ConvertFrom-Json
+    $out = [ordered]@{}
+    if ($null -ne $in.fogOfWar) { $out.fogOfWar = [bool]$in.fogOfWar }
+    if ($null -ne $in.cameraAttached) { $out.cameraAttached = [bool]$in.cameraAttached }
+    if ($in.selectionName -and "$($in.selectionName)".Length -le 40) { $out.selectionName = "$($in.selectionName)" }
+    $p = [JcHttp]::Send('POST', $url, $null, ($out | ConvertTo-Json -Compress), 3000)
+    if ($p.Status -eq 0) { Send $ctx 503 '{"error":"replay_api_off"}'; return }
+    Send $ctx $p.Status $(if ($p.Data) { [Text.Encoding]::UTF8.GetString($p.Data) } else { '{}' }); return
+  }
+  $r = [JcHttp]::Get($url, $null, 2000)
+  if ($r.Status -eq 0) { Send $ctx 503 '{"error":"replay_api_off"}'; return }
+  Send $ctx $r.Status $(if ($r.Body) { $r.Body } else { '{}' })
+}
+$script:ShotType = $false
+function Use-ShotType {
+  if ($script:ShotType) { return }
+  Add-Type -ReferencedAssemblies System.Drawing -TypeDefinition @"
+using System;
+using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
+using System.Runtime.InteropServices;
+using System.Threading;
+public static class JcShot {
+    [StructLayout(LayoutKind.Sequential)] struct RECT { public int L, T, R, B; }
+    [StructLayout(LayoutKind.Sequential)] struct POINT { public int X, Y; }
+    [DllImport("user32.dll")] static extern bool SetProcessDPIAware();
+    [DllImport("user32.dll")] static extern bool GetClientRect(IntPtr h, out RECT r);
+    [DllImport("user32.dll")] static extern bool ClientToScreen(IntPtr h, ref POINT p);
+    [DllImport("user32.dll")] static extern bool PrintWindow(IntPtr h, IntPtr hdc, uint flags);
+    [DllImport("user32.dll")] static extern bool SetForegroundWindow(IntPtr h);
+    [DllImport("user32.dll")] static extern IntPtr GetForegroundWindow();
+    [DllImport("user32.dll")] static extern bool ShowWindow(IntPtr h, int cmd);
+    [DllImport("user32.dll")] static extern bool IsIconic(IntPtr h);
+    [DllImport("user32.dll")] static extern void keybd_event(byte vk, byte scan, uint flags, UIntPtr extra);
+    static bool dpi;
+    // mostly black: PrintWindow can't see a DirectX game window drawn in exclusive fullscreen
+    static bool Blank(Bitmap b) {
+        int dark = 0, n = 0;
+        for (int y = 1; y < 12; y++) for (int x = 1; x < 16; x++) {
+            Color c = b.GetPixel(b.Width * x / 16, b.Height * y / 12); n++;
+            if (c.R + c.G + c.B < 24) dark++;
+        }
+        return dark > n * 0.95;
+    }
+    // the game window's picture, scaled to at most maxW pixels wide, saved as JPEG. Returns how it was taken.
+    public static string Capture(IntPtr h, string path, int maxW) {
+        if (!dpi) { SetProcessDPIAware(); dpi = true; }
+        RECT r; GetClientRect(h, out r);
+        POINT o = new POINT(); ClientToScreen(h, ref o);
+        int w = r.R - r.L, hh = r.B - r.T;
+        if (w < 200 || hh < 150) return "minimized";
+        Bitmap bmp = new Bitmap(w, hh, PixelFormat.Format32bppArgb);
+        string how = "window";
+        try {
+            using (Graphics g = Graphics.FromImage(bmp)) {
+                IntPtr dc = g.GetHdc();
+                bool ok = PrintWindow(h, dc, 3);
+                g.ReleaseHdc(dc);
+                if (!ok || Blank(bmp)) {
+                    // bring the replay to the front and copy it off the screen
+                    if (GetForegroundWindow() != h) {
+                        if (IsIconic(h)) ShowWindow(h, 9);
+                        keybd_event(0x12, 0, 0, UIntPtr.Zero); keybd_event(0x12, 0, 2, UIntPtr.Zero);
+                        SetForegroundWindow(h);
+                        Thread.Sleep(700);
+                    }
+                    g.CopyFromScreen(o.X, o.Y, 0, 0, new Size(w, hh));
+                    how = "screen";
+                }
+            }
+            if (Blank(bmp)) return "blank";
+            double s = Math.Min(1.0, (double)maxW / w);
+            using (Bitmap outB = new Bitmap((int)(w * s), (int)(hh * s)))
+            using (Graphics g2 = Graphics.FromImage(outB)) {
+                g2.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                g2.DrawImage(bmp, 0, 0, outB.Width, outB.Height);
+                ImageCodecInfo jpg = null;
+                foreach (ImageCodecInfo c in ImageCodecInfo.GetImageEncoders()) if (c.MimeType == "image/jpeg") jpg = c;
+                EncoderParameters ep = new EncoderParameters(1);
+                ep.Param[0] = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, 82L);
+                outB.Save(path, jpg, ep);
+            }
+        } finally { bmp.Dispose(); }
+        return how;
+    }
+}
+"@
+  $script:ShotType = $true
+}
+# POST { dir: "<gameId>-<second>", name: "before12-fog" }: a screenshot of the replay window into history\shots\<dir>\<name>.jpg
+# GET /api/replay/shots/<dir>/<name>.jpg: the picture
+function Handle-ReplayShot($ctx, [string]$sub) {
+  if ($ctx.Request.HttpMethod -ne 'POST') {
+    if ($sub -match '^/([\w-]{1,40})/([\w-]{1,40}\.jpg)$') { Send-File $ctx $ShotsDir "$($Matches[1])\$($Matches[2])"; return }
+    Send $ctx 404 '{"error":"not_found"}'; return
+  }
+  $in = Read-Body $ctx | ConvertFrom-Json
+  if ("$($in.dir)" -notmatch '^[\w-]{1,40}$' -or "$($in.name)" -notmatch '^[\w-]{1,40}$') { Send $ctx 400 '{"error":"bad_name"}'; return }
+  $p = Get-Process -Name 'League of Legends' -ErrorAction SilentlyContinue | Where-Object { $_.MainWindowHandle -ne [IntPtr]::Zero } | Select-Object -First 1
+  if (-not $p) { Send $ctx 503 '{"error":"replay_not_running"}'; return }
+  $dir = Join-Path $ShotsDir "$($in.dir)"
+  New-Item -ItemType Directory -Force $dir | Out-Null
+  $file = Join-Path $dir "$($in.name).jpg"
+  try { Use-ShotType; $how = [JcShot]::Capture($p.MainWindowHandle, $file, 1600) } catch { Send $ctx 500 ('{"error":' + (Json-Escape "$($_.Exception.Message)") + '}'); return }
+  if ($how -in @('minimized', 'blank')) { Send $ctx 409 ('{"error":"' + $how + '"}'); return }
+  Send $ctx 200 ('{"ok":true,"how":"' + $how + '","file":' + (Json-Escape "$($in.dir)/$($in.name).jpg") + '}')
+}
+# the one change Jax Coach makes to League's settings, and only when you click the button: EnableReplayApi=1 in game.cfg
+# (a copy of the old file is kept as game.cfg.jaxcoach-backup)
+function Handle-ReplayConfig($ctx) {
+  $null = Get-Lcu
+  $cfg = if ($script:LeagueDir) { Join-Path $script:LeagueDir 'Config\game.cfg' } else { $null }
+  if ($ctx.Request.HttpMethod -eq 'POST') {
+    $in = Read-Body $ctx | ConvertFrom-Json
+    if (-not $in.enable) { Send $ctx 400 '{"error":"nothing_to_do"}'; return }
+    if (-not $cfg -or -not (Test-Path $cfg)) { Send $ctx 404 '{"error":"game_cfg_not_found"}'; return }
+    try {
+      $text = [IO.File]::ReadAllText($cfg)
+      if ($text -notmatch '(?m)^\s*EnableReplayApi\s*=\s*1') {
+        $bak = "$cfg.jaxcoach-backup"
+        if (-not (Test-Path $bak)) { Copy-Item $cfg $bak }
+        if ($text -match '(?m)^\s*EnableReplayApi\s*=.*$') { $text = $text -replace '(?m)^\s*EnableReplayApi\s*=.*$', 'EnableReplayApi=1' }
+        elseif ($text -match '(?m)^\[General\]\s*$') { $text = $text -replace '(?m)^\[General\]\s*$', "[General]`r`nEnableReplayApi=1" }
+        else { $text = "[General]`r`nEnableReplayApi=1`r`n" + $text }
+        $f = Get-Item $cfg
+        if ($f.IsReadOnly) { $f.IsReadOnly = $false }
+        [IO.File]::WriteAllText($cfg, $text, (New-Object Text.UTF8Encoding($false)))
+        Write-Host "Replay API switched on in $cfg (backup: $bak)" -ForegroundColor Cyan
+      }
+    } catch { Send $ctx 500 ('{"error":' + (Json-Escape "$($_.Exception.Message)") + '}'); return }
+  }
+  $enabled = $false; $found = $false
+  if ($cfg -and (Test-Path $cfg)) { $found = $true; $enabled = [bool]((Get-Content $cfg -Raw) -match '(?m)^\s*EnableReplayApi\s*=\s*1') }
+  Send $ctx 200 ('{"found":' + $found.ToString().ToLower() + ',"enabled":' + $enabled.ToString().ToLower() + ',"path":' + (Json-Escape "$cfg") + '}')
+}
+
 # ---------------- personal rules: what the coach learned about you, for every champion (history\personal.json) ----------------
 # GET: { rules: [...], hints: [...], log: [...] } (empty when nothing is learned yet). POST: the whole file, checked as JSON.
 function Handle-Personal($ctx) {
@@ -578,6 +721,7 @@ function Get-StorageAreas {
     [ordered]@{ id = 'jobs'; label = 'Research run logs'; clear = $true; note = 'Logs of finished agent runs. Their results are already in your playbooks. Running jobs are kept.'; size = (Get-FilesSize $jobFiles) }
     [ordered]@{ id = 'playbooks'; label = 'Your playbooks'; clear = $false; note = 'Researched and updated champion playbooks with all versions. Manage them in the Playbook tab.'; size = (Get-FilesSize (Get-TreeFiles $LocalPb)) }
     [ordered]@{ id = 'archive'; label = 'Your match archive'; clear = $false; note = 'Every game of yours Riot still had, kept for good (Riot deletes games after about two years). Review, reports and stats read it.'; size = (Get-FilesSize @(@(Get-TreeFiles $ArchiveDir) + @(Get-TreeFiles $GamesDir))) }
+    [ordered]@{ id = 'shots'; label = 'Replay coach screenshots'; clear = $true; note = 'Pictures of your replays the replay coach looked at. Its answers stay.'; size = (Get-FilesSize (Get-TreeFiles $ShotsDir)) }
     [ordered]@{ id = 'history'; label = 'Live game records'; clear = $false; note = 'What the dashboard said in games you played with Jax Coach open.'; size = (Get-FilesSize (Get-ChildItem $HistoryDir -File -ErrorAction SilentlyContinue)) }
     [ordered]@{ id = 'voice'; label = 'Local voice engine'; clear = $false; note = 'The installed Kokoro voice. Uninstalling Jax Coach removes it.'; size = $script:VoiceEngineSize }
   )
@@ -588,6 +732,7 @@ function Clear-StorageArea([string]$id) {
     'tts' { Get-TreeFiles (Join-Path $CacheDir 'tts') | Remove-Item -Force -ErrorAction SilentlyContinue }
     'gamedata' { Get-ChildItem $CacheDir -File -ErrorAction SilentlyContinue | Remove-Item -Force -ErrorAction SilentlyContinue }
     'jobs' { Get-FinishedJobDirs | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue }
+    'shots' { if (Test-Path $ShotsDir) { Get-ChildItem $ShotsDir -Directory | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue } }
     default { return $false }
   }
   return $true
@@ -669,15 +814,9 @@ function Handle-Request($ctx) {
   if ($path -match '^/api/lcu(/.*)$') { Handle-Lcu $ctx $Matches[1]; return }
   if ($path -eq '/api/loadout/apply') { Handle-LoadoutApply $ctx; return }
   if ($path -eq '/api/replay/playback') { Handle-Replay $ctx; return }
-  if ($path -eq '/api/replay/config') {
-    # read-only: is the Replay API switched on in the game's config file?
-    $null = Get-Lcu
-    $cfg = if ($script:LeagueDir) { Join-Path $script:LeagueDir 'Config\game.cfg' } else { $null }
-    $enabled = $false; $found = $false
-    if ($cfg -and (Test-Path $cfg)) { $found = $true; $enabled = [bool]((Get-Content $cfg -Raw) -match '(?m)^\s*EnableReplayApi\s*=\s*1') }
-    Send $ctx 200 ('{"found":' + $found.ToString().ToLower() + ',"enabled":' + $enabled.ToString().ToLower() + ',"path":' + (Json-Escape "$cfg") + '}')
-    return
-  }
+  if ($path -eq '/api/replay/config') { Handle-ReplayConfig $ctx; return }
+  if ($path -eq '/api/replay/render') { Handle-ReplayRender $ctx; return }
+  if ($path -match '^/api/replay/shots?(/.*)?$') { Handle-ReplayShot $ctx "$($Matches[1])"; return }
   if ($path -eq '/api/history') { Handle-History $ctx; return }
   if ($path -match '^/api/archive(/.*)?$') { Handle-Archive $ctx "$($Matches[1])"; return }
   if ($path -eq '/api/personal') { Handle-Personal $ctx; return }

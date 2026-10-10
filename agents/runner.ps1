@@ -184,6 +184,7 @@ $JobTypes = @{
   review   = @{ model = 'fast'; maxMin = 20; installs = $false; tools = 'Read,Write,Edit,Glob,Grep,WebSearch,WebFetch' }
   ask      = @{ model = 'fast'; maxMin = 4;  installs = $false; tools = 'Read,Write,Edit,Glob,Grep,WebSearch,WebFetch' }
   profile  = @{ model = 'fast'; maxMin = 40; installs = $true;  tools = 'Read,Write,Edit,Glob,Grep,WebSearch,WebFetch,Agent' }
+  moment   = @{ model = 'fast'; maxMin = 6;  installs = $false; tools = 'Read,Write,Edit,Glob,Grep,WebSearch,WebFetch' }
 }
 $script:JobsTickAt = [DateTime]::MinValue
 
@@ -231,6 +232,12 @@ function Start-AgentJob([string]$body) {
   New-Item -ItemType Directory -Force $dir, (Join-Path $dir 'out') | Out-Null
   Write-Text (Join-Path $dir 'input.json') $body
   Copy-Reference $dir $type $champ
+  # replay coach: the screenshots of the moment, and what the coach already learned about this player
+  if ($type -eq 'moment' -and "$($in.shots)" -match '^[\w-]{1,40}$' -and (Test-Path (Join-Path $ShotsDir "$($in.shots)"))) {
+    New-Item -ItemType Directory -Force (Join-Path $dir 'shots') | Out-Null
+    Copy-Item (Join-Path $ShotsDir "$($in.shots)\*.jpg") (Join-Path $dir 'shots')
+  }
+  if ($type -in @('moment', 'review') -and (Test-Path (Join-Path $HistoryDir 'personal.json'))) { Copy-Item (Join-Path $HistoryDir 'personal.json') (Join-Path $dir 'reference') }
   $tpl = Join-Path $AgentsDir "prompts\$type.md"
   if (-not (Test-Path $tpl)) { return @{ status = 500; body = '{"error":"prompt_missing"}' } }
   $prompt = (Read-Text $tpl).Replace('{{CHAMPION}}', "$champ").Replace('{{CHAMPION_NAME}}', "$(if ($in.championName) { $in.championName } else { $champ })").

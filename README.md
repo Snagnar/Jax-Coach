@@ -10,6 +10,10 @@ browser (a second monitor works best):
 - **Champ select prep**: the matchup, build and runes against the enemy laner, and the enemy players' rank and mastery.
 - **Game report** after each game: a rating for all ten players, how much of the win/loss was yours, the gold story of
   the game, the three things to fix next time, and "Watch" buttons that jump the League replay to each of your deaths.
+- **Replay coach**: "Coach" on any death (or any second you type) reviews that moment like a VOD coach. It reads the
+  timeline (positions, health, levels, items, everything in the two minutes before, what did the damage) and, with the
+  replay open, pictures of the replay at 25, 12, 5 and 1 seconds before. It names the second it went wrong, what to do
+  instead, and the cue to see it coming. It can suggest a rule for the dashboard, which you can add with one click.
 - **Review**: patterns over your games on a champion (CS at 10, gold at 15, how and where you die), your record per
   matchup, streaks and sessions, and one focus per game.
 - **Match archive**: every game Riot still has for you (about two years) is imported once in the background and kept
@@ -90,8 +94,8 @@ Without Claude Code everything else works as before, and champions without a pla
   2. Put it in `%USERPROFILE%\.env.txt` as `riot_api_key=RGAPI-...`, or paste it into Settings (gear icon).
   3. Development keys expire every 24 hours; a *Personal API key* doesn't.
 - **Your server**: EUW by default; change it in Settings.
-- **Replay jumps** in the Game report: add `EnableReplayApi=1` under `[General]` in
-  `C:\Riot Games\League of Legends\Config\game.cfg`.
+- **Replay jumps and replay coach pictures** in the Game report: click "Turn on the Replay API" in the Replay card (it
+  adds `EnableReplayApi=1` to League's `Config\game.cfg` and keeps a copy of the old file), or add the line yourself.
 - **Groq voice** (optional cloud voice): add `GROQ_API_KEY=gsk_...` to the same `.env.txt`.
 
 ## Using it
@@ -145,6 +149,8 @@ Opens by itself a few minutes after each game, as soon as Riot publishes the mat
   deaths-while-warned count over your last 10 games.
 - **Improve next game**: the three biggest leaks with what to do instead. One click makes one of them your next focus.
 - **Replay**: download or open the replay, and jump to 15 seconds before each of your deaths.
+- **Replay coach**: a second-by-second review of one moment (see above). The pictures are kept in `history/shots`
+  (Settings → Storage can clear them).
 
 ### Match archive
 The first time Review opens (or 30 minutes after the app starts, while idle), Jax Coach lists every Solo/Duo, Flex,
@@ -215,6 +221,7 @@ flowchart LR
   - `app.js`: the dashboard, champ select, settings and callouts.
   - `voice.js`: speech. It tries the local Kokoro voice first, then Groq, then Windows voices.
   - `report.js`: Game report ratings and the replay jumps.
+  - `moment.js`: the replay coach (facts around a moment, replay pictures, the agent's answer).
   - `archive.js`: imports your match history into the archive and computes stats across all your games.
   - `review.js` and `focus.js`: match-history patterns and the focus of the game.
   - `scout.js`: enemy rank and mastery.

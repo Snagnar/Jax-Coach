@@ -57,6 +57,20 @@ const Review = (() => {
     }
     return null;
   }
+  // the closest of a team's turrets still standing at second t (the replay coach: how far you were from safety)
+  function nearestTurret(teamId, p, t, buildingKills) {
+    if (!p) return null;
+    let best = null;
+    for (const [key, [x, y]] of Object.entries(TURRETS[teamId] || {})) {
+      const [lane, tier] = key.split('-');
+      const dead = buildingKills.some((b) => b.teamId === teamId && b.timestamp / 1000 < t && b.buildingType === 'TOWER_BUILDING'
+        && (lane === 'nexus' ? b.towerType === 'NEXUS_TURRET' && Math.hypot(b.position.x - x, b.position.y - y) < 200
+          : b.laneType === `${lane.toUpperCase()}_LANE` && b.towerType === `${tier.toUpperCase()}_TURRET`));
+      const d = Math.hypot(p.x - x, p.y - y);
+      if (!dead && (!best || d < best.dist)) best = { key, dist: Math.round(d) };
+    }
+    return best;
+  }
   // who hit you with what in the seconds before a death (Riot's damage breakdown), biggest first
   function damageTaken(e, byPid) {
     const sum = {};
@@ -282,7 +296,7 @@ const Review = (() => {
   }
 
   return {
-    state: S, load, refresh, trends, insights, setIdentity, zoneOf, analyzeGame, QUEUE_NAME, ensurePuuid, turretAt, damageTaken,
+    state: S, load, refresh, trends, insights, setIdentity, zoneOf, analyzeGame, QUEUE_NAME, ensurePuuid, turretAt, damageTaken, nearestTurret,
     setRange: (r) => { S.range = r; refresh(); changed(); },
     onChange: (fn) => { onChange = fn; },
     reset: () => { S.games = []; S.all = []; S.status = 'idle'; },

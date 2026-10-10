@@ -97,6 +97,7 @@ async function boot() {
   wireUi();
   renderStatic();
   Report.onChange(() => { if (S.view === 'report') renderReport(); else if (S.view === 'live' && !S.game) renderLive(); });
+  Moment.onChange(() => { if (S.view === 'report') renderReport(); });
   Review.onChange(() => { if (S.view === 'review') renderReview(); else if (S.view === 'live' && S.cs && Review.state.status === 'done') renderLive(); });
   // the match archive imports in the background, never while you're queued or playing (scouting needs the API budget)
   Archive.setBusy(() => (S.game && !S.demo ? 'you are in a game' : ['Matchmaking', 'ReadyCheck', 'ChampSelect', 'GameStart', 'InProgress'].includes(S.clientPhase) ? 'you are in queue or champ select' : null));
@@ -1530,6 +1531,18 @@ function renderPlaybook() {
 // A review's changes you haven't decided yet. A change already saved as a playbook version (this review or an
 // earlier one suggesting the same thing) counts as applied, even if this browser forgot it.
 const reviewNote = (c) => `Review: ${c.title || 'change'}`;
+// your personal rules and hints: one file for every champion (history\personal.json). c: { addRules, removeRules, addHints, removeHints }
+// Returns how many rules/hints were added (invalid ones are left out).
+async function savePersonalChange(c, source, note) {
+  const cur = Playbooks.personal || { rules: [], hints: [] };
+  let rules = arr(cur.rules).filter((r) => !arr(c.removeRules).includes(r.id)), hints = arr(cur.hints).filter((h) => !arr(c.removeHints).includes(h.id));
+  let added = 0;
+  for (const r of arr(c.addRules)) { if (!r || !r.id || !Rules.clean([r], 'me').length) continue; rules = [...rules.filter((x) => x.id !== r.id), { ...r, from: source }]; added++; }
+  for (const h of arr(c.addHints)) { if (!h || !h.id || !h.text || Rules.check({ hints: [h] }).length) continue; hints = [...hints.filter((x) => x.id !== h.id), { ...h, from: source }]; added++; }
+  await Playbooks.savePersonal({ rules, hints, log: [...arr(cur.log), { at: new Date().toISOString(), note, source }].slice(-50) }, note);
+  applyPlaybook();
+  return added;
+}
 function openChanges(p) {
   const notes = new Set(arr((Playbooks.info(p.champ) || {}).versions).map((v) => String(v.note || '').trim().toLowerCase()));
   return arr(p.proposal.changes).map((c, i) => ({ c, i })).filter(({ c, i }) => !p.done[i] && !notes.has(reviewNote(c).trim().toLowerCase()));
@@ -1545,16 +1558,7 @@ async function applyProposal(jobId, idx) {
   if (!c || !openChanges(p).some((o) => o.i === idx)) return;
   const champ = p.champ, part = c.part || 'rules';
   if (part === 'personal') {
-    // your personal rules and hints: one file for every champion (history\personal.json)
-    const cur = Playbooks.personal || { rules: [], hints: [] };
-    let rules = arr(cur.rules).filter((r) => !arr(c.removeRules).includes(r.id)), hints = arr(cur.hints).filter((h) => !arr(c.removeHints).includes(h.id));
-    for (const r of arr(c.addRules)) { if (!r || !r.id || !Rules.clean([r], 'me').length) continue; rules = [...rules.filter((x) => x.id !== r.id), { ...r, from: `review:${jobId}` }]; }
-    for (const h of arr(c.addHints)) { if (!h || !h.id || !h.text || Rules.check({ hints: [h] }).length) continue; hints = [...hints.filter((x) => x.id !== h.id), { ...h, from: `review:${jobId}` }]; }
-    try {
-      await Playbooks.savePersonal({ rules, hints, log: [...arr(cur.log), { at: new Date().toISOString(), note: reviewNote(c), source: `review:${jobId}` }].slice(-50) }, reviewNote(c));
-      decideProposal(jobId, idx, 'applied');
-      applyPlaybook();
-    } catch (e) { alert(`Couldn't save: ${e.message}`); }
+    try { await savePersonalChange(c, `review:${jobId}`, reviewNote(c)); decideProposal(jobId, idx, 'applied'); } catch (e) { alert(`Couldn't save: ${e.message}`); }
     renderPlaybook();
     return;
   }
@@ -2029,6 +2033,8 @@ function coachScore(R) {
 function renderReport() {
   const el = $('#view-report');
   if (!el) return;
+  const act = document.activeElement, focusId = act && el.contains(act) && ['momentQ', 'momentAt'].includes(act.id) ? act.id : null;
+  const sel = focusId ? [act.selectionStart, act.selectionEnd] : null;
   const RS = Report.state, R = RS.R;
   if (!D.config.hasKey) { el.innerHTML = '<div class="notice warn">The game report needs a Riot API key (see Settings).</div>'; return; }
   if (!Review.state.me) { el.innerHTML = '<div class="notice">Open the League client (you are detected automatically) or set your Riot ID on the Review tab.</div>'; return; }
@@ -2103,12 +2109,14 @@ function renderReport() {
 
   // deaths + replay jumps
   const rs = Report.REPLAY_STATE[RS.replay] || null;
+  const coachBtn = (t, label) => { const a = Moment.answerFor(Moment.keyOf(R.gameId, t)); return `<button class="btn small ${a ? 'ghost' : ''}" data-moment="${Math.round(t)}" data-label="${esc(label)}" title="The replay coach: what went wrong here, second by second">${a ? 'Answer' : 'Coach'}</button>`; };
   const jumpBtn = (t, label = 'Watch') => `<button class="btn small ghost" data-jump="${Math.max(0, Math.round(t - 15))}" title="Jump the replay to 15 seconds before">${label}</button>`;
   const deathsHtml = `<div class="card"><header><h2>Your deaths</h2><span class="small faint">Watch jumps the replay to 15 seconds before</span></header>
     ${R.deaths.length ? `<div class="table-wrap"><table><thead><tr><th>Time</th><th>What</th><th>By</th><th>Where</th><th>Dashboard said</th><th class="num">Dead</th><th></th></tr></thead><tbody>
     ${R.deaths.map((d) => `<tr><td class="num">${Engine.fmtClock(d.t)}</td><td><span class="chip ${['solo', 'gank', 'picked'].includes(d.kind) ? 'warn' : ''}">${esc(DEATH_KIND[d.kind] || d.kind)}</span>${d.behind && d.kind === 'solo' ? ' <span class="small warn-t">while behind</span>' : ''}${d.alliesNear === 0 && d.t >= 1200 ? ' <span class="small warn-t">alone</span>' : ''}</td>
       <td class="small">${esc(d.killers.join(' + ') || 'tower/minions')}</td><td class="small muted">${esc(d.zone)}${d.enemyHalf ? ' · past the river' : ''}</td>
-      <td class="small">${d.mode ? esc((MODE_META[d.mode] || {}).name || d.mode) : '<span class="faint">not recorded</span>'}</td><td class="num small">${d.timer}s</td><td>${jumpBtn(d.t)}</td></tr>`).join('')}</tbody></table></div>` : '<div class="empty">You didn\'t die. Nice.</div>'}
+      <td class="small">${d.mode ? esc((MODE_META[d.mode] || {}).name || d.mode) : '<span class="faint">not recorded</span>'}</td><td class="num small">${d.timer}s</td><td class="row" style="gap:4px;flex-wrap:nowrap">${jumpBtn(d.t)}${coachBtn(d.t, `${DEATH_KIND[d.kind] || d.kind}${d.killers.length ? ` · ${d.killers.join(' + ')}` : ''}`)}</td></tr>`).join('')}</tbody></table></div>` : '<div class="empty">You didn\'t die. Nice.</div>'}
+    <div class="row small" style="gap:6px">Any other moment: <input id="momentAt" class="input" placeholder="12:34" size="6" style="width:70px"> <button class="btn small ghost" data-moment="custom">Coach it</button></div>
     ${R.missed.length ? `<div class="small muted">Objectives the enemy took while you were far away: ${R.missed.map((o) => `${o.kind} ${Engine.fmtClock(o.t)} ${jumpBtn(o.t, '▶')}`).join(' · ')}</div>` : ''}
   </div>`;
   const cfg = RS.replayCfg;
@@ -2117,13 +2125,59 @@ function renderReport() {
     <div class="small">${RS.replay === 'client_closed' ? 'Open the League client to download or watch the replay.' : rs ? esc(rs[1]) : 'Checking the replay…'}</div>
     <div class="row">${['download', 'retryDownload'].includes(RS.replay) ? '<button class="btn small" data-replay="download">Download replay</button>' : ''}${RS.replay === 'watch' ? '<button class="btn small" data-replay="watch">Watch replay</button>' : ''}</div>
     ${RS.replayMsg && RS.replayMsg !== 'REPLAY_API_OFF' ? `<div class="small">${esc(RS.replayMsg)}</div>` : ''}
-    ${apiOff ? `<div class="notice warn small">Jumping to a moment needs League's Replay API, which is off. One-time setup: close League, open <code>${esc((cfg && cfg.path) || 'C:\\Riot Games\\League of Legends\\Config\\game.cfg')}</code> and add the line <code>EnableReplayApi=1</code> under <code>[General]</code>. Without it you can still watch the replay and skip to the times listed here.</div>` : cfg && cfg.enabled ? '<div class="small good-t">Replay API is on: the Watch buttons jump straight to the moment.</div>' : ''}
+    ${apiOff ? `<div class="notice warn small">Jumping to a moment and the replay coach's pictures need League's Replay API, which is off. ${cfg && cfg.found
+      ? `<button class="btn small" data-action="replay-enable">Turn on the Replay API</button> adds the line <code>EnableReplayApi=1</code> to <code>${esc(cfg.path)}</code> (a copy of the old file is kept next to it). Reopen the replay afterwards.`
+      : `One-time setup: close League, open <code>C:\\Riot Games\\League of Legends\\Config\\game.cfg</code> and add the line <code>EnableReplayApi=1</code> under <code>[General]</code>. (With the League client open, Jax Coach can do it for you.)`} Without it you can still watch the replay and skip to the times listed here.</div>` : cfg && cfg.enabled ? '<div class="small good-t">Replay API is on: the Watch buttons jump straight to the moment, and the replay coach can look at it.</div>' : ''}
   </div>`;
 
   el.innerHTML = `<div class="grid" style="gap:14px">${head}${verdict}
     <div class="two">${fixHtml}<div class="card">${reportGoldChart(R)}</div></div>
     ${tiles}
     <div class="two">${lanesHtml}<div class="col">${deathsHtml}${replayHtml}</div></div>
+    ${momentCard(R, cfg)}
+  </div>`;
+  if (focusId) { const n = document.getElementById(focusId); if (n) { n.focus(); try { n.setSelectionRange(sel[0], sel[1]); } catch {} } }
+}
+
+// ---------- the replay coach: one moment, second by second ----------
+function momentCard(R, cfg) {
+  const M = Moment.state, C = M.cur;
+  if (!C || C.gameId !== R.gameId) return '';
+  const F = C.facts, a = Moment.answerFor(C.key), pend = M.pending[C.key];
+  const fmt = Engine.fmtClock;
+  const rmsg = Report.state.replayMsg === 'REPLAY_API_OFF' ? 'The Replay API is off: see the Replay card above.' : Report.state.replayMsg;
+  const seek = (sec, label) => (sec == null ? '' : `<button class="btn small ghost" data-seek="${sec}" title="Jump the replay to this second, paused">${label || `⏸ ${fmt(sec)}`}</button>`);
+  const facts = `<div class="small muted">What the data shows</div><ul class="moment-facts small">${F.summary.map((l) => `<li>${esc(l)}</li>`).join('')}</ul>
+    <details class="small"><summary>Everything in the two minutes before (${F.events.length} events)</summary><div class="moment-events">${F.events.map((e) => `<div><span class="num faint">${esc(e.t)}</span> ${esc(e.text)}</div>`).join('') || '<span class="faint">nothing recorded</span>'}</div></details>`;
+  const busy = M.cap ? `<div class="notice small">Capturing the replay ${M.cap.step}/${M.cap.total}… (League may come to the front; don't touch the replay until this is done)</div>`
+    : pend ? `<div class="notice small">The coach is looking at this moment (started ${ago(new Date(pend.at).toISOString())} ago). Usually under two minutes.</div>` : '';
+  const ask = Agent.ready() ? `<textarea id="momentQ" class="input" rows="2" placeholder="Optional: what do you want to know? e.g. Was I safe under my tower here? Should I have backed?">${esc(M.q || '')}</textarea>
+    <div class="row">
+      <button class="btn" data-moment-ask="replay" ${M.cap || pend ? 'disabled' : ''} title="Opens nothing by itself: start the replay first (Watch replay). The coach pauses it at 6 points before the moment and takes pictures of it.">Look at the replay and coach me</button>
+      <button class="btn ghost" data-moment-ask="data" ${M.cap || pend ? 'disabled' : ''}>Coach me from the data only</button>
+      ${seek(Math.max(0, C.t - 20), `▶ Watch from ${fmt(Math.max(0, C.t - 20))}`)}
+    </div>
+    <div class="small faint">With the replay the coach also sees the minion waves, health bars and where everyone stood${cfg && !cfg.enabled ? ' (needs the Replay API, see the Replay card)' : ''}.</div>`
+    : '<div class="notice small">The replay coach needs Claude Code (see the Playbook tab).</div>';
+  const ans = a ? (() => {
+    const P = a.personal && (arr(a.personal.addRules).length || arr(a.personal.addHints).length) ? a.personal : null;
+    return `<div class="moment-answer">
+      ${a.question ? `<div class="small muted">You asked: ${esc(a.question)}</div>` : ''}
+      ${a.headline ? `<div class="moment-head">${esc(a.headline)}</div>` : ''}
+      ${a.mistakeAt != null ? `<div class="row small">It went wrong at <b class="num">${fmt(a.mistakeAt)}</b> ${seek(a.mistakeAt, '⏸ Show me')}</div>` : ''}
+      ${a.steps.length ? `<ol class="moment-steps">${a.steps.map((s) => `<li><div class="row" style="gap:6px">${s.sec != null ? `<b class="num">${fmt(s.sec)}</b>${seek(s.sec, '⏸')}` : ''}<span>${esc(s.what)}</span></div>${s.instead ? `<div class="moment-instead"><b>Instead:</b> ${esc(s.instead)}</div>` : ''}</li>`).join('')}</ol>` : ''}
+      ${a.answer ? `<div class="small">${esc(a.answer)}</div>` : ''}
+      ${a.lesson ? `<div class="notice good small"><b>Remember:</b> ${esc(a.lesson)}</div>` : ''}
+      ${a.watchFor ? `<div class="small"><b>See it coming:</b> ${esc(a.watchFor)}</div>` : ''}
+      ${a.confidence ? `<div class="small faint">${esc(a.confidence)}</div>` : ''}
+      ${P ? `<div class="notice small"><b>Suggested rule for the dashboard:</b> ${esc(P.title || [...arr(P.addRules).map((r) => r.headline || r.id), ...arr(P.addHints).map((h) => h.text)].join(' · '))}${P.why ? `<div class="faint">${esc(P.why)}</div>` : ''}
+        ${a.personalDone ? `<div class="small good-t">${a.personalDone === 'added' ? 'Added to your rules (Playbook tab → What the coach learned about you).' : 'Skipped.'}</div>` : `<div class="row"><button class="btn small" data-moment-rule="add">Add to my rules</button><button class="btn small ghost" data-moment-rule="skip">No thanks</button></div>`}</div>` : ''}
+      ${a.shots && a.shots.length ? `<details class="small"><summary>The pictures the coach looked at (${a.shots.length})</summary><div class="moment-shots">${a.shots.map((s) => `<a href="${esc(s.url)}" target="_blank" rel="noopener"><img src="${esc(s.url)}" alt="replay at ${esc(s.clock)}" loading="lazy"><span>${esc(s.clock)}${s.fog ? ' · fog on' : ''}</span></a>`).join('')}</div></details>` : ''}
+    </div>`;
+  })() : '';
+  return `<div class="card moment" id="momentCard"><header><h2>Replay coach</h2><span class="chip">${fmt(C.t)}${C.label ? ` · ${esc(C.label)}` : ''}</span><span class="grow"></span><button class="btn small ghost" data-action="moment-close">Close</button></header>
+    <div class="two"><div>${facts}</div><div class="col">${busy}${M.msg ? `<div class="notice warn small">${esc(M.msg)}</div>` : ''}${ask}${rmsg ? `<div class="small">${esc(rmsg)}</div>` : ''}</div></div>
+    ${ans}
   </div>`;
 }
 const ordinal = (n) => `${n}${['th', 'st', 'nd', 'rd'][n % 10 > 3 || Math.floor(n / 10) === 1 ? 0 : n % 10]}`;
@@ -2160,7 +2214,7 @@ function stopDemo() {
 function wireUi() {
   $('#tabs').addEventListener('click', (e) => { const b = e.target.closest('button[data-view]'); if (b) setView(b.dataset.view); });
   document.body.addEventListener('click', (e) => {
-    const t = e.target.closest('[data-opp],[data-mu],[data-phase],[data-goto],[data-action],[data-csopp],[data-game],[data-mu-open],[data-focus],[data-report],[data-jump],[data-replay],[data-nextfocus],[data-pbsel],[data-usechamp],[data-research],[data-activate],[data-cancel],[data-apply],[data-skip],[data-dismiss],[data-range]');
+    const t = e.target.closest('[data-opp],[data-mu],[data-phase],[data-goto],[data-action],[data-csopp],[data-game],[data-mu-open],[data-focus],[data-report],[data-jump],[data-replay],[data-moment],[data-moment-ask],[data-seek],[data-moment-rule],[data-nextfocus],[data-pbsel],[data-usechamp],[data-research],[data-activate],[data-cancel],[data-apply],[data-skip],[data-dismiss],[data-range]');
     if (!t) return;
     if (t.dataset.range) { Review.setRange(t.dataset.range); return; }
     // playbooks + research agents
@@ -2189,10 +2243,42 @@ function wireUi() {
     if (t.dataset.skip) { decideProposal(t.dataset.skip, +t.dataset.idx, 'skipped'); renderPlaybook(); return; }
     if (t.dataset.dismiss) { Agent.dismissProposal(t.dataset.dismiss); renderPlaybook(); return; }
     if (t.dataset.focus) { Focus.setPick(t.dataset.focus); renderLive(); return; }
-    if (t.dataset.report) { Report.open(D, t.dataset.report); return; }
+    if (t.dataset.report) { Moment.close(); Report.open(D, t.dataset.report); return; }
+    if (t.dataset.moment) {
+      const RS = Report.state;
+      if (!RS.R || !RS.raw) return;
+      let sec = +t.dataset.moment, label = t.dataset.label || '';
+      if (t.dataset.moment === 'custom') {
+        const m = String(($('#momentAt') || {}).value || '').trim().match(/^(\d{1,2}):(\d{2})$/);
+        if (!m || +m[2] > 59) { alert('Type the game time as minutes:seconds, e.g. 12:34'); return; }
+        sec = +m[1] * 60 + +m[2];
+        if (sec > RS.R.dur) { alert(`The game was only ${Engine.fmtClock(RS.R.dur)} long.`); return; }
+      }
+      Moment.open(D, RS.R, RS.raw, sec, label);
+      setTimeout(() => { const c = $('#momentCard'); if (c) c.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 50);
+      return;
+    }
+    if (t.dataset.momentAsk) { const q = $('#momentQ'); if (q) Moment.state.q = q.value; Moment.ask(D, Report.state.R, t.dataset.momentAsk === 'replay'); return; }
+    if (t.dataset.seek) { Report.jump(+t.dataset.seek, true); return; }
+    if (t.dataset.momentRule) {
+      const C = Moment.state.cur, a = C && Moment.answerFor(C.key);
+      if (!a || !a.personal) return;
+      if (t.dataset.momentRule === 'skip') { Moment.markPersonal(C.key, 'skipped'); return; }
+      savePersonalChange(a.personal, `replay:${a.jobId}`, `Replay coach: ${a.personal.title || a.headline || Engine.fmtClock(C.t)}`)
+        .then((n) => { if (n) Moment.markPersonal(C.key, 'added'); else alert("The suggested rule doesn't fit the playbook format, so it wasn't added."); })
+        .catch((e) => alert(`Couldn't save: ${e.message}`));
+      return;
+    }
     if (t.dataset.jump) { Report.jump(+t.dataset.jump); return; }
     if (t.dataset.replay) { Report.replayAction(t.dataset.replay); return; }
     if (t.dataset.nextfocus) { Focus.setPick(t.dataset.nextfocus); renderReport(); return; }
+    if (t.dataset.action === 'moment-close') { Moment.close(); return; }
+    if (t.dataset.action === 'replay-enable') {
+      fetch('/api/replay/config', { method: 'POST', body: JSON.stringify({ enable: true }) }).then((r) => r.json())
+        .then((c) => { Report.state.replayCfg = c; if (c.enabled) Report.state.replayMsg = 'Replay API is on. If a replay is open, close it and open it again.'; else if (c.error) alert(`Couldn't change game.cfg: ${c.error}`); renderReport(); })
+        .catch((e) => alert(`Couldn't change game.cfg: ${e.message}`));
+      return;
+    }
     if (t.dataset.action === 'report-refresh') { Report.loadList(D, { fresh: true }).then(renderReport).catch(() => {}); return; }
     if (t.dataset.action === 'open-report') { setView('report'); return; }
     if (t.dataset.action === 'voice') {
@@ -2221,6 +2307,7 @@ function wireUi() {
   $('#champChip').addEventListener('click', () => { S.pbSel = S.champ; setView('playbook'); });
   document.body.addEventListener('input', (e) => {
     if (e.target.id === 'askInput') S.askDraft = e.target.value;
+    if (e.target.id === 'momentQ') Moment.state.q = e.target.value;
     if (e.target.id === 'muSearch') {
       S.muFilter = e.target.value; const pos = e.target.selectionStart; renderMatchups();
       const s = $('#muSearch'); s.focus(); s.setSelectionRange(pos, pos);

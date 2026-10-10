@@ -569,3 +569,18 @@ button.pill.upd-pill.warn i { background: var(--gold); animation: livedot 1.6s i
 .stance-dont::before { content: "Don't: "; font-weight: 600; color: var(--warn); }
 .stance-hint { color: var(--muted); }
 .stance-hint::before { content: "· "; }
+
+/* replay coach */
+.moment .input { width: 100%; box-sizing: border-box; background: var(--panel-2); border: 1px solid var(--line); color: var(--text); border-radius: 8px; padding: 8px 10px; font: inherit; font-size: 13px; resize: vertical; }
+#momentAt { background: var(--panel-2); border: 1px solid var(--line); color: var(--text); border-radius: 6px; padding: 3px 6px; font: inherit; font-size: 13px; }
+.moment-facts { margin: 4px 0 6px; padding-left: 18px; display: flex; flex-direction: column; gap: 3px; }
+.moment-events { max-height: 260px; overflow: auto; display: flex; flex-direction: column; gap: 2px; margin-top: 6px; }
+.moment-events .num { display: inline-block; min-width: 40px; }
+.moment-answer { display: flex; flex-direction: column; gap: 8px; }
+.moment-head { font-size: 15px; font-weight: 700; }
+.moment-steps { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 8px; font-size: 13px; }
+.moment-instead { color: var(--good); margin-top: 2px; }
+.moment-shots { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 6px; margin-top: 6px; }
+.moment-shots a { display: flex; flex-direction: column; gap: 2px; color: var(--muted); text-decoration: none; }
+.moment-shots img { width: 100%; border-radius: 6px; border: 1px solid var(--line); }
+.notice.good { background: var(--good-bg); border-color: rgba(79, 209, 139, .3); }

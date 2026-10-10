@@ -318,6 +318,7 @@ const Agent = (() => {
   async function finished(j) {
     S.handled[j.id] = true;
     if (j.type === 'ask') return answered(j);
+    if (j.type === 'moment') return Moment.finished(j);
     if (j.status !== 'done' && !['champion', 'quick', 'profile'].includes(j.type)) {
       if (S.game && S.game.jobId === j.id) { S.game.jobId = null; S.game.lastError = j.error; }
       return;
