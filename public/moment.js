@@ -198,6 +198,7 @@ const Moment = (() => {
   const PLAN = [[25, false], [12, true], [12, false], [5, true], [5, false], [1, false]];
   async function capture(R, t) {
     const dir = `${R.gameId}-${Math.round(t)}`, list = [];
+    let failed = null;
     S.cap = { step: 0, total: PLAN.length }; S.msg = ''; changed();
     try {
       await post('/api/replay/playback', { paused: true });
@@ -210,7 +211,7 @@ const Moment = (() => {
         await post('/api/replay/render', { fogOfWar: fog }); await sleep(500);
         const name = `${before}s-before${fog ? '-fog' : ''}`;
         try { await post('/api/replay/shot', { dir, name }); list.push({ file: `shots/${name}.jpg`, url: `/api/replay/shots/${dir}/${name}.jpg`, sec, clock: clock(sec), fog }); }
-        catch (e) { if (e.message === 'minimized') throw new Error('The replay window is minimized. Bring it back, then try again.'); }
+        catch (e) { if (e.message === 'minimized') throw new Error('The replay window is minimized. Bring it back, then try again.'); failed = e.message; }
         S.cap.step++; changed();
       }
       try { await post('/api/replay/render', { fogOfWar: false }); } catch {}
@@ -222,7 +223,11 @@ const Moment = (() => {
       changed();
       return null;
     }
-    S.cap = null; changed();
+    S.cap = null;
+    if (!list.length) S.msg = failed === 'blank'
+      ? 'The pictures of the replay came out black (League in exclusive fullscreen). Switch League to Borderless in its video settings, or use "Coach me from the data only".'
+      : `Couldn't take pictures of the replay${failed ? ` (${failed})` : ''}. "Coach me from the data only" still works.`;
+    changed();
     return list.length ? { dir, list } : null;
   }
 
@@ -253,6 +258,18 @@ const Moment = (() => {
     changed();
   }
   const str = (x, n = 400) => (x == null ? '' : String(x).slice(0, n));
+  // a question whose job dropped out of the job list (many newer jobs, or the app was closed for a while):
+  // read its answer directly; give up after 10 minutes (the job is stopped after 6)
+  async function recover() {
+    for (const [k, p] of Object.entries(S.pending)) {
+      if (Date.now() - p.at < 10 * 60000) continue;
+      let ok = false;
+      try { ok = (await fetch(`/api/agent/jobs/${p.jobId}/out/answer.json`, { cache: 'no-store' })).ok; } catch {}
+      if (ok) await finished({ id: p.jobId, status: 'done' });
+      else { delete S.pending[k]; savePending(); if (S.cur && S.cur.key === k) S.msg = "The coach didn't finish this one. Try again?"; changed(); }
+    }
+  }
+  setTimeout(recover, 5000); setInterval(recover, 60000);
   async function finished(j) {
     const k = Object.keys(S.pending).find((x) => S.pending[x].jobId === j.id);
     const p = k ? S.pending[k] : null;
