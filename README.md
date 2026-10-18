@@ -1,12 +1,15 @@
 # Jax Coach
 
-A local coaching app for **top lane** in League of Legends. It started as a Jax coach, and now covers any champion
+A local coaching app for **top and mid lane** in League of Legends. It started as a Jax coach, and now covers any champion
 through **playbooks** that research agents build and adapt. It runs on your own Windows PC and shows its advice in your
 browser (a second monitor works best):
 
 - **Live dashboard** during the game. One color says what to do right now: All-in, Push, Trade & farm, Play safe,
   Back off or Objective. It also tracks the enemy jungler, objective timers, lane states and when to go back.
 - **Voice callouts**, spoken only when something changes. By default a natural-sounding voice runs on your own PC.
+- **Top and mid**: every champion has a top and a mid playbook. Your lane comes from champ select and the game (your
+  lane opponent is the enemy in your position); in blind pick, set it with the **Top / Mid** switch next to the
+  champion at the top of the page.
 - **Champ select prep**: the matchup, build and runes against the enemy laner, and the enemy players' rank and mastery.
 - **Game report** after each game: a rating for all ten players, how much of the win/loss was yours, the gold story of
   the game, the three things to fix next time, and "Watch" buttons that jump the League replay to each of your deaths.
@@ -86,7 +89,7 @@ The agents run through **Claude Code**, Anthropic's command-line agent, using yo
 2. Sign in once: open the **Playbook** tab, click **Sign in**, follow the link and paste the code back into the window
    that opens.
 
-Without Claude Code everything else works as before, and champions without a playbook get general top-lane advice.
+Without Claude Code everything else works as before, and champions without a playbook get general top- or mid-lane advice.
 
 ### One-time setup inside the app
 - **Riot API key** (needed for enemy rank, mastery and your match history):
@@ -125,8 +128,8 @@ Browsers only allow sound after one click on the page, so click the page once be
 - **Ignored warnings**: on Back off or a "don't fight" guard, losing 12% of your health within 4 seconds (20% on Play
   safe) means you took a trade you were told not to: an alert tone, "Back. Now.", and the whole window flashes red.
   Back off and the farm-only lock tint the whole window.
-- **Death budget**: 1 death before 14:00, one more at 14:00, then one more per the death pace of your archived top-lane
-  wins. When you respawn, the voice tells you the time you shouldn't die again before.
+- **Death budget**: 1 death before 14:00, one more at 14:00, then one more per the death pace of your archived
+  wins in that lane. When you respawn, the voice tells you the time you shouldn't die again before.
 - **Exact CS**: Riot's live data reports CS in steps of 10; your own count is rebuilt from your gold. Other players
   show as "50+".
 - **Enemy jungler**: last seen only from the kill feed and objective kills. Nothing is predicted.
@@ -155,7 +158,7 @@ Opens by itself a few minutes after each game, as soon as Riot publishes the mat
 ### Match archive
 The first time Review opens (or 30 minutes after the app starts, while idle), Jax Coach lists every Solo/Duo, Flex,
 Draft and Quickplay game Riot still has for you and downloads each one, newest first. Games on your playbook
-champions or in top lane also get their minute-by-minute timeline. It's paced at about 40 Riot calls a minute (a
+champions or in top or mid lane also get their minute-by-minute timeline. It's paced at about 40 Riot calls a minute (a
 development key allows 50), pauses while you're queued, in champ select or in a game, and continues where it stopped
 if you close the app. After that it only fetches new games. Everything lands in `history/matches` (gzipped, about
 20-25 MB per 1,000 games) plus one summary row per game in `history/games`. Riot deletes games after about two years;

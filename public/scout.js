@@ -56,7 +56,7 @@ const Scout = (() => {
         if (wr >= 65) f.push({ t: `${wr}% WR recently on champ`, k: 'warn' });
         if (wr <= 35) f.push({ t: `${wr}% WR recently on champ`, k: 'good' });
       }
-      if (r.mainRole && r.mainRole !== 'TOP' && res.isOpponent) f.push({ t: `Usually plays ${r.mainRole.toLowerCase()}`, k: 'good' });
+      if (r.mainRole && res.isOpponent && r.mainRole !== (res.lanePos || 'TOP')) f.push({ t: `Usually plays ${({ MIDDLE: 'mid', BOTTOM: 'bot', UTILITY: 'support' }[r.mainRole] || r.mainRole.toLowerCase())}`, k: 'good' });
     }
     const s = res.solo;
     if (s && s.hotStreak) f.push({ t: 'Hot streak', k: 'warn' });
@@ -125,15 +125,17 @@ const Scout = (() => {
     running = false;
   }
 
-  function request(player, champKey, { deep = false, isOpponent = false, priority = false } = {}) {
+  // lanePos: your role (TOP/MIDDLE): an opponent who usually plays another role is flagged
+  function request(player, champKey, { deep = false, isOpponent = false, priority = false, lanePos = null } = {}) {
     const key = player.riotId || player.summonerName;
     let res = results.get(key);
+    if (res && lanePos) res.lanePos = lanePos;
     if (res && res.champKey === champKey && (res.status !== 'error' || res.retried)) {
       if (deep && res.status === 'done' && !res.recent && !res.recentLoading) { res.recentLoading = true; queue.unshift({ res, player, champKey, deep: true, again: true }); pump(); }
       return res;
     }
     if (res && res.status === 'error') res.retried = true;
-    res = res && res.champKey === champKey ? res : { status: 'queued', champKey, isOpponent, flags: [] };
+    res = res && res.champKey === champKey ? res : { status: 'queued', champKey, isOpponent, lanePos, flags: [] };
     res.isOpponent = isOpponent;
     results.set(key, res);
     (priority ? queue.unshift.bind(queue) : queue.push.bind(queue))({ res, player, champKey, deep });

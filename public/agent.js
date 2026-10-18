@@ -75,37 +75,45 @@ const Agent = (() => {
     const m = String(D.dd.version || '').match(/^(\d+)\.(\d+)/);
     return m ? `${+m[1] + 10}.${m[2]}` : (D.shared.patch || '');   // Data Dragon 16.19 = patch 26.19
   };
-  function ensureChampion(D, cid, oppCid, full = true) {
-    if (!cid || !ready() || Playbooks.has(cid) && !Playbooks.isDraft(cid)) return;
+  // a playbook is one champion in one role (Playbooks.idOf): jobs carry the champion (Data Dragon id), the role and
+  // the playbook id, and their keys use the playbook id ("champion-Malphite" top, "champion-Malphite_mid" mid)
+  const roleWord = (role) => (role === 'mid' ? ' mid' : '');
+  function ensureChampion(D, cid, oppCid, full = true, role = 'top') {
+    const pb = Playbooks.idOf(cid, role);
+    if (!cid || !ready() || Playbooks.has(pb) && !Playbooks.isDraft(pb)) return;
     const name = (D.dd.champs[cid] || {}).name || cid;
     const opp = oppCid ? { id: oppCid, name: (D.dd.champs[oppCid] || {}).name || oppCid } : null;
-    if (!Playbooks.has(cid) && !running(`quick-${cid}`) && !settled(`quick-${cid}`)) {
-      start('quick', { champion: cid, championName: name, key: `quick-${cid}`, patch: patchLabel(D), title: `Quick build for ${name}`, opponent: opp, classTags: (D.dd.champs[cid] || {}).tags || [] });
+    if (!Playbooks.has(pb) && !running(`quick-${pb}`) && !settled(`quick-${pb}`)) {
+      start('quick', { champion: cid, playbook: pb, role, championName: name, key: `quick-${pb}`, patch: patchLabel(D), title: `Quick build for ${name}${roleWord(role)}`, opponent: opp, classTags: (D.dd.champs[cid] || {}).tags || [] });
     }
-    if (full && !running(`champion-${cid}`) && !settled(`champion-${cid}`)) research(D, cid);
+    if (full && !running(`champion-${pb}`) && !settled(`champion-${pb}`)) research(D, pb);
   }
-  function research(D, cid, mode = 'new') {
+  // the classes that usually play each lane: the research picks the real opponent list from a stats site
+  const LANE_CLASSES = { top: ['Fighter', 'Tank'], mid: ['Mage', 'Assassin'] };
+  function research(D, pb, mode = 'new') {
+    const { cid, role } = Playbooks.parse(pb);
     const name = (D.dd.champs[cid] || {}).name || cid;
-    const topLaners = Object.values(D.dd.champs).filter((c) => (c.tags || []).some((t) => ['Fighter', 'Tank'].includes(t))).map((c) => c.id);
-    return start('champion', { champion: cid, championName: name, key: `champion-${cid}`, patch: patchLabel(D), mode, title: `${mode === 'refresh' ? 'Refresh' : 'Research'} ${name}`, classTags: (D.dd.champs[cid] || {}).tags || [], candidateOpponents: topLaners });
+    const laners = Object.values(D.dd.champs).filter((c) => (c.tags || []).some((t) => LANE_CLASSES[role].includes(t))).map((c) => c.id);
+    return start('champion', { champion: cid, playbook: pb, role, championName: name, key: `champion-${pb}`, patch: patchLabel(D), mode, title: `${mode === 'refresh' ? 'Refresh' : 'Research'} ${name}${roleWord(role)}`, classTags: (D.dd.champs[cid] || {}).tags || [], candidateOpponents: laners });
   }
 
   // playbook v2: turn a playbook's matchups into profiles (power curve, kit, threats). Opponents you meet most first.
-  function profiles(D, cid) {
-    const raw = Playbooks.raw(cid) || {};
+  function profiles(D, pb) {
+    const { cid, role } = Playbooks.parse(pb);
+    const raw = Playbooks.raw(pb) || {};
     const mus = Object.keys(((raw.matchups || {}).matchups) || {}).filter((k) => !k.startsWith('_'));
     if (!mus.length) return Promise.resolve(null);
-    const rows = Archive.rows().filter((r) => r.champ === cid && !r.remake && r.opp);
+    const rows = Archive.rows().filter((r) => r.champ === cid && Archive.inRole(r, role) && !r.remake && r.opp);
     const met = {}; for (const r of rows) met[r.opp] = (met[r.opp] || 0) + 1;
     const idOf = (k) => (D.dd.champs[k] ? k : D.dd.champByName[String(k).toLowerCase()] || k);
     const opponents = mus.map(idOf).sort((a, b) => (met[b] || 0) - (met[a] || 0) || a.localeCompare(b));
     const player = {};
     for (const o of opponents) {
-      const v = Archive.vs(cid, o);
+      const v = Archive.vs(cid, o, role);
       if (v && v.games) player[o] = { games: v.games, wins: v.wins, deathsBefore14: v.deathsBefore14 != null ? Math.round(v.deathsBefore14 * 10) / 10 : null, soloDeathsBefore14: v.soloDeathsBefore14 != null ? Math.round(v.soloDeathsBefore14 * 10) / 10 : null, deathsUnderOwnTowerBefore14: v.underOwnTowerBefore14 != null ? Math.round(v.underOwnTowerBefore14 * 10) / 10 : null };
     }
     const name = (D.dd.champs[cid] || {}).name || cid;
-    return start('profile', { champion: cid, championName: name, key: `profile-${cid}`, patch: patchLabel(D), title: `Matchup profiles for ${name} (${opponents.length})`, opponents, player });
+    return start('profile', { champion: cid, playbook: pb, role, championName: name, key: `profile-${pb}`, patch: patchLabel(D), title: `Matchup profiles for ${name}${roleWord(role)} (${opponents.length})`, opponents, player });
   }
 
   // ---------- game facts for the agents (champions only: no player names) ----------
@@ -143,7 +151,7 @@ const Agent = (() => {
       dashboardNextBuy: A.items.buyNow ? A.items.buyNow.text : null,
     };
     return {
-      clock: A.clock, minutes: Math.round(A.t / 6) / 10, phase: A.phaseLabel,
+      clock: A.clock, minutes: Math.round(A.t / 6) / 10, phase: A.phaseLabel, yourLane: A.lane,
       dashboard: A.mode ? { mode: A.mode.mode, headline: A.mode.headline, reason: A.mode.reason, rule: A.mode.rule, position: A.mode.position, farm: A.mode.farm, trade: A.mode.trade,
         towerSafe: A.trace && A.trace.safety ? A.trace.safety.towerSafe : null, threats: A.trace && A.trace.safety ? A.trace.safety.threats : [] } : null,
       laneState: { label: A.state.label, reasons: A.state.reasons }, me: { ...row(A.P.me), gold: A.items.gold, hp: A.trace && A.trace.ctx ? Math.round(A.trace.ctx.me.hp * 100) : null, inventory },
@@ -162,36 +170,40 @@ const Agent = (() => {
     const p = S.game && S.game.plan;
     return (p && p.build && Array.isArray(p.build.order) && p.build.order.length ? p.build.order : ((D.meta || {}).coreBuild || {}).typicalOrder || []).map(String);
   }
-  function champSelectFacts(cs, D) {
+  function champSelectFacts(cs, D, role = 'top') {
     const idOf = (key) => (key ? D.dd.keyToId[String(key)] : null);
     const nm = (id) => (D.dd.champs[id] || {}).name || id;
     const POS = { top: 'top', jungle: 'jungle', middle: 'mid', bottom: 'bot', utility: 'support' };
     const mine = (cs.myTeam || []).find((p) => p.cellId === cs.localPlayerCellId) || {};
     return {
-      me: nm(idOf(mine.championId)), myPosition: POS[String(mine.assignedPosition || '').toLowerCase()] || 'top',
+      me: nm(idOf(mine.championId)), myPosition: POS[String(mine.assignedPosition || '').toLowerCase()] || role,
       allies: (cs.myTeam || []).filter((p) => p !== mine).map((p) => ({ champ: nm(idOf(p.championId || p.championPickIntent)), role: POS[String(p.assignedPosition || '').toLowerCase()] || '' })).filter((p) => p.champ),
       enemies: (cs.theirTeam || []).map((p) => ({ champ: nm(idOf(p.championId)), role: POS[String(p.assignedPosition || '').toLowerCase()] || '' })).filter((p) => p.champ),
     };
   }
-  // the player's own numbers from the match archive: recent form on this champion, the whole record, and this matchup
-  function playerProfile(champ, opp) {
+  // the player's own numbers from the match archive: recent form on this champion in this role, the whole record, and this matchup
+  function playerProfile(champ, opp, role = 'top') {
     try {
       const out = {};
-      const T = Review.state.games.length >= 3 ? Review.trends(Review.state.games) : null;
+      // the Review tab's games are the shown champion in the shown role: only use them when that's this one
+      const RS = Review.state;
+      const T = RS.games.length >= 3 && RS.champ === champ && (RS.role || 'top') === role ? Review.trends(RS.games) : null;
       if (T) Object.assign(out, { recentGames: T.n, winRate: T.wr, cs10: T.cs10 != null ? Math.round(T.cs10) : null, goldDiff15: T.gd15 != null ? Math.round(T.gd15) : null, deathsBefore14PerGame: T.earlyDeathsPerGame != null ? Math.round(T.earlyDeathsPerGame * 10) / 10 : null, earlyDeathsThatWereGanks: `${T.earlyGanks.length}/${T.early.length}`, earlyDeathsUnderOwnTower: `${(T.underTower || []).length}/${T.early.length}`, earlyDeathsUnderEnemyTower: `${(T.underEnemyTower || []).length}/${T.early.length}`, winRateWhenAheadAt15: T.wrAhead, winRateWhenBehindAt15: T.wrBehind });
       if (Focus.current) out.focus = Focus.current.title;
-      const all = champ ? Archive.rows().filter((r) => r.champ === champ && !r.remake) : [];
+      out.role = role;
+      const all = champ ? Archive.rows().filter((r) => r.champ === champ && Archive.inRole(r, role) && !r.remake) : [];
       if (all.length) out.championRecord = { games: all.length, wins: all.filter((r) => r.win).length, since: new Date(Math.min(...all.map((r) => r.end))).toISOString().slice(0, 10) };
-      const v = champ && opp ? Archive.vs(champ, opp) : null;
+      const v = champ && opp ? Archive.vs(champ, opp, role) : null;
       if (v) out.vsThisOpponent = { opponent: (D.dd.champs[opp] || {}).name || opp, games: v.games, wins: v.wins, goldDiff15: v.goldDiff15 != null ? Math.round(v.goldDiff15) : null, deathsBefore14: v.deathsBefore14 != null ? Math.round(v.deathsBefore14 * 10) / 10 : null, soloDeathsBefore14: v.soloDeathsBefore14 != null ? Math.round(v.soloDeathsBefore14 * 10) / 10 : null, deathsUnderOwnTowerBefore14: v.underOwnTowerBefore14 != null ? Math.round(v.underOwnTowerBefore14 * 10) / 10 : null };
       return Object.keys(out).length ? out : null;
     } catch { return null; }
   }
 
   // ---------- champ select ----------
-  function onChampSelect(cs, D) {
+  // role: the playbook role for this pick (your assigned position, else the role chosen on the page)
+  function onChampSelect(cs, D, role = 'top') {
     if (!cs) return;
-    S.lastCs = cs;
+    S.lastCs = cs; S.csRole = role;
     const idOf = (key) => (key ? D.dd.keyToId[String(key)] : null);
     const mine = (cs.myTeam || []).find((p) => p.cellId === cs.localPlayerCellId) || {};
     const myChamp = idOf(mine.championId || mine.championPickIntent);
@@ -202,16 +214,16 @@ const Agent = (() => {
     const laneOpp = myPos ? idOf(((cs.theirTeam || []).find((p) => p.championId && String(p.assignedPosition || '').toLowerCase() === myPos) || {}).championId) : null;
     // hovering only starts the quick build; the full research starts on lock-in or after 15s on the same champion
     if (myChamp !== S.hover) { S.hover = myChamp; S.hoverSince = Date.now(); }
-    if (myChamp && ready()) ensureChampion(D, myChamp, laneOpp, !!mine.championId || Date.now() - S.hoverSince > 15000);
+    if (myChamp && ready()) ensureChampion(D, myChamp, laneOpp, !!mine.championId || Date.now() - S.hoverSince > 15000, role);
     // the game plan, once you're locked in, all enemies are picked and your lane opponent is certain
     const key = `${cs.gameId || ''}|${mine.championId || ''}`;
     if (!mine.championId || !ready() || !laneOpp || enemies.length < 5 || S.csKey === key) return;
     S.csKey = key;
-    const facts = champSelectFacts(cs, D);
+    const facts = champSelectFacts(cs, D, role);
     start('gameplan', {
-      champion: myChamp, championName: facts.me, key: `gameplan-${key}`, patch: patchLabel(D), title: `Game plan: ${facts.me} vs ${facts.enemies.map((e) => e.champ).join(', ')}`,
-      when: 'champ select', lineup: { ...facts, laneOpponent: (D.dd.champs[laneOpp] || {}).name || laneOpp }, player: playerProfile(myChamp, laneOpp),
-    }).then((job) => { if (job) S.csPlanJob = { id: job.id, champ: myChamp }; });
+      champion: myChamp, playbook: Playbooks.idOf(myChamp, role), role, championName: facts.me, key: `gameplan-${key}`, patch: patchLabel(D), title: `Game plan: ${facts.me}${roleWord(role)} vs ${facts.enemies.map((e) => e.champ).join(', ')}`,
+      when: 'champ select', lineup: { ...facts, laneOpponent: (D.dd.champs[laneOpp] || {}).name || laneOpp }, player: playerProfile(myChamp, laneOpp, role),
+    }).then((job) => { if (job) S.csPlanJob = { id: job.id, champ: myChamp, role }; });
   }
 
   // ---------- in game ----------
@@ -223,7 +235,8 @@ const Agent = (() => {
     const G = S.game;
     G.lastT = A.t; G.ended = null;
     if (!ready()) return;
-    ensureChampion(D, A.champ, A.P.opp ? A.P.opp.cid : null);
+    G.role = A.role;
+    ensureChampion(D, A.champ, A.P.opp ? A.P.opp.cid : null, true, A.role);
     if (!G.plan && !G.jobId && !G.startedPlan && !(S.csPlanJob && S.csPlanJob.champ === A.champ && running(`gameplan-${S.csKey}`))) {
       G.startedPlan = true;
       runPlanJob(A, D, 'gameplan', 'Game start: lane opponent known now');
@@ -237,11 +250,12 @@ const Agent = (() => {
     const me = A.P.me;
     // things that already happened before the app saw the game don't trigger a reassessment
     const marks = { deaths: (me.scores.deaths || 0) - (me.isDead ? 1 : 0), legs: A.legendaries, m14: A.t >= 840, m20: A.t >= 1200, m28: A.t >= 1680 };
-    S.game = { key: `${A.champ}-${Math.round((Date.now() - A.t * 1000) / 60000)}`, champ: A.champ, plan: null, history: [], lastAdaptAt: -1e9, lastT: A.t, startedAt: Date.now(), marks, pending: null, jobId: null, lastSnap: null };
+    S.game = { key: `${A.champ}-${Math.round((Date.now() - A.t * 1000) / 60000)}`, champ: A.champ, role: A.role, plan: null, history: [], lastAdaptAt: -1e9, lastT: A.t, startedAt: Date.now(), marks, pending: null, jobId: null, lastSnap: null };
     const C = S.chat;
     if (C && C.key.startsWith('cs|') && Date.now() - C.at < 20 * 60000) { C.key = S.game.key; C.champ = A.champ; C.undo = null; saveChat(); }
     const cp = S.csPlan;
-    if (cp && cp.champ === A.champ && Date.now() - cp.at < 20 * 60000) { S.game.plan = cp.plan; S.game.history.push({ t: 0, kind: 'gameplan', headline: cp.plan.headline, jobId: cp.jobId }); S.csPlan = null; applyHook(); }
+    // a champ-select plan made for another role (blind pick, then the game said otherwise) doesn't fit this game
+    if (cp && cp.champ === A.champ && (cp.role || 'top') === A.role && Date.now() - cp.at < 20 * 60000) { S.game.plan = cp.plan; S.game.history.push({ t: 0, kind: 'gameplan', headline: cp.plan.headline, jobId: cp.jobId }); S.csPlan = null; applyHook(); }
     changed();
   }
   // which moments deserve a fresh look at the plan
@@ -291,8 +305,8 @@ const Agent = (() => {
     if (G.nextSnap) { G.lastSnap = G.nextSnap; G.nextSnap = null; }
     const name = Engine.champ(D, A.champ).name;
     const job = await start(type, {
-      champion: A.champ, championName: name, key: `${type}-${G.key}`, patch: patchLabel(D), title: `${type === 'gameplan' ? 'Game plan' : 'Reassess'} at ${A.clock}: ${reason}`,
-      when: 'in game', reason, game: snapshot(A, D), history: G.history.filter((h) => h.kind !== 'check').map((h) => ({ at: Engine.fmtClock(h.t), kind: h.kind, headline: h.headline, changes: h.changes || [] })), player: type === 'gameplan' ? playerProfile(A.champ, A.P.opp ? A.P.opp.cid : null) : undefined,
+      champion: A.champ, playbook: Playbooks.idOf(A.champ, A.role), role: A.role, championName: name, key: `${type}-${G.key}`, patch: patchLabel(D), title: `${type === 'gameplan' ? 'Game plan' : 'Reassess'} at ${A.clock}: ${reason}`,
+      when: 'in game', reason, game: snapshot(A, D), history: G.history.filter((h) => h.kind !== 'check').map((h) => ({ at: Engine.fmtClock(h.t), kind: h.kind, headline: h.headline, changes: h.changes || [] })), player: type === 'gameplan' ? playerProfile(A.champ, A.P.opp ? A.P.opp.cid : null, A.role) : undefined,
       playerChat: chatDigest(G.key),
     });
     if (job) { G.jobId = job.id; G.jobReason = reason; G.jobT = A.t; }
@@ -325,7 +339,8 @@ const Agent = (() => {
     }
     if (['champion', 'quick', 'profile'].includes(j.type)) {
       await Playbooks.refreshList();
-      if (j.champion) { await Playbooks.load(j.champion, true); applyHook(); }
+      const pb = j.playbook || j.champion;
+      if (pb) { await Playbooks.load(pb, true); applyHook(); }
       return;
     }
     if (j.type === 'gameplan' || j.type === 'adapt') {
@@ -347,8 +362,9 @@ const Agent = (() => {
         }
         applyHook();
       } else if (S.csPlanJob && S.csPlanJob.id === j.id) {
-        S.csPlan = { champ: j.champion, plan, at: Date.now(), jobId: j.id };
-        if (G && G.champ === j.champion && !G.plan && Date.now() - G.startedAt < 15 * 60000) { G.plan = plan; G.history.push({ t: G.lastT, kind: 'gameplan', headline: plan.headline, jobId: j.id }); S.csPlan = null; }
+        const role = S.csPlanJob.role || 'top';
+        S.csPlan = { champ: j.champion, role, plan, at: Date.now(), jobId: j.id };
+        if (G && G.champ === j.champion && (G.role || 'top') === role && !G.plan && Date.now() - G.startedAt < 15 * 60000) { G.plan = plan; G.history.push({ t: G.lastT, kind: 'gameplan', headline: plan.headline, jobId: j.id }); S.csPlan = null; }
         applyHook();
       }
       return;
@@ -358,7 +374,8 @@ const Agent = (() => {
         const at = new Date(j.created).getTime() || Date.now();
         if (gone.includes(j.id) || S.proposals.some((p) => p.jobId === j.id) || !fresh(at)) return;   // already known: keep what you did with it
         const proposal = await getJSON(`/api/agent/jobs/${j.id}/out/proposal.json`);
-        if (proposal && Array.isArray(proposal.changes)) { S.proposals.push({ jobId: j.id, champ: j.champion, proposal, at, done: {} }); saveProposals(); }
+        // champ: the playbook the changes are for (champion + role)
+        if (proposal && Array.isArray(proposal.changes)) { S.proposals.push({ jobId: j.id, champ: j.playbook || j.champion, proposal, at, done: {} }); saveProposals(); }
       } catch {}
     }
   }
@@ -394,19 +411,20 @@ const Agent = (() => {
     const G = S.game && C.key === S.game.key ? S.game : null;
     const mine = cs ? (cs.myTeam || []).find((p) => p.cellId === cs.localPlayerCellId) || {} : {};
     const champ = A ? A.champ : D.dd.keyToId[String(mine.championId || mine.championPickIntent || '')] || null;
+    const role = A ? A.role : S.csRole || 'top';
     const name = champ ? Engine.champ(D, champ).name : null;
     const plan = G ? G.plan : S.csPlan ? S.csPlan.plan : null;
     const { at, jobId, kind, checkedAt, ...planOut } = plan || {};
     C.sending = true;
     const job = await start('ask', {
-      champion: champ, championName: name, key: `ask-${C.key}-${C.msgs.length}`, patch: patchLabel(D),
+      champion: champ, playbook: champ ? Playbooks.idOf(champ, role) : null, role, championName: name, key: `ask-${C.key}-${C.msgs.length}`, patch: patchLabel(D),
       title: `Question${A ? ` at ${A.clock}` : ' in champ select'}: ${open.map((m) => m.text).join(' / ').slice(0, 80)}`,
       when: A ? 'in game' : 'champ select', question: open.map((m) => m.text).join('\n'),
       conversation: C.msgs.filter((m) => m.sent || m.who === 'coach').slice(-12).map((m) => ({ from: m.who === 'you' ? 'player' : 'coach', at: m.clock, text: m.text, bullets: m.bullets })),
-      game: A ? snapshot(A, D) : null, lineup: !A && cs ? champSelectFacts(cs, D) : null,
+      game: A ? snapshot(A, D) : null, lineup: !A && cs ? champSelectFacts(cs, D, role) : null,
       currentPlan: plan ? planOut : null, canChangePlan: !!(G || S.csPlan),
       history: G ? G.history.filter((h) => h.kind !== 'check').map((h) => ({ at: Engine.fmtClock(h.t), kind: h.kind, headline: h.headline })) : [],
-      player: playerProfile(champ, A && A.P.opp ? A.P.opp.cid : null),
+      player: playerProfile(champ, A && A.P.opp ? A.P.opp.cid : null, role),
     });
     C.sending = false;
     if (!job) { C.msgs.push({ who: 'coach', error: true, text: `Couldn't ask the coach${S.lastError ? ` (${S.lastError})` : ''}.`, at: Date.now() }); for (const m of open) m.sent = 'failed'; }
@@ -471,8 +489,9 @@ const Agent = (() => {
     if (!ready() || !record || !record.champ) return;
     const name = Engine.champ(D, record.champ).name;
     const R = report || null;
+    const role = record.role || 'top';
     start('review', {
-      champion: record.champ, championName: name, key: `review-${record.champ}-${record.endedAt}`, patch: patchLabel(D), title: `Review: ${name} vs ${record.opp ? Engine.champ(D, record.opp).name : '?'}`,
+      champion: record.champ, playbook: Playbooks.idOf(record.champ, role), role, championName: name, key: `review-${record.champ}-${record.endedAt}`, patch: patchLabel(D), title: `Review: ${name}${roleWord(role)} vs ${record.opp ? Engine.champ(D, record.opp).name : '?'}`,
       game: {
         result: record.result, minutes: Math.round(record.gameTime / 6) / 10, opponent: record.opp ? Engine.champ(D, record.opp).name : null,
         deaths: record.deaths, dashboardTimeByMode: record.modeTime, focus: record.focus, plans: record.plans || [], playerChat: record.chat || undefined,
@@ -480,7 +499,7 @@ const Agent = (() => {
           deaths: (R.deaths || []).map((d) => ({ at: Engine.fmtClock(d.t), kind: d.kind, killers: d.killers, killer: d.killer, zone: d.zone, behind: d.behind, dashboardSaid: d.mode,
             underOwnTower: d.underOwnTower || null, underEnemyTower: d.underEnemyTower || null, damageTaken: d.hits || [] })) } : null,
       },
-      player: playerProfile(record.champ, record.opp),
+      player: playerProfile(record.champ, record.opp, role),
     });
   }
   function markProposal(jobId, idx, state) {
@@ -500,7 +519,7 @@ const Agent = (() => {
     if (tickN % (anyRunning ? 2 : 15) === 0) await refreshJobs();
     // research that fills a draft playbook: pick up new parts as they arrive
     if (tickN % 5 === 0) {
-      const drafting = [...new Set(S.jobs.filter((j) => j.status === 'running' && ['champion', 'quick'].includes(j.type) && j.newChampion && j.champion).map((j) => j.champion))];
+      const drafting = [...new Set(S.jobs.filter((j) => j.status === 'running' && ['champion', 'quick'].includes(j.type) && j.newChampion && j.champion).map((j) => j.playbook || j.champion))];
       if (drafting.length) {
         await Playbooks.refreshList();
         for (const c of drafting) {
@@ -531,10 +550,10 @@ const Agent = (() => {
       research(D, pb.champion, 'refresh');
     }
   }
-  function planFor(champ) {
+  function planFor(champ, role = 'top') {
     const live = S.game && !(S.game.ended && Date.now() - S.game.ended > 90000);
-    if (live && S.game.champ === champ && S.game.plan) return S.game.plan;
-    if (!live && S.csPlan && S.csPlan.champ === champ) return S.csPlan.plan;
+    if (live && S.game.champ === champ && (S.game.role || 'top') === role && S.game.plan) return S.game.plan;
+    if (!live && S.csPlan && S.csPlan.champ === champ && (S.csPlan.role || 'top') === role) return S.csPlan.plan;
     return null;
   }
   function gameLog() { return S.game ? S.game.history.filter((h) => h.kind !== 'check').map((h) => ({ t: Math.round(h.t), kind: h.kind, headline: h.headline, changes: h.changes || [] })) : []; }

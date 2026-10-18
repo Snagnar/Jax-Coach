@@ -195,7 +195,8 @@ function Job-Alive($job) {
   $p = Get-Process -Id ([int]$job.pid) -ErrorAction SilentlyContinue
   return [bool]($p -and $p.StartTime.Ticks -eq [long]$job.startTicks)
 }
-function Copy-Reference([string]$dir, [string]$type, [string]$champ) {
+# $champ: the playbook id (Jax = top, Jax_mid = mid); a playbook-less mid champion gets the generic mid playbook
+function Copy-Reference([string]$dir, [string]$type, [string]$champ, [string]$role = 'top') {
   $ref = Join-Path $dir 'reference'
   New-Item -ItemType Directory -Force $ref | Out-Null
   Copy-Item (Join-Path $AgentsDir 'playbook-format.md') $ref
@@ -209,7 +210,7 @@ function Copy-Reference([string]$dir, [string]$type, [string]$champ) {
     $any = $false
     foreach ($p in $PbParts) { $f = Get-PbPartFile $champ $p; if ($f) { if (-not $any) { New-Item -ItemType Directory -Force $cur | Out-Null; $any = $true }; Copy-Item $f (Join-Path $cur "$p.json") } }
     if (-not $any -and $type -notin @('champion', 'quick')) {
-      $gen = Join-Path $ShippedPb '_generic'
+      $gen = Join-Path $ShippedPb $(if ($role -eq 'mid') { '_generic_mid' } else { '_generic' })
       if (Test-Path $gen) { New-Item -ItemType Directory -Force $cur | Out-Null; Copy-Item (Join-Path $gen '*.json') $cur }
     }
   }
@@ -221,17 +222,20 @@ function Start-AgentJob([string]$body) {
   $exe = Find-Claude
   if (-not $exe) { return @{ status = 503; body = '{"error":"claude_not_installed"}' } }
   $champ = Safe-Champ "$($in.champion)"
-  $key = if ($in.key) { "$($in.key)" } else { "$type-$champ" }
+  # the playbook this job reads and writes: one per champion and role ("Jax" top, "Jax_mid" mid)
+  $role = if ("$($in.role)" -eq 'mid') { 'mid' } else { 'top' }
+  $pb = if ($in.playbook) { Safe-Champ "$($in.playbook)" } elseif ($champ -and $role -eq 'mid') { "${champ}_mid" } else { $champ }
+  $key = if ($in.key) { "$($in.key)" } else { "$type-$pb" }
   # one running job per key (e.g. one research run per champion)
   foreach ($d in (Get-ChildItem $JobsDir -Directory -ErrorAction SilentlyContinue)) {
     $j = Read-JobJson $d.FullName
     if ($j -and $j.status -eq 'running' -and $j.key -eq $key) { return @{ status = 200; body = (Read-Text (Join-Path $d.FullName 'job.json')) } }
   }
-  $id = (Get-Date -Format 'yyyyMMdd-HHmmss') + '-' + $type + $(if ($champ) { "-$champ" } else { '' }) + '-' + (Get-Random -Maximum 9999)
+  $id = (Get-Date -Format 'yyyyMMdd-HHmmss') + '-' + $type + $(if ($pb) { "-$pb" } else { '' }) + '-' + (Get-Random -Maximum 9999)
   $dir = Join-Path $JobsDir $id
   New-Item -ItemType Directory -Force $dir, (Join-Path $dir 'out') | Out-Null
   Write-Text (Join-Path $dir 'input.json') $body
-  Copy-Reference $dir $type $champ
+  Copy-Reference $dir $type $pb $role
   # replay coach: the screenshots of the moment, and what the coach already learned about this player
   if ($type -eq 'moment' -and "$($in.shots)" -match '^[\w-]{1,40}$' -and (Test-Path (Join-Path $ShotsDir "$($in.shots)"))) {
     New-Item -ItemType Directory -Force (Join-Path $dir 'shots') | Out-Null
@@ -241,7 +245,7 @@ function Start-AgentJob([string]$body) {
   $tpl = Join-Path $AgentsDir "prompts\$type.md"
   if (-not (Test-Path $tpl)) { return @{ status = 500; body = '{"error":"prompt_missing"}' } }
   $prompt = (Read-Text $tpl).Replace('{{CHAMPION}}', "$champ").Replace('{{CHAMPION_NAME}}', "$(if ($in.championName) { $in.championName } else { $champ })").
-    Replace('{{ROLE}}', "$(if ($in.role) { $in.role } else { 'top' })").Replace('{{DATE}}', (Get-Date -Format 'yyyy-MM-dd')).Replace('{{PATCH}}', "$($in.patch)")
+    Replace('{{ROLE}}', $role).Replace('{{DATE}}', (Get-Date -Format 'yyyy-MM-dd')).Replace('{{PATCH}}', "$($in.patch)")
   Write-Text (Join-Path $dir 'prompt.md') $prompt
   $models = Agent-Models
   $model = if ($in.model -and "$($in.model)" -match '^[A-Za-z0-9._-]+$') { "$($in.model)" } else { $models[$JobTypes[$type].model] }
@@ -259,10 +263,10 @@ function Start-AgentJob([string]$body) {
     CommandLine = "`"$(Join-Path $env:WINDIR 'System32\cmd.exe')`" /c `"$(Join-Path $dir 'run.cmd')`""; CurrentDirectory = $dir; ProcessStartupInformation = $startup }
   if ($r.ReturnValue -ne 0) { return @{ status = 500; body = ('{"error":' + (Json-Escape "could not start the agent (WMI code $($r.ReturnValue))") + '}') } }
   $p = Get-Process -Id ([int]$r.ProcessId)
-  $st = Get-PbState $champ
-  $hasPb = [bool]($champ -and ((Test-Path (Join-Path $ShippedPb $champ)) -or ($st.active -gt 0)))
+  $st = Get-PbState $pb
+  $hasPb = [bool]($pb -and ((Test-Path (Join-Path $ShippedPb $pb)) -or ($st.active -gt 0)))
   $job = [pscustomobject]@{
-    id = $id; type = $type; champion = $champ; key = $key; title = "$($in.title)"; model = $model
+    id = $id; type = $type; champion = $champ; playbook = $pb; role = $role; key = $key; title = "$($in.title)"; model = $model
     status = 'running'; created = (Get-Date -Format 's'); finished = $null; pid = $p.Id; startTicks = $p.StartTime.Ticks
     newChampion = (-not $hasPb) -or ($st.draft -gt 0 -and $st.draft -eq $st.active); installed = @(); warnings = @(); error = $null
   }
@@ -270,11 +274,10 @@ function Start-AgentJob([string]$body) {
   Write-Host "Agent job started: $id ($model)" -ForegroundColor Cyan
   return @{ status = 200; body = (Read-Text (Join-Path $dir 'job.json')) }
 }
-function Merge-MatchupParts($files, [string]$champ) {
-  $all = [ordered]@{}; $role = 'top'; $notes = $null
+function Merge-MatchupParts($files, [string]$champ, [string]$role = 'top') {
+  $all = [ordered]@{}; $notes = $null
   foreach ($f in ($files | Sort-Object Name)) {
     try { $o = Read-Text $f.FullName | ConvertFrom-Json } catch { continue }
-    if ($o.role) { $role = $o.role }
     if ($o._notes -and -not $notes) { $notes = $o._notes }
     $src = if ($o.matchups) { $o.matchups } else { $o }
     foreach ($m in $src.PSObject.Properties) { if ($m.Value -is [pscustomobject] -and $m.Name -notlike '_*' -and $m.Name -notin @('champion', 'role')) { $all[$m.Name] = $m.Value } }
@@ -287,8 +290,10 @@ function Merge-MatchupParts($files, [string]$champ) {
 }
 # playbook v2: a profile job writes only out\profiles*.json ({ "<Opponent>": { "profile": {...} } }); merge those into
 # the current matchups.json (nothing else in a matchup changes) and save it as a new version
+# older jobs have no playbook field: their playbook is the champion (top)
+function Job-Playbook($job) { if ($job.playbook) { return "$($job.playbook)" }; return "$($job.champion)" }
 function Install-Profiles([string]$dir, $job) {
-  $champ = $job.champion
+  $champ = Job-Playbook $job
   $files = @(Get-ChildItem (Join-Path $dir 'out') -Filter 'profiles*.json' -ErrorAction SilentlyContinue)
   $f = Get-PbPartFile $champ 'matchups'
   if (-not $files.Count -or -not $f) { $job.warnings = @($job.warnings) + 'no profiles to install'; return }
@@ -314,7 +319,7 @@ function Install-Profiles([string]$dir, $job) {
 }
 # install finished parts of a champion job. For a champion without a playbook, parts go live as they arrive.
 function Install-JobParts([string]$dir, $job, [bool]$final) {
-  $champ = $job.champion
+  $champ = Job-Playbook $job
   if (-not $champ) { return }
   if ($job.type -eq 'profile') { if ($final) { Install-Profiles $dir $job }; return }
   $outDir = Join-Path $dir 'out'
@@ -328,7 +333,7 @@ function Install-JobParts([string]$dir, $job, [bool]$final) {
       if (-not $pieces.Count) { continue }
       $stamp = "matchups@parts-" + (($pieces | ForEach-Object { "$($_.Name):$($_.LastWriteTime.Ticks)" }) -join ',')
       if (@($job.installed) -contains $stamp) { continue }
-      $text = Merge-MatchupParts $pieces $champ
+      $text = Merge-MatchupParts $pieces $job.champion $(if ($job.role) { "$($job.role)" } else { 'top' })
       if (-not $text) { continue }
     } else {
       $item = Get-Item $f

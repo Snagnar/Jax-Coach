@@ -72,9 +72,12 @@ const Archive = (() => {
     if (tl && !row.remake) { try { row.detail = Review.analyzeGame(D, m, tl, me.puuid); } catch (e) { console.warn('archive: analysis failed', id, e); } }
     return row;
   }
-  // timelines (minute-by-minute) only where the review uses them: top lane and your playbook champions
-  function wantDetail(r, pool) { return !r.remake && r.dur >= 600 && (r.role === 'TOP' || pool.has(r.champ)); }
-  const poolSet = () => new Set([...Playbooks.list.map((p) => p.champion), Review.state.champ].filter((c) => c && c !== '_generic'));
+  // timelines (minute-by-minute) only where the review uses them: top and mid lane and your playbook champions
+  function wantDetail(r, pool) { return !r.remake && r.dur >= 600 && (r.role === 'TOP' || r.role === 'MIDDLE' || pool.has(r.champ)); }
+  const poolSet = () => new Set([...Playbooks.list.map((p) => Playbooks.parse(p.champion).cid), Review.state.champ].filter((c) => c && !c.startsWith('_generic')));
+  // a game counts for a playbook role: mid = games in mid; top = every other game on the champion (as before mid
+  // playbooks existed: top, plus the odd jungle or blind game)
+  const inRole = (r, role) => (role === 'mid' ? r.role === 'MIDDLE' : r.role !== 'MIDDLE');
 
   // ---------- Riot calls: archived ones are free, new ones wait their turn ----------
   async function turn(real) {
@@ -186,9 +189,9 @@ const Archive = (() => {
       patches: Object.entries(byPatch).map(([p, g]) => ({ patch: p, n: g.length, wr: pctOf(g) })).sort((a, b) => b.patch.localeCompare(a.patch, undefined, { numeric: true })),
     };
   }
-  // your record on a champion against one opponent (for champ select and the agents)
-  function vs(champ, opp) {
-    const g = mine().filter((r) => r.champ === champ && r.opp === opp && !r.remake);
+  // your record on a champion against one opponent (for champ select and the agents), in one role if given
+  function vs(champ, opp, role) {
+    const g = mine().filter((r) => r.champ === champ && r.opp === opp && !r.remake && (!role || inRole(r, role)));
     if (!g.length) return null;
     const d = g.map((r) => r.detail).filter(Boolean);
     return {
@@ -200,7 +203,7 @@ const Archive = (() => {
   }
 
   return {
-    state: S, load, sync, addGame, findMe, stats, vs, sessions, QUEUES,
+    state: S, load, sync, addGame, findMe, stats, vs, sessions, inRole, QUEUES,
     rows: mine, row: (id) => S.byId.get(id) || null,
     get running() { return !!running; },
     setBusy: (fn) => { busy = fn; },

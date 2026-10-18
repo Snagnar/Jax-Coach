@@ -25,7 +25,7 @@
     { "id": "matchup", "when": "opp", "add": "(3 - (matchup.difficulty || 3)) * 0.5" },
     { "id": "opp_fed", "when": "opp && opp.kills - opp.deaths >= 3", "add": -1, "why": "{oppName} is fed" },
     { "id": "hp", "when": "true", "add": "(me.hp - 0.7) * 2.5", "why": "you're at {round(me.hp * 100)}% HP", "whyWhen": "me.hp < 0.5" },
-    { "id": "jungler_near", "when": "jg && jg.status == 'near'", "add": -2, "why": "{jg.name} showed top side", "first": true },
+    { "id": "jungler_near", "when": "jg && jg.status == 'near'", "add": -2, "why": "{jg.name} showed {jg.where}", "first": true },
     { "id": "jungler_away", "when": "jg && (jg.status == 'dead' || jg.status == 'far')", "add": 0.5 }
   ],
   "modes": [
@@ -33,7 +33,7 @@
     { "id": "numbers", "when": "min >= 8", "use": "numbers" },
     { "id": "opp_dead", "when": "opp && opp.dead", "mode": "push", "headline": "{oppName} dead · {ceil(opp.respawn)}s", "reason": "{recall.text}", "voiceKey": "oppdead-{round((t + opp.respawn) / 10)}" },
     { "id": "low_hp", "when": "me.hp < 0.25", "mode": "retreat", "headline": "Low HP: back off", "reason": "Step out of range or recall" },
-    { "id": "lane_jungler_near", "when": "min < 14 && jg && jg.status == 'near'", "mode": "{e >= 2.5 ? 'trade' : e >= 0 ? 'safe' : 'retreat'}", "headline": "{e >= 0 ? 'Careful: jungler nearby' : 'Back off: jungler nearby'}", "reason": "{reason}", "voice": "{jg.withMe ? null : 'Careful. ' + jg.name + ' showed top side.'}", "voiceKey": "{jg.key}" },
+    { "id": "lane_jungler_near", "when": "min < 14 && jg && jg.status == 'near'", "mode": "{e >= 2.5 ? 'trade' : e >= 0 ? 'safe' : 'retreat'}", "headline": "{e >= 0 ? 'Careful: jungler nearby' : 'Back off: jungler nearby'}", "reason": "{reason}", "voice": "{jg.withMe ? null : 'Careful. ' + jg.name + ' showed ' + jg.where + '.'}", "voiceKey": "{jg.key}" },
     { "id": "lane_objective_soon", "when": "min < 14 && soon && soon.in > 0", "mode": "group", "headline": "{soon.label} in {clock(soon.in)}", "reason": "{soon.key == 'dragon' ? 'Shove your wave first; keep Teleport for the fight if your team contests' : 'Get priority: push your wave so you can move first'}", "voice": "{soon.label} in one minute.", "voiceKey": "obj-{soon.key}-{round(soon.next)}" },
     { "id": "lane_guard", "when": "min < 14 && guard && (guard.strict || e < 1.5)", "mode": "{e < -2 ? 'retreat' : 'safe'}", "headline": "{guard.headline}", "reason": "{guard.reason}", "voice": "{guard.voice}", "voiceKey": "{guard.voiceKey}" },
     { "id": "objective", "when": "min >= 14 && soon", "mode": "group", "headline": "{soon.status == 'up' ? soon.label + ' is up' : soon.label + ' in ' + clock(soon.in)}", "reason": "{soon.status == 'up' ? 'Group with your team, or pressure the opposite side lane if you have Teleport' : 'Push your side wave now so you can join (or Teleport) in time'}", "voice": "{soon.status == 'up' ? soon.label + ' is up.' : soon.label + ' in one minute.'}", "voiceKey": "obj-{soon.key}-{round(soon.next)}{soon.status == 'up' ? '-up' : ''}" },

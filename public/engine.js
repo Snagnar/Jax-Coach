@@ -95,8 +95,15 @@ const Engine = (() => {
   const dmgType = (D, id) => (profile(D, id).def >= 0.5 ? 'AP' : 'AD');
   const isSupportChamp = (D, p, id) => p.position === 'UTILITY' || (!p.position && (champ(D, id).tags || [])[0] === 'Support');
 
+  // ---------- your lane ----------
+  // Ranked and draft games name every player's role (TOP/MIDDLE/...). Blind picks, customs and the practice tool
+  // don't: then the lane the app was told (champ select, or the Top/Mid switch on the page) decides.
+  const LANE_OF = { TOP: 'top', MIDDLE: 'mid', MID: 'mid', BOTTOM: 'bot', UTILITY: 'bot', JUNGLE: 'jungle' };
+  const POS_OF = { top: 'TOP', mid: 'MIDDLE', bot: 'BOTTOM', jungle: 'JUNGLE' };
+  const LANE_WORD = { top: 'top', mid: 'mid', bot: 'bot lane', jungle: 'your jungle' };
+
   // ---------- players ----------
-  function players(game, D, overrideOppId) {
+  function players(game, D, overrideOppId, laneHint) {
     const ap = game.activePlayer || {};
     const all = (game.allPlayers || []).map((p) => ({ ...p, cid: champIdOf(p, D), name: pname(p) }));
     let me = all.find((p) => (ap.riotId && p.riotId === ap.riotId) || (ap.summonerName && p.summonerName === ap.summonerName) || (ap.riotIdGameName && p.riotIdGameName === ap.riotIdGameName));
@@ -104,15 +111,23 @@ const Engine = (() => {
     const allies = all.filter((p) => p.team === me.team && p !== me);
     const enemies = all.filter((p) => p.team !== me.team);
     const enemyJungler = enemies.find((p) => p.position === 'JUNGLE') || enemies.find((p) => hasSpell(p, /smite/i));
+    const myPos = String(me.position || '').toUpperCase() || POS_OF[laneHint] || 'TOP';
+    const lane = LANE_OF[myPos] || 'top';
     let opp = null;
     if (overrideOppId) opp = enemies.find((p) => p.cid === overrideOppId);
-    if (!opp) opp = enemies.find((p) => p.position === 'TOP');
+    if (!opp) opp = enemies.find((p) => p.position === myPos);
     if (!opp) {
-      // no positions (normals/customs): best guess = enemy with a matchup entry, no Smite, not a support/marksman
-      const cands = enemies.filter((p) => p !== enemyJungler && !isSupportChamp(D, p, p.cid) && (champ(D, p.cid).tags || [])[0] !== 'Marksman');
-      opp = cands.find((p) => D.matchups[p.cid] && hasSpell(p, /teleport/i)) || cands.find((p) => D.matchups[p.cid]) || cands[0] || enemies[0];
+      // no positions (blind pick, customs): best guess = no Smite, not a support/marksman, a matchup entry, and the
+      // classes that play your lane (top: fighters and tanks, Teleport breaks ties; mid: mages and assassins, who
+      // often take Teleport too)
+      const tag = (p) => (champ(D, p.cid).tags || [])[0];
+      const cands = enemies.filter((p) => p !== enemyJungler && !isSupportChamp(D, p, p.cid) && tag(p) !== 'Marksman');
+      const score = (p) => (D.matchups[p.cid] ? 4 : 0) + (lane === 'mid'
+        ? (['Mage', 'Assassin'].includes(tag(p)) ? 2 : 0)
+        : (['Fighter', 'Tank'].includes(tag(p)) ? 2 : 0) + (hasSpell(p, /teleport/i) ? 1 : 0));
+      opp = cands.slice().sort((a, b) => score(b) - score(a))[0] || enemies[0];
     }
-    return { me, allies, enemies, opp, enemyJungler, activePlayer: ap };
+    return { me, allies, enemies, opp, enemyJungler, activePlayer: ap, lane, myPos };
   }
 
   // ---------- phase ----------
@@ -299,12 +314,14 @@ const Engine = (() => {
   const DEFAULT_TIMERS = { voidgrubs: { spawn: '8:00' }, dragon: { spawn: '5:00', respawn: '5:00' }, riftHerald: { spawn: '15:00' }, atakhan: { spawn: '20:00' }, baron: { spawn: '25:00', respawn: '6:00' } };
   // one-time camps leave the map if nobody takes them
   const DESPAWN = { voidgrubs: 14 * 60 + 45, riftHerald: 19 * 60 + 45 };
-  function objectives(D, events, t, teamOf) {
+  function objectives(D, events, t, teamOf, lane) {
     const timers = (D.shared && D.shared.objectiveTimers) || (D.meta && D.meta.objectiveTimers) || DEFAULT_TIMERS;
     const out = [];
     for (const o of OBJECTIVES) {
-      const cfg = timers[o.key];
-      if (!cfg) continue;
+      const raw = timers[o.key];
+      if (!raw) continue;
+      // a note per lane ("byLane": { "top": "...", "mid": "..." }) wins over the general one
+      const cfg = { ...raw, notes: (raw.byLane && raw.byLane[lane]) || raw.notes || '' };
       const spawn = parseClock(cfg.spawn), respawn = parseClock(cfg.respawn);
       if (spawn == null) continue;
       const kills = events.filter((e) => /Kill$/.test(e.EventName || '') && o.re.test(e.EventName) && e.EventName !== 'ChampionKill');
@@ -545,7 +562,8 @@ const Engine = (() => {
       if (inv.length >= 2 || (enemyJungler && inv.includes(enemyJungler) && enemyJungler !== opp)) add('you_died_to_gank', 'warn', 'You died to a gank', `Killed by ${inv.map((p) => champ(D, p.cid).name).join(' + ') || lastDeath.KillerName}`);
       else if (opp && nameIs(opp, lastDeath.KillerName)) add('you_died_solo', 'warn', `${champ(D, opp.cid).name} solo killed you`, 'Reset your approach, see below');
     }
-    if (junglerDeaths.length >= 2 && min < 20) add('enemy_jungler_ganked_top_repeatedly', 'warn', `${champ(D, enemyJungler.cid).name} keeps ganking top`, `${junglerDeaths.length} deaths with the jungler involved in the last 10 min`);
+    // (the id says top for older playbooks; it fires in every lane)
+    if (junglerDeaths.length >= 2 && min < 20) add('enemy_jungler_ganked_top_repeatedly', 'warn', `${champ(D, enemyJungler.cid).name} keeps ganking ${LANE_WORD[P.lane] || 'you'}`, `${junglerDeaths.length} deaths with the jungler involved in the last 10 min`);
 
     if (opp && min < 14) {
       if (min < 3.5 && me.level >= 2 && opp.level < 2) add('you_hit_level_2_first', 'good', 'You hit level 2 first', 'Short power window');
@@ -592,10 +610,12 @@ const Engine = (() => {
 
   // ---------- enemy jungler: last seen (kill feed + objective kills only, never predicted) ----------
   const SIDE = { TOP: 'top', MIDDLE: 'mid', BOTTOM: 'bot', UTILITY: 'bot' };
+  // seconds a jungler needs from a side of the map to your lane: 0 = that side is your lane ("near" for 45 s)
+  const REACH = { top: { top: 0, mid: 20, bot: 40 }, mid: { mid: 0, top: 20, bot: 20 }, bot: { bot: 0, mid: 20, top: 40 } };
   function roleOf(D, P, p) {
     if (p.position) return p.position;
     if (hasSpell(p, /smite/i)) return 'JUNGLE';
-    if (p === P.opp || p === P.me) return 'TOP';
+    if (p === P.opp || p === P.me) return P.myPos || 'TOP';
     const tag = (champ(D, p.cid).tags || [])[0];
     return tag === 'Support' ? 'UTILITY' : tag === 'Marksman' ? 'BOTTOM' : 'MIDDLE';
   }
@@ -629,17 +649,18 @@ const Engine = (() => {
     const last = sightings[sightings.length - 1] || null;
     const ago = last ? t - last.t : null;
     const sideTxt = (s) => ({ top: 'top side', mid: 'mid', bot: 'bot side', jungle: 'in the jungle' }[s] || s);
+    const reach = last ? (REACH[P.lane] || REACH.top)[last.side] : null;
     let status = 'unknown', text, safeFor = 0;
-    if (J.isDead) { status = 'dead'; safeFor = Math.ceil(J.respawnTimer || 0) + 30; text = `${name} is dead (${Math.ceil(J.respawnTimer || 0)}s): top is safe`; }
+    if (J.isDead) { status = 'dead'; safeFor = Math.ceil(J.respawnTimer || 0) + 30; text = `${name} is dead (${Math.ceil(J.respawnTimer || 0)}s): ${LANE_WORD[P.lane] || 'your lane'} is safe`; }
     else if (!last) {
       if (t < 200) { status = 'clearing'; text = `${name} is on the first clear. A full clear usually ends around 3:15–3:45`; }
       else text = `${name} hasn't shown yet: assume he could be near`;
-    } else if (last.side === 'top' && ago <= 45) { status = 'near'; text = `${name} ${last.what} top side ${fmtClock(ago)} ago`; }
-    else if ((last.side === 'bot' && ago <= 40) || (last.side === 'mid' && ago <= 20)) {
-      status = 'far'; safeFor = (last.side === 'bot' ? 40 : 20) - ago;
+    } else if (reach === 0 && ago <= 45) { status = 'near'; text = `${name} ${last.what} ${sideTxt(last.side)} ${fmtClock(ago)} ago`; }
+    else if (reach > 0 && ago <= reach) {
+      status = 'far'; safeFor = reach - ago;
       text = `${name} ${last.what} ${sideTxt(last.side)} ${fmtClock(ago)} ago: ~${Math.round(safeFor)}s to push safely`;
     } else text = `${name} last seen ${sideTxt(last.side)} ${fmtClock(ago)} ago (${last.what})`;
-    return { cid: J.cid, name, level: J.level, status, text, safeFor, last, ago, sightings };
+    return { cid: J.cid, name, level: J.level, status, text, safeFor, last, ago, sightings, where: last ? sideTxt(last.side) : null };
   }
 
   // ---------- role vs role: who is winning each lane (scoreboard info only) ----------
@@ -687,7 +708,9 @@ const Engine = (() => {
     const mana = st.resourceMax && /mana/i.test(st.resourceType || 'MANA') ? st.resourceValue / st.resourceMax : 1;
     const gold = items.gold, b = items.buyNow, min = t / 60;
     const buyTxt = b && b.cost > 0 ? b.text.replace(/^Components for [^:]+: /, '').replace(/^Finish /, '') : '';
-    const relevant = (o) => o.status !== 'taken' && (min >= 14 || o.key === 'voidgrubs' || o.key === 'riftHerald');
+    // in lane: the objectives your lane moves to (top: grubs and Herald; mid also rotates to dragon)
+    const early = P.lane === 'mid' ? ['voidgrubs', 'riftHerald', 'dragon'] : ['voidgrubs', 'riftHerald'];
+    const relevant = (o) => o.status !== 'taken' && (min >= 14 || early.includes(o.key));
     const reasons = [];
     let why = null;
     if (b && /^Finish /.test(b.text)) { why = 'item'; reasons.push(`you can finish ${buyTxt}`); }
@@ -700,7 +723,7 @@ const Engine = (() => {
     if (!why) return null;
 
     const eDead = P.enemies.filter((p) => p.isDead).length, aDead = [me, ...P.allies].filter((p) => p.isDead).length;
-    const soon = objs.find((o) => relevant(o) && o.in > 0 && o.in <= 45 && (o.key === 'voidgrubs' || o.key === 'riftHerald'));
+    const soon = objs.find((o) => relevant(o) && o.in > 0 && o.in <= 45 && early.includes(o.key));
     let hold = null;
     if (hp >= 0.3) {
       if (P.opp && P.opp.isDead) hold = `${champ(D, P.opp.cid).name} is dead: shove and take plates first`;
@@ -884,9 +907,8 @@ const Engine = (() => {
       lastKiller: last ? (killerOf(last) ? champ(D, killerOf(last).cid).name : 'a turret or minions') : null,
       lastAgo: last ? Math.round(t - last.EventTime) : null, lastSolo: !!(last && soloBy(last, opp)),
     };
-    // your lane and its turrets (live data names the role TOP/MIDDLE/BOTTOM/UTILITY/JUNGLE)
-    const LANE = { TOP: 'top', MIDDLE: 'mid', MID: 'mid', BOTTOM: 'bot', UTILITY: 'bot' };
-    const myLane = LANE[String(me.position || '').toUpperCase()] || (opp ? 'top' : null);
+    // your lane and its turrets (from your role, or the lane the app was told when the game names none)
+    const myLane = ['top', 'mid', 'bot'].includes(P.lane) ? P.lane : null;
     const tw = team.turrets || { mine: {}, theirs: {} };
     const eDead = enemies.filter((p) => p.isDead).length, aDead = [me, ...allies].filter((p) => p.isDead).length;
     const fedP = enemies.filter((p) => p !== opp && !p.isDead && isFed(p));
@@ -917,7 +939,7 @@ const Engine = (() => {
       lane: { label: state.label, very: state.very, est: state.est, reasons: state.reasons },
       team: { goldDiff: team.goldDiff, kills: team.kills, ekills: team.ekills, towers: team.towers, etowers: team.etowers },
       eDead, aDead, adv: eDead - aDead,
-      jg: jt ? { status: jt.status, name: jt.name, ago: jt.ago, side: jt.last ? jt.last.side : null, withMe: !!(jt.last && jt.last.withMe), safeFor: jt.safeFor, key: jt.nearKey } : null,
+      jg: jt ? { status: jt.status, name: jt.name, ago: jt.ago, side: jt.last ? jt.last.side : null, where: jt.where || 'nearby', withMe: !!(jt.last && jt.last.withMe), safeFor: jt.safeFor, key: jt.nearKey } : null,
       jgNote: jt && jt.status === 'unknown' && min >= 3 && min < 20 ? `${jt.name}'s position unknown: check the map` : '',
       soon: soon ? { key: soon.key, label: soon.label, in: soon.in, status: soon.status, next: soon.next, stakes: soon.stakes || null } : null,
       drakes: dragon ? { ours: dragon.drakes.ours, theirs: dragon.drakes.theirs, point: dragon.soulPoint, soul: dragon.soul } : { ours: 0, theirs: 0, point: null, soul: null },
@@ -1013,7 +1035,7 @@ const Engine = (() => {
     const events = ((game.events && game.events.Events) || []).slice().sort((a, b) => a.EventTime - b.EventTime);
     // the loading screen / a replay can deliver data without a player list: nothing to analyze yet
     if (!(game.allPlayers || []).length) return null;
-    const P = players(game, D, opts.overrideOppId);
+    const P = players(game, D, opts.overrideOppId, opts.lane);
     const { me, opp } = P;
     if (!me) return null;
     exactCs(D, mem, me, P.activePlayer, t);
@@ -1036,13 +1058,14 @@ const Engine = (() => {
     mem.tags = tags;
     const myTeam = [me, ...P.allies];
     const teamOf = (name) => (myTeam.some((p) => nameIs(p, name)) ? 'mine' : P.enemies.some((p) => nameIs(p, name)) ? 'theirs' : null);
-    const objs = objectives(D, events, t, teamOf);
+    const objs = objectives(D, events, t, teamOf, P.lane);
     const trig = triggers(D, opts, mem, P, t, events, state, objs);
     const items = recommendItems(D, me, P.activePlayer, tags, comp);
     const a = {
-      t, clock: fmtClock(t), P, phase, phaseLabel: PHASE_LABEL[phase], matchupPhase: MATCHUP_PHASE[phase],
+      // lane: where you play (top/mid/bot/jungle); role: which playbook fits it (top or mid, the lanes with playbooks)
+      t, clock: fmtClock(t), P, lane: P.lane, role: P.lane === 'mid' ? 'mid' : 'top', phase, phaseLabel: PHASE_LABEL[phase], matchupPhase: MATCHUP_PHASE[phase],
       state, team, comp, tags, objs, triggers: trig, items, legendaries: lg, events,
-      champ: me.cid, hasPlaybook: !!(D.playbook && D.playbook.champion === me.cid), gameMode: (game.gameData || {}).gameMode,
+      champ: me.cid, hasPlaybook: !!(D.playbook && D.playbook.champion === me.cid && (D.playbook.role || 'top') === (P.lane === 'mid' ? 'mid' : 'top')), gameMode: (game.gameData || {}).gameMode,
       activeStats: (game.activePlayer || {}).championStats || {},
       jungler: junglerTrack(D, P, events, t),
       lanes: lanes(D, P, t, events),
@@ -1100,5 +1123,7 @@ const Engine = (() => {
     return { comp, tags, items };
   }
 
-  return { analyze, newMemory, csText, planForComp, modesFor, profile, fmtClock, parseClock, champ, champIdOf, itemData, isLegendary, legendaryCount, inventory, building, STANCE, dmgType, nameIs, PHASE_LABEL, MATCHUP_PHASE, STRONG_HEALERS };
+  // a role name from the game or the client ("MIDDLE", "middle", "TOP") -> 'top' / 'mid' / 'bot' / 'jungle' (or null)
+  const laneOf = (pos) => LANE_OF[String(pos || '').toUpperCase()] || null;
+  return { analyze, newMemory, csText, planForComp, modesFor, profile, fmtClock, parseClock, champ, champIdOf, itemData, isLegendary, legendaryCount, inventory, building, STANCE, dmgType, nameIs, laneOf, PHASE_LABEL, MATCHUP_PHASE, STRONG_HEALERS };
 })();

@@ -2,7 +2,7 @@
 
 const D = { dd: { champs: {}, champByName: {}, keyToId: {}, items: {}, itemByName: {}, version: '' }, shared: {}, meta: null, phases: null, matchups: {}, rules: null, overlayRules: null, playbook: null, plan: null, config: {} };
 const S = {
-  view: 'live', champ: null, showWhy: false, pbSel: null, pbRule: null, game: null, A: null, demo: false, demoT: 330, demoTimer: null, overrideOpp: null,
+  view: 'live', champ: null, role: 'top', showWhy: false, pbSel: null, pbRule: null, game: null, A: null, demo: false, demoT: 330, demoTimer: null, overrideOpp: null,
   memory: Engine.newMemory(), muSel: null, muFilter: '', planPhase: 'lvl1_3', serverDown: false, liveStatus: 0,
   modeState: { cur: null, pending: null, pendingCount: 0, changedAt: 0 },
   clientPhase: null, cs: null, csOpp: null, meChecked: false, rec: null, reviewStale: true,
@@ -27,6 +27,10 @@ function champImg(id, cls = '') {
   return `<img class="ci ${cls}" src="${DD()}/img/champion/${c.image.full}" alt="" title="${esc(c.name)}">`;
 }
 const champName = (id) => (D.dd.champs[id] || {}).name || (D.matchups[id] || {}).name || id;
+// playbooks are per champion and role: the one the page shows, and a playbook id's name ("Malphite · Mid")
+const pbId = () => Playbooks.idOf(S.champ, S.role);
+const roleTag = (role) => (role === 'mid' ? '<i class="role-tag">Mid</i>' : '');
+const pbName = (pb) => { const p = Playbooks.parse(pb); return `${champName(p.cid)}${p.role === 'mid' ? ' mid' : ''}`; };
 function itemImg(id, cls = '') {
   const it = D.dd.items[id];
   return `<img class="ii ${cls}" src="${DD()}/img/item/${id}.png" alt="" title="${esc(it ? it.name : id)}">`;
@@ -79,10 +83,10 @@ async function boot() {
       if (!D.dd.itemByName[k] || better(id, D.dd.itemByName[k])) D.dd.itemByName[k] = id;
     }
   }
-  await Promise.allSettled([Playbooks.loadGeneric(), Playbooks.refreshList(), Playbooks.loadPersonal()]);
-  let start = 'Jax';
-  try { start = localStorage.getItem('jc.champ') || start; } catch {}
-  await useChamp(D.dd.champs[start] || start === 'Jax' ? start : 'Jax', { quiet: true });
+  await Promise.allSettled([Playbooks.loadGeneric('top'), Playbooks.loadGeneric('mid'), Playbooks.refreshList(), Playbooks.loadPersonal()]);
+  let start = 'Jax', startRole = 'top';
+  try { start = localStorage.getItem('jc.champ') || start; startRole = localStorage.getItem('jc.role') === 'mid' ? 'mid' : 'top'; } catch {}
+  await useChamp(D.dd.champs[start] || start === 'Jax' ? start : 'Jax', { quiet: true, role: startRole });
 
   await Focus.loadHistory();
   Archive.load().then(renderToday).catch(() => {});
@@ -123,24 +127,29 @@ async function boot() {
 
 // ---------- the active champion's playbook ----------
 // S.champ is whose playbook the page shows: your champ select pick, the champion you're playing, or your choice.
-async function useChamp(cid, { quiet = false, fresh = false } = {}) {
+// S.role is the lane it's for (top or mid): your assigned position in champ select or in the game, else the
+// Top/Mid switch in the header (blind picks, customs and the practice tool don't say).
+async function useChamp(cid, { quiet = false, fresh = false, role = S.role } = {}) {
   if (!cid) return;
-  const switching = cid !== S.champ;
-  S.champ = cid;
-  try { localStorage.setItem('jc.champ', cid); } catch {}
-  await Playbooks.load(cid, fresh || switching);
-  if (S.champ !== cid) return;                     // another switch happened while loading
+  role = role === 'mid' ? 'mid' : 'top';
+  const switching = cid !== S.champ || role !== S.role;
+  S.champ = cid; S.role = role;
+  try { localStorage.setItem('jc.champ', cid); localStorage.setItem('jc.role', role); } catch {}
+  const pb = Playbooks.idOf(cid, role);
+  await Playbooks.load(pb, fresh || switching);
+  if (pbId() !== pb) return;                       // another switch happened while loading
   applyPlaybook();
-  Review.setChampion(cid);
+  Review.setChampion(cid, role);
   if (switching && !quiet) S.muSel = Object.keys(D.matchups).sort()[0] || null;
 }
 function applyPlaybook() {
-  const plan = Agent.planFor(S.champ);
-  const e = Playbooks.effective(S.champ, D.dd, plan);
+  const plan = Agent.planFor(S.champ, S.role);
+  const e = Playbooks.effective(pbId(), D.dd, plan);
   Object.assign(D, { meta: e.meta, phases: e.phases, rules: e.rules, matchups: e.matchups, overlayRules: e.overlayRules, playbook: e.playbook, plan: plan || null, personal: Playbooks.personal || { rules: [], hints: [] } });
   if (!S.muSel || !D.matchups[S.muSel]) S.muSel = Object.keys(D.matchups).sort()[0] || null;
   const pb = D.playbook;
   $('#champChip').innerHTML = `${champImg(S.champ, 'xs')}<span>${esc(champName(S.champ))}</span>${pb.generic ? '<i class="faint">· no playbook</i>' : pb.draft ? '<i class="faint">· draft</i>' : ''}<span class="caret">▾</span>`;
+  document.querySelectorAll('#roleSwitch button').forEach((b) => b.classList.toggle('on', b.dataset.role === S.role));
   $('#patchChip').textContent = `Patch ${D.meta.patch || D.shared.patch || '?'} · ${Object.keys(D.matchups).length} matchups`;
   $('#patchChip').title = `Research data: ${D.meta.lastUpdated || '?'} · Data Dragon ${D.dd.version || 'unavailable'}`;
   renderStatic();
@@ -160,8 +169,11 @@ async function pollClient() {
     if (S.cs) {
       const mine = (S.cs.myTeam || []).find((p) => p.cellId === S.cs.localPlayerCellId) || {};
       const pick = D.dd.keyToId[String(mine.championId || mine.championPickIntent || '')];
-      if (pick && pick !== S.champ) await useChamp(pick);
-      Agent.onChampSelect(S.cs, D);
+      // your assigned position decides the playbook role (mid, else top); blind pick has none: keep the switch's
+      const lane = Engine.laneOf(mine.assignedPosition);
+      const role = lane === 'mid' ? 'mid' : lane ? 'top' : S.role;
+      if ((pick && pick !== S.champ) || role !== S.role) await useChamp(pick || S.champ, { role });
+      Agent.onChampSelect(S.cs, D, role);
     }
     // load your history on this champion once in the background (cached on disk) for "your record vs X"
     if (!S.csReviewTried && D.config.hasKey && Review.state.me && !Review.state.games.length && Review.state.status !== 'loading') { S.csReviewTried = true; Review.load(D); }
@@ -186,8 +198,10 @@ async function poll() {
       if (!S.game && was) { S.memory = Engine.newMemory(); S.overrideOpp = null; }
     } catch { if (S.demo) return; S.serverDown = true; S.game = null; }
   }
-  S.A = S.game ? Engine.analyze(S.game, D, { memory: S.memory, overrideOppId: S.overrideOpp }) : null;
-  if (S.A && S.A.champ !== S.champ && D.dd.champs[S.A.champ]) { await useChamp(S.A.champ); S.A = Engine.analyze(S.game, D, { memory: S.memory, overrideOppId: S.overrideOpp }); }
+  // the game names your role in ranked and draft (then it decides the playbook); otherwise S.role is your lane
+  const analyze = () => (S.game ? Engine.analyze(S.game, D, { memory: S.memory, overrideOppId: S.overrideOpp, lane: S.role }) : null);
+  S.A = analyze();
+  if (S.A && (S.A.champ !== S.champ || S.A.role !== S.role) && D.dd.champs[S.A.champ]) { await useChamp(S.A.champ, { role: S.A.role }); S.A = analyze(); }
   if (S.A && !S.demo) Agent.onGame(S.A, D);
   Agent.tick(S.demo ? null : S.A, D);
   if (!S.demo) askVoice();
@@ -226,7 +240,8 @@ async function maybeProfile() {
   if (S.A || S.cs || S.demo || S.profileBusy || !Agent.ready()) return;
   if (Agent.state.jobs.some((j) => j.status === 'running' && ['profile', 'champion'].includes(j.type))) return;
   S.profileTried = S.profileTried || {};
-  const pool = [S.champ, ...Playbooks.list.filter((p) => p.parts && p.parts.matchups).map((p) => p.champion)].filter((c, i, a) => c && a.indexOf(c) === i);
+  // playbook ids (champion + role)
+  const pool = [pbId(), ...Playbooks.list.filter((p) => p.parts && p.parts.matchups).map((p) => p.champion)].filter((c, i, a) => c && a.indexOf(c) === i);
   const cid = pool.find((c) => !S.profileTried[c] && Playbooks.has(c));
   if (!cid) return;
   S.profileTried[cid] = true;
@@ -387,11 +402,14 @@ function alertBanner(A) {
 // generate this game's most likely lines up front so they play without delay (Groq voices only)
 function prefetchLines(A) {
   const { opp } = A.P, jt = A.jungler;
-  const key = `${opp ? opp.cid : ''}|${jt ? jt.cid : ''}|${A.P.me.name}`;
+  const key = `${opp ? opp.cid : ''}|${jt ? jt.cid : ''}|${A.P.me.name}|${A.lane}`;
   if (!Voice.ready || S.prefetchedFor === key) return;
   S.prefetchedFor = key;
   const lines = [];
-  if (jt) lines.push(`${jt.name} showed bot side.`, `${jt.name} is dead.`, `Careful. ${jt.name} showed top side.`);
+  // the far sides of the map for your lane, and the near one ("Careful. X showed ...")
+  const far = { top: ['bot side', 'mid'], mid: ['top side', 'bot side'], bot: ['top side', 'mid'] }[A.lane] || ['bot side', 'mid'];
+  const near = { top: 'top side', mid: 'mid', bot: 'bot side' }[A.lane] || 'top side';
+  if (jt) lines.push(...far.map((s) => `${jt.name} showed ${s}.`), `${jt.name} is dead.`, `Careful. ${jt.name} showed ${near}.`);
   lines.push('Dragon in one minute.', 'Voidgrubs in one minute.', 'Baron in one minute.', 'Elder Dragon in one minute.');
   for (const c of A.items.nextCore.slice(0, 2)) lines.push(`You can finish ${String(c.name).toLowerCase()}. Recall on the next crash.`);
   Voice.prefetch(lines);
@@ -417,7 +435,7 @@ function callouts(A) {
   focusVoice(A);
   if (jt && A.t < 14 * 60) {
     // at most one "showed bot side" per 2 minutes (one fight = several kills)
-    if (jt.status === 'far' && jt.ago < 12 && !(S.jgFarAt && jt.last.t - S.jgFarAt < 120) && Voice.say(`${jt.name} showed ${jt.last.side === 'bot' ? 'bot side' : 'mid'}.`, { key: `jgfar-${jt.last.t}`, repeatAfter: 9999 })) S.jgFarAt = jt.last.t;
+    if (jt.status === 'far' && jt.ago < 12 && !(S.jgFarAt && jt.last.t - S.jgFarAt < 120) && Voice.say(`${jt.name} showed ${jt.where}.`, { key: `jgfar-${jt.last.t}`, repeatAfter: 9999 })) S.jgFarAt = jt.last.t;
     if (jt.status === 'dead') Voice.say(`${jt.name} is dead.`, { key: `jgdead-${jt.last ? jt.last.t : 0}`, repeatAfter: 9999 });
   }
 }
@@ -458,20 +476,22 @@ function warnWatch(A) {
 
 // ---------- death budget: as many deaths as your own wins have ----------
 // 1 death before 14:00 (with 2+ early deaths your top games are 44% wins, with none 63%), then one more at 14:00
-// and one more per the death pace of your archived top-lane wins after 14:00 (default every 7:30).
+// and one more per the death pace of your archived wins in this lane after 14:00 (default every 7:30).
 function deathBudget() {
-  if (S.budgetCfg && Date.now() - S.budgetCfg.at < (S.budgetCfg.n >= 15 ? 3600e3 : 60e3)) return S.budgetCfg;   // retry while the archive loads
+  const B0 = S.budgetCfg;
+  if (B0 && B0.role === S.role && Date.now() - B0.at < (B0.n >= 15 ? 3600e3 : 60e3)) return B0;   // retry while the archive loads
   let early = 1, every = 450, n = 0;
   if (!Archive.state.loaded && !S.budgetArchiveTried) { S.budgetArchiveTried = true; Archive.load().catch(() => {}); }
   try {
-    const W = Archive.rows().filter((r) => r.role === 'TOP' && r.win && !r.remake && r.detail && r.detail.deaths && r.dur > 1200);
+    const pos = S.role === 'mid' ? 'MIDDLE' : 'TOP';
+    const W = Archive.rows().filter((r) => r.role === pos && r.win && !r.remake && r.detail && r.detail.deaths && r.dur > 1200);
     n = W.length;
     if (n >= 15) {
       const late = W.reduce((s, r) => s + r.detail.deaths.filter((d) => d.t >= 840).length, 0), mins = W.reduce((s, r) => s + (r.dur - 840) / 60, 0);
       if (late) every = Math.min(900, Math.max(240, Math.round((60 * mins) / late / 30) * 30));
     }
   } catch {}
-  return (S.budgetCfg = { early, every, n, at: Date.now() });
+  return (S.budgetCfg = { early, every, n, role: S.role, at: Date.now() });
 }
 const budgetAt = (B, t) => (t < 840 ? B.early : B.early + 1 + Math.floor((t - 840) / B.every));
 const budgetClear = (B, n) => (n <= B.early ? 0 : 840 + (n - B.early - 1) * B.every);   // first moment n deaths fit
@@ -486,7 +506,7 @@ function budgetState(A) {
 }
 function budgetChip(A) {
   const b = budgetState(A), B = b.B;
-  const src = B.n >= 15 ? `After 14:00 from the pace of your ${B.n} top-lane wins` : 'Default';
+  const src = B.n >= 15 ? `After 14:00 from the pace of your ${B.n} ${B.role === 'mid' ? 'mid' : 'top'}-lane wins` : 'Default';
   return `<div class="budget b-${b.level}" title="${esc(`${src}: ${B.early} death${B.early > 1 ? 's' : ''} before 14:00, one more at 14:00, then one more every ${Engine.fmtClock(B.every)}.`)}">
     <div class="small muted">Death budget</div><b class="num">${b.d} / ${b.allowed}</b><div class="small">${esc(b.sub)}</div></div>`;
 }
@@ -530,6 +550,7 @@ function record(A) {
   const me = A.P.me;
   if (!S.rec || A.t < S.rec.lastT - 5) S.rec = { startedAt: Date.now(), champ: me.cid, riotId: me.riotId, deaths: [], modeTime: {}, lastT: A.t, saved: false };
   const r = S.rec, cur = S.modeState.cur ? S.modeState.cur.mode : null;
+  r.role = A.role;
   if (r.lastMode) r.modeTime[r.lastMode] = Math.round((r.modeTime[r.lastMode] || 0) + Math.max(0, Math.min(6, A.t - r.lastT)));
   if (me.isDead && !r.wasDead) {
     const ev = A.events.filter((e) => e.EventName === 'ChampionKill' && Engine.nameIs(me, e.VictimName)).pop();
@@ -554,7 +575,7 @@ function finishRecording(result) {
   const L = S.lastSaved;
   if (L && L.champ === r.champ && L.opp === r.opp && Math.abs(L.gameTime - r.gameTime) < 120 && Date.now() - L.at < 15 * 60000) return;
   S.lastSaved = { champ: r.champ, opp: r.opp, gameTime: r.gameTime, at: Date.now() };
-  const body = { v: 1, endedAt: Date.now(), champ: r.champ, riotId: r.riotId, opp: r.opp, result, gameTime: Math.round(r.gameTime), deaths: r.deaths, modeTime: r.modeTime, focus: r.focus || null, plans: r.plans || [], chat: r.chat || null, ignored: r.ignored || 0, budget: r.budget || null };
+  const body = { v: 1, endedAt: Date.now(), champ: r.champ, role: r.role || 'top', riotId: r.riotId, opp: r.opp, result, gameTime: Math.round(r.gameTime), deaths: r.deaths, modeTime: r.modeTime, focus: r.focus || null, plans: r.plans || [], chat: r.chat || null, ignored: r.ignored || 0, budget: r.budget || null };
   S.lastFocus = r.focus || null;
   if (result === 'Win' || result === 'Lose') S.todayPending = [...(S.todayPending || []), { end: Date.now(), win: result === 'Win', champ: r.champ, opp: r.opp }];
   fetch('/api/history', { method: 'POST', body: JSON.stringify(body) }).then(() => Focus.loadHistory()).catch(() => {});
@@ -572,9 +593,9 @@ function finishRecording(result) {
 
 function scoutPlayers() {
   if (!D.config.hasKey || !S.A) return;
-  const { opp, enemies } = S.A.P;
+  const { opp, enemies, myPos } = S.A.P;
   const key = (p) => (D.dd.champs[p.cid] || {}).key;
-  if (opp) Scout.request(opp, key(opp), { deep: true, isOpponent: true, priority: true });
+  if (opp) Scout.request(opp, key(opp), { deep: true, isOpponent: true, priority: true, lanePos: myPos });
   for (const p of enemies) if (p !== opp) Scout.request(p, key(p));
 }
 let renderQueued = false;
@@ -756,7 +777,7 @@ function renderLiveView() {
         ${enemies.map((p) => `<button data-opp="${esc(p.cid)}" class="${p === opp ? 'on' : ''}">${champImg(p.cid, 'sm')}</button>`).join('')}
       </div>
     </div>`;
-  el.innerHTML = `${alertBanner(A)}${modeBanner(A)}${whyPanel(A)}${gamebar}${playbookNotice(me.cid)}
+  el.innerHTML = `${alertBanner(A)}${modeBanner(A)}${whyPanel(A)}${gamebar}${playbookNotice(Playbooks.idOf(me.cid, A.role))}
     <div class="grid live-grid">
       <div class="col">${planCard(A)}${nowCard(A)}${matchupPhaseCard(A, mu)}${phasePlanCard(A)}</div>
       <div class="col">${opponentCard(A, mu)}${buildCard(A, mu)}</div>
@@ -1011,8 +1032,10 @@ function champSelectHtml(cs) {
   const myPos = String(mine.assignedPosition || '').toLowerCase();
   const posOpp = myPos ? idOf(((cs.theirTeam || []).find((p) => p.championId && String(p.assignedPosition || '').toLowerCase() === myPos) || {}).championId) : null;
   let opp = S.csOpp && enemies.includes(S.csOpp) ? S.csOpp : posOpp;
+  // no positions (blind pick): a champion from your matchups, else the classes that play your lane
+  const laneTags = S.role === 'mid' ? ['Mage', 'Assassin'] : ['Fighter', 'Tank'];
   if (!opp) opp = enemies.find((id) => D.matchups[id] && !['Marksman', 'Support'].includes(((D.dd.champs[id] || {}).tags || [])[0])) || enemies.find((id) => D.matchups[id])
-    || enemies.find((id) => ['Fighter', 'Tank'].includes(((D.dd.champs[id] || {}).tags || [])[0])) || enemies[0] || null;
+    || enemies.find((id) => laneTags.includes(((D.dd.champs[id] || {}).tags || [])[0])) || enemies[0] || null;
   const mu = opp ? D.matchups[opp] : null;
   const POS = { top: 'Top', jungle: 'Jungle', middle: 'Mid', bottom: 'Bot', utility: 'Support' };
 
@@ -1071,14 +1094,14 @@ function champSelectHtml(cs) {
   return `
     <div class="card cs-head">
       <header><h2>${phaseName}</h2>${left != null ? `<span class="chip gold num">${Engine.fmtClock(left)}</span>` : ''}
-        ${myChamp ? `<span class="chip">${myLocked ? 'Locked' : 'Hovering'}: ${esc(champName(myChamp))}</span>` : ''}${myChamp && !Playbooks.has(myChamp) ? '<span class="chip warn">No playbook yet: general tips</span>' : ''}</header>
+        ${myChamp ? `<span class="chip">${myLocked ? 'Locked' : 'Hovering'}: ${esc(champName(myChamp))}</span>` : ''}<span class="chip" title="${myPos ? 'Your assigned position' : 'No position in this mode: set with the Top/Mid switch at the top'}">${S.role === 'mid' ? 'Mid' : 'Top'} lane</span>${myChamp && !Playbooks.has(Playbooks.idOf(myChamp, S.role)) ? '<span class="chip warn">No playbook yet: general tips</span>' : ''}</header>
       <div class="cs-teams">
         <div><h3>Your team</h3><div class="cs-row">${(cs.myTeam || []).map((p) => slot(p, false)).join('')}</div></div>
         <div><h3>Enemy team <span class="faint" style="text-transform:none;letter-spacing:0">· click your lane opponent</span></h3><div class="cs-row">${(cs.theirTeam || []).map((p) => slot(p, true)).join('')}</div>${compHtml}</div>
       </div>
       ${banIds.length ? `<div class="row small"><span class="muted">Bans</span>${banIds.map((id) => `<span class="ban">${champImg(id, 'sm')}</span>`).join('')}</div>` : ''}
     </div>
-    ${playbookNotice(myChamp)}${planCard(null)}
+    ${playbookNotice(myChamp ? Playbooks.idOf(myChamp, S.role) : null)}${planCard(null)}
     ${focusCardHtml()}
     <div class="grid cs-grid">${matchup}${loadoutHtml(L)}</div>`;
 }
@@ -1352,19 +1375,21 @@ function jobActivity(j) {
   return `${TOOL_VERB[last.tool] || last.tool}: ${arg.length > 80 ? arg.slice(0, 77) + '…' : arg}`;
 }
 const JOB_KIND = { champion: 'Full research', quick: 'Quick build', gameplan: 'Game plan', adapt: 'Reassess', review: 'Post-game review' };
-function playbookNotice(cid) {
-  if (!cid) return '';
-  const name = champName(cid), has = Playbooks.has(cid), draft = Playbooks.isDraft(cid);
-  const full = Agent.running(`champion-${cid}`), quick = Agent.running(`quick-${cid}`);
+// pb: a playbook id (champion + role)
+function playbookNotice(pb) {
+  if (!pb) return '';
+  const lane = Playbooks.parse(pb).role === 'mid' ? 'mid' : 'top';
+  const name = pbName(pb), has = Playbooks.has(pb), draft = Playbooks.isDraft(pb);
+  const full = Agent.running(`champion-${pb}`), quick = Agent.running(`quick-${pb}`);
   if (has && !draft && !full) return '';
   const st = Agent.state.status;
   if (!has && !full && !quick) {
     const why = !st ? '' : !st.installed ? 'Install Claude Code to let a research agent build one (see the Playbook tab).' : !st.loggedIn ? 'Sign in to Claude Code on the Playbook tab and a research agent builds one automatically.' : 'Research starts automatically.';
-    return `<div class="notice warn pb-notice">No playbook for ${esc(name)} yet: general top-lane advice for now. ${esc(why)} <button class="btn small ghost" data-action="goto-playbook" data-champ="${esc(cid)}">Playbook</button></div>`;
+    return `<div class="notice warn pb-notice">No playbook for ${esc(name)} yet: general ${lane}-lane advice for now. ${esc(why)} <button class="btn small ghost" data-action="goto-playbook" data-champ="${esc(pb)}">Playbook</button></div>`;
   }
   const jobs = [quick, full].filter(Boolean);
   const line = jobs.map((j) => `<div class="small"><b>${JOB_KIND[j.type]}</b> · ${ago(j.created)} · <span class="muted">${esc(jobActivity(j))}</span></div>`).join('');
-  const lead = !has ? `Researching ${esc(name)}… general top-lane advice until the first results arrive (about 1–2 minutes for the build).`
+  const lead = !has ? `Researching ${esc(name)}… general ${lane}-lane advice until the first results arrive (about 1–2 minutes for the build).`
     : draft ? `${esc(name)}: draft playbook from the quick research. The full research is still running and replaces it part by part.`
       : `Refreshing the ${esc(name)} playbook in the background. The current version stays active until it's done.`;
   return `<div class="notice pb-notice"><div>${lead}</div>${line}</div>`;
@@ -1433,7 +1458,7 @@ function whyPanel(A) {
   const rules = T.rules.map((r) => `<span class="rchk ${r.decided ? 'hit' : r.on ? 'on' : ''} ${r.error ? 'err' : ''}" title="${esc(r.error || (r.used ? `built-in: ${r.used}` : ''))}">${r.decided ? '✓' : r.error ? '!' : '✗'} ${esc(r.id)}</span>`).join('');
   const pb = D.playbook || {};
   return `<div class="card why">
-    <header><h2>Why "${esc((MODE_META[m.mode] || {}).name || m.mode)}"?</h2><span class="chip">rule ${esc(m.rule || '–')}</span>${String(m.rule || '').startsWith('plan:') ? '<span class="chip info">from the game plan</span>' : ''}<span class="chip" title="Long fight / all-in">fight score ${T.score}</span>${T.scoreShort != null && T.scoreShort !== T.score ? `<span class="chip" title="Short trade">short trade ${T.scoreShort}</span>` : ''}${T.safety ? `<span class="chip ${T.safety.towerSafe ? '' : 'warn'}" title="${esc(T.safety.threat ? T.safety.threat.why || T.safety.threat.id : '')}">tower ${T.safety.towerSafe ? 'safe' : 'not safe'}${T.safety.threats.length ? `: ${esc(T.safety.threats.join(', '))}` : ''}</span>` : ''}${T.ctx && T.ctx.power && T.ctx.power.fromProfile ? `<span class="chip" title="Matchup power curve at this stage (short / extended)">${esc(T.ctx.power.stage)} ${T.ctx.power.short} / ${T.ctx.power.extended}</span>` : ''}<span class="grow"></span><span class="small faint">playbook: ${esc(champName(pb.champion))}${pb.generic ? ' (generic)' : pb.version ? ` v${pb.version}` : ' (built-in)'}</span></header>
+    <header><h2>Why "${esc((MODE_META[m.mode] || {}).name || m.mode)}"?</h2><span class="chip">rule ${esc(m.rule || '–')}</span>${String(m.rule || '').startsWith('plan:') ? '<span class="chip info">from the game plan</span>' : ''}<span class="chip" title="Long fight / all-in">fight score ${T.score}</span>${T.scoreShort != null && T.scoreShort !== T.score ? `<span class="chip" title="Short trade">short trade ${T.scoreShort}</span>` : ''}${T.safety ? `<span class="chip ${T.safety.towerSafe ? '' : 'warn'}" title="${esc(T.safety.threat ? T.safety.threat.why || T.safety.threat.id : '')}">tower ${T.safety.towerSafe ? 'safe' : 'not safe'}${T.safety.threats.length ? `: ${esc(T.safety.threats.join(', '))}` : ''}</span>` : ''}${T.ctx && T.ctx.power && T.ctx.power.fromProfile ? `<span class="chip" title="Matchup power curve at this stage (short / extended)">${esc(T.ctx.power.stage)} ${T.ctx.power.short} / ${T.ctx.power.extended}</span>` : ''}<span class="grow"></span><span class="small faint">playbook: ${esc(pbName(pb.id || pb.champion))}${pb.generic ? ' (generic)' : pb.version ? ` v${pb.version}` : ' (built-in)'}</span></header>
     <div class="two tight"><div><h3>Fight score (you vs your lane opponent)</h3><table><tbody>${terms || '<tr><td class="muted small">no terms apply</td></tr>'}</tbody></table></div>
     <div><h3>Rules checked, in order</h3><div class="rchks">${rules}</div><div class="small faint" style="margin-top:6px">The first rule whose condition holds decides. The Playbook tab shows every rule.</div></div></div>
   </div>`;
@@ -1443,15 +1468,17 @@ function whyPanel(A) {
 function renderPlaybook() {
   const el = $('#view-playbook');
   if (!el) return;
-  const cid = S.pbSel || S.champ;
+  // cid: the selected playbook id (champion + role, e.g. "Malphite_mid"); ch: its champion
+  const cid = S.pbSel || pbId(), ch = Playbooks.parse(cid).cid;
   if (!Playbooks.raw(cid) && Playbooks.has(cid) && S.pbLoading !== cid) { S.pbLoading = cid; Playbooks.load(cid).then(() => { S.pbLoading = null; if (S.view === 'playbook') renderPlaybook(); }); }
   const st = Agent.state.status;
   const info = Playbooks.info(cid);
-  const pool = [...new Set([cid, S.champ, ...Playbooks.list.map((p) => p.champion), ...arr(Agent.state.jobs).filter((j) => j.champion && ['champion', 'quick'].includes(j.type)).map((j) => j.champion)])].filter((c) => D.dd.champs[c]).sort((a, b) => champName(a).localeCompare(champName(b)));
+  const pool = [...new Set([cid, pbId(), ...Playbooks.list.map((p) => p.champion), ...arr(Agent.state.jobs).filter((j) => j.champion && ['champion', 'quick'].includes(j.type)).map((j) => j.playbook || j.champion)])]
+    .filter((c) => D.dd.champs[Playbooks.parse(c).cid]).sort((a, b) => pbName(a).localeCompare(pbName(b)));
   const pill = (c) => {
-    const i = Playbooks.info(c), run = Agent.running(`champion-${c}`) || Agent.running(`quick-${c}`);
+    const i = Playbooks.info(c), run = Agent.running(`champion-${c}`) || Agent.running(`quick-${c}`), p = Playbooks.parse(c);
     const tag = run ? '<span class="chip info">researching</span>' : i && i.draft ? '<span class="chip">draft</span>' : i && i.active ? `<span class="chip">v${i.active}</span>` : i && i.shipped ? '<span class="chip">built-in</span>' : '<span class="chip warn">none</span>';
-    return `<button class="pb-champ ${c === cid ? 'on' : ''}" data-pbsel="${esc(c)}">${champImg(c, 'sm')}<span class="grow">${esc(champName(c))}${c === S.champ ? ' <i class="faint">· on dashboard</i>' : ''}</span>${tag}</button>`;
+    return `<button class="pb-champ ${c === cid ? 'on' : ''}" data-pbsel="${esc(c)}">${champImg(p.cid, 'sm')}<span class="grow">${esc(champName(p.cid))}${roleTag(p.role)}${c === pbId() ? ' <i class="faint">· on dashboard</i>' : ''}</span>${tag}</button>`;
   };
   const allChamps = Object.values(D.dd.champs).sort((a, b) => a.name.localeCompare(b.name));
   const agentBox = !st ? '<div class="small muted">Checking Claude Code…</div>'
@@ -1460,14 +1487,15 @@ function renderPlaybook() {
         : `<div class="small good-t">Claude Code is ready · new champions: ${esc(st.models.deep)} · everything else and all sub-agents: ${esc(st.models.fast)}</div>`;
   const jobs = arr(Agent.state.jobs);
   const jobRow = (j) => `<div class="job j-${j.status}">
-      <div class="row"><b>${esc(JOB_KIND[j.type] || j.type)}</b>${j.champion ? `<span class="row" style="gap:4px">${champImg(j.champion, 'xs')}<span class="small">${esc(champName(j.champion))}</span></span>` : ''}<span class="chip ${j.status === 'done' ? 'good' : j.status === 'failed' ? 'warn' : j.status === 'running' ? 'info' : ''}">${esc(j.status)}</span>
+      <div class="row"><b>${esc(JOB_KIND[j.type] || j.type)}</b>${j.champion ? `<span class="row" style="gap:4px">${champImg(j.champion, 'xs')}<span class="small">${esc(champName(j.champion))}${j.role === 'mid' ? ' mid' : ''}</span></span>` : ''}<span class="chip ${j.status === 'done' ? 'good' : j.status === 'failed' ? 'warn' : j.status === 'running' ? 'info' : ''}">${esc(j.status)}</span>
         <span class="small faint">${ago(j.created)} ago${j.durationSec ? ` · took ${Math.round(j.durationSec / 6) / 10} min` : ''}</span><span class="grow"></span>${j.status === 'running' ? `<button class="btn small ghost" data-cancel="${esc(j.id)}">Stop</button>` : ''}</div>
       <div class="small muted">${esc(j.title || '')}</div>
       ${j.status === 'running' ? `<div class="small">${esc(jobActivity(j))} <span class="faint">(${(j.activity || {}).count || 0} steps)</span></div>` : ''}
       ${j.error ? `<div class="small warn-t">${esc(j.error)}</div>` : ''}${arr(j.warnings).length ? `<div class="small warn-t">${esc(arr(j.warnings).join(' · '))}</div>` : ''}
     </div>`;
-  const mine = jobs.filter((j) => j.champion === cid).slice(0, 8);
-  const others = jobs.filter((j) => j.champion !== cid).slice(0, 6);
+  const jobPb = (j) => j.playbook || j.champion;
+  const mine = jobs.filter((j) => jobPb(j) === cid).slice(0, 8);
+  const others = jobs.filter((j) => jobPb(j) !== cid).slice(0, 6);
 
   // post-game review proposals: only the changes still to decide, newest review first
   const props = Agent.state.proposals.filter((p) => p.champ === cid && openChanges(p).length).sort((a, b) => b.at - a.at);
@@ -1481,9 +1509,9 @@ function renderPlaybook() {
 
   // rules explorer
   const raw = Playbooks.raw(cid) || {};
-  const R = cid === S.champ ? D.rules : (raw.rules || {});
+  const R = cid === pbId() ? D.rules : (raw.rules || {});
   const problems = Rules.check(R);
-  const modes = Engine.modesFor(D, R, cid === S.champ ? D.overlayRules : null);
+  const modes = Engine.modesFor(D, R, cid === pbId() ? D.overlayRules : null);
   const ruleRow = (r) => (r.anchor ? `<div class="rule anchor"><b>▸ ${esc(r.id)}</b> <span class="small muted">${esc(r.note || '')}</span></div>`
     : `<details class="rule ${r.source === 'plan' || String(r.id).startsWith('plan:') ? 'from-plan' : ''} ${r.source === 'shared' ? 'from-shared' : ''} ${r.disabled ? 'off' : ''}"><summary><code>${esc(r.id)}</code>${r.source === 'shared' ? ' <span class="chip">all champions</span>' : ''} <span class="muted">${r.use ? `built-in: ${esc(r.use)}` : `→ ${esc(r.mode)}`}</span> <span class="small">${esc(r.headline || '')}</span></summary>
         <dl class="kv small"><dt>when</dt><dd><code>${esc(r.when || 'always')}</code></dd>${r.reason ? `<dt>reason</dt><dd>${esc(r.reason)}</dd>` : ''}${r.voice ? `<dt>voice</dt><dd>${esc(r.voice)}</dd>` : ''}${r.note ? `<dt>note</dt><dd>${esc(r.note)}</dd>` : ''}</dl></details>`);
@@ -1497,17 +1525,20 @@ function renderPlaybook() {
     <div class="col">
       <div class="card"><header><h2>Champions</h2></header>
         <div class="pb-list">${pool.map(pill).join('')}</div>
-        <label class="small muted">Add a champion (starts research)
-          <select id="pbAdd"><option value="">Choose…</option>${allChamps.filter((c) => !pool.includes(c.id)).map((c) => `<option value="${esc(c.id)}">${esc(c.name)}</option>`).join('')}</select></label>
+        <div class="row" style="gap:8px;align-items:flex-end">
+          <label class="small muted grow">Add a champion (starts research)
+            <select id="pbAdd"><option value="">Choose…</option>${allChamps.map((c) => `<option value="${esc(c.id)}">${esc(c.name)}</option>`).join('')}</select></label>
+          <label class="small muted">Lane <select id="pbAddRole">${Playbooks.ROLES.map((r) => `<option value="${r}" ${r === (S.pbAddRole || S.role) ? 'selected' : ''}>${Playbooks.ROLE_LABEL[r]}</option>`).join('')}</select></label>
+        </div>
       </div>
       <div class="card"><header><h2>Research agents</h2></header>${agentBox}
         ${others.length ? `<h3>Other recent runs</h3>${others.map(jobRow).join('')}` : ''}</div>
     </div>
     <div class="col">
       <div class="card">
-        <header>${champImg(cid, 'lg')}<div class="grow"><h2>${esc(champName(cid))} playbook</h2>
+        <header>${champImg(ch, 'lg')}<div class="grow"><h2>${esc(champName(ch))} ${Playbooks.parse(cid).role === 'mid' ? 'mid' : 'top'} playbook</h2>
           <div class="small muted">${info ? `${info.active ? `version ${info.active}${info.draft ? ' (draft)' : ''}` : 'built-in version'} · patch ${esc(info.patch || '?')} · build: ${esc(src.meta || '–')} · plan: ${esc(src.phases || '–')} · matchups: ${esc(src.matchups || '–')} · rules: ${esc(src.rules || '–')}` : 'no playbook yet'}</div></div>
-          ${cid !== S.champ ? `<button class="btn small" data-usechamp="${esc(cid)}">Show on dashboard</button>` : ''}
+          ${cid !== pbId() ? `<button class="btn small" data-usechamp="${esc(cid)}">Show on dashboard</button>` : ''}
           ${Agent.ready() ? `<button class="btn small ghost" data-research="${esc(cid)}" ${Agent.running(`champion-${cid}`) ? 'disabled' : ''}>${Playbooks.has(cid) ? 'Refresh research' : 'Research now'}</button>` : ''}
           ${Agent.ready() && muTotal ? `<button class="btn small ghost" data-profiles="${esc(cid)}" ${Agent.running(`profile-${cid}`) ? 'disabled' : ''} title="Turns the matchup texts into data the dashboard decides with: who wins short trades and all-ins at each stage, and when your tower isn't safe">${Agent.running(`profile-${cid}`) ? 'Profiling matchups…' : `Matchup profiles ${muProfiled}/${muTotal}`}</button>` : ''}
         </header>
@@ -1585,7 +1616,7 @@ async function applyProposal(jobId, idx) {
   try {
     await Playbooks.saveVersion(champ, { [part]: next }, reviewNote(c), `review:${jobId}`);
     decideProposal(jobId, idx, 'applied');
-    if (champ === S.champ) await useChamp(champ, { fresh: true });
+    if (champ === pbId()) await useChamp(S.champ, { fresh: true });
   } catch (e) { alert(`Couldn't save: ${e.message}`); }
   renderPlaybook();
 }
@@ -1672,7 +1703,7 @@ function renderBuild() {
   const cb = m.coreBuild || {};
   el.innerHTML = `
   <div class="grid" style="gap:14px">
-    ${playbookNotice(S.champ)}<div class="card"><header><h2>${esc(champName(S.champ))} top · patch ${esc(m.patch || '?')}</h2>
+    ${playbookNotice(pbId())}<div class="card"><header><h2>${esc(champName(S.champ))} ${S.role === 'mid' ? 'mid' : 'top'} · patch ${esc(m.patch || '?')}</h2>
       ${o.tier ? `<span class="chip gold">Tier ${esc(o.tier)}</span>` : ''}
       ${o.winRate != null ? `<span class="chip ${wrClass(o.winRate)}">WR ${pct(o.winRate)}</span>` : ''}
       ${o.pickRate != null ? `<span class="chip">Pick ${pct(o.pickRate)}</span>` : ''}
@@ -1834,14 +1865,14 @@ function renderReview() {
   if (R.status === 'loading') status = '<div class="small muted">Opening your match archive…</div>';
   else if (R.status === 'error') status = `<div class="notice warn">${esc(R.error)}</div>`;
   else if (R.status === 'needs_identity' || !R.me) status = '<div class="small muted">Open the League client (detected automatically) or enter your Riot ID.</div>';
-  const head = `<div class="card"><header><h2>Your ${esc(champName(S.champ))} games</h2>${R.me ? `<span class="chip">${esc(R.me.gameName)}#${esc(R.me.tagLine)}</span>` : ''}<span class="grow"></span>
+  const head = `<div class="card"><header><h2>Your ${esc(champName(S.champ))} ${S.role === 'mid' ? 'mid ' : ''}games</h2>${R.me ? `<span class="chip">${esc(R.me.gameName)}#${esc(R.me.tagLine)}</span>` : ''}<span class="grow"></span>
       ${R.all.length > 30 ? `<div class="seg" role="group" aria-label="Games to look at">${[['30', 'Last 30'], ['100', 'Last 100'], ['all', `All ${R.all.length}`]].filter(([v]) => v === 'all' || +v < R.all.length).map(([v, l]) => `<button class="${R.range === v ? 'on' : ''}" data-range="${v}">${l}</button>`).join('')}</div>` : ''}
       ${R.me && R.status !== 'loading' && !Archive.running ? `<button class="btn small" data-action="review-load">${R.all.length ? 'Check for new games' : 'Load my games'}</button>` : ''}</header>
       ${!R.me || R.status === 'needs_identity' ? idForm : ''}${status}
-      <div class="small faint">Solo/Duo, Flex, Draft and Quickplay games on ${esc(champName(S.champ))} from your match archive: every game Riot still has (about two years), kept on this PC for good. Games played with Jax Coach open also record what the dashboard said when you died.</div></div>`;
+      <div class="small faint">Solo/Duo, Flex, Draft and Quickplay games on ${esc(champName(S.champ))} ${S.role === 'mid' ? 'in mid' : 'outside mid (switch to Mid at the top for those)'} from your match archive: every game Riot still has (about two years), kept on this PC for good. Games played with Jax Coach open also record what the dashboard said when you died.</div></div>`;
   const games = R.games;
   const hist = historyHtml();
-  if (!games.length) { el.innerHTML = `<div class="grid" style="gap:14px">${head}${R.status === 'done' && !Archive.running ? `<div class="notice">No ${esc(champName(S.champ))} games in your archive yet.</div>` : ''}${hist}</div>`; return; }
+  if (!games.length) { el.innerHTML = `<div class="grid" style="gap:14px">${head}${R.status === 'done' && !Archive.running ? `<div class="notice">No ${esc(champName(S.champ))} ${S.role === 'mid' ? 'mid ' : ''}games in your archive yet.</div>` : ''}${hist}</div>`; return; }
 
   const T = Review.trends(games), ins = Review.insights(T, games);
   const tile = (label, value, sub) => `<div class="tile"><div class="l">${label}</div><div class="v">${value}</div>${sub ? `<div class="s">${sub}</div>` : ''}</div>`;
@@ -1940,11 +1971,12 @@ function historyHtml() {
   if (rows.length < 10) return '';
   const X = Archive.stats(rows);
   const asc = rows.slice().reverse();
-  const top = rows.filter((r) => r.role === 'TOP'), topWr = top.length ? Math.round((top.filter((r) => r.win).length / top.length) * 100) : null;
+  const laneWr = (pos) => { const g = rows.filter((r) => r.role === pos); return { n: g.length, wr: g.length ? Math.round((g.filter((r) => r.win).length / g.length) * 100) : null }; };
+  const top = laneWr('TOP'), mid = laneWr('MIDDLE');
   const tile = (label, value, sub) => `<div class="tile"><div class="l">${label}</div><div class="v">${value}</div>${sub ? `<div class="s">${sub}</div>` : ''}</div>`;
   const n = Math.min(20, Math.max(5, Math.floor(rows.length / 6)));
   const wrPts = rolling(asc, n, (r) => (r.win ? 100 : 0)).map((p) => ({ ...p, tip: `${new Date(p.t).toLocaleDateString()} · ${Math.round(p.v)}% over your ${n} games up to here` }));
-  const champRows = asc.filter((r) => r.champ === S.champ && r.detail && r.detail.at10);
+  const champRows = asc.filter((r) => r.champ === S.champ && Archive.inRole(r, S.role) && r.detail && r.detail.at10);
   const cn = Math.min(10, Math.max(3, Math.floor(champRows.length / 5)));
   const csPts = rolling(champRows, cn, (r) => r.detail.at10.cs).map((p) => ({ ...p, tip: `${new Date(p.t).toLocaleDateString()} · CS at 10: ${Math.round(p.v)} average over ${cn} games` }));
   const csMax = csPts.length ? Math.max(80, Math.ceil(Math.max(...csPts.map((p) => p.v)) / 20) * 20) : 100;
@@ -1952,24 +1984,26 @@ function historyHtml() {
     ${X.champs.slice(0, 12).map((c) => `<tr><td><span class="row">${champImg(c.champ, 'sm')}${esc(champName(c.champ))}</span></td><td class="num">${c.n}</td><td class="num"><span class="${c.n >= 5 ? (c.wr >= 55 ? 'good-t' : c.wr <= 45 ? 'warn-t' : '') : ''}">${c.wr}%</span></td><td class="num">${c.kda.toFixed(1)}</td><td class="num">${c.csm.toFixed(1)}</td><td class="small muted">${esc(ROLE_LABEL[c.role] || '–')}</td><td class="num small muted">${new Date(c.last).toLocaleDateString()}</td></tr>`).join('')}
     </tbody></table>${X.champs.length > 12 ? `<div class="small faint">and ${X.champs.length - 12} more champions</div>` : ''}`;
   const tl = X.tilt, base = X.wr;
-  const champPatches = Archive.stats(rows.filter((r) => r.champ === S.champ)).patches.slice(0, 8);
+  const champPatches = Archive.stats(rows.filter((r) => r.champ === S.champ && Archive.inRole(r, S.role))).patches.slice(0, 8);
+  const roleName = `${champName(S.champ)}${S.role === 'mid' ? ' mid' : ''}`;
   return `<div class="card"><header><h2>All your games</h2><span class="small faint">every champion and role in your archive</span></header>
     <div class="tiles">
       ${tile('Games', X.n, X.first ? `since ${new Date(X.first).toLocaleDateString()}` : '')}
       ${tile('Win rate', `${X.wr}%`, `${rows.filter((r) => r.win).length}W ${rows.filter((r) => !r.win).length}L`)}
-      ${tile('Top lane', topWr != null ? `${topWr}%` : '–', `${top.length} games in top`)}
+      ${tile('Top lane', top.wr != null ? `${top.wr}%` : '–', `${top.n} games in top`)}
+      ${mid.n ? tile('Mid lane', `${mid.wr}%`, `${mid.n} games in mid`) : ''}
       ${tile('Sessions', X.sessions, X.perSession ? `${X.perSession.toFixed(1)} games per session` : '')}
     </div>
     <div class="two" style="margin-top:12px">
       <div>${trendChart({ title: 'Win rate over time', note: `rolling over ${n} games, all champions · dashed line = 50%`, pts: wrPts, yMin: 0, yMax: 100, ref: 50, fmt: (v) => `${v}%`, label: (v) => `${Math.round(v)}%` })}
-        ${trendChart({ title: `CS at 10:00 on ${champName(S.champ)}`, note: `rolling over ${cn} games`, pts: csPts, yMin: 0, yMax: csMax, ref: null, fmt: (v) => String(Math.round(v)), label: (v) => String(Math.round(v)) })}</div>
+        ${trendChart({ title: `CS at 10:00 on ${roleName}`, note: `rolling over ${cn} games`, pts: csPts, yMin: 0, yMax: csMax, ref: null, fmt: (v) => String(Math.round(v)), label: (v) => String(Math.round(v)) })}</div>
       <div>
         <h3>Streaks and sessions</h3>
         <div class="small faint" style="margin-bottom:6px">Win rate by situation; the mark is your overall ${base}%. A session = games less than 45 minutes apart.</div>
         <div class="wrbars">${wrBar('After a win', tl.afterWin, base)}${wrBar('After a loss', tl.afterLoss, base)}${wrBar('After two losses', tl.afterTwoLosses, base)}
           ${tl.byGameNo.map((g) => wrBar(`${g.label} of a session`, g, base)).join('')}</div>
         ${tl.afterTwoLosses.n >= 8 && tl.afterTwoLosses.wr <= base - 8 ? `<div class="notice warn small" style="margin-top:8px">After two losses in a row you win ${tl.afterTwoLosses.wr}% (${tl.afterTwoLosses.n} games). A break after the second loss is worth trying.</div>` : ''}
-        ${champPatches.length >= 2 ? `<h3 style="margin-top:12px">${esc(champName(S.champ))} by patch</h3><div class="wrbars">${champPatches.map((p) => wrBar(`Patch ${p.patch}`, p, base)).join('')}</div>` : ''}
+        ${champPatches.length >= 2 ? `<h3 style="margin-top:12px">${esc(roleName)} by patch</h3><div class="wrbars">${champPatches.map((p) => wrBar(`Patch ${p.patch}`, p, base)).join('')}</div>` : ''}
       </div>
     </div>
     <h3 style="margin-top:12px">Champions</h3>${champTable}</div>`;
@@ -2223,11 +2257,11 @@ function wireUi() {
     if (t.dataset.action === 'reassess') { Agent.reassessNow(S.A, D); renderLive(); return; }
     if (t.dataset.action === 'chat-undo') { Agent.undoChatPlan(); renderLive(); return; }
     if (t.dataset.action === 'loadout-apply') { applyLoadout(); return; }
-    if (t.dataset.action === 'goto-playbook') { S.pbSel = t.dataset.champ || S.champ; setView('playbook'); return; }
+    if (t.dataset.action === 'goto-playbook') { S.pbSel = t.dataset.champ || pbId(); setView('playbook'); return; }
     if (t.dataset.action === 'agent-login') { Agent.login(); return; }
     if (t.dataset.action === 'agent-check') { Agent.refreshStatus(true).then(() => { renderPlaybook(); renderLive(); }); return; }
     if (t.dataset.pbsel) { S.pbSel = t.dataset.pbsel; Playbooks.load(S.pbSel, true).then(renderPlaybook); renderPlaybook(); return; }
-    if (t.dataset.usechamp) { useChamp(t.dataset.usechamp).then(() => { renderPlaybook(); renderLive(); }); return; }
+    if (t.dataset.usechamp) { const p = Playbooks.parse(t.dataset.usechamp); useChamp(p.cid, { role: p.role }).then(() => { renderPlaybook(); renderLive(); }); return; }
     if (t.dataset.profiles) { S.profileTried = S.profileTried || {}; S.profileTried[t.dataset.profiles] = true; Agent.profiles(D, t.dataset.profiles).then(renderPlaybook); return; }
     if (t.dataset.personalRemove) {
       const [kind, id] = t.dataset.personalRemove.split(':');
@@ -2237,7 +2271,7 @@ function wireUi() {
       return;
     }
     if (t.dataset.research) { Agent.research(D, t.dataset.research, Playbooks.has(t.dataset.research) ? 'refresh' : 'new').then(renderPlaybook); return; }
-    if (t.dataset.activate) { Playbooks.activate(t.dataset.activate, +t.dataset.v).then(() => (t.dataset.activate === S.champ ? useChamp(S.champ, { fresh: true }) : null)).then(renderPlaybook).catch((err) => alert(err.message)); return; }
+    if (t.dataset.activate) { Playbooks.activate(t.dataset.activate, +t.dataset.v).then(() => (t.dataset.activate === pbId() ? useChamp(S.champ, { fresh: true }) : null)).then(renderPlaybook).catch((err) => alert(err.message)); return; }
     if (t.dataset.cancel) { Agent.cancel(t.dataset.cancel); return; }
     if (t.dataset.apply) { applyProposal(t.dataset.apply, +t.dataset.idx); return; }
     if (t.dataset.skip) { decideProposal(t.dataset.skip, +t.dataset.idx, 'skipped'); renderPlaybook(); return; }
@@ -2299,12 +2333,20 @@ function wireUi() {
     else if (t.dataset.action === 'demo') startDemo();
   });
   document.body.addEventListener('change', (e) => {
+    if (e.target.id === 'pbAddRole') { S.pbAddRole = e.target.value; return; }
     if (e.target.id !== 'pbAdd' || !e.target.value) return;
-    const cid = e.target.value;
-    S.pbSel = cid;
-    if (Agent.ready()) Agent.research(D, cid, 'new').then(renderPlaybook); else renderPlaybook();
+    const role = ($('#pbAddRole') || {}).value || S.role;
+    const pb = Playbooks.idOf(e.target.value, role);
+    S.pbAddRole = role; S.pbSel = pb;
+    if (Agent.ready()) Agent.research(D, pb, Playbooks.has(pb) ? 'refresh' : 'new').then(renderPlaybook); else renderPlaybook();
   });
-  $('#champChip').addEventListener('click', () => { S.pbSel = S.champ; setView('playbook'); });
+  $('#champChip').addEventListener('click', () => { S.pbSel = pbId(); setView('playbook'); });
+  $('#roleSwitch').addEventListener('click', (e) => {
+    const b = e.target.closest('button[data-role]');
+    if (!b || b.dataset.role === S.role) return;
+    // in a game that says your position, the next poll puts it back: the game knows best
+    useChamp(S.champ, { role: b.dataset.role }).then(() => { if (S.A || S.demo) poll(); else renderLive(); if (S.view === 'playbook') renderPlaybook(); });
+  });
   document.body.addEventListener('input', (e) => {
     if (e.target.id === 'askInput') S.askDraft = e.target.value;
     if (e.target.id === 'momentQ') Moment.state.q = e.target.value;

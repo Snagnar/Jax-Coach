@@ -45,11 +45,11 @@ with what they still cost); `offPlanParts` (parts that go into no planned item, 
   Don't sell boots or finished items without a clear reason (e.g. a full build, or an item that is useless here).
 
 ## Think about
-- The lane: who wins early, the kill windows, the jungle matchup (who ganks top, who invades).
+- The lane: who wins early, the kill windows, the jungle matchup (who ganks your lane, who invades).
 - The two teams: engage, poke, pick, scaling, split push, frontline, damage profile (AD/AP), healing, crowd
   control. What does your team need from you, and what does the enemy team fear?
 - The win condition: split push and draw pressure, or group and engage, or peel your carry, or scale safely.
-  When should the player do which (e.g. "group for dragon when your jungler is top side; split only with TP up")?
+  When should the player do which (e.g. "group for dragon when your jungler is bot side; split only with TP up")?
 - The build for this lineup (anti-heal, armor vs MR, pen, boots) in exact item names, and runes/spells if they
   should differ from the playbook's default (champ select only).
 - Dashboard rules: add 0-3 rules only if they change what the dashboard should say in this game (for example a

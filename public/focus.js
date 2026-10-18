@@ -24,7 +24,7 @@ const Focus = (() => {
       how: 'Last-hit first, trade second. When you have to leave lane, crash the wave first so it isn\'t lost to the turret.',
       spoken: (tg) => `${tg} CS at ten minutes. Every last hit counts more than a trade.`,
       score: (T) => (T.cs10 == null ? null : Math.max(0, 70 - T.cs10) / 20),
-      why: (T) => `You average ${Math.round(T.cs10)} CS at 10${T.csDiff10 != null ? ` (${T.csDiff10 >= 0 ? '+' : ''}${T.csDiff10.toFixed(0)} vs your opponent)` : ''}. 70+ is the top-lane goal.`,
+      why: (T) => `You average ${Math.round(T.cs10)} CS at 10${T.csDiff10 != null ? ` (${T.csDiff10 >= 0 ? '+' : ''}${T.csDiff10.toFixed(0)} vs your opponent)` : ''}. 70+ is a good goal in lane.`,
     },
     early_deaths: {
       title: () => 'Max 1 death before 14:00',

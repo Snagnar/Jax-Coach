@@ -4,10 +4,13 @@ Today is {{DATE}}.
 
 ## Your folder
 - `input.json`: the request. `mode` is `new` (no playbook yet) or `refresh` (update an existing one).
-  `candidateOpponents` lists champions that can play top (Data Dragon ids).
+  `role` is `top` or `mid`; `playbook` is the playbook id (`Champ` for top, `Champ_mid` for mid).
+  `candidateOpponents` lists champions that can play {{ROLE}} (Data Dragon ids).
 - `reference/playbook-format.md`: the exact file formats and rules. **Read it first, completely.**
 - `reference/example-Jax/`: a finished playbook (the shape to copy; its content is about Jax, not your champion).
 - `reference/current/` (refresh only): the playbook you are updating. Keep what is still right, fix what changed.
+- The example is a top-lane playbook. For a **mid** playbook set `"role": "mid"` in every file and write for mid:
+  see "Mid lane" below.
 - `reference/shared.json`: season facts and objective timers.
 - Write your results to `out/`: `meta.json`, `rules.json`, `phases.json` and `matchups_part*.json`.
 You can only read and write inside this folder, and you can search and read the web. There is no shell (no Bash, Python or Node): write every file directly with the Write tool, and merge files by reading them and writing the result.
@@ -18,8 +21,8 @@ You can only read and write inside this folder, and you can search and read the 
    sites (e.g. op.gg, lolalytics, u.gg, mobalytics) for this patch and rank range; use the League wiki and the
    official patch notes for ability details and recent changes.
 2. **`out/rules.json` and `out/phases.json`**: how this champion plays each phase, and the dashboard decisions.
-3. **Matchups** (`out/matchups_part1.json`, `out/matchups_part2.json`, ...): the ~30 most common top-lane opponents of {{CHAMPION_NAME}} on this patch (find the
-   list on a stats site's counters page), with win rates and concrete tips per phase, and a `profile` for each
+3. **Matchups** (`out/matchups_part1.json`, `out/matchups_part2.json`, ...): the ~30 most common {{ROLE}}-lane opponents of {{CHAMPION_NAME}} on this patch (find the
+   list on a stats site's counters page for the {{ROLE}} role), with win rates and concrete tips per phase, and a `profile` for each
    (power curve, kit flags, threats; see the format). Every threat asks: is the player still safe at their own
    tower when behind in this matchup?
 
@@ -47,6 +50,16 @@ make it about {{CHAMPION_NAME}}:
 - `text.level6` names the real ultimate; `text.motivation` has 3-6 short lines in the champion's spirit.
 - `notes` explains your reasoning in 2-4 sentences for the human reading the Playbook tab.
 - Expressions may only use the facts and functions listed in the format. Enemy HP and cooldowns are not known.
+
+## Mid lane (only when the role is mid)
+- Use the mid stats pages (build, runes, win rates and counters for {{CHAMPION_NAME}} in mid), not the top ones.
+- Mid is short and has two river sides: ganks come from both, so the plan warns about unwarded river brushes and
+  says when to ward which side. In rules, say where the jungler showed with `{jg.where}`, never "top side".
+- Lane priority and roams decide mid: push first, then help the jungler at the scuttle crab, roam to a side lane, or
+  move first to dragon and the grubs. Punish the opponent's roams (push and take plates, or follow, and ping).
+- Most mid laners take Ignite or Teleport depending on the champion; don't assume Teleport in tips or rules.
+- After laning (min >= 14) a mid laner usually clears mid and plays with the team around objectives, catching side
+  waves on the side of the next objective; only true duelists split, and then on the side away from the objective.
 
 ## Standards
 - Current patch only. If a source is older, say so in `sources` / `winRateSource` and prefer newer data.

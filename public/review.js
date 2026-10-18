@@ -5,7 +5,7 @@
 const Review = (() => {
   const QUEUES = [420, 440, 400, 490];               // solo/duo, flex, draft, quickplay
   const QUEUE_NAME = { 420: 'Solo/Duo', 440: 'Flex', 400: 'Draft', 490: 'Quickplay' };
-  const S = { status: 'idle', me: null, champ: 'Jax', games: [], all: [], range: '30', error: null, history: [], open: null };
+  const S = { status: 'idle', me: null, champ: 'Jax', role: 'top', games: [], all: [], range: '30', error: null, history: [], open: null };
   let onChange = () => {};
   const changed = () => onChange();
 
@@ -165,9 +165,9 @@ const Review = (() => {
   }
 
   // ---------- games: from your match archive (archive.js imports them in the background) ----------
-  // range: how many of your most recent games on this champion the review looks at ('all' = every archived one)
+  // range: how many of your most recent games on this champion (in this role) the review looks at ('all' = every archived one)
   function refresh() {
-    S.all = Archive.rows().filter((r) => r.detail && r.champ === S.champ && !r.remake).map((r) => r.detail);
+    S.all = Archive.rows().filter((r) => r.detail && r.champ === S.champ && Archive.inRole(r, S.role) && !r.remake).map((r) => r.detail);
     S.games = S.range === 'all' ? S.all : S.all.slice(0, +S.range);
     attachLiveRecords();
   }
@@ -254,7 +254,7 @@ const Review = (() => {
     const earlyN = Math.max(1, T.early.length);
     if (T.earlyGanks.length && T.gankGames / T.n >= 0.35) {
       const avgT = avg(T.earlyGanks.map((d) => d.t));
-      out.push({ k: 'warn', score: T.earlyGanks.length / earlyN, title: `Early ganks: ${T.gankGames} of ${T.n} games`, text: `${T.earlyGanks.length} of your ${T.early.length} deaths before 14:00 were ganks, on average at ${fmt(avgT)}. ${T.gankEnemyHalf} happened past the river.`, tip: 'When the Jungler line on the Live tab says the position is unknown, don\'t walk past the river without a ward. Push when the jungler showed bot side or is dead.' });
+      out.push({ k: 'warn', score: T.earlyGanks.length / earlyN, title: `Early ganks: ${T.gankGames} of ${T.n} games`, text: `${T.earlyGanks.length} of your ${T.early.length} deaths before 14:00 were ganks, on average at ${fmt(avgT)}. ${T.gankEnemyHalf} happened past the river.`, tip: `When the Jungler line on the Live tab says the position is unknown, don't walk past the ${S.role === 'mid' ? 'middle of the lane without wards on both sides' : 'river without a ward'}. Push when the jungler showed on the far side of the map or is dead.` });
     }
     if (T.wardsBefore14 != null && T.wardsBefore14 < 4 && T.earlyGanks.length) {
       out.push({ k: 'warn', score: (T.earlyGanks.length / earlyN) * 0.5, title: `Few early wards: ${T.wardsBefore14.toFixed(1)} per game before 14:00`, text: 'Combined with the gank deaths, this is the cheapest thing to fix.', tip: 'Ward the river bush or tri-brush on each back, and buy a Control Ward whenever you have 75g spare.' });
@@ -273,15 +273,17 @@ const Review = (() => {
     if (T.underEnemyTower && T.underEnemyTower.length >= 3 && T.underEnemyTower.length / earlyN >= 0.15) {
       out.push({ k: 'warn', score: (T.underEnemyTower.length / earlyN) * 0.8, title: `Dying under their tower: ${T.underEnemyTower.length} early deaths`, text: 'Dives before 14:00 that cost you your life.', tip: 'Only dive with a clear kill and the tower aggro on someone else (minions or an ally).' });
     }
+    const mid = S.role === 'mid';
     if (T.ahead.length >= 3 && T.wrAhead != null && T.wrAhead < 60) {
-      out.push({ k: 'warn', title: `Leads not converting: ${T.wrAhead}% win rate when ahead at 15`, text: `You were 500g+ ahead of your lane opponent at 15:00 in ${T.ahead.length} games and won ${T.ahead.filter((g) => g.win).length}.`, tip: 'After laning, split push opposite objectives and join through Teleport; don\'t trade your lead in random mid-lane fights.' });
+      out.push({ k: 'warn', title: `Leads not converting: ${T.wrAhead}% win rate when ahead at 15`, text: `You were 500g+ ahead of your lane opponent at 15:00 in ${T.ahead.length} games and won ${T.ahead.filter((g) => g.win).length}.`,
+        tip: mid ? 'With a lead, push mid first, then move with your jungler to the next dragon or grubs and take side-lane towers; don\'t give the lead back by face-checking alone.' : 'After laning, split push opposite objectives and join through Teleport; don\'t trade your lead in random mid-lane fights.' });
     } else if (T.ahead.length >= 3 && T.wrAhead >= 70) {
       out.push({ k: 'good', title: `You close out leads: ${T.wrAhead}% when ahead at 15`, text: `The work is getting ahead: you were ahead at 15 in ${T.ahead.length} of ${T.n} games.`, tip: '' });
     }
     if (T.cs10 != null) {
       const recent = avg(games.slice(0, 5).map((g) => g.at10 && g.at10.cs)), older = avg(games.slice(5).map((g) => g.at10 && g.at10.cs));
       const trend = recent != null && older != null ? ` (last 5 games: ${Math.round(recent)}, before: ${Math.round(older)})` : '';
-      out.push({ k: T.cs10 >= 70 ? 'good' : 'info', title: `CS at 10: ${Math.round(T.cs10)} on average${trend}`, text: T.csDiff10 != null ? `${T.csDiff10 >= 0 ? '+' : ''}${T.csDiff10.toFixed(1)} vs your lane opponent.` : '', tip: T.cs10 < 70 ? 'Around 70+ at 10 minutes is a common goal for top lane.' : '' });
+      out.push({ k: T.cs10 >= 70 ? 'good' : 'info', title: `CS at 10: ${Math.round(T.cs10)} on average${trend}`, text: T.csDiff10 != null ? `${T.csDiff10 >= 0 ? '+' : ''}${T.csDiff10.toFixed(1)} vs your lane opponent.` : '', tip: T.cs10 < 70 ? `Around 70+ at 10 minutes is a common goal for ${mid ? 'mid' : 'top'} lane.` : '' });
     }
     if (T.firstItem != null) {
       const fast = games.filter((g) => g.firstItemAt && g.firstItemAt <= T.firstItem), slow = games.filter((g) => g.firstItemAt && g.firstItemAt > T.firstItem);
@@ -300,7 +302,7 @@ const Review = (() => {
     setRange: (r) => { S.range = r; refresh(); changed(); },
     onChange: (fn) => { onChange = fn; },
     reset: () => { S.games = []; S.all = []; S.status = 'idle'; },
-    // the Review follows the active champion
-    setChampion: (cid) => { if (!cid || cid === S.champ) return; S.champ = cid; S.open = null; if (S.status === 'done') refresh(); changed(); },
+    // the Review follows the active champion and role
+    setChampion: (cid, role = 'top') => { if (!cid || (cid === S.champ && role === S.role)) return; S.champ = cid; S.role = role; S.open = null; if (S.status === 'done') refresh(); changed(); },
   };
 })();

@@ -4,11 +4,19 @@
   "objectiveTimers": {
     "voidgrubs": {
       "spawn": "08:00",
-      "notes": "3 Voidgrubs, spawn once per game (no respawn). Despawn at 14:45 (14:55 if in combat). Each grub gives your team a Touch of the Void stack (structure burn); 3 stacks add Hunger of the Void (allied Voidmites on turrets) - very strong for a splitpusher like you."
+      "notes": "3 Voidgrubs, spawn once per game (no respawn). Despawn at 14:45 (14:55 if in combat). Each grub gives your team a Touch of the Void stack (structure burn); 3 stacks add Hunger of the Void (allied Voidmites on turrets) - strong for side-lane pushing.",
+      "byLane": {
+        "top": "3 Voidgrubs, spawn once per game (no respawn). Despawn at 14:45 (14:55 if in combat). Each grub gives your team a Touch of the Void stack (structure burn); 3 stacks add Hunger of the Void (allied Voidmites on turrets) - very strong for a splitpusher like you.",
+        "mid": "3 Voidgrubs, spawn once per game (no respawn). Despawn at 14:45 (14:55 if in combat). The pit is top side of the river: push mid first and help your jungler there. Grubs give structure burn (Touch of the Void) that helps take the mid turret."
+      }
     },
     "riftHerald": {
       "spawn": "15:00",
-      "notes": "Spawns once in the grub pit, despawns 19:45 (19:55 in combat). Eye of the Herald summons a pushing Herald - use it top to take plates/turret when your jungler can help."
+      "notes": "Spawns once in the grub pit, despawns 19:45 (19:55 in combat). Eye of the Herald summons a pushing Herald - use it in a lane where your team can follow up to take plates and the turret.",
+      "byLane": {
+        "top": "Spawns once in the grub pit, despawns 19:45 (19:55 in combat). Eye of the Herald summons a pushing Herald - use it top to take plates/turret when your jungler can help.",
+        "mid": "Spawns once in the grub pit, despawns 19:45 (19:55 in combat). Eye of the Herald summons a pushing Herald - mid is the best lane for it: the mid turret falls fast and opens the map."
+      }
     },
     "dragon": {
       "spawn": "05:00",
@@ -22,7 +30,7 @@
       "spawn": "20:00",
       "respawn": "6:00"
     },
-    "otherNotes": "Atakhan no longer exists (removed 26.1). Minions spawn 0:30, jungle camps 0:55. Hand of Baron lasts 180 s. Your top quest finishes around 13:35 at the latest - plan Teleport plays around Herald (15:00) and drakes."
+    "otherNotes": "Atakhan no longer exists (removed 26.1). Minions spawn 0:30, jungle camps 0:55. Hand of Baron lasts 180 s. Top: your top quest finishes around 13:35 at the latest - plan Teleport plays around Herald (15:00) and drakes. Mid: you are closest to both river objectives - push first and move first to dragon and grubs."
   },
   "seasonFacts": [
     "Atakhan was removed in 26.1; Baron spawns at 20:00 again (6:00 respawn).",
@@ -309,7 +317,7 @@
       "trade": "none",
       "do": [
         "Recall now; the tower takes the wave for you",
-        "Come back with Teleport or after the next wave crashes"
+        "Come back after the next wave crashes (or with Teleport if you have it)"
       ],
       "voice": "Not safe at your tower now. Recall.",
       "voiceKey": "lane-not-safe"

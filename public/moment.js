@@ -247,8 +247,9 @@ const Moment = (() => {
     const shots = withReplay ? await capture(R, C.t) : null;
     if (withReplay && !shots) return;
     const q = String(S.q || '').trim().slice(0, 600);
+    const role = Engine.laneOf(R.me.role) === 'mid' ? 'mid' : 'top';
     const job = await Agent.start('moment', {
-      champion: R.me.champ, championName: R.me.champ, key: `moment-${C.key}`, title: `Replay coach: ${clock(C.t)}${C.facts.opponent ? ` vs ${C.facts.opponent}` : ''}`,
+      champion: R.me.champ, playbook: Playbooks.idOf(R.me.champ, role), role, championName: R.me.champ, key: `moment-${C.key}`, title: `Replay coach: ${clock(C.t)}${C.facts.opponent ? ` vs ${C.facts.opponent}` : ''}`,
       patch: C.facts.game.patch, question: q || null, facts: C.facts, shots: shots ? shots.dir : null, pictures: shots ? shots.list.map(({ file, sec, clock: c, fog }) => ({ file, sec, clock: c, fog })) : [],
     });
     if (!job) { S.msg = `Couldn't start the coach${Agent.state.lastError ? `: ${Agent.state.lastError}` : ''}.`; changed(); return; }

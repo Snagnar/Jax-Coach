@@ -1,18 +1,28 @@
 // Jax Coach - champion playbooks on the page.
 // A playbook = meta (build, runes, items), phases (game plan), matchups, rules (the in-game decisions).
 // The server resolves each part: your local version (research agents, approved changes) > the shipped one.
-// Missing parts fall back to the generic top-lane playbook. A game plan from a research agent is an overlay
+// Missing parts fall back to the generic playbook of the role. A game plan from a research agent is an overlay
 // on top: it can reorder the build, change rule parameters and add decision rules for this game only.
+// A playbook is one champion in one role. Its id is the champion for top ("Malphite", as before mid existed) and
+// "<champion>_mid" for mid ("Malphite_mid"): its own build, matchups, plan and rules, researched for mid.
 
 const Playbooks = (() => {
-  const cache = {};            // champion id -> raw playbook from /api/playbook/<id>
-  let generic = null;
+  const cache = {};            // playbook id -> raw playbook from /api/playbook/<id>
+  const generic = {};          // role -> the generic playbook (_generic, _generic_mid)
   let list = [];               // /api/playbooks: what exists (shipped / local versions / drafts)
   const listeners = [];
   const changed = () => listeners.forEach((f) => { try { f(); } catch (e) { console.error(e); } });
 
+  const ROLES = ['top', 'mid'];
+  const ROLE_LABEL = { top: 'Top', mid: 'Mid' };
+  const idOf = (cid, role) => (role === 'mid' ? `${cid}_mid` : cid);
+  const parse = (id) => { const m = String(id || '').match(/^(.+)_mid$/); return m ? { cid: m[1], role: 'mid' } : { cid: String(id || ''), role: 'top' }; };
+
   async function getJSON(url) { const r = await fetch(url, { cache: 'no-store' }); if (!r.ok) throw new Error(`${url} ${r.status}`); return r.json(); }
-  async function loadGeneric() { if (!generic) generic = await getJSON('/api/playbook/_generic'); return generic; }
+  async function loadGeneric(role = 'top') {
+    if (!generic[role]) { try { generic[role] = await getJSON(`/api/playbook/${idOf('_generic', role)}`); } catch { generic[role] = null; } }
+    return generic[role];
+  }
   async function load(champ, fresh = false) {
     if (!champ) return null;
     if (!fresh && cache[champ]) return cache[champ];
@@ -53,10 +63,11 @@ const Playbooks = (() => {
     return { ...rules, fightScore, modes };
   }
 
-  // the playbook as the engine and views use it, for one champion, with an optional game-plan overlay
-  function effective(champ, dd, overlay) {
-    const pb = cache[champ] || {};
-    const gen = generic || {};
+  // the playbook as the engine and views use it, for one playbook id (champion + role), with an optional game-plan overlay
+  function effective(id, dd, overlay) {
+    const { cid: champ, role } = parse(id);
+    const pb = cache[id] || {};
+    const gen = generic[role] || generic.top || {};
     const cls = ((dd.champs[champ] || {}).tags || [])[0] || 'Fighter';
     let meta = pb.meta;
     if (!meta) {
@@ -81,7 +92,7 @@ const Playbooks = (() => {
     return {
       meta, phases, rules, matchups, overlayRules,
       playbook: {
-        champion: champ, generic: !pb.meta && !pb.rules, draft: !!pb.draft, version: pb.activeVersion || 0,
+        id, champion: champ, role, generic: !pb.meta && !pb.rules, draft: !!pb.draft, version: pb.activeVersion || 0,
         source: pb.source || {}, partsMissing: ['meta', 'phases', 'matchups', 'rules'].filter((p) => !pb[p]),
       },
     };
@@ -118,5 +129,5 @@ const Playbooks = (() => {
     return j;
   }
 
-  return { load, loadGeneric, refreshList, info, has, isDraft, raw, effective, cleanRules, saveVersion, activate, loadPersonal, savePersonal, get personal() { return personal; }, onChange: (f) => listeners.push(f), get list() { return list; } };
+  return { load, loadGeneric, refreshList, info, has, isDraft, raw, effective, cleanRules, saveVersion, activate, loadPersonal, savePersonal, idOf, parse, ROLES, ROLE_LABEL, get personal() { return personal; }, onChange: (f) => listeners.push(f), get list() { return list; } };
 })();

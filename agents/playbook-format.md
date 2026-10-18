@@ -1,6 +1,6 @@
 # Jax Coach playbook format
 
-A **playbook** is everything Jax Coach knows about playing one champion in one role (top lane for now). It is
+A **playbook** is everything Jax Coach knows about playing one champion in one role (top or mid). It is
 four JSON files. The app reads them; research agents write them. Everything is data: no code.
 
 | File | What it holds | Used for |
@@ -30,12 +30,12 @@ General rules for all text:
 ```jsonc
 {
   "champion": "Malphite",            // Data Dragon id (e.g. "DrMundo", "MonkeyKing")
-  "role": "top",
+  "role": "top",                     // "top" or "mid": the app stores a mid playbook as <Champ>_mid (e.g. Malphite_mid)
   "patch": "26.19",                  // the patch this data is for
   "lastUpdated": "2026-09-30",
   "sources": [ { "name": "...", "url": "https://...", "usedFor": "..." } ],
   "overview": { "tier": "...", "winRate": 51.2, "pickRate": 4.1, "banRate": 3.0, "rankFilter": "Emerald+ ...",
-                "playstyle": "2-4 sentences: how this champion wins games from top lane." },
+                "playstyle": "2-4 sentences: how this champion wins games from its lane." },
   "seasonNotes": [ "recent changes that matter for this champion" ],
   "abilities": [ { "key": "P|Q|W|E|R", "name": "...", "summary": "...", "tips": ["..."] } ],
   "combos": [ { "name": "...", "input": "E > Q > AA", "when": "..." } ],
@@ -182,7 +182,7 @@ Every two seconds the app computes facts about the game (below), then:
   "fightScore": [
     { "id": "ult_up", "group": "level", "when": "opp && me.level >= 6 && opp.level < 6", "add": 2, "why": "you have R, {oppName} doesn't" },
     { "id": "item_gold", "when": "opp", "add": "clamp(itemD / 900, -2, 2)", "why": "...", "whyWhen": "abs(itemD) >= 700" },
-    { "id": "jungler_near", "when": "jg && jg.status == 'near'", "add": -2, "why": "{jg.name} showed top side", "first": true }
+    { "id": "jungler_near", "when": "jg && jg.status == 'near'", "add": -2, "why": "{jg.name} showed {jg.where}", "first": true }
   ],
   "modes": [
     { "id": "dead", "when": "me.dead", "mode": "dead", "headline": "Dead: plan your next move", "reason": "{buyNow}" },
@@ -257,7 +257,7 @@ can be null = silent).
 | `lane` | `{ label: 'ahead'/'even'/'behind', very, est, reasons }` |
 | `team` | `{ goldDiff, kills, ekills, towers, etowers }` (goldDiff = item gold, yours minus theirs) |
 | `eDead`, `aDead`, `adv` | dead enemies, dead allies, eDead - aDead |
-| `jg` | enemy jungler `{ status: 'near'/'far'/'dead'/'clearing'/'unknown', name, ago, side, withMe, safeFor, key }` or null · `jgNote` |
+| `jg` | enemy jungler `{ status: 'near'/'far'/'dead'/'clearing'/'unknown', name, ago, side, where, withMe, safeFor, key }` or null · `jgNote`. `where`: where it last showed, in words for a voice line (`top side`, `mid`, `bot side`; `nearby` if unknown). `near` means close to your lane, `far` means on the other side of the map for your lane |
 | `soon` | the objective that matters now `{ key: 'dragon'/'voidgrubs'/'riftHerald'/'baron', label, in, status: 'upcoming'/'up', next, stakes: 'soul'/'elder'/null }` or null |
 | `drakes` | `{ ours, theirs, point: 'ours'/'theirs'/'both'/null (a team on 3 drakes = soul point), soul: 'ours'/'theirs'/null }` |
 | `bigDragon` | the soul-point dragon or the Elder Dragon when it's up or spawns within 90 s: `{ label, stakes: 'soul'/'elder', point, status, in, next }`, else null |

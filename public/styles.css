@@ -41,7 +41,7 @@ li::marker { color: var(--faint); }
 
 /* ---------- header ---------- */
 header.top { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; gap: 16px; padding: 10px 16px; background: rgba(12, 11, 18, .92); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); flex-wrap: wrap; }
-.brand { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 16px; letter-spacing: .02em; }
+.brand { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 16px; letter-spacing: .02em; flex-wrap: wrap; min-width: 0; }
 nav { display: flex; gap: 2px; flex-wrap: wrap; }
 nav button { background: none; border: 0; color: var(--muted); padding: 7px 12px; border-radius: 8px; font: inherit; font-weight: 600; cursor: pointer; }
 nav button:hover { color: var(--text); background: var(--panel); }
@@ -403,7 +403,7 @@ button.cs-slot:hover { border-color: var(--line); }
 .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; vertical-align: -1px; margin-right: 4px; }
 
 /* ---------- playbooks + research agents ---------- */
-.champ-chip { display: inline-flex; align-items: center; gap: 6px; background: var(--panel-2); border: 1px solid var(--line); color: var(--text); border-radius: 999px; padding: 2px 10px 2px 3px; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
+.champ-chip { display: inline-flex; align-items: center; gap: 6px; background: var(--panel-2); border: 1px solid var(--line); color: var(--text); border-radius: 999px; padding: 2px 10px 2px 3px; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; }
 .champ-chip:hover { border-color: var(--accent-2); }
 .champ-chip .caret { color: var(--muted); font-size: 10px; }
 .champ-chip i { font-style: normal; font-weight: 500; }
@@ -474,6 +474,9 @@ pre { white-space: pre-wrap; background: var(--panel-2); border-radius: 8px; pad
 .seg button { background: none; border: 0; color: var(--muted); font: inherit; font-size: 12px; padding: 4px 10px; cursor: pointer; }
 .seg button + button { border-left: 1px solid var(--line); }
 .seg button.on { background: var(--brand-bg); color: var(--text); }
+.role-seg { font-weight: 500; letter-spacing: 0; }
+.role-seg button { padding: 3px 9px; }
+.role-tag { font-size: 11px; font-weight: 600; color: var(--muted); border: 1px solid var(--line); border-radius: 6px; padding: 0 5px; margin-left: 4px; }
 .wrbars { display: grid; gap: 5px; }
 .wrbar { display: grid; grid-template-columns: 150px 1fr 42px 34px; gap: 8px; align-items: center; font-size: 13px; }
 .wrbar .b { position: relative; height: 10px; background: var(--panel-2); border-radius: 5px; }

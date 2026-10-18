@@ -112,7 +112,7 @@
       "id": "jungler_near",
       "when": "jg && jg.status == 'near'",
       "add": -2,
-      "why": "{jg.name} showed top side",
+      "why": "{jg.name} showed {jg.where}",
       "first": true
     },
     {
@@ -158,7 +158,7 @@
       "mode": "{e >= 2.5 ? 'trade' : e >= 0 ? 'safe' : 'retreat'}",
       "headline": "{e >= 0 ? 'Careful: jungler nearby' : 'Back off: jungler nearby'}",
       "reason": "{reason}",
-      "voice": "{jg.withMe ? null : 'Careful. ' + jg.name + ' showed top side.'}",
+      "voice": "{jg.withMe ? null : 'Careful. ' + jg.name + ' showed ' + jg.where + '.'}",
       "voiceKey": "{jg.key}",
       "note": "The kill feed shows the jungler only after a fight: if you were in it, you already know."
     },
