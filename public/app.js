@@ -181,6 +181,7 @@ async function pollClient() {
   else { S.cs = null; S.csOpp = null; }
   renderStatus();
   if (!S.game && !S.demo && S.view === 'live') renderLive();
+  autoApplyLoadout();
 }
 
 // ---------- polling ----------
@@ -972,6 +973,23 @@ async function applyLoadout() {
   S.loadoutRes = { ...res, ...local, at: Date.now(), key: X.key };
   S.loadoutBusy = false; renderLive();
 }
+// auto apply (on unless switched off): once your pick is locked, and again when the loadout changes (the enemy laner
+// locks in, the game plan arrives), at most every 8 s. Only in champ select, never in a game.
+const autoApplyOn = () => { try { return localStorage.getItem('jc.autoApply') !== '0'; } catch { return true; } };
+function autoApplyLoadout() {
+  const cs = S.cs;
+  if (!cs || S.A || S.game || S.demo || S.loadoutBusy || !autoApplyOn()) return;
+  if ((cs.timer || {}).phase === 'GAME_STARTING') return;
+  const mine = (cs.myTeam || []).find((p) => p.cellId === cs.localPlayerCellId) || {};
+  const picks = arr(cs.actions).flat().filter((a) => a.actorCellId === cs.localPlayerCellId && a.type === 'pick');
+  const locked = mine.championId && (picks.length ? picks.every((a) => a.completed) : true);
+  if (!locked || D.dd.keyToId[String(mine.championId)] !== S.champ) return;
+  if (S.view !== 'live') champSelectHtml(cs);            // the loadout is worked out while drawing champ select
+  const X = S.csLoadout;
+  if (!X || X.champ !== S.champ || (S.loadoutRes && S.loadoutRes.key === X.key) || Date.now() - (S.autoAppliedAt || 0) < 8000) return;
+  S.autoAppliedAt = Date.now();
+  applyLoadout();
+}
 function loadoutApplyRow() {
   if (!S.cs || S.A || S.demo) return '';
   const R = S.loadoutRes && S.loadoutRes.key.split('|')[0] === String(S.cs.gameId) ? S.loadoutRes : null;
@@ -980,7 +998,8 @@ function loadoutApplyRow() {
   const notes = parts.map(([k]) => R[k]).filter((x) => !x.ok || /replaced/.test(x.msg)).map((x) => x.msg);
   return `<div class="apply-row small">
       <button class="btn small" data-action="loadout-apply" ${S.loadoutBusy ? 'disabled' : ''} title="Sets this rune page (as 'Jax Coach'), the summoner spells and a 'Jax Coach' item set in the League client">${S.loadoutBusy ? 'Setting…' : R && !stale ? 'Apply again' : 'Apply to client'}</button>
-      ${!R ? '<span class="faint">sets these runes, spells and items in the League client</span>'
+      <label class="check small" title="Apply automatically once your pick is locked, and again when the loadout changes"><input type="checkbox" id="autoApply" ${autoApplyOn() ? 'checked' : ''}> Auto</label>
+      ${!R ? `<span class="faint">${autoApplyOn() ? 'applies these runes, spells and items in the League client when you lock in' : 'sets these runes, spells and items in the League client'}</span>`
         : R.error ? `<span class="warn-t">${esc(R.error)}</span>`
         : `${parts.map(([k, l]) => `<span class="${R[k].ok ? 'good-t' : 'warn-t'}" title="${esc(R[k].msg)}">${R[k].ok ? '✓' : '✗'} ${l}</span>`).join('')}<span class="faint">${stale ? 'the loadout changed since: apply again' : `${ago(R.at)} ago`}</span>`}
     </div>${notes.length ? `<div class="small muted">${notes.map(esc).join(' · ')}</div>` : ''}`;
@@ -2334,6 +2353,7 @@ function wireUi() {
   });
   document.body.addEventListener('change', (e) => {
     if (e.target.id === 'pbAddRole') { S.pbAddRole = e.target.value; return; }
+    if (e.target.id === 'autoApply') { try { localStorage.setItem('jc.autoApply', e.target.checked ? '1' : '0'); } catch {} renderLive(); autoApplyLoadout(); return; }
     if (e.target.id !== 'pbAdd' || !e.target.value) return;
     const role = ($('#pbAddRole') || {}).value || S.role;
     const pb = Playbooks.idOf(e.target.value, role);
