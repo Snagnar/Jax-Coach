@@ -167,6 +167,7 @@ async function pollClient() {
   if (phase === 'ChampSelect') {
     try { S.cs = await getJSON('/api/lcu/lol-champ-select/v1/session'); S.csFetchedAt = Date.now(); } catch { S.cs = null; }
     if (S.cs) {
+      Counters.loadMyTier();
       const mine = (S.cs.myTeam || []).find((p) => p.cellId === S.cs.localPlayerCellId) || {};
       const pick = D.dd.keyToId[String(mine.championId || mine.championPickIntent || '')];
       // your assigned position decides the playbook role (mid, else top); blind pick has none: keep the switch's
@@ -600,6 +601,7 @@ function scoutPlayers() {
   for (const p of enemies) if (p !== opp) Scout.request(p, key(p));
 }
 let renderQueued = false;
+Counters.onUpdate(() => { if (S.cs && !S.A && S.view === 'live') renderLive(); });
 Scout.onUpdate(() => {
   if (renderQueued) return;
   renderQueued = true;
@@ -975,15 +977,19 @@ async function applyLoadout() {
 }
 // auto apply (on unless switched off): once your pick is locked, and again when the loadout changes (the enemy laner
 // locks in, the game plan arrives), at most every 8 s. Only in champ select, never in a game.
+// your pick is locked in (hovering also fills championId during your pick turn: the pick action says it's done)
+function csLocked(cs) {
+  const mine = (cs.myTeam || []).find((p) => p.cellId === cs.localPlayerCellId) || {};
+  const picks = arr(cs.actions).flat().filter((a) => a.actorCellId === cs.localPlayerCellId && a.type === 'pick');
+  return !!mine.championId && (picks.length ? picks.every((a) => a.completed) : true);
+}
 const autoApplyOn = () => { try { return localStorage.getItem('jc.autoApply') !== '0'; } catch { return true; } };
 function autoApplyLoadout() {
   const cs = S.cs;
   if (!cs || S.A || S.game || S.demo || S.loadoutBusy || !autoApplyOn()) return;
   if ((cs.timer || {}).phase === 'GAME_STARTING') return;
   const mine = (cs.myTeam || []).find((p) => p.cellId === cs.localPlayerCellId) || {};
-  const picks = arr(cs.actions).flat().filter((a) => a.actorCellId === cs.localPlayerCellId && a.type === 'pick');
-  const locked = mine.championId && (picks.length ? picks.every((a) => a.completed) : true);
-  if (!locked || D.dd.keyToId[String(mine.championId)] !== S.champ) return;
+  if (!csLocked(cs) || D.dd.keyToId[String(mine.championId)] !== S.champ) return;
   if (S.view !== 'live') champSelectHtml(cs);            // the loadout is worked out while drawing champ select
   const X = S.csLoadout;
   if (!X || X.champ !== S.champ || (S.loadoutRes && S.loadoutRes.key === X.key) || Date.now() - (S.autoAppliedAt || 0) < 8000) return;
@@ -1045,7 +1051,7 @@ function champSelectHtml(cs) {
   const idOf = (key) => (key ? D.dd.keyToId[String(key)] : null);
   const mine = (cs.myTeam || []).find((p) => p.cellId === cs.localPlayerCellId) || {};
   const myChamp = idOf(mine.championId || mine.championPickIntent);
-  const myLocked = !!mine.championId;
+  const myLocked = csLocked(cs);
   const enemies = (cs.theirTeam || []).map((p) => idOf(p.championId)).filter(Boolean);
   // your lane opponent: the one you picked, else the enemy assigned to your lane (when the client shows positions)
   const myPos = String(mine.assignedPosition || '').toLowerCase();
@@ -1074,7 +1080,7 @@ function champSelectHtml(cs) {
     const inner = `${id ? champImg(id) : '<span class="ci empty-slot"></span>'}
       <span class="small ${isMe ? '' : 'muted'}">${id ? esc(champName(id)) : 'picking…'}${!enemy && p.championPickIntent && !p.championId ? ' <i class="faint">(hover)</i>' : ''}</span>
       ${enemy ? (m && m.winRate != null ? `<span class="small ${wrClass(m.winRate)}" title="${esc(champName(S.champ))}'s win rate in this matchup">${(+m.winRate).toFixed(1)}%</span>` : '<span class="small faint">&nbsp;</span>') : `<span class="small faint">${esc(POS[String(p.assignedPosition || '').toLowerCase()] || '')}${isMe ? ' · you' : ''}</span>`}`;
-    return enemy && id ? `<button class="cs-slot ${id === opp ? 'on' : ''}" data-csopp="${esc(id)}" title="Set as your lane opponent">${inner}</button>` : `<div class="cs-slot ${isMe ? 'me' : ''}">${inner}</div>`;
+    return enemy && id ? `<button class="cs-slot ${id === opp ? 'on' : ''}" data-csopp="${esc(id)}" title="Set as your lane opponent and show the best picks against them">${inner}</button>` : `<div class="cs-slot ${isMe ? 'me' : ''}">${inner}</div>`;
   };
   const banSuggest = Object.values(D.matchups).filter((m) => m.winRate != null).sort((a, b) => a.winRate - b.winRate).slice(0, 5);
 
@@ -1116,13 +1122,54 @@ function champSelectHtml(cs) {
         ${myChamp ? `<span class="chip">${myLocked ? 'Locked' : 'Hovering'}: ${esc(champName(myChamp))}</span>` : ''}<span class="chip" title="${myPos ? 'Your assigned position' : 'No position in this mode: set with the Top/Mid switch at the top'}">${S.role === 'mid' ? 'Mid' : 'Top'} lane</span>${myChamp && !Playbooks.has(Playbooks.idOf(myChamp, S.role)) ? '<span class="chip warn">No playbook yet: general tips</span>' : ''}</header>
       <div class="cs-teams">
         <div><h3>Your team</h3><div class="cs-row">${(cs.myTeam || []).map((p) => slot(p, false)).join('')}</div></div>
-        <div><h3>Enemy team <span class="faint" style="text-transform:none;letter-spacing:0">· click your lane opponent</span></h3><div class="cs-row">${(cs.theirTeam || []).map((p) => slot(p, true)).join('')}</div>${compHtml}</div>
+        <div><h3>Enemy team <span class="faint" style="text-transform:none;letter-spacing:0">· click one: lane opponent + best picks against them</span></h3><div class="cs-row">${(cs.theirTeam || []).map((p) => slot(p, true)).join('')}</div>${compHtml}</div>
       </div>
       ${banIds.length ? `<div class="row small"><span class="muted">Bans</span>${banIds.map((id) => `<span class="ban">${champImg(id, 'sm')}</span>`).join('')}</div>` : ''}
     </div>
+    ${countersHtml(cs, { opp, myLocked, banIds, idOf })}
     ${playbookNotice(myChamp ? Playbooks.idOf(myChamp, S.role) : null)}${planCard(null)}
     ${focusCardHtml()}
     <div class="grid cs-grid">${matchup}${loadoutHtml(L)}</div>`;
+}
+
+// ---------- best picks vs an enemy (champ select): click an enemy; opens by itself for your lane opponent until you lock in ----------
+function countersHtml(cs, { opp, myLocked, banIds, idOf }) {
+  if (S.csCountersGame !== cs.gameId) { S.csCountersGame = cs.gameId; S.csCounters = null; S.csCountersClosed = false; }
+  const enemy = S.csCounters || (!myLocked && !S.csCountersClosed ? opp : null);
+  if (!enemy) return '';
+  const e = Counters.get(D, enemy, S.role), R = Counters.rank(D, e, enemy, S.role);
+  const taken = new Map([...banIds.map((id) => [id, 'banned']), ...[...(cs.myTeam || []), ...(cs.theirTeam || [])].filter((p) => p.cellId !== cs.localPlayerCellId)
+    .map((p) => [idOf(p.championId), 'picked']).filter(([id]) => id)]);
+  const lane = S.role === 'mid' ? 'mid' : 'top';
+  const row = (r, tagYours) => {
+    const t = taken.get(r.cid);
+    const mine = r.my ? `<span class="${r.myWr >= 50 ? 'good-t' : 'warn-t'}" title="Your games on ${esc(champName(r.cid))} against ${esc(champName(enemy))} in ${lane}${r.w ? ': they count in the ranking' : ' (3+ games count in the ranking)'}">you ${r.my.wins}W ${r.my.games - r.my.wins}L</span>` : '';
+    return `<tr class="${t ? 'cnt-off' : ''}"><td>${champImg(r.cid, 'sm')}</td><td>${esc(champName(r.cid))}${t ? ` <span class="chip">${t}</span>` : ''}${tagYours && r.inPool && !t ? ' <span class="faint small">· yours</span>' : ''}</td>
+      <td class="num ${wrClass(r.wr)}" title="${esc(champName(r.cid))}'s win rate against ${esc(champName(enemy))}">${r.wr.toFixed(1)}%</td>
+      <td class="num small ${r.delta >= 1 ? 'good-t' : r.delta <= -1 ? 'warn-t' : 'faint'}" title="Compared with ${esc(champName(r.cid))}'s usual win rate: how much this matchup helps or hurts">${r.delta >= 0 ? '+' : '−'}${Math.abs(r.delta).toFixed(1)}</td>
+      <td class="num small faint" title="Games in this matchup (last 30 days)">${r.n >= 1000 ? `${(r.n / 1000).toFixed(1)}k` : r.n}</td><td class="small">${mine}</td></tr>`;
+  };
+  const table = (rows, tagYours) => `<table class="cnt"><thead><tr><th></th><th></th><th class="num">WR</th><th class="num" title="vs their usual win rate">±</th><th class="num">games</th><th></th></tr></thead><tbody>${rows.map((r) => row(r, tagYours)).join('')}</tbody></table>`;
+  let body;
+  if (e.status === 'loading') body = '<div class="muted small">Loading matchup stats…</div>';
+  else if (e.status === 'error' || !R) body = `<div class="warn-t small">${esc(e.error || 'No stats')}</div>`;
+  else {
+    const poolRows = R.rows.filter((r) => r.inPool);
+    const best = R.rows.filter((r) => r.common && !taken.has(r.cid)).slice(0, 10);
+    body = `${R.total < 5000 ? `<div class="notice warn small">${esc(champName(enemy))} is rarely played in ${lane} (${R.total.toLocaleString()} games): these numbers are thin. Is ${esc(champName(enemy))} really your lane opponent?</div>` : ''}
+      <div class="two tight">
+        <div><h3>Your champions</h3>${poolRows.length ? table(poolRows) : '<div class="small muted">None of your champions has games against them in this lane yet.</div>'}
+          ${R.missing.length ? `<div class="small faint">No stats vs ${esc(champName(enemy))} in ${lane}: ${esc(R.missing.map(champName).join(', '))}</div>` : ''}</div>
+        <div><h3>Best in ${lane} against them</h3>${best.length ? table(best, true) : '<div class="small muted">Too few games in this lane to rank.</div>'}</div>
+      </div>
+      <div class="small faint">Win rate of each champion against ${esc(champName(enemy))} in ${lane}, ${esc(Counters.TIERS.find(([k]) => k === Counters.tier())[1])}, ranked games of the last 30 days (lolalytics, ${R.total.toLocaleString()} games${e.at ? `, fetched ${ago(Date.parse(e.at))} ago` : ''}). Few-game matchups lean toward the champion's usual win rate; with 3+ of your own games your record counts too.</div>`;
+  }
+  return `<div class="card cnt-card">
+    <header><div class="row" style="gap:8px">${champImg(enemy, 'sm')}<h2>Best picks vs ${esc(champName(enemy))}</h2></div>
+      <span class="seg small" title="Rank tier of the games">${Counters.shownTiers().map(([k, l]) => `<button type="button" data-ctier="${k}" class="${k === Counters.tier() ? 'on' : ''}">${l}${k === Counters.myTier() ? ' (you)' : ''}</button>`).join('')}</span>
+      <button class="btn small ghost" data-action="counters-close" title="Close (click an enemy to open it again)">×</button></header>
+    ${body}
+  </div>`;
 }
 
 function phaseHero() {
@@ -2267,7 +2314,7 @@ function stopDemo() {
 function wireUi() {
   $('#tabs').addEventListener('click', (e) => { const b = e.target.closest('button[data-view]'); if (b) setView(b.dataset.view); });
   document.body.addEventListener('click', (e) => {
-    const t = e.target.closest('[data-opp],[data-mu],[data-phase],[data-goto],[data-action],[data-csopp],[data-game],[data-mu-open],[data-focus],[data-report],[data-jump],[data-replay],[data-moment],[data-moment-ask],[data-seek],[data-moment-rule],[data-nextfocus],[data-pbsel],[data-usechamp],[data-research],[data-activate],[data-cancel],[data-apply],[data-skip],[data-dismiss],[data-range]');
+    const t = e.target.closest('[data-opp],[data-mu],[data-phase],[data-goto],[data-action],[data-csopp],[data-game],[data-mu-open],[data-focus],[data-report],[data-jump],[data-replay],[data-moment],[data-moment-ask],[data-seek],[data-moment-rule],[data-nextfocus],[data-pbsel],[data-ctier],[data-usechamp],[data-research],[data-activate],[data-cancel],[data-apply],[data-skip],[data-dismiss],[data-range]');
     if (!t) return;
     if (t.dataset.range) { Review.setRange(t.dataset.range); return; }
     // playbooks + research agents
@@ -2342,7 +2389,9 @@ function wireUi() {
     if (t.dataset.action === 'review-load') { if (Review.state.status === 'done') Archive.sync(D, { fresh: true }); else Review.load(D); renderReview(); return; }
     if (t.dataset.action === 'review-all-rows') { S.reviewAllRows = true; renderReview(); return; }
     if (t.dataset.action === 'report-more') { Report.state.listLimit += 20; renderReport(); return; }
-    if (t.dataset.csopp) { S.csOpp = t.dataset.csopp; renderLive(); return; }
+    if (t.dataset.csopp) { S.csOpp = t.dataset.csopp; S.csCounters = t.dataset.csopp; renderLive(); return; }
+    if (t.dataset.ctier) { Counters.setTier(t.dataset.ctier); return; }
+    if (t.dataset.action === 'counters-close') { S.csCounters = null; S.csCountersClosed = true; renderLive(); return; }
     if (t.dataset.game) { Review.state.open = Review.state.open === t.dataset.game ? null : t.dataset.game; renderReview(); return; }
     if (t.dataset.muOpen) { S.muSel = t.dataset.muOpen; renderMatchups(); setView('matchups'); return; }
     if (t.dataset.opp) { S.overrideOpp = t.dataset.opp; S.muSel = t.dataset.opp; poll(); }

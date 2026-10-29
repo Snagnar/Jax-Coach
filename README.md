@@ -11,6 +11,11 @@ browser (a second monitor works best):
   lane opponent is the enemy in your position); in blind pick, set it with the **Top / Mid** switch next to the
   champion at the top of the page.
 - **Champ select prep**: the matchup, build and runes against the enemy laner, and the enemy players' rank and mastery.
+- **Best picks vs an enemy**: click an enemy in champ select to see which champions win most against them in your
+  lane: your own champions and the best ones overall, with win rates from lolalytics (last 30 days, your rank tier
+  or another), blended with your own record in that matchup. Banned and picked champions are marked. It opens by
+  itself for your lane opponent until you lock in. The runes, spells and item set are applied to the client
+  automatically once you lock in (the **Auto** box turns that off).
 - **Game report** after each game: a rating for all ten players, how much of the win/loss was yours, the gold story of
   the game, the three things to fix next time, and "Watch" buttons that jump the League replay to each of your deaths.
 - **Replay coach**: "Coach" on any death (or any second you type) reviews that moment like a VOD coach. It reads the

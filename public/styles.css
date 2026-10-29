@@ -588,3 +588,8 @@ button.pill.upd-pill.warn i { background: var(--gold); animation: livedot 1.6s i
 .moment-shots img { width: 100%; border-radius: 6px; border: 1px solid var(--line); }
 .notice.good { background: var(--good-bg); border-color: rgba(79, 209, 139, .3); }
 .apply-row label.check { display: inline-flex; align-items: center; gap: 5px; cursor: pointer; color: var(--muted); }
+.cnt-card header { flex-wrap: wrap; gap: 8px; }
+.cnt-card .seg button { padding: 3px 8px; }
+table.cnt th.num, table.cnt td.num { text-align: right; white-space: nowrap; }
+table.cnt td { vertical-align: middle; }
+table.cnt tr.cnt-off { opacity: .45; }

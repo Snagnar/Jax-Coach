@@ -307,7 +307,7 @@ function Handle-Riot($ctx, [string]$route, [string]$pathAndQuery) {
 # (or its lockfile). Only a few read-only endpoints are allowed.
 $script:Lcu = $null
 $script:LcuCheckedAt = [DateTime]::MinValue
-$AllowedLcu = '^/(lol-gameflow/v1/gameflow-phase|lol-champ-select/v1/session|lol-summoner/v1/current-summoner|lol-replays/v1/metadata/\d+|lol-replays/v1/configuration)$'
+$AllowedLcu = '^/(lol-gameflow/v1/gameflow-phase|lol-champ-select/v1/session|lol-ranked/v1/current-ranked-stats|lol-summoner/v1/current-summoner|lol-replays/v1/metadata/\d+|lol-replays/v1/configuration)$'
 # the only client actions this app may trigger, and only on a click: download / open the replay of one of your games
 $AllowedLcuPost = '^/lol-replays/v1/rofls/\d+/(download|watch)$'
 
@@ -704,6 +704,26 @@ function Handle-Personal($ctx) {
 # ---------------- champion playbooks + research agents ----------------
 . (Join-Path $AgentsDir 'runner.ps1')
 
+# ---------------- matchup stats (lolalytics): every champion's win rate against one champion in a lane ----------------
+# One request per champion, lane and rank tier (games of the last 30 days), kept 12 hours. Offline: the last copy.
+$CountersDir = Join-Path $CacheDir 'counters'
+$CounterTiers = '^(all|iron|bronze|silver|gold|platinum|emerald|diamond|gold_plus|platinum_plus|emerald_plus|diamond_plus|master_plus)$'
+function Handle-Counters($ctx, [string]$lane, [string]$tier, [string]$champ) {
+  if ($tier -notmatch $CounterTiers) { Send $ctx 400 '{"error":"bad_tier"}'; return }
+  New-Item -ItemType Directory -Force $CountersDir | Out-Null
+  $file = Join-Path $CountersDir "$lane-$tier-$champ.json"
+  $have = Test-Path $file
+  $wrap = { param($f) '{"at":' + (Json-Escape ((Get-Item $f).LastWriteTime.ToString('s'))) + ',"data":' + [IO.File]::ReadAllText($f, [Text.Encoding]::UTF8) + '}' }
+  if ($have -and (Get-Item $file).LastWriteTime -gt (Get-Date).AddHours(-12)) { Send $ctx 200 (& $wrap $file); return }
+  $r = [JcHttp]::Get("https://a1.lolalytics.com/mega/?ep=counter&v=1&patch=30&c=$champ&lane=$lane&tier=$tier&queue=ranked&region=all", $null, 10000)
+  if ($r.Status -eq 200 -and $r.Body -match '^\s*\{"stats"') {
+    [IO.File]::WriteAllText($file, $r.Body, (New-Object Text.UTF8Encoding($false)))
+    Send $ctx 200 (& $wrap $file); return
+  }
+  if ($have) { Send $ctx 200 (& $wrap $file); return }
+  Send $ctx 502 ('{"error":' + (Json-Escape "no stats for this champion right now ($($r.Status))") + '}')
+}
+
 # ---------------- storage: what Jax Coach keeps on disk (Settings shows it; caches can be cleared) ----------------
 $script:VoiceEngineSize = $null
 function Get-FilesSize($files) { $m = @($files) | Measure-Object Length -Sum; return @{ bytes = [int64]$m.Sum; files = [int]$m.Count } }
@@ -718,6 +738,7 @@ function Get-StorageAreas {
   $areas = @(
     [ordered]@{ id = 'tts'; label = 'Spoken lines'; clear = $true; note = 'Voice lines made so far. They are made again when needed (a second or two each).'; size = (Get-FilesSize (Get-TreeFiles (Join-Path $CacheDir 'tts'))) }
     [ordered]@{ id = 'gamedata'; label = 'Game data'; clear = $true; note = 'Champion and item data per patch (Data Dragon). Downloaded again on the next start.'; size = (Get-FilesSize (Get-ChildItem $CacheDir -File -ErrorAction SilentlyContinue)) }
+    [ordered]@{ id = 'counters'; label = 'Matchup stats'; clear = $true; note = 'Win rates per matchup from lolalytics for "Best picks vs". Fetched again when needed.'; size = (Get-FilesSize (Get-TreeFiles $CountersDir)) }
     [ordered]@{ id = 'jobs'; label = 'Research run logs'; clear = $true; note = 'Logs of finished agent runs. Their results are already in your playbooks. Running jobs are kept.'; size = (Get-FilesSize $jobFiles) }
     [ordered]@{ id = 'playbooks'; label = 'Your playbooks'; clear = $false; note = 'Researched and updated champion playbooks with all versions. Manage them in the Playbook tab.'; size = (Get-FilesSize (Get-TreeFiles $LocalPb)) }
     [ordered]@{ id = 'archive'; label = 'Your match archive'; clear = $false; note = 'Every game of yours Riot still had, kept for good (Riot deletes games after about two years). Review, reports and stats read it.'; size = (Get-FilesSize @(@(Get-TreeFiles $ArchiveDir) + @(Get-TreeFiles $GamesDir))) }
@@ -731,6 +752,7 @@ function Clear-StorageArea([string]$id) {
   switch ($id) {
     'tts' { Get-TreeFiles (Join-Path $CacheDir 'tts') | Remove-Item -Force -ErrorAction SilentlyContinue }
     'gamedata' { Get-ChildItem $CacheDir -File -ErrorAction SilentlyContinue | Remove-Item -Force -ErrorAction SilentlyContinue }
+    'counters' { Get-TreeFiles $CountersDir | Remove-Item -Force -ErrorAction SilentlyContinue }
     'jobs' { Get-FinishedJobDirs | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue }
     'shots' { if (Test-Path $ShotsDir) { Get-ChildItem $ShotsDir -Directory | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue } }
     default { return $false }
@@ -812,6 +834,7 @@ function Handle-Request($ctx) {
   }
   if ($raw -match '^/api/riot/(platform|match|account)(/.*)$') { Handle-Riot $ctx $Matches[1] $Matches[2]; return }
   if ($path -match '^/api/lcu(/.*)$') { Handle-Lcu $ctx $Matches[1]; return }
+  if ($path -match '^/api/counters/(top|middle)/([a-z_]+)/([a-z]{2,20})$') { Handle-Counters $ctx $Matches[1] $Matches[2] $Matches[3]; return }
   if ($path -eq '/api/loadout/apply') { Handle-LoadoutApply $ctx; return }
   if ($path -eq '/api/replay/playback') { Handle-Replay $ctx; return }
   if ($path -eq '/api/replay/config') { Handle-ReplayConfig $ctx; return }
